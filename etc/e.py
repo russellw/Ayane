@@ -26,7 +26,7 @@ def do(file):
     cmd = "E/PROVER/eprover", "-p", file
     try:
         p = subprocess.run(
-            cmd, capture_output=True, encoding="utf-8", timeout=3, check=True,
+            cmd, capture_output=True, check=True, encoding="utf-8", timeout=3
         )
         print(len(p.stdout.splitlines()), end=",", flush=True)
         if "Proof found" in p.stdout:
