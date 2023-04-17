@@ -23,7 +23,10 @@ def difficulty(file):
 def do(file):
     print(file, end=",", flush=True)
     print(difficulty(file), end=",", flush=True)
-    cmd = "E/PROVER/eprover", "-p", file
+    # --auto makes a big difference to performance
+    # don't use --auto-schedule
+    # for some reason, it breaks the timeout feature
+    cmd = "E/PROVER/eprover", "--auto", "-p", file
     try:
         p = subprocess.run(
             cmd, capture_output=True, check=True, encoding="utf-8", timeout=3
