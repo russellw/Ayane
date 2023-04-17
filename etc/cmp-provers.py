@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 import inspect
-import subprocess
-import re
-import sys
 import logging
+import re
+import subprocess
+import sys
 
 subprocess.check_call(["make", "debug"])
 

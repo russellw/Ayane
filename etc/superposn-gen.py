@@ -11,7 +11,6 @@ import re
 import sys
 import time
 
-
 # numbers larger than 2000 silently fail
 sys.setrecursionlimit(2000)
 

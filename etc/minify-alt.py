@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 import inspect
-import subprocess
-import re
-import sys
 import logging
+import re
+import subprocess
+import sys
 
 logger = logging.getLogger()
 logger.addHandler(logging.StreamHandler(sys.stdout))

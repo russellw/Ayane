@@ -2,7 +2,6 @@
 # as this script requires subprocess capture_output
 # which does not work with the version of /usr/bin/python3 in WSL at this time
 # run this script with 'python ...'
-import subprocess
 import argparse
 import datetime
 import fractions
@@ -12,9 +11,9 @@ import itertools
 import logging
 import os
 import re
+import subprocess
 import sys
 import time
-
 
 # naming conventions:
 # C, D  clauses

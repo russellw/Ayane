@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 import inspect
-import time
-import random
-import subprocess
-import re
-import sys
 import logging
+import random
+import re
+import subprocess
+import sys
+import time
 
 logger = logging.getLogger()
 logger.addHandler(logging.StreamHandler(sys.stdout))

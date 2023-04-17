@@ -10,7 +10,6 @@ import re
 import sys
 import time
 
-
 # naming conventions:
 # C, D  clauses
 # F, G  formulas
