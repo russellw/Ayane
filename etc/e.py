@@ -29,7 +29,7 @@ def difficulty(f):
 def do_file(f):
     print(f, end=",", flush=True)
     print(difficulty(f), end=",", flush=True)
-    cmd = ["bin/eprover", "-p", f]
+    cmd = ["E/PROVER/eprover", "-p", f]
     try:
         p = subprocess.run(
             cmd,
