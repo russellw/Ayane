@@ -12,13 +12,9 @@ parser.add_argument("files", nargs="+")
 args = parser.parse_args()
 
 
-def read_lines(file):
-    with open(file) as f:
-        return [s.rstrip("\n") for s in f]
 
 
 def difficulty(file):
-    a = read_lines(file)
     for s in open(file):
         m = re.match(r"% Rating   : (\d+\.\d+)", s)
         if m:
@@ -62,7 +58,7 @@ for arg in args.files:
         continue
     ext = os.path.splitext(arg)[1]
     if ext == ".lst":
-        for file in read_lines(arg):
-            do(file)
+        for file in open(arg):
+            do(file.strip())
         continue
     do(arg)
