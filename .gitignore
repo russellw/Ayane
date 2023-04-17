@@ -1,4 +1,6 @@
 *.exe
+*.log
 *.lst
 *.obj
+*.p
 ayane
