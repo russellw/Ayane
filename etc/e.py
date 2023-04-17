@@ -12,24 +12,24 @@ parser.add_argument("files", nargs="+")
 args = parser.parse_args()
 
 
-def read_lines(filename):
-    with open(filename) as f:
+def read_lines(file):
+    with open(file) as f:
         return [s.rstrip("\n") for s in f]
 
 
-def difficulty(f):
-    xs = read_lines(f)
-    for x in xs:
-        m = re.match(r"% Rating   : (\d+\.\d+)", x)
+def difficulty(file):
+    a = read_lines(file)
+    for s in open(file):
+        m = re.match(r"% Rating   : (\d+\.\d+)", s)
         if m:
             return m[1]
     return "?"
 
 
-def do_file(f):
-    print(f, end=",", flush=True)
-    print(difficulty(f), end=",", flush=True)
-    cmd = ["E/PROVER/eprover", "-p", f]
+def do(file):
+    print(file, end=",", flush=True)
+    print(difficulty(file), end=",", flush=True)
+    cmd = "E/PROVER/eprover", "-p", file
     try:
         p = subprocess.run(
             cmd,
@@ -44,8 +44,7 @@ def do_file(f):
         elif "No proof found":
             r = "Satisfiable"
         else:
-            print(p.stdout)
-            exit(1)
+            raise Exception(p.stdout)
     except subprocess.TimeoutExpired:
         print(0, end=",", flush=True)
         r = "Timeout"
@@ -53,17 +52,17 @@ def do_file(f):
 
 
 for arg in args.files:
-    if not os.path.isfile(arg):
+    if os.path.isdir(arg):
         for root, dirs, files in os.walk(arg):
-            for filename in files:
-                ext = os.path.splitext(filename)[1]
+            for file in files:
+                ext = os.path.splitext(file)[1]
                 if ext != ".p":
                     continue
-                do_file(os.path.join(root, filename))
+                do(os.path.join(root, file))
         continue
     ext = os.path.splitext(arg)[1]
     if ext == ".lst":
-        for filename in read_lines(arg):
-            do_file(filename)
+        for file in read_lines(arg):
+            do(file)
         continue
-    do_file(arg)
+    do(arg)
