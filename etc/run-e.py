@@ -1,7 +1,7 @@
-# the #! line has been intentionally omitted here
-# as this script requires subprocess capture_output
+# this script requires subprocess capture_output
 # which does not work with the version of /usr/bin/python3 in WSL at this time
-# run this script with 'python ...'
+# run with e.g.
+# ./anaconda/bin/python ...
 import argparse
 import os
 import re
