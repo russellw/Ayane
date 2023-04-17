@@ -1,13 +1,13 @@
-black C:\ayane\etc
+black etc
 if errorlevel 1 goto :eof
 
-isort C:\ayane\etc
+isort etc
 if errorlevel 1 goto :eof
 
-clang-format -i -style=file C:\ayane\src\*.h C:\ayane\src\*.cc
+clang-format -i -style=file src\*.h src\*.cc
 if errorlevel 1 goto :eof
 
-python C:\ayane\etc\fmt-c.py C:\ayane\src
+python etc\fmt-c.py src
 if errorlevel 1 goto :eof
 
 git diff

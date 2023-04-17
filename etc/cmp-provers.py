@@ -17,11 +17,7 @@ def solved(r):
 
 def run_eprover(filename):
     cmd = ["bin/eprover", "--generated-limit=10000", filename]
-    p = subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,)
     stdout, stderr = p.communicate()
     stdout = str(stdout, "utf-8")
     stderr = str(stderr, "utf-8")
@@ -38,11 +34,7 @@ def run_eprover(filename):
 
 def run_ayane(filename):
     cmd = ["./ayane", "-t3", filename]
-    p = subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,)
     stdout, stderr = p.communicate()
     stdout = str(stdout, "utf-8")
     stderr = str(stderr, "utf-8")

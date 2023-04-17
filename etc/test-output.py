@@ -13,9 +13,7 @@ def write_lines(filename, lines):
 
 def act(f):
     p = subprocess.Popen(
-        ["./ayane.exe", "-t10", f],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        ["./ayane.exe", "-t10", f], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
     )
     stdout, stderr = p.communicate()
     stdout = str(stdout, "utf-8")

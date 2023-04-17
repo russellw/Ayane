@@ -137,10 +137,7 @@ def verify(filename):
         print(stderr, end="")
     for s in stdout.splitlines():
         # definition formula
-        m = re.match(
-            r"tff\((\w+), plain, (.+), introduced\(definition\)\)\.",
-            s,
-        )
+        m = re.match(r"tff\((\w+), plain, (.+), introduced\(definition\)\)\.", s,)
         if m:
             name = m[1]
             term = m[2]
@@ -193,9 +190,7 @@ def verify(filename):
         f.close()
 
         p = subprocess.Popen(
-            ["bin/eprover", "tmp.p"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            ["bin/eprover", "tmp.p"], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
         )
         stdout, stderr = p.communicate()
         stdout = str(stdout, "utf-8")

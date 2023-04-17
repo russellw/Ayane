@@ -24,11 +24,7 @@ parser.add_option(
     "-n", "--number", type="int", help="max number of problems to attempt"
 )
 parser.add_option(
-    "-C",
-    "--iters",
-    type="int",
-    help="iterations",
-    default=1000,
+    "-C", "--iters", type="int", help="iterations", default=1000,
 )
 parser.add_option(
     "-r", "--random", action="store_true", help="attempt problems in random order"

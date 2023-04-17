@@ -1872,11 +1872,7 @@ def do_file(filename):
         if conclusion:
             for C in conclusion.proof():
                 prformula(C)
-        if r in (
-            "Unsatisfiable",
-            "ContradictoryAxioms",
-            "Satisfiable",
-        ):
+        if r in ("Unsatisfiable", "ContradictoryAxioms", "Satisfiable",):
             solved += 1
             if hasattr(problem, "expected") and r != problem.expected:
                 if problem.expected == "ContradictoryAxioms" and r in (

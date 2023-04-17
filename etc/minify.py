@@ -615,11 +615,7 @@ def shrinks(xs):
 def good_test(xs):
     write_tmp(xs)
     cmd = ["./ayane", "b.p"]
-    p = subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,)
     stdout, stderr = p.communicate()
     stdout = str(stdout, "utf-8")
     stderr = str(stderr, "utf-8")

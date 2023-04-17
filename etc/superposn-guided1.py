@@ -2360,11 +2360,7 @@ def run_base(filename):
     try:
         problem = read_problem(filename)
         r, conclusion = solve(problem.clauses)
-        if r in (
-            "Unsatisfiable",
-            "ContradictoryAxioms",
-            "Satisfiable",
-        ):
+        if r in ("Unsatisfiable", "ContradictoryAxioms", "Satisfiable",):
             if hasattr(problem, "expected") and r != problem.expected:
                 if problem.expected == "ContradictoryAxioms" and r in (
                     "Theorem",
@@ -2384,11 +2380,7 @@ def run_e(f):
     cmd = ["bin/eprover", "-s", "-p", f]
     try:
         p = subprocess.run(
-            cmd,
-            capture_output=True,
-            encoding="utf-8",
-            timeout=10,
-            check=True,
+            cmd, capture_output=True, encoding="utf-8", timeout=10, check=True,
         )
         if "Proof found" in p.stdout:
             r = "Unsatisfiable"

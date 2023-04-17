@@ -41,9 +41,7 @@ def act(f):
         return
     print(f)
     p = subprocess.Popen(
-        ["./ayane.exe", "-cnf", f],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        ["./ayane.exe", "-cnf", f], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
     )
     stdout, stderr = p.communicate()
     stdout = str(stdout, "utf-8")

@@ -12,8 +12,6 @@ parser.add_argument("files", nargs="+")
 args = parser.parse_args()
 
 
-
-
 def difficulty(file):
     for s in open(file):
         m = re.match(r"% Rating   : (\d+\.\d+)", s)
@@ -28,11 +26,7 @@ def do(file):
     cmd = "E/PROVER/eprover", "-p", file
     try:
         p = subprocess.run(
-            cmd,
-            capture_output=True,
-            encoding="utf-8",
-            timeout=3,
-            check=True,
+            cmd, capture_output=True, encoding="utf-8", timeout=3, check=True,
         )
         print(len(p.stdout.splitlines()), end=",", flush=True)
         if "Proof found" in p.stdout:
