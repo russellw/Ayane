@@ -3,21 +3,14 @@ import os
 import re
 import sys
 
-# numbers larger than 2000 silently fail
+from PIL import Image
+
+# numbers above 2000 silently fail
 sys.setrecursionlimit(2000)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("files", nargs="+")
 args = parser.parse_args()
-
-
-def check_tuples(a):
-    if isinstance(a, tuple):
-        for b in a:
-            check_tuples(b)
-        return
-    if isinstance(a, list):
-        raise ValueError(a)
 
 
 def clause(text):
@@ -131,6 +124,12 @@ def clause(text):
             return neg, pos
 
 
+def hash_rgb(a):
+    n = hash(a)
+    b = n.to_bytes((n.bit_length() + 7) // 8, byteorder="little")
+    return b[0], b[1], b[2]
+
+
 def do(file):
     line = 0
     for s in open(file):
@@ -146,7 +145,7 @@ for arg in args.files:
         for root, dirs, files in os.walk(arg):
             for file in files:
                 ext = os.path.splitext(file)[1]
-                if ext != ".p":
+                if ext != ".log":
                     continue
                 do(os.path.join(root, file))
         continue
