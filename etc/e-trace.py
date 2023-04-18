@@ -32,7 +32,7 @@ def do(file):
     file = replace_ext(file, ".log")
     out = open(file, "w")
     try:
-        p = subprocess.run(cmd, check=True, stdout=out, timeout=3)
+        p = subprocess.run(cmd, stdout=out, timeout=60)
     except subprocess.TimeoutExpired:
         pass
 
