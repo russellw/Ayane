@@ -135,10 +135,10 @@ def do(file):
     line = 0
     for s in open(file):
         line += 1
-        if s.startswith("#cnf"):
+        if s.startswith("#cnf") and s.endswith("\n"):
             s = s[1:]
             neg, pos = clause(s)
-            print(neg, "=>", pos)
+            print(line, neg, "=>", pos)
 
 
 for arg in args.files:
