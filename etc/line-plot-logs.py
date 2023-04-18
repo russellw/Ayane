@@ -10,11 +10,9 @@ sys.setrecursionlimit(2000)
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    "-l", "--literals", help="plot literal count", action="store_true", default=True
+    "-y", help="plot which metric", choices=("l", "d", "s"), default="l"
 )
-parser.add_argument("-d", "--depth", help="plot literal depth", action="store_true")
-parser.add_argument("-s", "--size", help="plot clause size", action="store_true")
-parser.add_argument("-m", "--max", help="plot running max", action="store_true")
+parser.add_argument("-m", help="plot running max", action="store_true")
 parser.add_argument("files", nargs="+")
 args = parser.parse_args()
 
@@ -161,16 +159,16 @@ def do(file):
             max_depth = max(max_depth, depth1)
             max_size = max(max_size, size1)
 
-            if args.max:
+            if args.m:
                 literals1 = max_literals
                 depth1 = max_depth
                 size1 = max_size
 
-            if args.literals:
+            if args.y == "l":
                 ys.append(literals1)
-            elif args.depth:
+            elif args.y == "d":
                 ys.append(depth1)
-            elif args.size:
+            elif args.y == "s":
                 ys.append(size1)
     plt.plot(ys)
 
