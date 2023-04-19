@@ -1,11 +1,11 @@
-ayane: src/*
-	g++ -O3 -fno-exceptions -oayane -pipe -s -std=c++17 src/*.cc -lgmp
+ayane: *.cc *.h
+	g++ -O3 -fno-exceptions -oayane -pipe -s -std=c++17 *.cc -lgmp
 
 debug:
-	g++ -DDEBUG -Og -fmax-errors=1 -fno-exceptions -g -oayane -pipe -std=c++17 src/*.cc -lgmp
+	g++ -DDEBUG -Og -fmax-errors=1 -fno-exceptions -g -oayane -pipe -std=c++17 *.cc -lgmp
 
 prof:
-	g++ -fno-exceptions -oayane -pg -pipe -std=c++17 src/*.cc -lgmp
+	g++ -fno-exceptions -oayane -pg -pipe -std=c++17 *.cc -lgmp
 
 clean:
 	rm ayane
