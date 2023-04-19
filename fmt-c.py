@@ -1,9 +1,7 @@
-#!/usr/bin/python3
 # Additionally format C++ code for further entropy reduction
 # Assumes clang-format already run
 # Does not work for all possible C++ programs
 # Test carefully before reusing in other projects!
-
 import argparse
 import os
 import re
