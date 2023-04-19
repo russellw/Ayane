@@ -30,8 +30,7 @@ VOID CALLBACK timeout(PVOID a, BOOLEAN b) {
 
 enum
 {
-	cxx = 1,
-	dimacs,
+	dimacs = 1,
 	tptp,
 };
 
@@ -163,9 +162,6 @@ void parse(int argc, const char** argv) {
 #endif
 			continue;
 		}
-		case s_cxx:
-			inputLanguage = cxx;
-			continue;
 		case s_dimacs:
 			inputLanguage = dimacs;
 			outputLanguage = dimacs;
@@ -238,9 +234,6 @@ int inputLang(const char* file) {
 	case s_ax:
 	case s_p:
 		return tptp;
-	case s_cc:
-	case s_cpp:
-		return cxx;
 	case s_cnf:
 		return dimacs;
 	}
