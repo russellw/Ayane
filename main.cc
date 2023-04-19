@@ -193,8 +193,6 @@ void parse(int argc, const char** argv) {
 				,
 				memLimit / (1 << 20));
 			exit(0);
-		case s_in:
-			continue;
 		case s_m:
 		case s_memory:
 		case s_memorylimit:
