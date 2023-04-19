@@ -124,20 +124,58 @@ def clause(text):
             return neg, pos
 
 
+squares = set()
+
+
+def put(x, y, a):
+    if isinstance(a, str):
+        squares.add((x, y, a))
+        return x + 1, y + 1
+
+    assert isinstance(a[0], str)
+    squares.add((x, y, a[0]))
+    y += 1
+
+    y2 = y
+    for b in a[1:]:
+        x, y1 = put(x, y, b)
+        y2 = max(y2, y1)
+    return x, y2
+
+
 def hash_rgb(a):
-    n = hash(a)
-    b = n.to_bytes((n.bit_length() + 7) // 8, byteorder="little")
+    n = hash(a) & 0xFFFFFF
+    b = n.to_bytes(3, byteorder="little")
     return b[0], b[1], b[2]
 
 
 def do(file):
-    line = 0
+    squares.clear()
+    x2 = 0
+    y = 0
     for s in open(file):
-        line += 1
         if s.startswith("#cnf") and s.endswith("\n"):
             s = s[1:]
             neg, pos = clause(s)
-            print(line, neg, "=>", pos)
+            x = 0
+            y2 = y
+            for a in neg:
+                x, y1 = put(x, y, a)
+                y2 = max(y2, y1)
+            x += 1
+            for a in pos:
+                x, y1 = put(x, y, a)
+                y2 = max(y2, y1)
+            x2 = max(x2, x)
+            y = y2
+
+    pixels = [(0, 0, 0)] * (x2 * y2)
+    for (x, y, s) in squares:
+        pixels[y * x2 + x] = hash_rgb(s)
+
+    image = Image.new("RGB", (x2, y2))
+    image.putdata(pixels)
+    image.save("a.png")
 
 
 for arg in args.files:
@@ -145,9 +183,8 @@ for arg in args.files:
         for root, dirs, files in os.walk(arg):
             for file in files:
                 ext = os.path.splitext(file)[1]
-                if ext != ".log":
-                    continue
-                do(os.path.join(root, file))
+                if ext == ".log":
+                    do(os.path.join(root, file))
         continue
     ext = os.path.splitext(arg)[1]
     if ext == ".lst":
