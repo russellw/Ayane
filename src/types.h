@@ -5,7 +5,7 @@ enum class kind
 };
 
 // The first few numbers are reserved for unboxed atomic types, for which the type number is just the kind, cast to an integer.
-const size_t unboxedTypes = (size_t)kind::Void + 1;
+const size_t unboxedTypes = (size_t)kind::Fn;
 
 // The total span of type numbers is 2^typeBits. The number of bits is important for terms, which sometimes want to pack a type with
 // other information into a word.
