@@ -113,7 +113,7 @@ for y in words:
     ys.append(f"\ts_{san(y)},\n")
 ys.append("\tend_s\n")
 xs[i:j] = ys
-open("strings.h", "w").writelines(xs)
+open("strings.h", "w", newline="\n").writelines(xs)
 
 xs = open("strings.cc").readlines()
 i = find("string keywords") + 1
@@ -124,4 +124,4 @@ for y in words:
     ys.append('\t{0, 0, 0, "%s"},\n' % y)
 ys.append("// clang-format on\n")
 xs[i:j] = ys
-open("strings.cc", "w").writelines(xs)
+open("strings.cc", "w", newline="\n").writelines(xs)
