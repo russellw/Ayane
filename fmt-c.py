@@ -17,7 +17,7 @@ def read_lines(filename):
 
 
 def write_lines(filename, lines):
-    with open(filename, "w") as f:
+    with open(filename, "w", newline="\n") as f:
         for s in lines:
             f.write(s + "\n")
 
