@@ -115,11 +115,8 @@ try:
                     expected = m.group(1)
 
         t = time.time()
-        p = subprocess.Popen(
-            ["./ayane", "-C" + str(options.iters), filename],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
+        cmd = "R:/ayane.exe", "-C" + str(options.iters), filename
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,)
         out, err = p.communicate()
         out = str(out, "utf-8")
         err = str(err, "utf-8")
