@@ -54,7 +54,7 @@ using ProofCnf = map<clause, term>;
 
 // Inference graph, or strictly speaking, hypergraph; each clause in a set of inferences is, in general, derived from multiple
 // parent clauses. Note that this represents a single derivation of each clause from multiple parent clauses, not multiple
-// derivations. It is possible and indeed commonplace for a clause to have multiple separate derivations, that is, independent
+// derivations. It is possible and indeed common for a clause to have multiple separate derivations, that is, independent
 // rediscoveries, but this is not particularly useful, so we eliminate the possibility of representing the rediscoveries.
 using Proof = map<clause, pair<rule, vec<clause>>>;
 

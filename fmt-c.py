@@ -379,7 +379,7 @@ for arg in args.files:
     for root, dirs, files in os.walk(arg):
         for filename in files:
             ext = os.path.splitext(filename)[1]
-            if ext not in (".cc", ".cpp", ".h"):
+            if ext not in (".cc", ".h"):
                 continue
             filename = os.path.join(root, filename)
             act()
