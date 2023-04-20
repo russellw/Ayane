@@ -14,14 +14,14 @@ void printItem(size_t n, const char* caption) {
 	*s = 0;
 	size_t i = 0;
 	do {
-		// Extract a digit.
+		// Extract a digit
 		*--s = '0' + n % 10;
 		n /= 10;
 
-		// Track how many digits we have extracted.
+		// Track how many digits we have extracted
 		++i;
 
-		// So that we can punctuate them in groups of 3.
+		// So that we can punctuate them in groups of 3
 		if (i % 3 == 0 && n) *--s = ',';
 	} while (n);
 	printf("%16s  %s\n", s, caption);
@@ -42,25 +42,25 @@ void incStat(size_t k, uint64_t n) {
 
 void incTrace() {
 #ifdef _WIN32
-	// Process.
+	// Process
 	auto process = GetCurrentProcess();
 	SymInitialize(process, 0, 1);
 
-	// Stack frames.
+	// Stack frames
 	const int maxFrames = 64;
 	static void* stack[maxFrames];
 	auto nframes = CaptureStackBackTrace(1, maxFrames, stack, 0);
 
-	// Symbol.
+	// Symbol
 	auto si = (SYMBOL_INFO*)buf;
 	si->MaxNameLen = 0x100;
 	si->SizeOfStruct = sizeof(SYMBOL_INFO);
 
-	// Location.
+	// Location
 	IMAGEHLP_LINE64 loc;
 	loc.SizeOfStruct = sizeof loc;
 
-	// Trace.
+	// Trace
 	std::vector<const char*> v;
 	for (int i = 0; i != nframes; ++i) {
 		auto addr = (DWORD64)(stack[i]);

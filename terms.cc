@@ -1,6 +1,6 @@
 #include "main.h"
 
-// Atoms.
+// Atoms
 Heap<8>* atoms;
 uint32_t tatoms;
 
@@ -82,7 +82,7 @@ term gensym(type ty) {
 	return a;
 }
 
-// Compounds.
+// Compounds
 Heap<>* compounds;
 
 namespace comps {
@@ -128,17 +128,17 @@ size_t intern(const term* s, size_t n) {
 	incStat("term");
 	auto i = slot(entries, cap, s, n);
 
-	// If we have seen this before, return the existing object.
+	// If we have seen this before, return the existing object
 	if (entries[i]) return entries[i];
 
-	// Expand the hash table if necessary.
+	// Expand the hash table if necessary
 	if (++qty > cap * 3 / 4) {
 		expand();
 		i = slot(entries, cap, s, n);
 		assert(!entries[i]);
 	}
 
-	// Make a new object.
+	// Make a new object
 	incStat("term alloc");
 	incStat("term alloc bytes", offsetof(compound, v) + n * sizeof *s);
 	auto o = compounds->alloc(offsetof(compound, v) + n * sizeof *s);
@@ -147,7 +147,7 @@ size_t intern(const term* s, size_t n) {
 	p->n = n;
 	memcpy(p->v, s, n * sizeof *s);
 
-	// Add to hash table.
+	// Add to hash table
 	return entries[i] = o;
 }
 } // namespace comps
@@ -280,13 +280,13 @@ term term::operator[](size_t i) const {
 
 // TODO: eliminate this?
 int cmp(term a, term b) {
-	// Fast test for equality.
+	// Fast test for equality
 	if (a == b) return 0;
 
-	// If the tags differ, just sort in tag order; not meaningful, but it doesn't have to be meaningful, just consistent.
+	// If the tags differ, just sort in tag order; not meaningful, but it doesn't have to be meaningful, just consistent
 	if (tag(a) != tag(b)) return (int)tag(a) - (int)tag(b);
 
-	// Numbers sort in numerical order.
+	// Numbers sort in numerical order
 	switch (tag(a)) {
 	case tag::Integer:
 		return mpz_cmp(a.mpz(), b.mpz());
@@ -294,7 +294,7 @@ int cmp(term a, term b) {
 		return mpq_cmp(a.mpq(), b.mpq());
 	}
 
-	// Compound terms sort in lexicographic order.
+	// Compound terms sort in lexicographic order
 	auto an = a.size();
 	auto bn = b.size();
 	auto n = min(an, bn);
@@ -305,7 +305,7 @@ int cmp(term a, term b) {
 	if (an - bn) return an - bn;
 
 	// They are different terms with the same tags and no different components, so they must be different atoms; just do a straight
-	// binary comparison.
+	// binary comparison
 	return memcmp(&a, &b, sizeof a);
 }
 

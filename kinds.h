@@ -1,13 +1,13 @@
 _(Unknown)
 
-// Unboxed.
+// Unboxed
 _(Bool)
 _(Individual)
 _(Integer)
 _(Rational)
 _(Real)
 
-// Boxed.
+// Boxed
 _(Fn)
 _(Sym)
 

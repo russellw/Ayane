@@ -9,7 +9,7 @@ bool constant(term a) {
 	case tag::True:
 		return 1;
 	case tag::False:
-		// In the superposition calculus, true only shows up as an argument of equality and false never shows up as an argument.
+		// In the superposition calculus, true only shows up as an argument of equality and false never shows up as an argument
 		unreachable;
 	}
 	return 0;

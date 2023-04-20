@@ -27,7 +27,7 @@ void check(term a, type ty) {
 	if (ty == kind::Unknown) err("Unspecified type");
 
 	// Need to handle calls before checking the type of this term, because the type of a call is only well-defined if the type of
-	// the function is well-defined.
+	// the function is well-defined
 	if (tag(a) == tag::Fn && a.size() > 1) {
 		auto fty = a.getAtom()->ty;
 		if (kind(fty) != kind::Fn) err("Called a non-function");
@@ -44,7 +44,7 @@ void check(term a, type ty) {
 		return;
 	}
 
-	// The core of the check: Make sure the term is of the required type.
+	// The core of the check: Make sure the term is of the required type
 	if (type(a) != ty) err("Type mismatch");
 
 	// Further checks can be done depending on operator. For example, arithmetic operators should have matching numeric arguments.
@@ -147,7 +147,7 @@ void check(term a, type ty) {
 		check(a[2], ty);
 		return;
 	case tag::Var:
-		// A function would also be an invalid type for a variable, but we already checked for that.
+		// A function would also be an invalid type for a variable, but we already checked for that
 		if (kind(ty) == kind::Bool) err("Invalid type for variable");
 		return;
 	}

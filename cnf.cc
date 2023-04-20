@@ -89,7 +89,7 @@ struct doing {
 	size_t vars = 0;
 	///
 
-	// Skolem functions replace existentially quantified variables, also formulas that are renamed to avoid exponential expansion.
+	// Skolem functions replace existentially quantified variables, also formulas that are renamed to avoid exponential expansion
 	term skolem(type rty, const set<term>& args) {
 		vec<term> v(1, gensym(ftype(rty, args)));
 		// TODO: single call instead of loop?
@@ -104,15 +104,15 @@ struct doing {
 		// NO_SORT
 		switch (pol) {
 		case 1:
-			// If this formula is only being used with positive polarity, the new name only needs to imply the original formula.
+			// If this formula is only being used with positive polarity, the new name only needs to imply the original formula
 			a = imp(b, a);
 			break;
 		case -1:
-			// And the reverse for negative polarity.
+			// And the reverse for negative polarity
 			a = imp(a, b);
 			break;
 		case 0:
-			// In the general case, full equivalence is needed; the new name implies and is implied by the original formula.
+			// In the general case, full equivalence is needed; the new name implies and is implied by the original formula
 			a = term(tag::And, imp(b, a), imp(a, b));
 			break;
 		default:
@@ -123,7 +123,7 @@ struct doing {
 	}
 
 	// Maybe rename some of the arguments to an OR-over-AND (taking polarity into account), where the number of clauses generated
-	// would be the product of the arguments.
+	// would be the product of the arguments
 	void maybeRename(int pol, vec<term>& v) {
 		// Sorting the arguments doesn't change the meaning of the formula, because AND and OR are commutative. The effect is that
 		// if only some of them are to be renamed, we will leave the simple ones alone and end up renaming the complicated ones,
@@ -161,13 +161,13 @@ struct doing {
 
 			// If this formula will be used with positive polarity (including the case where it will be used both ways), we are
 			// looking at OR over possible ANDs, which would produce exponential expansion at the distribution stage, so may need to
-			// rename some of the arguments.
+			// rename some of the arguments
 			if (pol >= 0) maybeRename(pol, v);
 			break;
 		case tag::And:
 			for (size_t i = 1; i != a.size(); ++i) v.push_back(maybeRename(pol, a[i]));
 
-			// NOT-AND yields OR, so mirror the OR case.
+			// NOT-AND yields OR, so mirror the OR case
 			if (pol <= 0) maybeRename(pol, v);
 			break;
 
@@ -200,14 +200,14 @@ struct doing {
 	}
 
 	// Each existentially quantified variable is replaced with a Skolem function whose parameters are all the surrounding
-	// universally quantified variables.
+	// universally quantified variables
 	map<term, term> exists(map<term, term> m, term a) {
-		// Get the surrounding universally quantified variables that will be arguments to the Skolem functions.
+		// Get the surrounding universally quantified variables that will be arguments to the Skolem functions
 		set<term> args;
 		for (auto& kv: m)
 			if (tag(kv.second) == tag::Var) args.add(kv.second);
 
-		// Make a replacement for each existentially quantified variable.
+		// Make a replacement for each existentially quantified variable
 		for (size_t i = 2; i != a.size(); ++i) {
 			auto x = a[i];
 			assert(tag(x) == tag::Var);
@@ -218,12 +218,12 @@ struct doing {
 	}
 
 	// Negation normal form consists of several transformations that are as easy to do at the same time: Move NOTs inward to the
-	// literal layer, flipping things around on the way, while simultaneously resolving quantifiers.
+	// literal layer, flipping things around on the way, while simultaneously resolving quantifiers
 	term nnf(map<term, term> m, bool pol, term a) {
 		vec<term> v(1, a[0]);
 		// NO_SORT
 		switch (tag(a)) {
-			// Boolean constants and operators can be inverted by downward-sinking NOTs.
+			// Boolean constants and operators can be inverted by downward-sinking NOTs
 		case tag::False:
 			return tbool(!pol);
 		case tag::True:
@@ -241,11 +241,11 @@ struct doing {
 			for (size_t i = 1; i != a.size(); ++i) v.push_back(nnf(m, pol, a[i]));
 			return term(v);
 
-			// Variables are mapped to new variables or Skolem functions.
+			// Variables are mapped to new variables or Skolem functions
 		case tag::Var:
 			return m.at(a);
 
-			// According to whether they are bound by universal or existential quantifiers.
+			// According to whether they are bound by universal or existential quantifiers
 		case tag::All:
 			m = pol ? all(m, a) : exists(m, a);
 			return nnf(m, pol, a[1]);
@@ -253,7 +253,7 @@ struct doing {
 			m = pol ? exists(m, a) : all(m, a);
 			return nnf(m, pol, a[1]);
 
-			// Equivalence is the most difficult operator to deal with.
+			// Equivalence is the most difficult operator to deal with
 		case tag::Eqv:
 		{
 			auto x = a[1];
@@ -281,17 +281,17 @@ struct doing {
 			break;
 		case tag::Or:
 		{
-			// Arguments can be taken without loss of generality as ANDs.
+			// Arguments can be taken without loss of generality as ANDs
 			vec<vec<term>> ands;
 			for (size_t i = 1; i != a.size(); ++i) {
-				// Recur.
+				// Recur
 				auto b = distribute(a[i]);
 
-				// And make a flat layer of ANDs.
+				// And make a flat layer of ANDs
 				ands.push_back(flatten(tag::And, b));
 			}
 
-			// OR distributes over AND by Cartesian product.
+			// OR distributes over AND by Cartesian product
 			// TODO: can this be done by reference?
 			for (auto u: cartProduct(ands)) {
 				u.insert(u.begin(), term(tag::Or));
@@ -305,7 +305,7 @@ struct doing {
 		return term(v);
 	}
 
-	// Convert a suitably rearranged term into actual clauses.
+	// Convert a suitably rearranged term into actual clauses
 	void clauseTerm(term a, vec<term>& neg, vec<term>& pos) {
 		switch (tag(a)) {
 		case tag::All:
@@ -333,7 +333,7 @@ struct doing {
 		return c;
 	}
 
-	// And record the clauses.
+	// And record the clauses
 	void csTerm(term from, term a) {
 		for (auto& b: flatten(tag::And, a)) {
 			auto c = clauseTerm(b);
@@ -343,10 +343,10 @@ struct doing {
 		}
 	}
 
-	// Top level.
+	// Top level
 	doing(const set<term>& initialFormulas, ProofCnf& proofCnf, set<clause>& cs): proofCnf(proofCnf), cs(cs) {
 		// First run each input formula through the full process: Rename subformulas where necessary to avoid exponential expansion,
-		// then convert to negation normal form, distribute OR into AND, and convert to clauses.
+		// then convert to negation normal form, distribute OR into AND, and convert to clauses
 		for (auto a: initialFormulas) {
 			auto from = a;
 			a = maybeRename(1, a);

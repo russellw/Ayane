@@ -130,7 +130,7 @@ public:
 		heap->free(o, cap * sizeof(entry));
 	}
 
-	// Same as the standard library API: Check whether a key exists in the map.
+	// Same as the standard library API: Check whether a key exists in the map
 	bool count(const K& k) const {
 		if (!cap) return 0;
 
@@ -149,7 +149,7 @@ public:
 	}
 
 	// This is a new function, inspired by other languages; it checks for the existence of a key, gets the value if it exists, but
-	// doesn't touch the map if not.
+	// doesn't touch the map if not
 	bool get(const K& k, V& v) const {
 		if (!cap) return 0;
 
@@ -161,7 +161,7 @@ public:
 		return 1;
 	}
 
-	// Also new: Add a key and value, only if not already present.
+	// Also new: Add a key and value, only if not already present
 	bool add(const K& k, const V& v) {
 		entry* entries;
 		size_t i;
@@ -215,7 +215,7 @@ public:
 		qty = 0;
 	}
 
-	// Capacity.
+	// Capacity
 	size_t size() const {
 		return qty;
 	}
@@ -224,7 +224,7 @@ public:
 		return !qty;
 	}
 
-	// Iterators.
+	// Iterators
 	iterator begin() const {
 		auto p = (entry*)heap->ptr(o);
 		auto e = p + cap;

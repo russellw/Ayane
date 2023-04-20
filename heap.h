@@ -6,7 +6,7 @@
 // Instead of pointers, it returns 32-bit offsets, which are decoded into pointers only as needed. (Sizes of allocated memory chunks
 // are still measured in bytes as usual.) The offsets are scaled to the heap alignment, so a 4-byte heap can be up to 16 gigabytes.
 
-// Free requires the size of the allocated block as a parameter.
+// Free requires the size of the allocated block as a parameter
 
 // Heaps are not shared between threads. Each thread must have its own.
 void* reserve(size_t n);
@@ -44,7 +44,7 @@ template <size_t alignment = 4> class Heap {
 
 	// Large. Allocations larger than half a slab, are rounded up to a whole number of slabs, so do not have a free list.
 
-	// Track how many slabs we have allocated from the operating system so far.
+	// Track how many slabs we have allocated from the operating system so far
 	uint32_t top = divUp(sizeof(Heap), slabSize);
 
 	// Each size class keeps the index (not offset) of the slab it is currently allocating from. The heap data structure occupies at
@@ -52,7 +52,7 @@ template <size_t alignment = 4> class Heap {
 	// slab.
 	uint32_t sizeClasses[1 + (1 << smallBits) + mediumBits];
 
-	// Metadata for each slab.
+	// Metadata for each slab
 	Slab slabs[nslabs];
 
 	// Figure out the size class for an allocation, and round up the size accordingly. A negative return value means this is a large
@@ -62,23 +62,23 @@ template <size_t alignment = 4> class Heap {
 		static_assert(isPow2(alignment));
 		assert(n);
 
-		// Measure size in words for this.
+		// Measure size in words for this
 		auto w = divUp(n, alignment);
 
-		// Small sizes get their own classes.
+		// Small sizes get their own classes
 		if (w <= 1 << smallBits) {
 			n = w * alignment;
 			return w;
 		}
 
-		// Medium sizes are rounded up to the next power of two.
+		// Medium sizes are rounded up to the next power of two
 		for (int i = smallBits + 1; 1 << i < slabSize / alignment; ++i)
 			if (w <= 1 << i) {
 				n = (1 << i) * alignment;
 				return (1 << smallBits) - smallBits + i;
 			}
 
-		// Large allocations are rounded up to a whole number of slabs.
+		// Large allocations are rounded up to a whole number of slabs
 		n = roundUp(n, slabSize);
 		return 0;
 	}
@@ -109,20 +109,20 @@ public:
 		return p;
 	}
 
-	// Turn an offset into a pointer for actual use.
+	// Turn an offset into a pointer for actual use
 	void* ptr(size_t o) const {
 		assert(o <= top * slabSize / alignment);
 		return (char*)this + o * alignment;
 	}
 
-	// Turn a pointer back into an offset, suitable for compact storage, also for passing to realloc or free.
+	// Turn a pointer back into an offset, suitable for compact storage, also for passing to realloc or free
 	// TODO: still  needed?
 	size_t offset(const void* p) const {
 		auto q = (char*)p;
 		assert((char*)this <= q);
 
 		// Assign the difference to an unsigned variable and then perform the division, because ptrdiff_t is a signed type, but
-		// unsigned division is slightly faster.
+		// unsigned division is slightly faster
 		size_t i = q - (char*)this;
 		return i / alignment;
 	}
@@ -130,55 +130,55 @@ public:
 	size_t alloc(size_t n) {
 		if (!n) return 0;
 
-		// Figure out the size class, and round the size up appropriately.
+		// Figure out the size class, and round the size up appropriately
 		auto sc = classify(n);
 		assert(n % alignment == 0);
 		assert(sc < sizeof sizeClasses / sizeof *sizeClasses);
 
-		// Index of the (first) slab.
+		// Index of the (first) slab
 		size_t i;
 
-		// Offset of the allocated memory.
+		// Offset of the allocated memory
 		size_t o;
 
 		// Is it a defined size class?
 		if (sc) {
 			i = sizeClasses[sc];
 
-			// If we don't have a current slab for that size class.
+			// If we don't have a current slab for that size class
 			if (!i) {
-				// Try to find one.
+				// Try to find one
 				for (i = divUp(sizeof(Heap), slabSize); i != top; ++i)
 					if (slabs[i].sc == sc && slabs[i].freeList) break;
 				if (i == top) {
-					// Otherwise allocate one.
+					// Otherwise allocate one
 					i = allocSlabs(1);
 					slabs[i].allocated = 0;
 					slabs[i].sc = sc;
 
-					// Initialize the free list.
+					// Initialize the free list
 					o = i * slabSize / alignment;
 					slabs[i].freeList = o;
 					for (auto e = o + slabSize / alignment; o + n / alignment <= e; o += n / alignment)
 						*((uint32_t*)ptr(o)) = o + n / alignment;
 
-					// And null terminate it.
+					// And null terminate it
 					*((uint32_t*)ptr(o - n / alignment)) = 0;
 				}
 				sizeClasses[sc] = i;
 			}
 			++slabs[i].allocated;
 
-			// Get the next free memory block.
+			// Get the next free memory block
 			o = slabs[i].freeList;
 
-			// Update the free list to point to the one after that.
+			// Update the free list to point to the one after that
 			slabs[i].freeList = *((uint32_t*)ptr(o));
 
-			// If there isn't one, this block is full.
+			// If there isn't one, this block is full
 			if (!slabs[i].freeList) sizeClasses[sc] = 0;
 		} else {
-			// Allocate a block of slabs.
+			// Allocate a block of slabs
 			i = allocSlabs(n / slabSize);
 			for (auto j = i, e = i + n / slabSize; j != e; ++j) {
 				assert(!slabs[j].allocated);
@@ -212,7 +212,7 @@ public:
 			return;
 		}
 
-		// Figure out the size class, and round the size up appropriately.
+		// Figure out the size class, and round the size up appropriately
 		auto sc = classify(n);
 		assert(n % alignment == 0);
 		assert(sc < sizeof sizeClasses / sizeof *sizeClasses);
@@ -220,25 +220,25 @@ public:
 		memset(ptr(o), 0xdd, n);
 #endif
 
-		// Index of the (first) slab.
+		// Index of the (first) slab
 		auto i = o / (slabSize / alignment);
 
 		// Is it a defined size class?
 		if (sc) {
 			assert(slabs[i].sc == sc);
 
-			// Add the memory block to the free list.
+			// Add the memory block to the free list
 			*((uint32_t*)ptr(o)) = slabs[i].freeList;
 			slabs[i].freeList = o;
 
-			// Mark the slab less allocated.
+			// Mark the slab less allocated
 			assert(slabs[i].allocated);
 			--slabs[i].allocated;
 
-			// If this slab is now empty, and is not depended on as the current slab for its size class, free it up completely.
+			// If this slab is now empty, and is not depended on as the current slab for its size class, free it up completely
 			if (!slabs[i].allocated && sizeClasses[sc] != i) slabs[i].sc = 0;
 		} else {
-			// Free a block of slabs.
+			// Free a block of slabs
 			for (auto j = i, e = i + n / slabSize; j != e; ++j) {
 				assert(slabs[j].allocated == 1);
 				assert(!slabs[j].sc);
@@ -263,5 +263,5 @@ public:
 	}
 };
 
-// Not the only heap, but the one used by default.
+// Not the only heap, but the one used by default
 extern Heap<>* heap;

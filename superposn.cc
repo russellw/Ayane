@@ -38,7 +38,7 @@ term splice(term a, const vec<size_t>& posn, size_t i, term b) {
 	return term(v);
 }
 
-// Passive clauses are stored in a priority queue with smaller clauses first.
+// Passive clauses are stored in a priority queue with smaller clauses first
 size_t weight(term a) {
 	size_t n = 1;
 	for (size_t i = 1; i < a.size(); ++i) n += weight(a[i]);
@@ -103,19 +103,19 @@ public:
 		check(a);
 		check(b);
 
-		// Fast equality test.
+		// Fast equality test
 		if (a == b) return 0;
 
-		// Variables are unordered unless contained in other term.
+		// Variables are unordered unless contained in other term
 		// TODO: check how that relates to variable identity between clauses
 		if (tag(a) == tag::Var) return 0;
 		if (tag(b) == tag::Var) return occurs(b, a);
 
-		// Sufficient condition: Exists ai >= b.
+		// Sufficient condition: Exists ai >= b
 		for (size_t i = 1; i < a.size(); i++)
 			if (ge(a[i], b)) return 1;
 
-		// Necessary condition: a > all bi.
+		// Necessary condition: a > all bi
 		for (size_t i = 1; i < b.size(); i++)
 			if (!gt(a, b[i])) return 0;
 
@@ -124,18 +124,18 @@ public:
 		auto c = (int)a.getAtomOffset() - (int)b.getAtomOffset();
 		if (c) return c > 0;
 
-		// Same operators should mean similar terms.
+		// Same operators should mean similar terms
 		assert(tag(a) == tag(b));
 		assert(a.size() == b.size());
 		assert(a[0] == b[0]);
 
-		// Lexicographic extension.
+		// Lexicographic extension
 		for (size_t i = 1; i < a.size(); i++) {
 			if (gt(a[i], b[i])) return 1;
 			if (a[i] != b[i]) return 0;
 		}
 
-		// Having found no differences, the terms must be equal, but we already checked for that first thing, so something is wrong.
+		// Having found no differences, the terms must be equal, but we already checked for that first thing, so something is wrong
 		unreachable;
 	}
 };
@@ -162,23 +162,23 @@ struct doing {
 		// https://stackoverflow.com/questions/65162921/is-superposition-complete-with-immediate-simplify
 		c = simplify(map<term, term>(), c);
 
-		// Filter tautologies.
+		// Filter tautologies
 		if (c == truec) {
 			incStat("qclause filter tautology");
 			return;
 		}
 
 		// We need to keep track of the proof anyway for output later, so it might as well do double duty as a record of which
-		// clauses we have already seen, for filtering duplicates.
+		// clauses we have already seen, for filtering duplicates
 		if (proof.count(c)) {
 			incStat("qclause filter dup");
 			return;
 		}
 
-		// Record proof step.
+		// Record proof step
 		proof.add(c, make_pair(rl, from));
 
-		// Add to the passive queue.
+		// Add to the passive queue
 		incStat("qclause add");
 		passive.push(c);
 	}
@@ -192,26 +192,26 @@ struct doing {
 		s = unify(c0, c1)
 	*/
 
-	// Check, substitute and make new clause.
+	// Check, substitute and make new clause
 	void resolve(const clause& c, size_t ci, term c0, term c1) {
-		// Unify.
+		// Unify
 		map<termx, termx> m;
 		if (!unify(m, c0, 0, c1, 0)) return;
 
-		// Negative literals.
+		// Negative literals
 		vec<term> neg;
 		for (size_t i = 0; i != c.first.size(); ++i)
 			if (i != ci) neg.push_back(replace(m, c.first[i], 0));
 
-		// Positive literals.
+		// Positive literals
 		vec<term> pos;
 		for (size_t i = 0; i != c.second.size(); ++i) pos.push_back(replace(m, c.second[i], 0));
 
-		// Make new clause.
+		// Make new clause
 		qclause(rule::er, vec<clause>{c}, neg, pos);
 	}
 
-	// For each negative equation.
+	// For each negative equation
 	void resolve(const clause& c) {
 		for (size_t ci = 0; ci != c.first.size(); ++ci) {
 			auto e = eqn(c.first[ci]);
@@ -228,31 +228,31 @@ struct doing {
 		s = unify(c0, d0)
 	*/
 
-	// Check, substitute and make new clause.
+	// Check, substitute and make new clause
 	void factor(const clause& c, size_t ci, term c0, term c1, size_t di, term d0, term d1) {
 		// If these two terms are not equatable (for which the types must match, and predicates can only be equated with True),
-		// substituting terms for variables would not make them become so.
+		// substituting terms for variables would not make them become so
 		if (!equatable(c1, d1)) return;
 
-		// Unify.
+		// Unify
 		map<termx, termx> m;
 		if (!unify(m, c0, 0, d0, 0)) return;
 
-		// Negative literals.
+		// Negative literals
 		vec<term> neg;
 		for (size_t i = 0; i != c.first.size(); ++i) neg.push_back(replace(m, c.first[i], 0));
 		neg.push_back(equate(replace(m, c1, 0), replace(m, d1, 0)));
 
-		// Positive literals.
+		// Positive literals
 		vec<term> pos;
 		for (size_t i = 0; i != c.second.size(); ++i)
 			if (i != di) pos.push_back(replace(m, c.second[i], 0));
 
-		// Make new clause.
+		// Make new clause
 		qclause(rule::ef, vec<clause>{c}, neg, pos);
 	}
 
-	// For each positive equation (both directions) again.
+	// For each positive equation (both directions) again
 	void factor(const clause& c, size_t ci, term c0, term c1) {
 		for (size_t di = 0; di != c.second.size(); ++di) {
 			if (di == ci) continue;
@@ -262,7 +262,7 @@ struct doing {
 		}
 	}
 
-	// For each positive equation (both directions).
+	// For each positive equation (both directions)
 	void factor(const clause& c) {
 		for (size_t ci = 0; ci != c.second.size(); ++ci) {
 			auto e = eqn(c.second[ci]);
@@ -283,9 +283,9 @@ struct doing {
 
 	// The literature describes negative and positive superposition as separate inference rules; the only difference between them is
 	// whether they consider negative or positive equations in the second clause, so to avoid copy-pasting a significant chunk of
-	// nontrivial and almost identical code, we specify here a single inference rule controlled by the mode flag.
+	// nontrivial and almost identical code, we specify here a single inference rule controlled by the mode flag
 
-	// Check, substitute and make new clause.
+	// Check, substitute and make new clause
 	void superposn(
 		const clause& c,
 		const clause& d,
@@ -297,14 +297,14 @@ struct doing {
 		term d1,
 		const vec<size_t>& posn,
 		term a) {
-		// It is never necessary to paramodulate into variables.
+		// It is never necessary to paramodulate into variables
 		if (tag(a) == tag::Var) return;
 
-		// Unify.
+		// Unify
 		map<termx, termx> m;
 		if (!unify(m, c0, 0, a, 1)) return;
 
-		// Negative literals.
+		// Negative literals
 		vec<term> neg;
 		for (size_t i = 0; i != c.first.size(); ++i) neg.push_back(replace(m, c.first[i], 0));
 		for (size_t i = 0; i != d.first.size(); ++i) {
@@ -312,7 +312,7 @@ struct doing {
 			neg.push_back(replace(m, d.first[i], 1));
 		}
 
-		// Positive literals.
+		// Positive literals
 		vec<term> pos;
 		for (size_t i = 0; i != c.second.size(); ++i)
 			if (i != ci) pos.push_back(replace(m, c.second[i], 0));
@@ -330,16 +330,16 @@ struct doing {
 		auto d0c1 = splice(d0, posn, 0, c1);
 		d1 = replace(m, d1, 1);
 
-		// Make equation.
+		// Make equation
 		if (!equatable(d0c1, d1)) return;
 		auto& v = mode ? pos : neg;
 		v.push_back(equate(d0c1, d1));
 
-		// Make new clause.
+		// Make new clause
 		qclause(rule::sp, vec<clause>{c, d}, neg, pos);
 	}
 
-	// Descend into subterms.
+	// Descend into subterms
 	void descend(
 		const clause& c,
 		const clause& d,
@@ -359,7 +359,7 @@ struct doing {
 		}
 	}
 
-	// For each (mode)ve equation in d (both directions).
+	// For each (mode)ve equation in d (both directions)
 	void superposn(const clause& c, const clause& d, size_t ci, term c0, term c1) {
 		auto& dmode = mode ? d.second : d.first;
 		for (size_t di = 0; di != dmode.size(); ++di) {
@@ -369,7 +369,7 @@ struct doing {
 		}
 	}
 
-	// For each positive equation in c (both directions).
+	// For each positive equation in c (both directions)
 	void superposn(const clause& c, const clause& d) {
 		for (size_t ci = 0; ci != c.second.size(); ++ci) {
 			auto e = eqn(c.second[ci]);
@@ -388,37 +388,37 @@ struct doing {
 				break;
 			}
 
-		// The passive queue starts off with all the input clauses.
+		// The passive queue starts off with all the input clauses
 		for (auto& c: cs) qclause(rule::cnf, vec<clause>(), c.first, c.second);
 
-		// The active set starts off empty.
+		// The active set starts off empty
 		set<clause> active;
 
-		// Saturation proof procedure tries to perform all possible derivations until it derives a contradiction.
+		// Saturation proof procedure tries to perform all possible derivations until it derives a contradiction
 		for (uint64_t i = 0; i != iterLimit; ++i) {
-			// If there are no more clauses in the queue, the problem is satisfiable, unless completeness was lost.
+			// If there are no more clauses in the queue, the problem is satisfiable, unless completeness was lost
 			if (passive.empty()) return;
 			incStat("superposn main loop");
 
-			// Given clause.
+			// Given clause
 			auto g = passive.top();
 			passive.pop();
 
-			// Derived false.
+			// Derived false
 			if (g == falsec) {
 				result = szs::Unsatisfiable;
 				return;
 			}
 
 			// This is the Discount loop (in which only active clauses participate in subsumption checks); in tests, it performed
-			// slightly better than the alternative Otter loop (in which passive clauses also participate).
+			// slightly better than the alternative Otter loop (in which passive clauses also participate)
 			if (subsumesForward(active, g)) continue;
 			active = subsumeBackward(active, g);
 
-			// Add g to active clauses before inference, because we will sometimes need to combine g with itself.
+			// Add g to active clauses before inference, because we will sometimes need to combine g with itself
 			active.add(g);
 
-			// Infer.
+			// Infer
 			resolve(g);
 			factor(g);
 			for (auto& c: active)

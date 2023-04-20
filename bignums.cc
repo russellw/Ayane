@@ -1,7 +1,7 @@
 #include "main.h"
 
 // TODO: divide this functionality between terms and simplify?
-// Integers.
+// Integers
 namespace mpzs {
 size_t cap = 4;
 size_t qty;
@@ -46,27 +46,27 @@ void init() {
 size_t intern(mpz_t a) {
 	auto i = slot(entries, cap, a);
 
-	// If we have seen this before, return the existing object.
+	// If we have seen this before, return the existing object
 	if (entries[i]) {
 		// TODO: cache result in local?
 		mpz_clear(a);
 		return entries[i];
 	}
 
-	// Expand the hash table if necessary.
+	// Expand the hash table if necessary
 	if (++qty > cap * 3 / 4) {
 		expand();
 		i = slot(entries, cap, a);
 		assert(!entries[i]);
 	}
 
-	// Make a new object.
+	// Make a new object
 	auto o = atoms->alloc(offsetof(atom, mpz) + sizeof(mpz_t));
 	auto p = (atom*)atoms->ptr(o);
 	p->t = tag::Integer;
 	memcpy(p->mpz, a, sizeof p->mpz);
 
-	// Add to hash table.
+	// Add to hash table
 	return entries[i] = o;
 }
 } // namespace mpzs
@@ -87,7 +87,7 @@ term integer(const char* s) {
 	return term(r);
 }
 
-// Rationals.
+// Rationals
 namespace mpqs {
 size_t cap = 4;
 size_t qty;
@@ -132,27 +132,27 @@ void init() {
 size_t intern(mpq_t a) {
 	auto i = slot(entries, cap, a);
 
-	// If we have seen this before, return the existing object.
+	// If we have seen this before, return the existing object
 	if (entries[i]) {
 		// TODO: cache result in local?
 		mpq_clear(a);
 		return entries[i];
 	}
 
-	// Expand the hash table if necessary.
+	// Expand the hash table if necessary
 	if (++qty > cap * 3 / 4) {
 		expand();
 		i = slot(entries, cap, a);
 		assert(!entries[i]);
 	}
 
-	// Make a new object.
+	// Make a new object
 	auto o = atoms->alloc(offsetof(atom, mpq) + sizeof(mpq_t));
 	auto p = (atom*)atoms->ptr(o);
 	p->t = tag::Rational;
 	memcpy(p->mpq, a, sizeof p->mpq);
 
-	// Add to hash table.
+	// Add to hash table
 	return entries[i] = o;
 }
 } // namespace mpqs
@@ -190,23 +190,23 @@ term real(int n, unsigned d) {
 }
 
 term real(const char* s) {
-	// GMP string to integer or rational doesn't handle leading +, so for consistency, this function doesn't either.
+	// GMP string to integer or rational doesn't handle leading +, so for consistency, this function doesn't either
 	assert(*s != '+');
 
-	// Sign.
+	// Sign
 	bool sign = 0;
 	if (*s == '-') {
 		++s;
 		sign = 1;
 	}
 
-	// Result = scaled mantissa.
+	// Result = scaled mantissa
 	mpq_t r;
 	mpq_init(r);
 	auto mantissa = mpq_numref(r);
 	auto powScale = mpq_denref(r);
 
-	// Integer part.
+	// Integer part
 	mpz_t integerPart;
 	mpz_init(integerPart);
 	auto t = s;
@@ -218,7 +218,7 @@ term real(const char* s) {
 		s = t;
 	}
 
-	// Decimal part.
+	// Decimal part
 	size_t scale = 0;
 	if (*s == '.') {
 		++s;
@@ -234,13 +234,13 @@ term real(const char* s) {
 	}
 	mpz_ui_pow_ui(powScale, 10, scale);
 
-	// Mantissa += integerPart * 10^scale.
+	// Mantissa += integerPart * 10^scale
 	mpz_addmul(mantissa, integerPart, powScale);
 
-	// Sign.
+	// Sign
 	if (sign) mpz_neg(mantissa, mantissa);
 
-	// Exponent.
+	// Exponent
 	bool exponentSign = 0;
 	auto exponent = 0UL;
 	if (*s == 'e' || *s == 'E') {
@@ -264,26 +264,26 @@ term real(const char* s) {
 	else
 		mpz_mul(mantissa, mantissa, powExponent);
 
-	// Reduce result to lowest terms.
+	// Reduce result to lowest terms
 	mpq_canonicalize(r);
 
-	// Cleanup.
+	// Cleanup
 	// TODO: free in reverse order?
 	mpz_clear(powExponent);
 	mpz_clear(integerPart);
 
-	// Wrap result in term designating it as a real number.
+	// Wrap result in term designating it as a real number
 	return real(r);
 }
 
 // The number tables must be initialized after the atom heap, and C++ does not guarantee the order in which global constructors in
-// different modules will be called, so the number tables must be initialized with an explicit function.
+// different modules will be called, so the number tables must be initialized with an explicit function
 void initBignums() {
 	mpzs::init();
 	mpqs::init();
 }
 
-// Arithmetic.
+// Arithmetic
 namespace {
 void mpz_ediv_r(mpz_t r, const mpz_t n, const mpz_t d) {
 	mpz_tdiv_r(r, n, d);
@@ -305,28 +305,28 @@ void mpz_ediv_q(mpz_t q, const mpz_t n, const mpz_t d) {
 	mpz_tdiv_q(q, q, d);
 }
 
-// Calculate q = n/d, assuming common factors have already been canceled out, and applying bankers rounding.
+// Calculate q = n/d, assuming common factors have already been canceled out, and applying bankers rounding
 void mpz_round(mpz_t q, mpz_t n, mpz_t d) {
 	// If we are dividing by 2, the result could be exactly halfway between two integers, so need special case to apply bankers
-	// rounding.
+	// rounding
 	if (!mpz_cmp_ui(d, 2)) {
-		// Floored division by 2 (this corresponds to arithmetic shift right one bit).
+		// Floored division by 2 (this corresponds to arithmetic shift right one bit)
 		mpz_fdiv_q_2exp(q, n, 1);
 
-		// If it was an even number before the division, the issue doesn't arise; we already have the exact answer.
+		// If it was an even number before the division, the issue doesn't arise; we already have the exact answer
 		if (!mpz_tstbit(n, 0)) return;
 
 		// If it's an even number after the division, we are already on the nearest even integer, so we don't need to do anything
-		// else.
+		// else
 		if (!mpz_tstbit(q, 0)) return;
 
-		// Need to adjust by one to land on an even integer, but which way? Floored division rounded down, so we need to go up.
+		// Need to adjust by one to land on an even integer, but which way? Floored division rounded down, so we need to go up
 		mpz_add_ui(q, q, 1);
 		return;
 	}
 
 	// We are not dividing by 2, so cannot end up exactly halfway between two integers, and merely need to add half the denominator
-	// to the numerator before dividing.
+	// to the numerator before dividing
 	mpz_t d2;
 	mpz_init(d2);
 	mpz_fdiv_q_2exp(d2, d, 1);
@@ -444,7 +444,7 @@ term operator/(term a, term b) {
 		mpz_init(r);
 
 		// TPTP does not define integer division with unspecified rounding mode, but most programming languages nowadays define it
-		// as truncating.
+		// as truncating
 		mpz_tdiv_q(r, a1, b1);
 		return term(r);
 	}

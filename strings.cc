@@ -85,7 +85,7 @@ void* alloc(size_t bytes) {
 	return r;
 }
 
-// Compare a counted string with a null terminated one.
+// Compare a counted string with a null terminated one
 bool eq(const char* s, size_t n, const char* z) {
 	while (n--)
 		if (*s++ != *z++) return 0;
@@ -117,10 +117,10 @@ struct init {
 			// is sometimes useful, but would not be appropriate here, so make sure it's not the case.
 			assert(n < sizeof keywords[0].v);
 
-			// Make sure there are no duplicate keywords.
+			// Make sure there are no duplicate keywords
 			assert(!entries[slot(entries, cap, s->v, n)]);
 
-			// Add to hash table.
+			// Add to hash table
 			entries[slot(entries, cap, s->v, n)] = s;
 		}
 	}
@@ -151,22 +151,22 @@ void clearStrings() {
 string* intern(const char* s, size_t n) {
 	auto i = slot(entries, cap, s, n);
 
-	// If we have seen this string before, return the existing string.
+	// If we have seen this string before, return the existing string
 	if (entries[i]) return entries[i];
 
-	// Expand the hash table if necessary.
+	// Expand the hash table if necessary
 	if (++qty > cap * 3 / 4) {
 		expand();
 		i = slot(entries, cap, s, n);
 		assert(!entries[i]);
 	}
 
-	// Make a new string.
+	// Make a new string
 	auto r = (string*)alloc(offsetof(string, v) + n + 1);
 	memset(r, 0, offsetof(string, v));
 	memcpy(r->v, s, n);
 	r->v[n] = 0;
 
-	// Add to hash table.
+	// Add to hash table
 	return entries[i] = r;
 }

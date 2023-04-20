@@ -49,7 +49,7 @@ struct term {
 		return raw >> typeBits & (1 << idxBits) - 1;
 	}
 
-	// Atoms are stored in the atom heap, interned to save memory and to speed up operations like equality testing.
+	// Atoms are stored in the atom heap, interned to save memory and to speed up operations like equality testing
 	term(tag t): raw(tatoms + (int)t * offsetof(atom, s) / 8) {
 	}
 
@@ -76,7 +76,7 @@ struct term {
 
 	explicit operator tag() const;
 
-	// Type check is slightly slower.
+	// Type check is slightly slower
 	explicit operator type() const;
 
 	// Compound terms can be treated in some ways like containers, but since they have value semantics, are strictly read-only. Also
@@ -94,10 +94,10 @@ inline term tbool(bool b) {
 	return b ? tag::True : tag::False;
 }
 
-// Variables are unboxed, with packed bits for index number and type.
+// Variables are unboxed, with packed bits for index number and type
 term var(size_t i, type ty);
 
-// Because terms are interned, equality can simply compare words.
+// Because terms are interned, equality can simply compare words
 inline bool operator==(term a, term b) {
 	return !memcmp(&a, &b, sizeof b);
 }
@@ -117,7 +117,7 @@ inline mpq_t& term::mpq() const {
 	return getAtom()->mpq;
 }
 
-// Compounds.
+// Compounds
 struct compound {
 	uint32_t n;
 	term v[0];
@@ -146,7 +146,7 @@ inline atom* term::getAtom() const {
 type ftype(type rty, const term* first, const term* last);
 type ftype(type rty, const set<term>& args);
 
-// Tag.
+// Tag
 inline term::operator tag() const {
 	if (isVar()) return tag::Var;
 	return getAtom()->t;
@@ -175,7 +175,7 @@ inline size_t hash(const term& a) {
 int cmp(term a, term b);
 
 // Comparing symbols will not give alphabetical order, but an arbitrary order based on memory addresses, that is guaranteed to be
-// consistent within a given process.
+// consistent within a given process
 inline bool operator<(term a, term b) {
 	return cmp(a, b) < 0;
 }

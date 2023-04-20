@@ -4,7 +4,7 @@ enum class kind
 #include "kinds.h"
 };
 
-// The first few numbers are reserved for unboxed atomic types, for which the type number is just the kind, cast to an integer.
+// The first few numbers are reserved for unboxed atomic types, for which the type number is just the kind, cast to an integer
 const size_t unboxedTypes = (size_t)kind::Fn;
 
 // The total span of type numbers is 2^typeBits. The number of bits is important for terms, which sometimes want to pack a type with
@@ -22,7 +22,7 @@ struct Type {
 };
 
 // The number of types used in any run is expected to be small enough, that a statically allocated array will suffice for all of
-// them.
+// them
 extern char typeMem[];
 
 // It is desirable to pack types into as few bits as possible, for efficient term representation. Since types are always allocated
@@ -35,32 +35,32 @@ inline Type* typePtr(size_t o) {
 struct type {
 	uint32_t offset;
 
-	// Unboxed types.
+	// Unboxed types
 	type(kind k = kind::Unknown) {
 		assert((size_t)k < unboxedTypes);
 		offset = (size_t)k * offsetof(Type, v) / 8;
 	}
 
-	// Boxed atomic types.
+	// Boxed atomic types
 	explicit type(string* s);
 
-	// Compound types are interned.
+	// Compound types are interned
 	explicit type(kind k, type a);
 	explicit type(kind k, type a, type b);
 	explicit type(kind k, const vec<type>& v);
 
-	// Terms need the ability to reconstitute types from bits.
+	// Terms need the ability to reconstitute types from bits
 	explicit type(size_t offset): offset(offset) {
 	}
 
 	// Even unboxed types are allocated space in the (first few words of the) array, which means the kind of any type can be
-	// recovered in the same way, by reading the first word of the corresponding Type object.
+	// recovered in the same way, by reading the first word of the corresponding Type object
 	// TODO: optimize
 	explicit operator kind() const {
 		return typePtr(offset)->k;
 	}
 
-	// Compound operations.
+	// Compound operations
 	size_t size() const {
 		return typePtr(offset)->n;
 	}
@@ -76,7 +76,7 @@ inline size_t hash(type ty) {
 	return ty.offset;
 }
 
-// Because compound types are interned, equality can simply compare words.
+// Because compound types are interned, equality can simply compare words
 inline bool operator==(type a, type b) {
 	return a.offset == b.offset;
 }

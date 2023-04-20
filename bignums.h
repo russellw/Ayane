@@ -1,7 +1,7 @@
 void initBignums();
 
 // Functions for making arbitrary precision numbers for convenience, accept integer or string input and will intern the result so
-// equality tests can simply compare pointers.
+// equality tests can simply compare pointers
 term integer(int n);
 term integer(const char* s);
 
@@ -13,10 +13,10 @@ term rational(const char* s);
 term real(mpq_t q);
 term real(int n, unsigned d);
 
-// Per TPTP syntax, decimal/exponent string parses to a real number literal.
+// Per TPTP syntax, decimal/exponent string parses to a real number literal
 term real(const char* s);
 
-// Arithmetic is polymorphic on integers and rationals.
+// Arithmetic is polymorphic on integers and rationals
 term operator-(term a);
 term operator+(term a, term b);
 term operator-(term a, term b);
@@ -35,7 +35,7 @@ term floor(term a);
 term trunc(term a);
 term round(term a);
 
-// So is converting numbers between types.
+// So is converting numbers between types
 bool isInteger(term a);
 
 term toInteger(term a);

@@ -15,14 +15,14 @@ enum
 	k_xor,
 };
 
-// If a term does not already have a type, assign it a specified one.
+// If a term does not already have a type, assign it a specified one
 void defaultType(term a, type rty) {
 	// A statement about the return type of a function call, can directly imply the type of the function. This generally does not
 	// apply to basic operators; in most cases, they already have a definite type. That is not entirely true of the arithmetic
 	// operators, but we don't try to do global type inference to figure those out.
 	if (tag(a) != tag::Fn) return;
 
-	// This is only a default assignment, only relevant if the function does not already have a type.
+	// This is only a default assignment, only relevant if the function does not already have a type
 	auto p = a.getAtom();
 	if (p->ty == kind::Unknown) p->ty = ftype(rty, a.begin(), a.end());
 }
@@ -47,7 +47,7 @@ struct parser1: parser {
 	vec<pair<string*, term>> vars;
 	///
 
-	// Tokenizer.
+	// Tokenizer
 	void lex() {
 	loop:
 		auto s = srck = src;
@@ -227,7 +227,7 @@ struct parser1: parser {
 		err(buf);
 	}
 
-	// Types.
+	// Types
 	type atomicType() {
 		auto k = tok;
 		auto s = str;
@@ -274,7 +274,7 @@ struct parser1: parser {
 		return ty;
 	}
 
-	// Terms.
+	// Terms
 	void args(vec<term>& v) {
 		expect('(');
 		do v.push_back(atomicTerm());
@@ -371,10 +371,10 @@ struct parser1: parser {
 		{
 			term a(s, kind::Unknown);
 
-			// Not a function call.
+			// Not a function call
 			if (tok != '(') return a;
 
-			// Function is being called, so gather the function and arguments.
+			// Function is being called, so gather the function and arguments
 			vec<term> v(1, a);
 			args(v);
 
@@ -530,7 +530,7 @@ struct parser1: parser {
 		return a;
 	}
 
-	// Top level.
+	// Top level
 	string* wordOrDigits() {
 		switch (tok) {
 		case k_id:
@@ -573,18 +573,18 @@ struct parser1: parser {
 			{
 				expect(',');
 
-				// Role.
+				// Role
 				wordOrDigits();
 				expect(',');
 
-				// Literals.
+				// Literals
 				cnfMode = 1;
 				auto a = quantify(logicFormula());
 
-				// Select.
+				// Select
 				if (!sel.count(name)) break;
 
-				// Clause.
+				// Clause
 				problem.axiom(a, file, name);
 				break;
 			}
@@ -593,11 +593,11 @@ struct parser1: parser {
 			{
 				expect(',');
 
-				// Role.
+				// Role
 				auto role = keyword(wordOrDigits());
 				expect(',');
 
-				// Type.
+				// Type
 				if (role == s_type) {
 					size_t parens = 0;
 					while (eat('(')) ++parens;
@@ -618,22 +618,22 @@ struct parser1: parser {
 					break;
 				}
 
-				// Formula.
+				// Formula
 				cnfMode = 0;
 				auto a = logicFormula();
 				assert(vars.empty());
 				check(a, kind::Bool);
 
-				// Select.
+				// Select
 				if (!sel.count(name)) break;
 
-				// Conjecture.
+				// Conjecture
 				if (role == s_conjecture) {
 					problem.conjecture(a, file, name);
 					break;
 				}
 
-				// Ordinary formula.
+				// Ordinary formula
 				problem.axiom(a, file, name);
 				break;
 			}
@@ -642,11 +642,11 @@ struct parser1: parser {
 				auto dir = getenv("TPTP");
 				if (!dir) err("TPTP environment variable not set");
 
-				// File.
+				// File
 				snprintf(buf, sizeof buf, "%s/%s", dir, name);
 				auto file1 = intern(buf)->v;
 
-				// Select and read.
+				// Select and read
 				if (eat(',')) {
 					expect('[');
 
@@ -696,7 +696,7 @@ size_t parseId(const char* s) {
 }
 
 // Like most computer languages, TPTP has the notion of a normal name beginning with a letter or underscore, and containing those
-// characters or digits.
+// characters or digits
 bool normal(const char* s) {
 	if (!*s) return 0;
 	if (isDigit(*s)) return 0;
@@ -705,7 +705,7 @@ bool normal(const char* s) {
 	return 1;
 }
 
-// Formulas have the additional rule that all-digits counts as a normal name.
+// Formulas have the additional rule that all-digits counts as a normal name
 bool allDigits(const char* s) {
 	if (!*s) return 0;
 	while (*s)
@@ -713,7 +713,7 @@ bool allDigits(const char* s) {
 	return 1;
 }
 
-// Unlike some computer languages, TPTP allows other names to be used if quoted.
+// Unlike some computer languages, TPTP allows other names to be used if quoted
 void quote(int q, const char* s) {
 	putchar(q);
 	while (*s) {
@@ -724,7 +724,7 @@ void quote(int q, const char* s) {
 }
 
 // Print the name of a formula, taking into account that it may have an actual name or just an ID number, and in the former case it
-// may or may not require quotes.
+// may or may not require quotes
 void prname(const map<uint32_t, uint32_t>& ids, size_t o) {
 	auto s = getName((AbstractFormula*)heap->ptr(o));
 	if (!s) {
@@ -739,7 +739,7 @@ void prname(const map<uint32_t, uint32_t>& ids, size_t o) {
 }
 
 // Ordinary names have the same consideration about possibly requiring quotes, but don't have the special cases for ID numbers and
-// strings of digits.
+// strings of digits
 void prname(const char* s) {
 	if (normal(s)) {
 		print(s);
@@ -748,7 +748,7 @@ void prname(const char* s) {
 	quote('\'', s);
 }
 
-// Only some types will occur in proofs.
+// Only some types will occur in proofs
 void pr(type ty) {
 	switch (kind(ty)) {
 	case kind::Individual:
@@ -803,13 +803,13 @@ void quant(char op, term a) {
 	pr(a[1], a);
 }
 
-// Infix connectives may need to be surrounded by parentheses to disambiguate, depending on what the parent term was.
+// Infix connectives may need to be surrounded by parentheses to disambiguate, depending on what the parent term was
 bool needParens(term a, term parent) {
 	// CNF conversion may sometimes generate conjunctions or disjunctions with only one operand. In that case, the operator will not
 	// actually occur in the printed form, so the requirement for parentheses cannot arise.
 	if (a.size() == 1) return 0;
 
-	// Otherwise, only some parent terms have the potential to interfere with operator parsing.
+	// Otherwise, only some parent terms have the potential to interfere with operator parsing
 	switch (tag(parent)) {
 	case tag::All:
 	case tag::And:
@@ -1023,7 +1023,7 @@ void tptpProof(const vec<uint32_t>& proofv) {
 		if (i) used.add(i);
 	}
 
-	// Assign identity numbers to all formulas that don't already have names.
+	// Assign identity numbers to all formulas that don't already have names
 	size_t i = 1;
 	map<uint32_t, uint32_t> ids;
 	for (auto o: proofv) {
@@ -1037,7 +1037,7 @@ void tptpProof(const vec<uint32_t>& proofv) {
 	// printing the proof, because some skolem functions may not feature in the proof, so need never be named.)
 	sknames = 0;
 
-	// Print the proof.
+	// Print the proof
 	for (auto o: proofv) {
 		auto f0 = (AbstractFormula*)heap->ptr(o);
 		switch (f0->Class) {
@@ -1050,7 +1050,7 @@ void tptpProof(const vec<uint32_t>& proofv) {
 			print(f->Class == FormulaClass::Axiom ? ", axiom, " : ", conjecture, ");
 			pr(f->a);
 
-			// Axioms and conjectures are input formulas.
+			// Axioms and conjectures are input formulas
 			print(", file(");
 			quote('\'', basename(f->file));
 			putchar(',');
@@ -1075,7 +1075,7 @@ void tptpProof(const vec<uint32_t>& proofv) {
 			printf(", inference(%s,[status(%s)],[", ruleNames[(int)f->rl], f->rl == rule::cnf ? "esa" : "thm");
 
 			// It is possible to implement more complex inference rules that infer a clause from several source clauses, but at the
-			// moment, the largest number of source clauses is 2.
+			// moment, the largest number of source clauses is 2
 			prname(ids, f->from);
 			if (f->from1) {
 				putchar(',');

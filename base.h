@@ -1,4 +1,4 @@
-// Printing things that need to be joined with separators.
+// Printing things that need to be joined with separators
 #define joining bool joining1 = 0
 #define join(s) \
 	do { \
@@ -12,7 +12,7 @@ const char* basename(const char* file);
 size_t fnv(const void* p, size_t bytes);
 ///
 
-// For debugging purposes, define print functions for all the data types being used.
+// For debugging purposes, define print functions for all the data types being used
 inline void print(char c) {
 	putchar(c);
 }

@@ -12,7 +12,7 @@ struct string {
 	char v[32 - 4 - 4 - 4];
 };
 
-// Keywords are strings that are known to be important.
+// Keywords are strings that are known to be important
 enum
 {
 	s_question,
@@ -78,12 +78,12 @@ enum
 	end_s
 };
 
-// And statically allocated for fast lookup.
+// And statically allocated for fast lookup
 extern string keywords[];
 
 inline size_t keyword(const string* s) {
 	// Assign the difference to an unsigned variable and perform the division explicitly, because ptrdiff_t is a signed type, but
-	// unsigned division is slightly faster.
+	// unsigned division is slightly faster
 	size_t i = (char*)s - (char*)keywords;
 	return i / sizeof(string);
 }

@@ -43,7 +43,7 @@ void* reserve(size_t n) {
 }
 
 void commit(void* p, size_t n) {
-	// This assumes slab size is at least as big as page size, so the pointer is already aligned.
+	// This assumes slab size is at least as big as page size, so the pointer is already aligned
 	if (mprotect(p, n, PROT_READ | PROT_WRITE)) {
 		perror("mprotect");
 		exit(1);

@@ -78,9 +78,11 @@ def capitalize(s):
 
 
 def comment_block(i):
+    # check current indent
     m = re.match(r"(\s*)//", lines[i])
     dent = m[1]
 
+    # get the comment block as a list of words
     j = i
     words = []
     while j < len(lines) and re.match(r"\s*//", lines[j]) and not special(lines[j]):
@@ -89,18 +91,28 @@ def comment_block(i):
         words.extend(xs)
         j += 1
 
+    # do we have a comment block at all?
     if i == j:
         return 1
 
+    # capitalize sentences
     k = 0
     words[k] = capitalize(words[k])
     for k in range(1, len(words)):
         if is_sentence_end(words[k - 1]):
             words[k] = capitalize(words[k])
     k = len(words) - 1
+
+    # make sure the last sentence ends in a period
     if not is_sentence_end(words[k]):
         words[k] += "."
 
+    # but only if this comment block is actually a paragraph of sentences
+    s = " ".join(words)
+    if s.endswith(".") and "." not in s[:-1]:
+        words[k] = words[k][:-1]
+
+    # word wrap
     width = 132 - len(dent) * 4 - 3
     xs = []
     s = ""
@@ -115,9 +127,11 @@ def comment_block(i):
     assert s
     xs.append(s)
 
+    # prepend comment markers again
     for k in range(len(xs)):
         xs[k] = dent + "// " + xs[k]
 
+    # splice back into code
     lines[i:j] = xs
     return len(xs)
 

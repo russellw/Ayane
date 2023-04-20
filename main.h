@@ -1,5 +1,5 @@
 #ifdef _MSC_VER
-// Not using exceptions.
+// Not using exceptions
 #pragma warning(disable : 4530)
 #endif
 
@@ -35,10 +35,10 @@ using std::swap;
 #include <gmp.h>
 
 // The debug header needs to be included first, to make the assert macro available everywhere else, because assert is used all over
-// the place, including in some inline functions defined in headers.
+// the place, including in some inline functions defined in headers
 #include "debug.h"
 
-// General.
+// General
 #include "base.h"
 #include "buf.h"
 #include "heap.h"
@@ -48,7 +48,7 @@ using std::swap;
 #include "strings.h"
 #include "vec.h"
 
-// Logic.
+// Logic
 #include "types.h"
 
 #include "terms.h"
@@ -56,7 +56,7 @@ using std::swap;
 #include "bignums.h"
 #include "logic.h"
 
-// Algorithms.
+// Algorithms
 #include "cnf.h"
 #include "dpll.h"
 #include "etc.h"
@@ -66,12 +66,12 @@ using std::swap;
 #include "superposn.h"
 #include "unify.h"
 
-// I/O.
+// I/O
 #include "parser.h"
 #include "problem.h"
 
 #include "dimacs.h"
 #include "tptp.h"
 
-// Unit tests.
+// Unit tests
 #include "test.h"

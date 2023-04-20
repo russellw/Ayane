@@ -43,24 +43,24 @@ const char* extension(const char* file) {
 struct listParser: parser {
 	listParser(const char* file, vec<const char*>& v): parser(file) {
 		for (;;) {
-			// Find start of next line, skipping blanks.
+			// Find start of next line, skipping blanks
 			while (isSpace(*src)) ++src;
 
-			// Null terminator indicates end of file.
+			// Null terminator indicates end of file
 			if (!*src) break;
 
-			// Find end of line.
+			// Find end of line
 			auto s = src;
 			while (isPrint(*s)) ++s;
 
-			// Store a copy of the line.
+			// Store a copy of the line
 			auto n = s - src;
 			auto r = new char[n + 1];
 			memcpy(r, src, n);
 			r[n] = 0;
 			v.push_back(r);
 
-			// Continue.
+			// Continue
 			src = s;
 		}
 	}
@@ -99,7 +99,7 @@ void parse(int argc, const char** argv) {
 	for (int i = 0; i != argc; ++i) {
 		auto s = argv[i];
 
-		// File.
+		// File
 		if (*s != '-') {
 			if (!strcmp(extension(s), "lst")) {
 				vec<const char*> v;
@@ -111,7 +111,7 @@ void parse(int argc, const char** argv) {
 			continue;
 		}
 
-		// Option.
+		// Option
 		bufi = 0;
 		auto oa = "";
 		for (;;) {
@@ -138,10 +138,10 @@ void parse(int argc, const char** argv) {
 		}
 
 		// An unadorned '-' means read from standard input, but that's the default anyway if no files are specified, so quietly
-		// accept it.
+		// accept it
 		if (!bufi) continue;
 
-		// Option.
+		// Option
 		switch (keyword(intern(buf, bufi))) {
 		case s_C:
 			iterLimit = optDouble(argc, argv, i, oa);
@@ -250,29 +250,29 @@ int main(int argc, const char** argv) {
 #endif
 	initBignums();
 
-	// Run unit tests, if this is a debug build.
+	// Run unit tests, if this is a debug build
 	test();
 
-	// Command line arguments.
+	// Command line arguments
 	parse(argc - 1, argv + 1);
 	if (files.empty()) files.push_back("stdin");
 
 	// If no input file was specified, we default to reading standard input, but that still requires input language to be specified,
-	// so with no arguments, just print a usage message.
+	// so with no arguments, just print a usage message
 	if (argc <= 1) {
 		fprintf(stderr, "Usage: ayane [options] files\n");
 		return 1;
 	}
 
-	// Attempt problems.
+	// Attempt problems
 	for (size_t i = 0; i != files.size(); ++i) {
 		auto file = files[i];
 		auto bname = basename(file);
 
-		// Initialize.
+		// Initialize
 		clearStrings();
 
-		// Parse.
+		// Parse
 		Problem problem;
 		switch (inputLang(file)) {
 		case dimacs:
@@ -288,7 +288,7 @@ int main(int argc, const char** argv) {
 		set<term> initialFormulas;
 		for (auto& p: problem.initialFormulas) initialFormulas.add(p.first);
 
-		// Convert to CNF.
+		// Convert to CNF
 		ProofCnf proofCnf;
 		set<clause> cs;
 		cnf(initialFormulas, proofCnf, cs);
@@ -298,11 +298,11 @@ int main(int argc, const char** argv) {
 			return 0;
 		}
 
-		// Solve.
+		// Solve
 		Proof proof;
 		auto r = superposn(cs, proof, iterLimit);
 
-		// The SZS ontology uses different result values depending on whether the problem contains a conjecture.
+		// The SZS ontology uses different result values depending on whether the problem contains a conjecture
 		if (problem.hasConjecture) switch (r) {
 			case szs::Satisfiable:
 				r = szs::CounterSatisfiable;
@@ -312,7 +312,7 @@ int main(int argc, const char** argv) {
 				break;
 			}
 
-		// Print result, and proof if we have one.
+		// Print result, and proof if we have one
 		printf("%% SZS status %s for %s\n", szsNames[(int)r], bname);
 		switch (r) {
 		case szs::Theorem:
@@ -326,7 +326,7 @@ int main(int argc, const char** argv) {
 			break;
 		}
 
-		// Print stats.
+		// Print stats
 		printStats();
 		if (files.size() > 1) putchar('\n');
 	}

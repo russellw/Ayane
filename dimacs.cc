@@ -7,7 +7,7 @@ enum
 struct parser1: parser {
 	Problem& problem;
 
-	// Tokenizer.
+	// Tokenizer
 	void lex() {
 	loop:
 		auto s = srck = src;
@@ -49,14 +49,14 @@ struct parser1: parser {
 		tok = *s;
 	}
 
-	// A variable in propositional logic is a constant in first-order logic.
+	// A variable in propositional logic is a constant in first-order logic
 	term var() {
 		auto a = term(str, kind::Bool);
 		lex();
 		return a;
 	}
 
-	// Top level.
+	// Top level
 	void add(const vec<term>& literals) {
 		problem.axiom(term(literals), file);
 	}

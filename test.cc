@@ -28,31 +28,31 @@ void testSubsume() {
 	clause c;
 	clause d;
 
-	// False <= false.
+	// False <= false
 	c = mkClause(neg, pos);
 	d = c;
 	assert(subsumes(c, d));
 
-	// False <= p.
+	// False <= p
 	c = mkClause(neg, pos);
 	pos.push_back(p);
 	d = mkClause(neg, pos);
 	assert(subsumes(c, d));
 	assert(!subsumes(d, c));
 
-	// p <= p.
+	// p <= p
 	pos.push_back(p);
 	c = mkClause(neg, pos);
 	d = c;
 	assert(subsumes(c, d));
 
-	// !p <= !p.
+	// !p <= !p
 	neg.push_back(p);
 	c = mkClause(neg, pos);
 	d = c;
 	assert(subsumes(c, d));
 
-	// p <= p | p.
+	// p <= p | p
 	pos.push_back(p);
 	c = mkClause(neg, pos);
 	pos.push_back(p);
@@ -61,7 +61,7 @@ void testSubsume() {
 	assert(subsumes(c, d));
 	assert(!subsumes(d, c));
 
-	// p !<= !p.
+	// p !<= !p
 	pos.push_back(p);
 	c = mkClause(neg, pos);
 	neg.push_back(p);
@@ -69,7 +69,7 @@ void testSubsume() {
 	assert(!subsumes(c, d));
 	assert(!subsumes(d, c));
 
-	// p | q <= q | p.
+	// p | q <= q | p
 	pos.push_back(p);
 	pos.push_back(q);
 	c = mkClause(neg, pos);
@@ -79,7 +79,7 @@ void testSubsume() {
 	assert(subsumes(c, d));
 	assert(subsumes(d, c));
 
-	// p | q <= p | q | p.
+	// p | q <= p | q | p
 	pos.push_back(p);
 	pos.push_back(q);
 	c = mkClause(neg, pos);
@@ -90,7 +90,7 @@ void testSubsume() {
 	assert(subsumes(c, d));
 	assert(!subsumes(d, c));
 
-	// p(a) | p(b) | q(a) | q(b) | <= p(a) | q(a) | p(b) | q(b).
+	// p(a) | p(b) | q(a) | q(b) | <= p(a) | q(a) | p(b) | q(b)
 	pos.push_back(term(p1, a));
 	pos.push_back(term(p1, b));
 	pos.push_back(term(q1, a));
@@ -104,7 +104,7 @@ void testSubsume() {
 	assert(subsumes(c, d));
 	assert(subsumes(d, c));
 
-	// p(x,y) <= p(a,b).
+	// p(x,y) <= p(a,b)
 	pos.push_back(term(p2, x, y));
 	c = mkClause(neg, pos);
 	pos.push_back(term(p2, a, b));
@@ -112,7 +112,7 @@ void testSubsume() {
 	assert(subsumes(c, d));
 	assert(!subsumes(d, c));
 
-	// p(x,x) !<= p(a,b).
+	// p(x,x) !<= p(a,b)
 	pos.push_back(term(p2, x, x));
 	c = mkClause(neg, pos);
 	pos.push_back(term(p2, a, b));
@@ -120,7 +120,7 @@ void testSubsume() {
 	assert(!subsumes(c, d));
 	assert(!subsumes(d, c));
 
-	// p(x) <= p(y).
+	// p(x) <= p(y)
 	pos.push_back(term(p1, x));
 	c = mkClause(neg, pos);
 	pos.push_back(term(p1, y));
@@ -128,7 +128,7 @@ void testSubsume() {
 	assert(subsumes(c, d));
 	assert(subsumes(d, c));
 
-	// p(x) | p(a(x)) | p(a(a(x))) <= p(y) | p(a(y)) | p(a(a(y))).
+	// p(x) | p(a(x)) | p(a(a(x))) <= p(y) | p(a(y)) | p(a(a(y)))
 	pos.push_back(term(p1, x));
 	pos.push_back(term(p1, term(a1, x)));
 	pos.push_back(term(p1, term(a1, term(a1, x))));
@@ -140,7 +140,7 @@ void testSubsume() {
 	assert(subsumes(c, d));
 	assert(subsumes(d, c));
 
-	// p(x) | p(a) <= p(a) | p(b).
+	// p(x) | p(a) <= p(a) | p(b)
 	pos.push_back(term(p1, x));
 	pos.push_back(term(p1, a));
 	c = mkClause(neg, pos);
@@ -150,7 +150,7 @@ void testSubsume() {
 	assert(subsumes(c, d));
 	assert(!subsumes(d, c));
 
-	// p(x) | p(a(x)) <= p(a(y)) | p(y).
+	// p(x) | p(a(x)) <= p(a(y)) | p(y)
 	pos.push_back(term(p1, x));
 	pos.push_back(term(p1, term(a1, x)));
 	c = mkClause(neg, pos);
@@ -160,7 +160,7 @@ void testSubsume() {
 	assert(subsumes(c, d));
 	assert(subsumes(d, c));
 
-	// p(x) | p(a(x)) | p(a(a(x))) <= p(a(a(y))) | p(a(y)) | p(y).
+	// p(x) | p(a(x)) | p(a(a(x))) <= p(a(a(y))) | p(a(y)) | p(y)
 	pos.push_back(term(p1, x));
 	pos.push_back(term(p1, term(a1, x)));
 	pos.push_back(term(p1, term(a1, term(a1, x))));
@@ -172,7 +172,7 @@ void testSubsume() {
 	assert(subsumes(c, d));
 	assert(subsumes(d, c));
 
-	// (a = x) <= (a = b).
+	// (a = x) <= (a = b)
 	pos.push_back(term(tag::Eq, a, x));
 	c = mkClause(neg, pos);
 	pos.push_back(term(tag::Eq, a, b));
@@ -180,7 +180,7 @@ void testSubsume() {
 	assert(subsumes(c, d));
 	assert(!subsumes(d, c));
 
-	// (x = a) <= (a = b).
+	// (x = a) <= (a = b)
 	pos.push_back(term(tag::Eq, x, a));
 	c = mkClause(neg, pos);
 	pos.push_back(term(tag::Eq, a, b));
@@ -188,7 +188,7 @@ void testSubsume() {
 	assert(subsumes(c, d));
 	assert(!subsumes(d, c));
 
-	// !p(y) | !p(x) | q(x) <= !p(a) | !p(b) | q(b).
+	// !p(y) | !p(x) | q(x) <= !p(a) | !p(b) | q(b)
 	neg.push_back(term(p1, y));
 	neg.push_back(term(p1, x));
 	pos.push_back(term(q1, x));
@@ -200,7 +200,7 @@ void testSubsume() {
 	assert(subsumes(c, d));
 	assert(!subsumes(d, c));
 
-	// !p(x) | !p(y) | q(x) <= !p(a) | !p(b) | q(b).
+	// !p(x) | !p(y) | q(x) <= !p(a) | !p(b) | q(b)
 	neg.push_back(term(p1, x));
 	neg.push_back(term(p1, y));
 	pos.push_back(term(q1, x));
@@ -212,7 +212,7 @@ void testSubsume() {
 	assert(subsumes(c, d));
 	assert(!subsumes(d, c));
 
-	// p(x,a(x)) !<= p(a(y),a(y)).
+	// p(x,a(x)) !<= p(a(y),a(y))
 	pos.push_back(term(p2, x, term(a1, x)));
 	c = mkClause(neg, pos);
 	pos.push_back(term(p2, term(a1, y), term(a1, y)));
@@ -233,14 +233,14 @@ void testCnf() {
 	set<clause> cs1;
 	int i = 0;
 
-	// False.
+	// False
 	cs.clear();
 	cs1.clear();
 	cnf(tag::False, cs);
 	assert(cs.size() == 1);
 	assert(*cs.begin() == falsec);
 
-	// True.
+	// True
 	cs.clear();
 	cs1.clear();
 	cnf(tag::True, cs);
@@ -257,7 +257,7 @@ void testCnf() {
 	assert(c.first.empty());
 	assert(c.second == vec<term>{a});
 
-	// !a.
+	// !a
 	cs.clear();
 	cs1.clear();
 	cnf(term(tag::Not, a), cs);
@@ -266,7 +266,7 @@ void testCnf() {
 	assert(c.first == vec<term>{a});
 	assert(c.second.empty());
 
-	// !!a.
+	// !!a
 	cs.clear();
 	cs1.clear();
 	cnf(term(tag::Not, term(tag::Not, a)), cs);
@@ -275,14 +275,14 @@ void testCnf() {
 	assert(c.first.empty());
 	assert(c.second == vec<term>{a});
 
-	// !true.
+	// !true
 	cs.clear();
 	cs1.clear();
 	cnf(term(tag::Not, tag::True), cs);
 	assert(cs.size() == 1);
 	assert(*cs.begin() == falsec);
 
-	// !false.
+	// !false
 	cs.clear();
 	cs1.clear();
 	cnf(term(tag::Not, tag::False), cs);
@@ -290,7 +290,7 @@ void testCnf() {
 
 	term b = gensym(kind::Bool);
 
-	// a || b.
+	// a || b
 	cs.clear();
 	cs1.clear();
 	cnf(term(tag::Or, a, b), cs);
@@ -299,7 +299,7 @@ void testCnf() {
 	assert(c.first.empty());
 	assert((c.second == vec<term>{a, b}));
 
-	// a && b.
+	// a && b
 	cs.clear();
 	cs1.clear();
 	cnf(term(tag::And, a, b), cs);
@@ -312,7 +312,7 @@ void testCnf() {
 	term a2 = gensym(kind::Bool);
 	term a3 = gensym(kind::Bool);
 
-	// a1 || a2 || a3.
+	// a1 || a2 || a3
 	cs.clear();
 	cs1.clear();
 	cnf(term(tag::Or, a1, a2, a3), cs);
@@ -321,7 +321,7 @@ void testCnf() {
 	assert(c.first.empty());
 	assert((c.second == vec<term>{a1, a2, a3}));
 
-	// (a1 || a2) || a3.
+	// (a1 || a2) || a3
 	cs.clear();
 	cs1.clear();
 	cnf(term(tag::Or, term(tag::Or, a1, a2), a3), cs);
@@ -330,7 +330,7 @@ void testCnf() {
 	assert(c.first.empty());
 	assert((c.second == vec<term>{a1, a2, a3}));
 
-	// a1 || (a2 || a3).
+	// a1 || (a2 || a3)
 	cs.clear();
 	cs1.clear();
 	cnf(term(tag::Or, a1, term(tag::Or, a2, a3)), cs);
@@ -339,7 +339,7 @@ void testCnf() {
 	assert(c.first.empty());
 	assert((c.second == vec<term>{a1, a2, a3}));
 
-	// a1 && a2 && a3.
+	// a1 && a2 && a3
 	cs.clear();
 	cs1.clear();
 	cnf(term(tag::And, a1, a2, a3), cs);
@@ -349,7 +349,7 @@ void testCnf() {
 	cs1.add(make_pair(vec<term>(), vec<term>{a3}));
 	assert(cs == cs1);
 
-	// (a1 && a2) && a3.
+	// (a1 && a2) && a3
 	cs.clear();
 	cs1.clear();
 	cnf(term(tag::And, term(tag::And, a1, a2), a3), cs);
@@ -359,7 +359,7 @@ void testCnf() {
 	cs1.add(make_pair(vec<term>(), vec<term>{a3}));
 	assert(cs == cs1);
 
-	// a1 && (a2 && a3).
+	// a1 && (a2 && a3)
 	cs.clear();
 	cs1.clear();
 	cnf(term(tag::And, a1, term(tag::And, a2, a3)), cs);
@@ -369,7 +369,7 @@ void testCnf() {
 	cs1.add(make_pair(vec<term>(), vec<term>{a3}));
 	assert(cs == cs1);
 
-	// !(a1 || a2 || a3).
+	// !(a1 || a2 || a3)
 	cs.clear();
 	cs1.clear();
 	cnf(term(tag::Not, term(tag::Or, a1, a2, a3)), cs);
@@ -379,7 +379,7 @@ void testCnf() {
 	cs1.add(make_pair(vec<term>{a3}, vec<term>()));
 	assert(cs == cs1);
 
-	// !(a1 && a2 && a3).
+	// !(a1 && a2 && a3)
 	cs.clear();
 	cs1.clear();
 	cnf(term(tag::Not, term(tag::And, a1, a2, a3)), cs);
@@ -387,32 +387,32 @@ void testCnf() {
 	cs1.add(make_pair(vec<term>{a1, a2, a3}, vec<term>()));
 	assert(cs == cs1);
 
-	// False <=> false.
+	// False <=> false
 	cs.clear();
 	cs1.clear();
 	cnf(term(tag::Eqv, tag::False, tag::False), cs);
 	assert(cs.size() == 0);
 
-	// True <=> true.
+	// True <=> true
 	cs.clear();
 	cs1.clear();
 	cnf(term(tag::Eqv, tag::True, tag::True), cs);
 	assert(cs.size() == 0);
 
-	// False <=> true.
+	// False <=> true
 	cs.clear();
 	cs1.clear();
 	cnf(term(tag::Eqv, tag::False, tag::True), cs);
 	assert(cs.size() == 1);
 	assert(*cs.begin() == falsec);
 
-	// a <=> a.
+	// a <=> a
 	cs.clear();
 	cs1.clear();
 	cnf(term(tag::Eqv, a, a), cs);
 	assert(cs.size() == 0);
 
-	// a => a.
+	// a => a
 	cs.clear();
 	cs1.clear();
 	cnf(term(tag::Or, term(tag::Not, a), a), cs);
@@ -422,7 +422,7 @@ void testCnf() {
 	term b2 = gensym(kind::Bool);
 	term b3 = gensym(kind::Bool);
 
-	// a || (b1 && b2 && b3).
+	// a || (b1 && b2 && b3)
 	cs.clear();
 	cs1.clear();
 	cnf(term(tag::Or, a, term(tag::And, b1, b2, b3)), cs);
@@ -437,7 +437,7 @@ void testCnf() {
 	term s2 = gensym(kind::Individual);
 	term s3 = gensym(kind::Individual);
 
-	// p(s1, s2, s3).
+	// p(s1, s2, s3)
 	cs.clear();
 	cs1.clear();
 	cnf(term(p, s1, s2, s3), cs);
@@ -445,7 +445,7 @@ void testCnf() {
 	cs1.add(make_pair(vec<term>(), vec<term>{term(p, s1, s2, s3)}));
 	assert(cs == cs1);
 
-	// !p(s1, s2, s3).
+	// !p(s1, s2, s3)
 	cs.clear();
 	cs1.clear();
 	cnf(term(tag::Not, term(p, s1, s2, s3)), cs);
@@ -457,7 +457,7 @@ void testCnf() {
 	term n2 = gensym(kind::Integer);
 	term n3 = gensym(kind::Integer);
 
-	// n1 == 42.
+	// n1 == 42
 	cs.clear();
 	cs1.clear();
 	cnf(term(tag::Eq, n1, integer(42)), cs);
@@ -465,7 +465,7 @@ void testCnf() {
 	cs1.add(make_pair(vec<term>(), vec<term>{term(tag::Eq, n1, integer(42))}));
 	assert(cs == cs1);
 
-	// n1 + n2 + n3 != 99.
+	// n1 + n2 + n3 != 99
 	cs.clear();
 	cs1.clear();
 	cnf(term(tag::Not, term(tag::Eq, term(tag::Add, term(tag::Add, n1, n2), n3), integer(99))), cs);
@@ -529,13 +529,13 @@ void testGraph1() {
 
 	int s = 'r';
 
-	// a dominates a.
+	// a dominates a
 	for (auto& a: xs) assert(dominates(g, s, a, a));
 
-	// s dominates a.
+	// s dominates a
 	for (auto& a: xs) assert(dominates(g, s, s, a));
 
-	// Immediate dominators.
+	// Immediate dominators
 	for (auto& b: xs) {
 		auto a = idom(g, s, b);
 		switch (b) {
@@ -560,7 +560,7 @@ void testGraph1() {
 }
 
 void testGraph2() {
-	// Tiger book page 439.
+	// Tiger book page 439
 	graph<int> g;
 	g.add(make_pair(1, 2));
 	g.add(make_pair(1, 5));
@@ -586,13 +586,13 @@ void testGraph2() {
 
 	int s = 1;
 
-	// a dominates a.
+	// a dominates a
 	for (int a = 1; a <= 13; ++a) assert(dominates(g, s, a, a));
 
-	// s dominates a.
+	// s dominates a
 	for (int a = 1; a <= 13; ++a) assert(dominates(g, s, s, a));
 
-	// Dominance frontier.
+	// Dominance frontier
 	set<int> r;
 	r.add(4);
 	r.add(5);
@@ -622,7 +622,7 @@ void testGraph3() {
 	g.add(make_pair(12, 0));
 	assert(nodes(g).size() == 13);
 
-	// First UIP.
+	// First UIP
 	assert(idom(g, 6, 0) == 8);
 
 	set<int> r;
@@ -672,7 +672,7 @@ void testMatch() {
 	assert(match(m, a, a));
 	assert(m.size() == 0);
 
-	// a and b do not match.
+	// a and b do not match
 	m.clear();
 	assert(!match(m, a, b));
 
@@ -682,33 +682,33 @@ void testMatch() {
 	assert(m.size() == 1);
 	assert(m.at(x) == x);
 
-	// x is not matched with the constant a, because the variable is on the right-hand side.
+	// x is not matched with the constant a, because the variable is on the right-hand side
 	m.clear();
 	assert(!match(m, a, x));
 
-	// x and y are aliased.
+	// x and y are aliased
 	m.clear();
 	assert(match(m, x, y));
 	assert(m.size() == 1);
 	assert(replace(m, x) == replace(m, y));
 
-	// Function and constant symbols match, x is unified with the constant b.
+	// Function and constant symbols match, x is unified with the constant b
 	m.clear();
 	assert(match(m, term(f2, a, x), term(f2, a, b)));
 	assert(m.size() == 1);
 	assert(replace(m, x) == b);
 
-	// f and g do not match.
+	// f and g do not match
 	m.clear();
 	assert(!match(m, term(f1, a), term(g1, a)));
 
-	// x and y are aliased.
+	// x and y are aliased
 	m.clear();
 	assert(match(m, term(f1, x), term(f1, y)));
 	assert(m.size() == 1);
 	assert(replace(m, x) == replace(m, y));
 
-	// f and g do not match.
+	// f and g do not match
 	m.clear();
 	assert(!match(m, term(f1, x), term(g1, y)));
 
@@ -716,21 +716,21 @@ void testMatch() {
 	m.clear();
 	assert(!match(m, term(f1, x), term(f2, y, z)));
 
-	// Does not match y with the term g(x), because the variable is on the right-hand side.
+	// Does not match y with the term g(x), because the variable is on the right-hand side
 	m.clear();
 	assert(!match(m, term(f1, term(g1, x)), term(f1, y)));
 
-	// Does not match, because the variable is on the right-hand side.
+	// Does not match, because the variable is on the right-hand side
 	m.clear();
 	assert(!match(m, term(f2, term(g1, x), x), term(f2, y, a)));
 
 	// Returns false in first-order logic and many modern Prolog dialects (enforced by the occurs check) but returns true here
-	// because match has no notion of an occurs check.
+	// because match has no notion of an occurs check
 	m.clear();
 	assert(match(m, x, term(f1, x)));
 	assert(m.size() == 1);
 
-	// Both x and y are unified with the constant a.
+	// Both x and y are unified with the constant a
 	m.clear();
 	assert(match(m, x, y));
 	assert(match(m, y, a));
@@ -738,7 +738,7 @@ void testMatch() {
 	assert(replace(m, x) == a);
 	assert(replace(m, y) == a);
 
-	// Fails this time, because the variable is on the right-hand side.
+	// Fails this time, because the variable is on the right-hand side
 	m.clear();
 	assert(!match(m, a, y));
 
@@ -778,7 +778,7 @@ void testUnify() {
 	assert(unify(m, a, a));
 	assert(m.size() == 0);
 
-	// a and b do not match.
+	// a and b do not match
 	m.clear();
 	assert(!unify(m, a, b));
 
@@ -787,35 +787,35 @@ void testUnify() {
 	assert(unify(m, x, x));
 	assert(m.size() == 0);
 
-	// x is unified with the constant a.
+	// x is unified with the constant a
 	m.clear();
 	assert(unify(m, a, x));
 	assert(m.size() == 1);
 	assert(replace(m, x) == a);
 
-	// x and y are aliased.
+	// x and y are aliased
 	m.clear();
 	assert(unify(m, x, y));
 	assert(m.size() == 1);
 	assert(replace(m, x) == replace(m, y));
 
-	// Function and constant symbols match, x is unified with the constant b.
+	// Function and constant symbols match, x is unified with the constant b
 	m.clear();
 	assert(unify(m, term(f2, a, x), term(f2, a, b)));
 	assert(m.size() == 1);
 	assert(replace(m, x) == b);
 
-	// f and g do not match.
+	// f and g do not match
 	m.clear();
 	assert(!unify(m, term(f1, a), term(g1, a)));
 
-	// x and y are aliased.
+	// x and y are aliased
 	m.clear();
 	assert(unify(m, term(f1, x), term(f1, y)));
 	assert(m.size() == 1);
 	assert(replace(m, x) == replace(m, y));
 
-	// f and g do not match.
+	// f and g do not match
 	m.clear();
 	assert(!unify(m, term(f1, x), term(g1, y)));
 
@@ -823,24 +823,24 @@ void testUnify() {
 	m.clear();
 	assert(!unify(m, term(f1, x), term(f2, y, z)));
 
-	// Unifies y with the term g1(x).
+	// Unifies y with the term g1(x)
 	m.clear();
 	assert(unify(m, term(f1, term(g1, x)), term(f1, y)));
 	assert(m.size() == 1);
 	assert(replace(m, y) == term(g1, x));
 
-	// Unifies x with constant a, and y with the term g1(a).
+	// Unifies x with constant a, and y with the term g1(a)
 	m.clear();
 	assert(unify(m, term(f2, term(g1, x), x), term(f2, y, a)));
 	assert(m.size() == 2);
 	assert(replace(m, x) == a);
 	assert(replace(m, y) == term(g1, a));
 
-	// Returns false in first-order logic and many modern Prolog dialects (enforced by the occurs check).
+	// Returns false in first-order logic and many modern Prolog dialects (enforced by the occurs check)
 	m.clear();
 	assert(!unify(m, x, term(f1, x)));
 
-	// Both x and y are unified with the constant a.
+	// Both x and y are unified with the constant a
 	m.clear();
 	assert(unify(m, x, y));
 	assert(unify(m, y, a));
@@ -848,7 +848,7 @@ void testUnify() {
 	assert(replace(m, x) == a);
 	assert(replace(m, y) == a);
 
-	// As above (order of equations in set doesn't matter).
+	// As above (order of equations in set doesn't matter)
 	m.clear();
 	assert(unify(m, a, y));
 	assert(unify(m, x, y));
@@ -933,51 +933,51 @@ void testDpll() {
 	term a(intern("a"), kind::Bool);
 	term b = gensym(kind::Bool);
 
-	// No clauses.
+	// No clauses
 	cs.clear();
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 	assert(m.empty());
 
-	// False.
+	// False
 	cs.clear();
 	cs.add(falsec);
 	m.clear();
 	assert(dpll(m, cs) == szs::Unsatisfiable);
 
-	// False.
+	// False
 	cs.clear();
 	cs.add(make_pair(vec<term>(), vec<term>{tag::False}));
 	m.clear();
 	assert(dpll(m, cs) == szs::Unsatisfiable);
 
-	// False | false.
+	// False | false
 	cs.clear();
 	cs.add(make_pair(vec<term>(), vec<term>{tag::False, tag::False}));
 	m.clear();
 	assert(dpll(m, cs) == szs::Unsatisfiable);
 
-	// !true.
+	// !true
 	cs.clear();
 	cs.add(make_pair(vec<term>{tag::True}, vec<term>()));
 	m.clear();
 	assert(dpll(m, cs) == szs::Unsatisfiable);
 
-	// True.
+	// True
 	cs.clear();
 	cs.add(truec);
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 	assert(m.empty());
 
-	// True | true.
+	// True | true
 	cs.clear();
 	cs.add(make_pair(vec<term>(), vec<term>{tag::True, tag::True}));
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 	assert(m.empty());
 
-	// !false.
+	// !false
 	cs.clear();
 	cs.add(make_pair(vec<term>{tag::False}, vec<term>()));
 	m.clear();
@@ -992,7 +992,7 @@ void testDpll() {
 	assert(m.size() == 1);
 	assert(m.at(a) == tag::True);
 
-	// a | a.
+	// a | a
 	cs.clear();
 	cs.add(make_pair(vec<term>(), vec<term>{a, a}));
 	m.clear();
@@ -1000,7 +1000,7 @@ void testDpll() {
 	assert(m.size() == 1);
 	assert(m.at(a) == tag::True);
 
-	// !a.
+	// !a
 	cs.clear();
 	cs.add(make_pair(vec<term>{a}, vec<term>()));
 	m.clear();
@@ -1008,13 +1008,13 @@ void testDpll() {
 	assert(m.size() == 1);
 	assert(m.at(a) == tag::False);
 
-	// !a | a.
+	// !a | a
 	cs.clear();
 	cs.add(make_pair(vec<term>{a}, vec<term>{a}));
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 
-	// !a & a.
+	// !a & a
 	cs.clear();
 	cs.add(make_pair(vec<term>{a}, vec<term>()));
 	cs.add(make_pair(vec<term>(), vec<term>{a}));
@@ -1029,7 +1029,7 @@ void testDpll() {
 	assert(m.size() == 1);
 	assert(m.at(b) == tag::True);
 
-	// a & b.
+	// a & b
 	cs.clear();
 	cs.add(make_pair(vec<term>(), vec<term>{a}));
 	cs.add(make_pair(vec<term>(), vec<term>{b}));
@@ -1039,27 +1039,27 @@ void testDpll() {
 	assert(m.at(a) == tag::True);
 	assert(m.at(b) == tag::True);
 
-	// Cnf.
+	// Cnf
 
-	// True <=> (true <=> true).
+	// True <=> (true <=> true)
 	cs.clear();
 	cnf(term(tag::Eqv, tag::True, term(tag::Eqv, tag::True, tag::True)), cs);
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 
-	// True <=> (true <=> (true <=> true)).
+	// True <=> (true <=> (true <=> true))
 	cs.clear();
 	cnf(term(tag::Eqv, tag::True, term(tag::Eqv, tag::True, term(tag::Eqv, tag::True, tag::True))), cs);
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 
-	// True <=> (true <=> (true <=> (true <=> true))).
+	// True <=> (true <=> (true <=> (true <=> true)))
 	cs.clear();
 	cnf(term(tag::Eqv, tag::True, term(tag::Eqv, tag::True, term(tag::Eqv, tag::True, term(tag::Eqv, tag::True, tag::True)))), cs);
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 
-	// True <=> (true <=> (true <=> (true <=> (true <=> true)))).
+	// True <=> (true <=> (true <=> (true <=> (true <=> true))))
 	cs.clear();
 	cnf(term(
 			tag::Eqv,
@@ -1069,7 +1069,7 @@ void testDpll() {
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 
-	// True <=> (true <=> (true <=> (true <=> (true <=> (true <=> true))))).
+	// True <=> (true <=> (true <=> (true <=> (true <=> (true <=> true)))))
 	cs.clear();
 	cnf(term(
 			tag::Eqv,
@@ -1090,7 +1090,7 @@ void testDpll() {
 	term q = gensym(kind::Bool);
 	term r = gensym(kind::Bool);
 
-	// p & q & r.
+	// p & q & r
 	cs.clear();
 	cnf(term(tag::And, p, q, r), cs);
 	m.clear();
@@ -1100,7 +1100,7 @@ void testDpll() {
 	assert(m.at(q) == tag::True);
 	assert(m.at(r) == tag::True);
 
-	// (p & q) & r.
+	// (p & q) & r
 	cs.clear();
 	cnf(term(tag::And, term(tag::And, p, q), r), cs);
 	m.clear();
@@ -1110,7 +1110,7 @@ void testDpll() {
 	assert(m.at(q) == tag::True);
 	assert(m.at(r) == tag::True);
 
-	// p & (q & r).
+	// p & (q & r)
 	cs.clear();
 	cnf(term(tag::And, p, term(tag::And, q, r)), cs);
 	m.clear();
@@ -1120,21 +1120,21 @@ void testDpll() {
 	assert(m.at(q) == tag::True);
 	assert(m.at(r) == tag::True);
 
-	// p | q | r.
+	// p | q | r
 	cs.clear();
 	cnf(term(tag::Or, p, q, r), cs);
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 	assert(m.size());
 
-	// (p | q) | r.
+	// (p | q) | r
 	cs.clear();
 	cnf(term(tag::Or, term(tag::Or, p, q), r), cs);
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 	assert(m.size());
 
-	// p | (q | r).
+	// p | (q | r)
 	cs.clear();
 	cnf(term(tag::Or, p, term(tag::Or, q, r)), cs);
 	m.clear();
@@ -1147,11 +1147,11 @@ void test() {
 	static_assert(sizeof(type) == 4);
 	static_assert(sizeof(term) == 4);
 
-	// Strings.
+	// Strings
 	assert(keyword(intern("h")) == s_h);
 	assert(intern("abcdef", 6) == intern("abcdef"));
 
-	// Terms.
+	// Terms
 	term x = var(0, kind::Individual);
 	term y = var(0, kind::Individual);
 	term z = var(2, kind::Individual);
@@ -1167,7 +1167,7 @@ void test() {
 	term b = term(tag::And, tag::True, tag::True);
 	assert(a == b);
 
-	// Collections.
+	// Collections
 	vec<term> v;
 	v.push_back(x);
 	v.push_back(y);
@@ -1369,7 +1369,7 @@ void test() {
 	}
 	heap->check();
 
-	// Numbers.
+	// Numbers
 	term one = integer(1);
 	assert(one == integer(1));
 	assert(one != integer(2));
@@ -1409,7 +1409,7 @@ void test() {
 	assert(-integer(5) == integer(-5));
 	assert(-rational(5, 99) == rational(-5, 99));
 
-	// Sets.
+	// Sets
 	set<size_t> ints1;
 	ints1.add(1);
 	ints1.add(2);
@@ -1430,12 +1430,12 @@ void test() {
 	vals1.add(var(100, kind::Individual));
 	assert(vals1.size() == 2);
 
-	// Graphs.
+	// Graphs
 	testGraph1();
 	testGraph2();
 	testGraph3();
 
-	// Types.
+	// Types
 	map<term, term> types;
 	assert(type(term(tag::True)) == kind::Bool);
 	assert(type(integer(11)) == kind::Integer);
@@ -1443,7 +1443,7 @@ void test() {
 	assert(type(var(100, kind::Individual)) == kind::Individual);
 	assert(type(term(tag::And, tag::False, tag::True)) == kind::Bool);
 
-	// Eval.
+	// Eval
 	map<term, term> m;
 	assert(simplify(m, term(tag::Eq, integer(3), integer(3))) == tag::True);
 	assert(simplify(m, term(tag::Eq, integer(3), integer(4))) == tag::False);
@@ -1614,11 +1614,11 @@ void test() {
 	assert(simplify(m, term(tag::ToRational, a)) == term(tag::ToRational, a));
 	assert(simplify(m, term(tag::ToReal, a)) == a);
 
-	// Unification.
+	// Unification
 	testMatch();
 	testUnify();
 
-	// Free variables.
+	// Free variables
 	a = gensym(kind::Individual);
 	x = var(600, kind::Individual);
 	y = var(601, kind::Individual);
@@ -1644,17 +1644,17 @@ void test() {
 	assert(fv.size() == 1);
 	assert(*fv.begin() == y);
 
-	// Cartesian product.
+	// Cartesian product
 	testCartProduct();
 
-	// flattenTerm.
+	// flattenTerm
 	vec<term> r{integer(1), integer(2), integer(3), integer(4), integer(5)};
 	assert(flatten(tag::Add, term(tag::Add, integer(1), integer(2), term(tag::Add, integer(3), integer(4), integer(5)))) == r);
 
-	// Vectors.
+	// Vectors
 	assert(sum(vec<size_t>{1, 2, 3}) == 6);
 
-	// Parsing real numbers.
+	// Parsing real numbers
 	testReal("123", 123, 1);
 	testReal("123", 123, 1);
 	testReal("-123", -123, 1);
@@ -1666,19 +1666,19 @@ void test() {
 	testReal("123.456", 123456, 1000);
 	testReal("123.456e3", 123456, 1);
 
-	// Cnf.
+	// Cnf
 	testCnf();
 
-	// Subsumption.
+	// Subsumption
 	testSubsume();
 
-	// Vec.
+	// Vec
 	vec<int> v1{1, 2, 3};
 	for (auto& a: v1) a++;
 	vec<int> v2{2, 3, 4};
 	for (int i = 0; i != v1.size(); ++i) assert(v1[i] == v2[i]);
 
-	// Dpll.
+	// Dpll
 	testDpll();
 	heap->check();
 }

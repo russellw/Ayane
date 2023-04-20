@@ -24,25 +24,25 @@ void indent() {
 
 void stackTrace() {
 #ifdef _WIN32
-	// Process.
+	// Process
 	auto process = GetCurrentProcess();
 	SymInitialize(process, 0, 1);
 
-	// Stack frames.
+	// Stack frames
 	const int maxFrames = 64;
 	static void* stack[maxFrames];
 	auto nframes = CaptureStackBackTrace(1, maxFrames, stack, 0);
 
-	// Symbol.
+	// Symbol
 	auto si = (SYMBOL_INFO*)buf;
 	si->MaxNameLen = 0x100;
 	si->SizeOfStruct = sizeof(SYMBOL_INFO);
 
-	// Location.
+	// Location
 	IMAGEHLP_LINE64 loc;
 	loc.SizeOfStruct = sizeof loc;
 
-	// Print.
+	// Print
 	for (int i = 0; i != nframes; ++i) {
 		auto addr = (DWORD64)(stack[i]);
 		SymFromAddr(process, addr, 0, si);

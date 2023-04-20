@@ -43,23 +43,23 @@ enum
 };
 
 struct parser {
-	// Current file.
+	// Current file
 	static const char* file;
 
-	// Heap allocation of source text.
+	// Heap allocation of source text
 	static uint32_t srco;
 	uint32_t srcBytes;
 
-	// Current position in source text.
+	// Current position in source text
 	char* src;
 
-	// Current token in source text.
+	// Current token in source text
 	static char* srck;
 
-	// Current token keyword or identifier.
+	// Current token keyword or identifier
 	string* str;
 
-	// Current token, as direct char for single-char tokens, or language-specific enum otherwise.
+	// Current token, as direct char for single-char tokens, or language-specific enum otherwise
 	int tok;
 
 	// If we only needed to consider the happy path, all location variables, that keep track of which file we are parsing and where
@@ -75,7 +75,7 @@ struct parser {
 	// restored by the destructor at end of file.
 
 	// The special case where we are not in a file and err() does not need to report location, is covered automatically; at the end
-	// of the top level file, the current file will be restored to its original value, which is null.
+	// of the top level file, the current file will be restored to its original value, which is null
 	const char* old_file;
 	uint32_t old_srco;
 	char* old_srck;
@@ -83,13 +83,13 @@ struct parser {
 	parser(const char* file);
 	~parser();
 
-	// Lex an unquoted word, set symbol and set tok = k_id.
+	// Lex an unquoted word, set symbol and set tok = k_id
 	void word();
 
-	// Lex a quoted string, set symbol and leave tok unset.
+	// Lex a quoted string, set symbol and leave tok unset
 	void quote();
 
-	// Lex numbers; these functions just identify the end of a number token and set tok accordingly.
+	// Lex numbers; these functions just identify the end of a number token and set tok accordingly
 	void sign();
 	void digits();
 	void exp();

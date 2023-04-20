@@ -12,14 +12,14 @@ size_t alloc(size_t n) {
 	// TODO: optimize
 	n = roundUp(n, 8);
 
-	// Reserve the first few words of memory for unboxed atomic types.
+	// Reserve the first few words of memory for unboxed atomic types
 	static size_t top = unboxedTypes;
 
-	// Check overflow.
+	// Check overflow
 	const size_t end = 1 << typeBits;
 	if (end - top < n / 8) err("Too many types");
 
-	// Bump allocation.
+	// Bump allocation
 	auto o = top;
 #ifdef DEBUG
 	memset(typePtr(o), 0xcc, n);
@@ -53,7 +53,7 @@ bool eq(kind k, const type* s, size_t n, const Type* z) {
 }
 
 // The hash table capacity must be strictly greater than the number of types we can have, because the capacity factor needs to be
-// less than 100%.
+// less than 100%
 const size_t cap = 1 << (typeBits + 1);
 uint32_t entries[cap];
 
@@ -74,17 +74,17 @@ size_t slot(kind k, const type* s, size_t n) {
 size_t intern(kind k, const type* s, size_t n) {
 	auto i = slot(k, s, n);
 
-	// If we have seen this before, return the existing object.
+	// If we have seen this before, return the existing object
 	if (entries[i]) return entries[i];
 
-	// Make a new object.
+	// Make a new object
 	auto o = alloc(offsetof(Type, v) + n * sizeof *s);
 	auto p = typePtr(o);
 	p->k = k;
 	p->n = n;
 	memcpy(p->v, s, n * sizeof *s);
 
-	// Add to hash table.
+	// Add to hash table
 	return entries[i] = o;
 }
 } // namespace

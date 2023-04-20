@@ -65,7 +65,7 @@ term quantify(term a) {
 // but unfortunately there are important algorithms that will break unless they are represented as bags, such as the superposition
 // calculus:
 // https://stackoverflow.com/questions/29164610/why-are-clauses-multisets
-// So we represent them as bags (or lists, ignoring the order) and let the algorithms that prefer sets, discard duplicate literals.
+// So we represent them as bags (or lists, ignoring the order) and let the algorithms that prefer sets, discard duplicate literals
 clause uniq(const clause& c) {
 	vec<term> neg;
 	for (auto& a: c.first)

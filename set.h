@@ -188,7 +188,7 @@ public:
 		qty = 0;
 	}
 
-	// Capacity.
+	// Capacity
 	size_t size() const {
 		return qty;
 	}
@@ -197,7 +197,7 @@ public:
 		return !qty;
 	}
 
-	// Iterators.
+	// Iterators
 	iterator begin() const {
 		auto p = (entry*)heap->ptr(o);
 		auto e = p + cap;

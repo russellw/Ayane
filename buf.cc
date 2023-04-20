@@ -4,7 +4,7 @@ int bufi;
 char buf[4096];
 
 void bufAdd(char c) {
-	// Leave a spare byte so a null terminator can be added if necessary.
+	// Leave a spare byte so a null terminator can be added if necessary
 	if (bufi >= sizeof buf - 1) err("Token too long");
 	buf[bufi++] = c;
 }

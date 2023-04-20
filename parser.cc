@@ -14,12 +14,12 @@ uint32_t parser::srco;
 char* parser::srck;
 
 parser::parser(const char* file) {
-	// Save the old location variables, so they can be restored when this file is done.
+	// Save the old location variables, so they can be restored when this file is done
 	old_file = this->file;
 	old_srco = srco;
 	old_srck = srck;
 
-	// And start assigning the new ones.
+	// And start assigning the new ones
 	this->file = file;
 
 	// Read all the input in one go before beginning parsing, to make the parsers simpler and faster. Testing indicates
@@ -69,17 +69,17 @@ parser::parser(const char* file) {
 	}
 	srco = o;
 
-	// Make sure input is null terminated.
+	// Make sure input is null terminated
 	auto s = (char*)heap->ptr(o);
 	s[n] = 0;
 
-	// And ends in a newline, to simplify parser code.
+	// And ends in a newline, to simplify parser code
 	if (!(n && s[n - 1] == '\n')) {
 		s[n] = '\n';
 		s[n + 1] = 0;
 	}
 
-	// Start at the beginning of the input.
+	// Start at the beginning of the input
 	src = s;
 
 	// And set the current token likewise. Normally this won't matter, being overwritten as soon as the first token is lexed, but
@@ -145,16 +145,16 @@ void parser::exp() {
 void parser::num() {
 	sign();
 
-	// GMP doesn't handle unary +, so need to omit it from token.
+	// GMP doesn't handle unary +, so need to omit it from token
 	if (*srck == '+') ++srck;
 
-	// Make sure the call wasn't triggered by a sign or decimal point that fails to be actually followed by a number.
+	// Make sure the call wasn't triggered by a sign or decimal point that fails to be actually followed by a number
 	if (!isDigit(*src) && !(*src == '.' && isDigit(src[1]))) err("Expected digit");
 
-	// Integer part.
+	// Integer part
 	digits();
 
-	// Followed by various possibilities for fractional part or exponent.
+	// Followed by various possibilities for fractional part or exponent
 	switch (*src) {
 	case '.':
 		tok = k_real;
@@ -175,6 +175,6 @@ void parser::num() {
 		return;
 	}
 
-	// No, it was just an integer after all.
+	// No, it was just an integer after all
 	tok = k_integer;
 }
