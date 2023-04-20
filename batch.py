@@ -1,4 +1,3 @@
-#!/usr/bin/python
 import datetime
 import itertools
 import optparse
