@@ -78,10 +78,10 @@ struct Problem {
 	map<term, uint32_t> initialFormulas;
 
 	// What happens if a formula shows up twice in the input? This is redundant; one occurrence will be kept, and the other
-	// discarded
+	// discarded.
 
 	// What if one shows up as both an axiom and a negated conjecture? This is the same thing; one occurrence will be kept, the
-	// other discarded
+	// other discarded.
 
 	// What if one shows up as both an axiom and a conjecture? This is not redundant; it makes the problem an easy theorem. The
 	// axiom is kept, along with the negated conjecture.

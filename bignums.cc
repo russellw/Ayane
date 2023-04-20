@@ -320,7 +320,7 @@ void mpz_round(mpz_t q, mpz_t n, mpz_t d) {
 		// else
 		if (!mpz_tstbit(q, 0)) return;
 
-		// Need to adjust by one to land on an even integer, but which way? Floored division rounded down, so we need to go up
+		// Need to adjust by one to land on an even integer, but which way? Floored division rounded down, so we need to go up.
 		mpz_add_ui(q, q, 1);
 		return;
 	}

@@ -109,7 +109,7 @@ def comment_block(i):
 
     # but only if this comment block is actually a paragraph of sentences
     s = " ".join(words)
-    if s.endswith(".") and "." not in s[:-1]:
+    if s.endswith(".") and "." not in s[:-1] and "?" not in s[:-1]:
         words[k] = words[k][:-1]
 
     # word wrap
