@@ -11,13 +11,13 @@ parser.add_argument("files", nargs="+")
 args = parser.parse_args()
 
 
-def read_lines(filename):
-    with open(filename) as f:
+def read_lines(file):
+    with open(file) as f:
         return [s.rstrip("\n") for s in f]
 
 
-def write_lines(filename, lines):
-    with open(filename, "w", newline="\n") as f:
+def write_lines(file, lines):
+    with open(file, "w", newline="\n") as f:
         for s in lines:
             f.write(s + "\n")
 
@@ -158,7 +158,7 @@ def case(i, dent):
     case_mark = dent + "(case .*|default):$"
     while 1:
         if not re.match(case_mark, lines[i]):
-            raise ValueError(filename + ":" + str(i + 1) + ": case not found")
+            raise ValueError(file + ":" + str(i + 1) + ": case not found")
         while re.match(case_mark, lines[i]):
             i += 1
         if dent + "{" == lines[i]:
@@ -166,7 +166,7 @@ def case(i, dent):
             while dent + "}" != lines[i]:
                 if re.match(case_mark, lines[i]):
                     raise ValueError(
-                        filename
+                        file
                         + ":"
                         + str(i + 1)
                         + ": another case in the middle of block"
@@ -255,13 +255,13 @@ def get_multi_element(dent, i, j):
         i += 1
     m = re.match(r"(\s*).*{$", lines[i])
     if not m:
-        raise ValueError(filename + ":" + str(i + 1) + ": inconsistent syntax")
+        raise ValueError(file + ":" + str(i + 1) + ": inconsistent syntax")
     if m[1] != dent:
-        raise ValueError(filename + ":" + str(i + 1) + ": inconsistent indent")
+        raise ValueError(file + ":" + str(i + 1) + ": inconsistent indent")
     while lines[i] != dent + "}":
         i += 1
         if i > j:
-            raise ValueError(filename + ":" + str(i + 1) + ": inconsistent syntax")
+            raise ValueError(file + ":" + str(i + 1) + ": inconsistent syntax")
     i += 1
     return lines[i0:i], i
 
@@ -305,7 +305,7 @@ def sort_multi():
             i += 1
             if lines[i] == "":
                 raise ValueError(
-                    filename + ":" + str(i + 1) + ": blank line after SORT directive"
+                    file + ":" + str(i + 1) + ": blank line after SORT directive"
                 )
             if not lines[i].endswith("{") and not re.match(r"\s*//", lines[i]):
                 continue
@@ -321,9 +321,9 @@ def sort_multi():
 # top level
 
 
-def act():
+def do():
     global lines
-    lines = read_lines(filename)
+    lines = read_lines(file)
     old = lines[:]
 
     comments()
@@ -333,18 +333,18 @@ def act():
 
     if lines == old:
         return
-    print(filename)
-    write_lines(filename, lines)
+    print(file)
+    write_lines(file, lines)
 
 
 for arg in args.files:
     if os.path.isdir(arg):
         for root, dirs, files in os.walk(arg):
-            for filename in files:
-                ext = os.path.splitext(filename)[1]
+            for file in files:
+                ext = os.path.splitext(file)[1]
                 if ext in (".cc", ".h"):
-                    filename = os.path.join(root, filename)
-                    act()
+                    file = os.path.join(root, file)
+                    do()
         continue
-    filename = arg
-    act()
+    file = arg
+    do()
