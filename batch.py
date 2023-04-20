@@ -82,15 +82,6 @@ else:
 # max number of problems to attempt
 problems = problems[0 : options.number]
 
-# copy output to log file
-lname = datetime.datetime.now().strftime("%Y-%m-%d %H%M%S")
-log = open(lname, "w")
-
-
-def pr(s):
-    sys.stdout.write(s)
-    log.write(s)
-
 
 # attempt problems
 success = [
@@ -117,7 +108,7 @@ try:
         i = min(i + 1, len(h))
         h = h[:i]
         for s in h:
-            pr(s + "\n")
+            print(s)
             if not expected:
                 m = re.match(r"% Status\s+:\s+(\w+)\s*", s)
                 if m:
@@ -135,11 +126,11 @@ try:
         t = time.time() - t
 
         if out:
-            pr(out)
+            print(out, end="")
         if err:
-            pr(err)
-        pr("%0.3f" % t + " seconds\n")
-        pr("\n")
+            print(err, end="")
+        print("%0.3f" % t + " seconds")
+        print()
 
         if p.returncode not in (0, 1, -14):
             break
@@ -154,7 +145,7 @@ try:
         tried += 1
         if r in success:
             if expected and r != expected:
-                pr("Expected " + expected + "\n")
+                print("Expected " + expected)
                 exit(1)
             solved += 1
 
@@ -166,22 +157,22 @@ try:
             else:
                 hardest[r] = filename, t
 except KeyboardInterrupt:
-    pr("\n")
+    print()
 
 for r in [""] + success:
     if r in hardest:
         filename, t = hardest[r]
-        pr("Hardest " + r + "\n")
-        pr(filename + "\n")
-        pr("%0.3f seconds\n" % t)
-        pr("\n")
+        print("Hardest " + r)
+        print(filename)
+        print("%0.3f seconds" % t)
+        print()
 
 if tried:
-    pr("Success rate\n")
-    pr(str(solved) + "/" + str(tried) + "\n")
-    pr(str(float(solved) / tried * 100) + "%\n")
-    pr("\n")
+    print("Success rate")
+    print(str(solved) + "/" + str(tried))
+    print(str(float(solved) / tried * 100) + "%")
+    print()
 
-pr("Total time\n")
+print("Total time")
 t = time.time() - start
-pr(str(datetime.timedelta(seconds=t)) + "\n")
+print(datetime.timedelta(seconds=t))
