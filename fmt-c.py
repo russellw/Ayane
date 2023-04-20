@@ -318,39 +318,6 @@ def sort_multi():
 
 
 ########################################
-# blank lines before comments
-
-
-def comment_blank_lines():
-    i = 1
-    while i < len(lines):
-        m = re.match(r"(\s*)//", lines[i])
-        if m:
-            if special(lines[i]):
-                i += 1
-                continue
-            if not lines[i - 1]:
-                i += 1
-                continue
-            if re.match(r"\s*//", lines[i - 1]):
-                i += 1
-                continue
-            if re.match(r"\s*#", lines[i - 1]):
-                i += 1
-                continue
-            if lines[i - 1].endswith("{"):
-                i += 1
-                continue
-            if lines[i - 1].endswith(":"):
-                i += 1
-                continue
-            lines[i:i] = [""]
-            i += 2
-        else:
-            i += 1
-
-
-########################################
 # top level
 
 
@@ -363,7 +330,6 @@ def act():
     sort_case_blocks()
     sort_single()
     sort_multi()
-    comment_blank_lines()
 
     if lines == old:
         return
@@ -372,14 +338,13 @@ def act():
 
 
 for arg in args.files:
-    if os.path.isfile(arg):
-        filename = arg
-        act()
+    if os.path.isdir(arg):
+        for root, dirs, files in os.walk(arg):
+            for filename in files:
+                ext = os.path.splitext(filename)[1]
+                if ext in (".cc", ".h"):
+                    filename = os.path.join(root, filename)
+                    act()
         continue
-    for root, dirs, files in os.walk(arg):
-        for filename in files:
-            ext = os.path.splitext(filename)[1]
-            if ext not in (".cc", ".h"):
-                continue
-            filename = os.path.join(root, filename)
-            act()
+    filename = arg
+    act()
