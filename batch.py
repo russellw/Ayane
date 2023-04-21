@@ -19,7 +19,6 @@ parser.add_argument("-s", "--seed", help="random number seed", type=int)
 parser.add_argument("files", nargs="*")
 args = parser.parse_args()
 
-
 if args.seed is not None:
     args.random = 1
     random.seed(args.seed)
@@ -29,7 +28,6 @@ if not args.files:
 tptp = os.getenv("TPTP")
 if not tptp:
     raise Exception("TPTP environment variable not set")
-
 
 problems = []
 for arg in args.files:
@@ -55,14 +53,12 @@ if args.random:
 if args.number:
     problems = problems[0 : args.number]
 
-
 success = [
     "CounterSatisfiable",
     "Satisfiable",
     "Theorem",
     "Unsatisfiable",
 ]
-
 
 start = time.time()
 tried = 0
