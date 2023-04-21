@@ -1,6 +1,5 @@
+import argparse
 import datetime
-import itertools
-import optparse
 import os
 import random
 import re
@@ -9,81 +8,54 @@ import subprocess
 import sys
 import time
 
-
-def read_lines(filename):
-    with open(filename) as f:
-        return [s.rstrip("\n") for s in f]
-
-
-parser = optparse.OptionParser(
-    usage="Usage: %prog [options] [files]", description="Process a batch of problems"
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "-n", "--number", help="max number of problems to attempt", type=int
 )
-parser.add_option("-f", "--filter", dest="regex", help="filter filenames")
-parser.add_option(
-    "-n", "--number", type="int", help="max number of problems to attempt"
+parser.add_argument(
+    "-r", "--random", help="attempt problems in random order", action="store_true"
 )
-parser.add_option(
-    "-C", "--iters", type="int", help="iterations", default=1000,
-)
-parser.add_option(
-    "-r", "--random", action="store_true", help="attempt problems in random order"
-)
-parser.add_option("-s", "--seed", help="random number seed")
-options, args = parser.parse_args()
-
-if not args:
-    exit(0)
-
-if args == ["."]:
-    tptp = os.getenv("TPTP")
-    if not tptp:
-        print("TPTP environment variable not set")
-        exit(1)
-    args = [tptp]
-
-# skip other files and higher-order problems
-def ok(filename):
-    if os.path.splitext(filename)[1] != ".p":
-        return 0
-    for c in ["^"]:
-        if filename.find(c) >= 0:
-            return 0
-    return 1
+parser.add_argument("-s", "--seed", help="random number seed", type=int)
+parser.add_argument("files", nargs="*")
+args = parser.parse_args()
 
 
-# directory names are ok
+if args.seed is not None:
+    args.random = 1
+    random.seed(args.seed)
+if not args.files:
+    args.files = "tptp"
+
+tptp = os.getenv("TPTP")
+if not tptp:
+    raise Exception("TPTP environment variable not set")
+
+
 problems = []
-for arg in args:
-    if os.path.isfile(arg):
-        if arg.endswith(".lst"):
-            problems.extend(read_lines(arg))
-            continue
-        problems.append(arg)
+for arg in args.files:
+    if arg.lower() == "tptp":
+        arg = tptp
+    elif len(arg) == 3 and arg.isalpha():
+        arg = os.path.join(tptp, "Problems", arg.upper())
+    if os.path.isdir(arg):
+        for root, dirs, files in os.walk(arg):
+            for file in files:
+                ext = os.path.splitext(file)[1]
+                if ext == ".p" and "^" not in file:
+                    problems.append(os.path.join(root, file))
         continue
-    for root, dirs, files in os.walk(arg):
-        for filename in files:
-            filename = os.path.join(root, filename)
-            if ok(filename):
-                problems.append(filename)
-
-# filter filenames
-if options.regex:
-    problems = [s for s in problems if re.match(options.regex, s)]
-
-# order
-if options.seed:
-    options.random = 1
-    random.seed(options.seed)
-if options.random:
+    if arg.endswith(".lst"):
+        for s in open(arg):
+            if "^" not in s:
+                problems.append(s.rstrip())
+        continue
+    problems.append(arg)
+if args.random:
     random.shuffle(problems)
-else:
-    problems.sort()
-
-# max number of problems to attempt
-problems = problems[0 : options.number]
+if args.number:
+    problems = problems[0 : args.number]
 
 
-# attempt problems
 success = [
     "CounterSatisfiable",
     "Satisfiable",
@@ -98,24 +70,20 @@ solved = 0
 hardest = {}
 
 try:
-    for filename in problems:
+    for file in problems:
         expected = None
-
-        h = read_lines(filename)
-        i = 1
-        while i < len(h) and not h[i].startswith("%--"):
-            i += 1
-        i = min(i + 1, len(h))
-        h = h[:i]
-        for s in h:
+        for s in open(file):
+            if s and not s.startswith("%") or s.startswith("%--"):
+                break
             print(s)
             if not expected:
                 m = re.match(r"% Status\s+:\s+(\w+)\s*", s)
                 if m:
-                    expected = m.group(1)
+                    expected = m[1]
+        assert expected
 
         t = time.time()
-        cmd = "R:/ayane.exe", "-C" + str(options.iters), filename
+        cmd = "R:/ayane.exe", "-C" + str(options.iters), file
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,)
         out, err = p.communicate()
         out = str(out, "utf-8")
@@ -150,17 +118,17 @@ try:
             if r in hardest:
                 h = hardest[r]
                 if t > h[1]:
-                    hardest[r] = filename, t
+                    hardest[r] = file, t
             else:
-                hardest[r] = filename, t
+                hardest[r] = file, t
 except KeyboardInterrupt:
     print()
 
 for r in [""] + success:
     if r in hardest:
-        filename, t = hardest[r]
+        file, t = hardest[r]
         print("Hardest " + r)
-        print(filename)
+        print(file)
         print("%0.3f seconds" % t)
         print()
 
