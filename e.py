@@ -1,7 +1,3 @@
-# this script requires subprocess capture_output
-# which does not work with the version of /usr/bin/python3 in WSL at this time
-# run with e.g.
-# ./anaconda/bin/python ...
 import argparse
 import os
 import re
@@ -25,8 +21,8 @@ def do(file):
     print(difficulty(file), end=",", flush=True)
     # --auto makes a big difference to performance
     # don't use --auto-schedule
-    # for some reason, it breaks the timeout feature
-    cmd = "E/PROVER/eprover", "--auto", "-p", file
+    # for some reason, it breaks the subprocess timeout feature
+    cmd = "bin/eprover", "--auto", "-p", file
     try:
         p = subprocess.run(
             cmd, capture_output=True, check=True, encoding="utf-8", timeout=3
