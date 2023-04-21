@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 import inspect
 import logging
 import re

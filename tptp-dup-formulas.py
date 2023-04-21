@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # Scan TPTP problems to gather statistics on exactly how many formulas occur in multiple positions
 import argparse
 import itertools

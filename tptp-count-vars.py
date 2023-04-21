@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # Scan TPTP problems to gather statistics on max number of variables in a single formula
 # answer: 34940
 import argparse

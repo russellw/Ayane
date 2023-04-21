@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # Scan TPTP problems to gather statistics on how many can benefit from
 # boolean simplification at the preprocessing stage
 import argparse
