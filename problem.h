@@ -1,5 +1,4 @@
-enum class FormulaClass
-{
+enum class FormulaClass {
 	// SORT
 	Axiom,
 	Clause,

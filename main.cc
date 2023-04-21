@@ -26,8 +26,7 @@ VOID CALLBACK timeout(PVOID a, BOOLEAN b) {
 
 #define version "3"
 
-enum
-{
+enum {
 	dimacs = 1,
 	tptp,
 };

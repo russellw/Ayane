@@ -33,8 +33,7 @@ inline bool isWord(int c) {
 	return isAlnum(c) || c == '_';
 }
 
-enum
-{
+enum {
 	k_id = 0x100,
 	k_integer,
 	k_rational,

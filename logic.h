@@ -1,6 +1,5 @@
 // Names of the inference rules used by the program, for use in tracking inferences and printing proofs
-enum class rule
-{
+enum class rule {
 #define _(x) x,
 #include "rules.h"
 };
@@ -12,8 +11,7 @@ inline void print(rule rl) {
 }
 
 // The SZS ontologies for automated reasoning software, or at least, the subset thereof that is used here
-enum class szs
-{
+enum class szs {
 #define _(x) x,
 #include "szs.h"
 	end

@@ -13,8 +13,7 @@ struct string {
 };
 
 // Keywords are strings that are known to be important
-enum
-{
+enum {
 	s_question,
 	s_C,
 	s_T,

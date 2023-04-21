@@ -1,5 +1,4 @@
-enum class tag
-{
+enum class tag {
 #define _(x) x,
 #include "tags.h"
 	end
@@ -25,8 +24,7 @@ extern uint32_t tatoms;
 
 // TODO: reorder definitions
 struct term {
-	enum
-	{
+	enum {
 		t_compound = 1u << 31,
 		t_var = 1 << 30,
 		t_boxed = 1 << 29,

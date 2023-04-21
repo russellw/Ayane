@@ -1,5 +1,4 @@
-enum class kind
-{
+enum class kind {
 #define _(x) x,
 #include "kinds.h"
 };

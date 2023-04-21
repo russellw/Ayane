@@ -1,8 +1,7 @@
 #include "main.h"
 
 namespace {
-enum
-{
+enum {
 	k_distinctObj = parser_k,
 	k_dollarWord,
 	k_eqv,

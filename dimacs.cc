@@ -1,8 +1,9 @@
 #include "main.h"
 
 namespace {
-enum
-{ k_zero = parser_k, };
+enum {
+	k_zero = parser_k,
+};
 
 struct parser1: parser {
 	Problem& problem;
