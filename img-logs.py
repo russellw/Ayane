@@ -170,7 +170,7 @@ def do(file):
             y = y2
 
     pixels = [(0, 0, 0)] * (x2 * y2)
-    for (x, y, s) in squares:
+    for x, y, s in squares:
         pixels[y * x2 + x] = hash_rgb(s)
 
     image = Image.new("RGB", (x2, y2))
