@@ -16,6 +16,7 @@ parser.add_argument(
     "-r", "--random", help="attempt problems in random order", action="store_true"
 )
 parser.add_argument("-s", "--seed", help="random number seed", type=int)
+parser.add_argument("-t", "--time", help="time limit per problem", type=float)
 parser.add_argument("files", nargs="*")
 args = parser.parse_args()
 
@@ -23,7 +24,7 @@ if args.seed is not None:
     args.random = 1
     random.seed(args.seed)
 if not args.files:
-    args.files = "tptp"
+    args.files = ["tptp"]
 
 tptp = os.getenv("TPTP")
 if not tptp:
@@ -69,7 +70,8 @@ try:
     for file in problems:
         expected = None
         for s in open(file):
-            if s and not s.startswith("%") or s.startswith("%--"):
+            s = s.rstrip()
+            if s and not s.startswith("%"):
                 break
             print(s)
             if not expected:
@@ -79,38 +81,29 @@ try:
         assert expected
 
         t = time.time()
-        cmd = "R:/ayane.exe", "-C" + str(options.iters), file
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,)
+        cmd = ["R:/ayane.exe", file]
+        if args.time:
+            cmd.append("-t=" + str(args.time))
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
         out, err = p.communicate()
         out = str(out, "utf-8")
-        err = str(err, "utf-8")
         t = time.time() - t
 
-        if out:
-            print(out, end="")
-        if err:
-            print(err, end="")
+        print(out, end="")
         print("%0.3f" % t + " seconds")
         print()
 
-        if p.returncode not in (0, 1, -14):
-            break
+        assert p.returncode in (0, -14)
 
         r = ""
         m = re.match("% SZS status (\w+)", out)
         if m:
-            r = m.group(1)
-            if r not in success:
-                r = ""
+            r = m[1]
 
         tried += 1
         if r in success:
-            if expected and r != expected:
-                print("Expected " + expected)
-                exit(1)
+            assert r == expected
             solved += 1
-
-        if r in [""] + success:
             if r in hardest:
                 h = hardest[r]
                 if t > h[1]:
@@ -120,7 +113,7 @@ try:
 except KeyboardInterrupt:
     print()
 
-for r in [""] + success:
+for r in success:
     if r in hardest:
         file, t = hardest[r]
         print("Hardest " + r)
