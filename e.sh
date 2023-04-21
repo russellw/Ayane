@@ -1,1 +1,1 @@
-~/E/PROVER/eprover --auto-schedule --proof-object $@
+bin/eprover --auto-schedule --proof-object $@

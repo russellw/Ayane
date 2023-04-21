@@ -26,8 +26,8 @@ def do(file):
     print(file)
     # --auto makes a big difference to performance
     # don't use --auto-schedule
-    # for some reason, it breaks the timeout feature
-    cmd = "E/PROVER/eprover", "--auto", "-l", "1", file
+    # for some reason, it breaks the subprocess timeout feature
+    cmd = "bin/eprover", "--auto", "-l", "1", file
     file = replace_dir(file, "logs-e")
     file = replace_ext(file, ".log")
     out = open(file, "w")
