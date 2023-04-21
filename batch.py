@@ -16,7 +16,9 @@ parser.add_argument(
     "-r", "--random", help="attempt problems in random order", action="store_true"
 )
 parser.add_argument("-s", "--seed", help="random number seed", type=int)
-parser.add_argument("-t", "--time", help="time limit per problem", type=float)
+parser.add_argument(
+    "-t", "--time", help="time limit per problem", type=float, default=60.0
+)
 parser.add_argument("files", nargs="*")
 args = parser.parse_args()
 
@@ -34,8 +36,13 @@ problems = []
 for arg in args.files:
     if arg.lower() == "tptp":
         arg = tptp
-    elif len(arg) == 3 and arg.isalpha():
-        arg = os.path.join(tptp, "Problems", arg.upper())
+    elif re.match(r"[A-Za-z][A-Za-z][A-Za-z]$", arg):
+        arg = arg.upper()
+        arg = os.path.join(tptp, "Problems", arg)
+    elif re.match(r"[A-Za-z][A-Za-z][A-Za-z]\d\d\d.\d+$", arg):
+        arg = arg.upper()
+        arg = os.path.join(tptp, "Problems", arg[:3], arg + ".p")
+
     if os.path.isdir(arg):
         for root, dirs, files in os.walk(arg):
             for file in files:
@@ -93,7 +100,9 @@ try:
         print("%0.3f" % t + " seconds")
         print()
 
-        assert p.returncode in (0, -14)
+        if p.returncode == 1:
+            continue
+        assert p.returncode in (0, 2)
 
         r = ""
         m = re.match("% SZS status (\w+)", out)

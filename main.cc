@@ -17,9 +17,7 @@ LONG WINAPI handler(struct _EXCEPTION_POINTERS* ExceptionInfo) {
 }
 
 VOID CALLBACK timeout(PVOID a, BOOLEAN b) {
-	// On Linux the exit code associated with timeout is 128+SIGALRM. On Windows, this exit code serves as well as any, and means a
-	// script that calls the program can use the same code to check for timeout on both platforms.
-	ExitProcess(128 + 14);
+	ExitProcess(2);
 }
 } // namespace
 #else
