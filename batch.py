@@ -88,9 +88,7 @@ try:
         assert expected
 
         t = time.time()
-        cmd = ["R:/ayane.exe", file]
-        if args.time:
-            cmd.append("-t=" + str(args.time))
+        cmd = "R:/ayane.exe", "-t", str(args.time), file
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
         out, err = p.communicate()
         out = str(out, "utf-8")

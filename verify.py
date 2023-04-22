@@ -1,5 +1,6 @@
 import argparse
 import os
+import random
 import re
 import subprocess
 
@@ -118,11 +119,25 @@ def quantify(s, f):
 
 
 for file in problems:
+    # header
+    expected = None
+    for s in open(file):
+        s = s.rstrip()
+        if s and not s.startswith("%"):
+            break
+        print(s)
+        if not expected:
+            m = re.match(r"% Status\s+:\s+(\w+)\s*", s)
+            if m:
+                expected = m[1]
+    assert expected
+
     # attempt proof
-    cmd = ["./ayane", "-t", "60", file]
+    cmd = "./ayane", "-t", str(args.time), file
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     out, err = p.communicate()
     out = str(out, "utf-8")
+    print(out, end="")
 
     # clauses
     clauses = {}
@@ -164,6 +179,8 @@ for file in problems:
     # verify each clause
     for c in clauses.values():
         if c.fm is not None:
+            print(c)
+
             f = open("tmp.p", "w")
             for d in c.fm:
                 f.write("tff(")
@@ -187,3 +204,5 @@ for file in problems:
                 raise ValueError(str(p.returncode))
             if "Proof found" not in out:
                 raise ValueError(out)
+
+    print()
