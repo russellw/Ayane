@@ -195,6 +195,7 @@ for file in problems:
             f.write(")).\n")
             f.close()
 
+            # should --auto-schedule be used here?
             cmd = "bin/eprover", "--auto", "tmp.p"
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
             out, err = p.communicate()
