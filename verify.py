@@ -80,9 +80,9 @@ def quantify(s, f):
 def verify(filename):
     cmd = ["./ayane", "-t", "60", filename]
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    stdout, stderr = p.communicate()
-    stdout = str(stdout, "utf-8")
-    for s in stdout.splitlines():
+    out, err = p.communicate()
+    out = str(out, "utf-8")
+    for s in out.splitlines():
         m = re.match(r"cnf\((\w+), plain, (.+), introduced\(definition\)\)\.$", s)
         if m:
             Formula(m[1], m[2])
@@ -126,22 +126,15 @@ def verify(filename):
             f.write(")).\n")
             f.close()
 
-            p = subprocess.Popen(
-                ["bin/eprover", "tmp.p"],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            )
-            stdout, stderr = p.communicate()
-            stdout = str(stdout, "utf-8")
-            stderr = str(stderr, "utf-8")
-            if stderr:
-                print(stderr, end="")
-                exit(1)
+            cmd = "bin/eprover", "--auto", "tmp.p"
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+            out, err = p.communicate()
+            out = str(out, "utf-8")
             if p.returncode:
-                raise Exception(str(p.returncode))
-            if "Proof found" not in stdout:
-                print(stdout)
-                exit(1)
+                print(out, end="")
+                raise ValueError(str(p.returncode))
+            if "Proof found" not in out:
+                raise ValueError(out)
 
 
 for arg in args.files:
