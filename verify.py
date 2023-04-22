@@ -124,16 +124,10 @@ def quantify(s, f):
 
 
 def verify(filename):
-    p = subprocess.Popen(
-        ["./ayane", "-t", "60", filename],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
+    cmd = ["./ayane", "-t", "60", filename]
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     stdout, stderr = p.communicate()
     stdout = str(stdout, "utf-8")
-    stderr = str(stderr, "utf-8")
-    if stderr:
-        print(stderr, end="")
     for s in stdout.splitlines():
         # definition formula
         m = re.match(
@@ -167,6 +161,9 @@ def verify(filename):
         fm = []
         for name in c.fm:
             if name not in formulad:
+                print(stdout)
+                print(formulas)
+                print(formulad)
                 raise Exception(name)
             fm.append(formulad[name])
         c.fm = fm
