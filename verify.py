@@ -33,16 +33,11 @@ class Formula:
         return self.name
 
 
-def getVars(s):
+def vars(s):
     r = set()
     i = 0
     while i < len(s):
         c = s[i]
-
-        # space
-        if c.isspace():
-            i += 1
-            continue
 
         # variable
         if c.isupper():
@@ -53,7 +48,7 @@ def getVars(s):
             continue
 
         # word
-        if c.isalpha() or c == "$":
+        if c.isalpha():
             i += 1
             while s[i].isalnum() or s[i] == "_":
                 i += 1
@@ -69,45 +64,13 @@ def getVars(s):
             i += 1
             continue
 
-        # number
-        if c.isdigit() or (c == "-" and s[i + 1].isdigit()):
-            # integer part
-            i += 1
-            while s[i].isalnum():
-                i += 1
-
-            # rational
-            if s[i] == "/":
-                i += 1
-                while s[i].isdigit():
-                    i += 1
-
-            # real
-            else:
-                if s[i] == ".":
-                    i += 1
-                    while s[i].isalnum():
-                        i += 1
-                if s[i - 1] in ("e", "E") and s[i] in ("+", "-"):
-                    i += 1
-                    while s[i].isdigit():
-                        i += 1
-
-            continue
-
-        # punctuation
-        if s[i : i + 3] in ("<=>", "<~>"):
-            i += 3
-            continue
-        if s[i : i + 2] in ("!=", "=>", "<=", "~&", "~|"):
-            i += 2
-            continue
+        # etc
         i += 1
     return r
 
 
 def quantify(s, f):
-    r = getVars(s)
+    r = vars(s)
     if not r:
         f.write(s)
         return
