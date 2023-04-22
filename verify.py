@@ -203,7 +203,7 @@ for file in problems:
             if p.returncode:
                 print(out, end="")
                 raise Exception(str(p.returncode))
-            m = re.match(r"SZS status (\w+)", out)
+            m = re.search(r"SZS status (\w+)", out)
             if m and m[1] in ("Unsatisfiable", "Theorem"):
                 continue
             raise Exception(out)
