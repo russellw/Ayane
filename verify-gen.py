@@ -13,7 +13,7 @@ logger.setLevel(logging.DEBUG)
 # numbers larger than 2000 silently fail
 sys.setrecursionlimit(2000)
 
-subprocess.check_call(["make", "debug"])
+subprocess.check_call("make")
 
 
 def dbg(a):

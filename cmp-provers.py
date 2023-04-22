@@ -4,7 +4,7 @@ import re
 import subprocess
 import sys
 
-subprocess.check_call(["make", "debug"])
+subprocess.check_call("make")
 
 
 def solved(r):

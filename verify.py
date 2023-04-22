@@ -7,7 +7,7 @@ parser = argparse.ArgumentParser(description="Run prover and verify proof")
 parser.add_argument("files", nargs="+")
 args = parser.parse_args()
 
-subprocess.check_call(["make", "debug"])
+subprocess.check_call("make")
 
 
 def read_lines(filename):
