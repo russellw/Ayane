@@ -150,7 +150,7 @@ for file in problems:
             continue
 
         m = re.match(
-            r"cnf\((\w+), plain, (.+), inference\((cnf),\[status\(esa\)\],\[(\w+)\]\)\)\.",
+            r"cnf\((\w+), plain, (.+), inference\((cnf),\[status\(esa\)\],\[(\w+)\]\)\)\.$",
             s,
         )
         if m:
@@ -160,7 +160,7 @@ for file in problems:
             continue
 
         m = re.match(
-            r"cnf\((\w+), plain, (.+), inference\(\w+,\[status\(thm\)\],\[(\w+)(,\w+)?\]\)\)\.",
+            r"cnf\((\w+), plain, (.+), inference\(\w+,\[status\(thm\)\],\[(\w+)(,\w+)?\]\)\)\.$",
             s,
         )
         if m:
@@ -203,7 +203,9 @@ for file in problems:
             if p.returncode:
                 print(out, end="")
                 raise Exception(str(p.returncode))
-            if "Proof found" not in out:
-                raise Exception(out)
+            m = re.match(r"SZS status (\w+)", out)
+            if m and m[1] in ("Unsatisfiable", "Theorem"):
+                continue
+            raise Exception(out)
 
     print()
