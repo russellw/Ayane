@@ -15,27 +15,23 @@ def read_lines(filename):
         return [s.rstrip("\n") for s in f]
 
 
-formulas = []
-formulad = {}
+formulas = {}
 
 
 class Formula:
-    def __init__(self, name, term, rl, fm, status):
+    def __init__(self, name, term, fm=None):
         self.name = name
         self.term = term
-        self.rl = rl
         self.fm = fm
-        self.status = status
-        formulas.append(self)
-        formulad[name] = self
+        formulas[name] = self
 
     def __repr__(self):
         return self.name
 
 
 def vars(s):
-    r = set()
     i = 0
+    r = set()
     while i < len(s):
         c = s[i]
 
@@ -50,7 +46,7 @@ def vars(s):
         # word
         if c.isalpha():
             i += 1
-            while s[i].isalnum() or s[i] == "_":
+            while i < len(s) and (s[i].isalnum() or s[i] == "_"):
                 i += 1
             continue
 
@@ -75,12 +71,7 @@ def quantify(s, f):
         f.write(s)
         return
     f.write("![")
-    more = 0
-    for x in r:
-        if more:
-            f.write(",")
-        more = 1
-        f.write(x)
+    f.write(",".join(r))
     f.write("]:(")
     f.write(s)
     f.write(")")
@@ -92,81 +83,65 @@ def verify(filename):
     stdout, stderr = p.communicate()
     stdout = str(stdout, "utf-8")
     for s in stdout.splitlines():
-        # definition formula
+        m = re.match(r"cnf\((\w+), plain, (.+), introduced\(definition\)\)\.$", s)
+        if m:
+            Formula(m[1], m[2])
+            continue
+
         m = re.match(
-            r"tff\((\w+), plain, (.+), introduced\(definition\)\)\.",
+            r"cnf\((\w+), plain, (.+), inference\((cnf),\[status\(esa\)\],\[(\w+)\]\)\)\.",
             s,
         )
         if m:
-            name = m[1]
-            term = m[2]
-            rl = "def"
-            fm = []
-            c = Formula(name, term, rl, fm, "axiom")
+            Formula(m[1], m[2])
             continue
 
-        # derived clause
         m = re.match(
-            r"cnf\((\w+), plain, (.+), inference\((\w+),\[status\(thm\)\],\[(\w+)(,\w+)?\]\)\)\.",
+            r"cnf\((\w+), plain, (.+), inference\(\w+,\[status\(thm\)\],\[(\w+)(,\w+)?\]\)\)\.",
             s,
         )
         if m:
-            name = m[1]
-            term = m[2]
-            rl = m[3]
-            fm = [m[4]]
-            if m[5]:
-                fm.append(m[5][1:])
-            c = Formula(name, term, rl, fm, "thm")
-            continue
+            fm = [m[3]]
+            if m[4]:
+                fm.append(m[4][1:])
+            Formula(m[1], m[2], fm)
 
-    for c in formulas:
-        fm = []
-        for name in c.fm:
-            if name not in formulad:
-                print(stdout)
-                print(formulas)
-                print(formulad)
-                raise Exception(name)
-            fm.append(formulad[name])
-        c.fm = fm
+    for c in formulas.values():
+        if c.fm is not None:
+            c.fm = [formulas[name] for name in c.fm]
 
-    for c in formulas:
-        if c.status != "thm":
-            continue
-        if c.term == "$false":
-            continue
-
-        f = open("tmp.p", "w")
-        for d in c.fm:
+    for c in formulas.values():
+        if c.fm is not None:
+            f = open("tmp.p", "w")
+            for d in c.fm:
+                f.write("tff(")
+                f.write(d.name)
+                f.write(",plain,")
+                quantify(d.term, f)
+                f.write(").\n")
             f.write("tff(")
-            f.write(d.name)
-            f.write(",plain,")
-            quantify(d.term, f)
-            f.write(").\n")
-        f.write("tff(")
-        f.write(c.name)
-        f.write(",plain,~(")
-        quantify(c.term, f)
-        f.write(")).\n")
-        f.close()
+            f.write(c.name)
+            f.write(",plain,~(")
+            quantify(c.term, f)
+            f.write(")).\n")
+            f.close()
 
-        p = subprocess.Popen(
-            ["bin/eprover", "tmp.p"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-        stdout, stderr = p.communicate()
-        stdout = str(stdout, "utf-8")
-        stderr = str(stderr, "utf-8")
-        if stderr:
-            print(stderr, end="")
-            exit(1)
-        if p.returncode:
-            raise Exception(str(p.returncode))
-        if "Proof found" not in stdout:
-            print(stdout)
-            exit(1)
+            p = subprocess.Popen(
+                ["bin/eprover", "tmp.p"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            stdout, stderr = p.communicate()
+            stdout = str(stdout, "utf-8")
+            stderr = str(stderr, "utf-8")
+            if stderr:
+                print(stderr, end="")
+                exit(1)
+            if p.returncode:
+                raise Exception(str(p.returncode))
+            if "Proof found" not in stdout:
+                print(stdout)
+                exit(1)
 
 
 for arg in args.files:
