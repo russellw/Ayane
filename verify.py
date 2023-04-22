@@ -79,7 +79,7 @@ def vars(s):
         # variable
         if c.isupper():
             j = i
-            while s[i].isalnum() or s[i] == "_":
+            while i < len(s) and (s[i].isalnum() or s[i] == "_"):
                 i += 1
             r.add(s[j:i])
             continue
@@ -179,7 +179,7 @@ for file in problems:
     # verify each clause
     for c in clauses.values():
         if c.fm is not None:
-            print(c)
+            print(c, c.term, c.fm)
 
             f = open("tmp.p", "w")
             for d in c.fm:
@@ -202,8 +202,8 @@ for file in problems:
             out = str(out, "utf-8")
             if p.returncode:
                 print(out, end="")
-                raise ValueError(str(p.returncode))
+                raise Exception(str(p.returncode))
             if "Proof found" not in out:
-                raise ValueError(out)
+                raise Exception(out)
 
     print()
