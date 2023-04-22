@@ -3,27 +3,67 @@ import os
 import re
 import subprocess
 
-parser = argparse.ArgumentParser(description="Run prover and verify proof")
-parser.add_argument("files", nargs="+")
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "-n", "--number", help="max number of problems to attempt", type=int
+)
+parser.add_argument(
+    "-r", "--random", help="attempt problems in random order", action="store_true"
+)
+parser.add_argument("-s", "--seed", help="random number seed", type=int)
+parser.add_argument(
+    "-t", "--time", help="time limit per problem", type=float, default=60.0
+)
+parser.add_argument("files", nargs="*")
 args = parser.parse_args()
+
+if args.seed is not None:
+    args.random = 1
+    random.seed(args.seed)
+if not args.files:
+    args.files = ["tptp"]
+
+tptp = os.getenv("TPTP")
+if not tptp:
+    raise Exception("TPTP environment variable not set")
+
+problems = []
+for arg in args.files:
+    if arg.lower() == "tptp":
+        arg = tptp
+    elif re.match(r"[A-Za-z][A-Za-z][A-Za-z]$", arg):
+        arg = arg.upper()
+        arg = os.path.join(tptp, "Problems", arg)
+    elif re.match(r"[A-Za-z][A-Za-z][A-Za-z]\d\d\d.\d+$", arg):
+        arg = arg.upper()
+        arg = os.path.join(tptp, "Problems", arg[:3], arg + ".p")
+
+    if os.path.isdir(arg):
+        for root, dirs, files in os.walk(arg):
+            for file in files:
+                ext = os.path.splitext(file)[1]
+                if ext == ".p" and "^" not in file:
+                    problems.append(os.path.join(root, file))
+        continue
+    if arg.endswith(".lst"):
+        for s in open(arg):
+            if "^" not in s:
+                problems.append(s.rstrip())
+        continue
+    problems.append(arg)
+if args.random:
+    random.shuffle(problems)
+if args.number:
+    problems = problems[0 : args.number]
 
 subprocess.check_call("make")
 
 
-def read_lines(filename):
-    with open(filename) as f:
-        return [s.rstrip("\n") for s in f]
-
-
-formulas = {}
-
-
-class Formula:
+class Clause:
     def __init__(self, name, term, fm=None):
         self.name = name
         self.term = term
         self.fm = fm
-        formulas[name] = self
 
     def __repr__(self):
         return self.name
@@ -77,15 +117,21 @@ def quantify(s, f):
     f.write(")")
 
 
-def verify(filename):
-    cmd = ["./ayane", "-t", "60", filename]
+for file in problems:
+    # attempt proof
+    cmd = ["./ayane", "-t", "60", file]
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     out, err = p.communicate()
     out = str(out, "utf-8")
+
+    # clauses
+    clauses = {}
     for s in out.splitlines():
         m = re.match(r"cnf\((\w+), plain, (.+), introduced\(definition\)\)\.$", s)
         if m:
-            Formula(m[1], m[2])
+            name = m[1]
+            term = m[2]
+            clauses[name] = Clause(name, term)
             continue
 
         m = re.match(
@@ -93,7 +139,9 @@ def verify(filename):
             s,
         )
         if m:
-            Formula(m[1], m[2])
+            name = m[1]
+            term = m[2]
+            clauses[name] = Clause(name, term)
             continue
 
         m = re.match(
@@ -101,16 +149,20 @@ def verify(filename):
             s,
         )
         if m:
+            name = m[1]
+            term = m[2]
             fm = [m[3]]
             if m[4]:
                 fm.append(m[4][1:])
-            Formula(m[1], m[2], fm)
+            clauses[name] = Clause(name, term, fm)
 
-    for c in formulas.values():
+    # resolve clause names
+    for c in clauses.values():
         if c.fm is not None:
-            c.fm = [formulas[name] for name in c.fm]
+            c.fm = [clauses[name] for name in c.fm]
 
-    for c in formulas.values():
+    # verify each clause
+    for c in clauses.values():
         if c.fm is not None:
             f = open("tmp.p", "w")
             for d in c.fm:
@@ -135,20 +187,3 @@ def verify(filename):
                 raise ValueError(str(p.returncode))
             if "Proof found" not in out:
                 raise ValueError(out)
-
-
-for arg in args.files:
-    if not os.path.isfile(arg):
-        for root, dirs, files in os.walk(arg):
-            for filename in files:
-                ext = os.path.splitext(filename)[1]
-                if ext != ".p":
-                    continue
-                verify(os.path.join(root, filename))
-        continue
-    ext = os.path.splitext(arg)[1]
-    if ext == ".lst":
-        for filename in read_lines(arg):
-            verify(filename)
-        continue
-    verify(arg)
