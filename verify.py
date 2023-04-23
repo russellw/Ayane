@@ -176,26 +176,25 @@ for file in problems:
         if c.fm is not None:
             print(c, c.term, c.fm)
 
-            f = open("tmp.p", "w")
-            for d in c.fm:
-                f.write("tff(")
-                f.write(d.name)
-                f.write(",plain,")
-                f.write(quantify(d.term))
-                f.write(").\n")
-            f.write("tff(")
-            f.write(c.name)
-            f.write(",plain,~(")
-            f.write(quantify(c.term))
-            f.write(")).\n")
-            f.close()
-
             # should --auto-schedule be used here?
             cmd = "bin/eprover", "--auto", "tmp.p"
-            p = subprocess.run(cmd, capture_output=True, check=True, encoding="utf-8")
+
+            v = []
+            for d in c.fm:
+                v.append(f"tff({d.name}, plain, {quantify(d.term)}).")
+            v.append(f"tff({c.name}, plain, ~({quantify(c.term)})).")
+
+            p = subprocess.run(
+                cmd,
+                input="\n".join(v),
+                capture_output=True,
+                check=True,
+                encoding="utf-8",
+            )
+
             m = re.search(r"SZS status (\w+)", p.stdout)
             if m and m[1] in ("Unsatisfiable", "Theorem"):
                 continue
-            raise Exception(out)
+            raise Exception(p.stdout)
 
     print()
