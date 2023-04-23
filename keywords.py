@@ -1,6 +1,5 @@
 words = [
     "?",
-    "C",
     "T",
     "V",
     "ax",
@@ -87,7 +86,7 @@ def san(s):
 
 
 xs = open("strings.h").readlines()
-i = find("enum") + 2
+i = find("enum") + 1
 j = end(i)
 ys = []
 for y in words:
