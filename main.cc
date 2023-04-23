@@ -87,7 +87,6 @@ double optDouble(int argc, const char** argv, int& i, const char* oa) {
 bool cnfOnly;
 std::vector<const char*> files;
 int inputLanguage;
-uint64_t iterLimit = ~(uint64_t)0;
 size_t memLimit = (size_t)1 << (sizeof(void*) == 4 ? 30 : 31);
 int outputLanguage;
 ///
@@ -140,10 +139,6 @@ void parse(int argc, const char** argv) {
 
 		// Option
 		switch (keyword(intern(buf, bufi))) {
-		case s_C:
-			// TODO is this actually useful?
-			iterLimit = optDouble(argc, argv, i, oa);
-			continue;
 		case s_cnf:
 			cnfOnly = 1;
 			continue;
@@ -175,7 +170,6 @@ void parse(int argc, const char** argv) {
 		case s_question:
 			printf(
 				// SORT
-				"-C count      Max iterations of main superposition loop\n"
 				"-cnf          Convert problem to clause normal form\n"
 				"-dimacs       Set DIMACS as input and output format\n"
 				"-dimacs-in    Set DIMACS as input format\n"
@@ -298,7 +292,7 @@ int main(int argc, const char** argv) {
 
 		// Solve
 		Proof proof;
-		auto r = superposn(cs, proof, iterLimit);
+		auto r = superposn(cs, proof);
 
 		// The SZS ontology uses different result values depending on whether the problem contains a conjecture
 		if (problem.hasConjecture) switch (r) {

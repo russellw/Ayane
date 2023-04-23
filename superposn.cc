@@ -378,7 +378,7 @@ struct doing {
 		}
 	}
 
-	doing(const set<clause>& cs, Proof& proof, uint64_t iterLimit): order(cs), proof(proof) {
+	doing(const set<clause>& cs, Proof& proof): order(cs), proof(proof) {
 		// First-order logic is not complete on arithmetic. The conservative approach to this is that if any clause (after
 		// simplification, which includes evaluation of ground terms) contains terms of numeric type, we mark the proof search
 		// incomplete, so that failure to derive a contradiction, means the result is inconclusive rather than satisfiable.
@@ -395,7 +395,7 @@ struct doing {
 		set<clause> active;
 
 		// Saturation proof procedure tries to perform all possible derivations until it derives a contradiction
-		for (uint64_t i = 0; i != iterLimit; ++i) {
+		for (;;) {
 			// If there are no more clauses in the queue, the problem is satisfiable, unless completeness was lost
 			if (passive.empty()) return;
 			incStat("superposn main loop");
@@ -427,12 +427,11 @@ struct doing {
 					superposn(g, c);
 				}
 		}
-		result = szs::Timeout;
 	}
 };
 } // namespace
 
-szs superposn(const set<clause>& cs, Proof& proof, uint64_t iterLimit) {
-	doing _(cs, proof, iterLimit);
+szs superposn(const set<clause>& cs, Proof& proof) {
+	doing _(cs, proof);
 	return _.result;
 }
