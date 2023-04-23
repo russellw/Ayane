@@ -141,6 +141,7 @@ void parse(int argc, const char** argv) {
 		// Option
 		switch (keyword(intern(buf, bufi))) {
 		case s_C:
+			// TODO is this actually useful?
 			iterLimit = optDouble(argc, argv, i, oa);
 			continue;
 		case s_cnf:
