@@ -778,7 +778,7 @@ void dfunctor(const char* op, term a) {
 	print(op);
 	putchar('(');
 	for (size_t i = 1; i != a.size(); ++i) {
-		if (i) putchar(',');
+		if (i > 1) putchar(',');
 		pr(a[i]);
 	}
 	putchar(')');
