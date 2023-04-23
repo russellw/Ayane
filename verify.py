@@ -177,7 +177,7 @@ for file in problems:
             print(c, c.term, c.fm)
 
             # should --auto-schedule be used here?
-            cmd = "bin/eprover", "--auto", "tmp.p"
+            cmd = "bin/eprover", "--auto"
 
             v = []
             for d in c.fm:
