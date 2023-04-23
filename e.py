@@ -84,7 +84,8 @@ for file in problems:
         # if p.returncode == 3:
         #    print()
         #    continue
-        assert p.returncode in (0, 1)
+        if p.returncode not in (0, 1, 9):
+            raise Exception(p.returncode)
 
         print("%0.3f" % (time.time() - t), end="\t")
         print(len(p.stdout.splitlines()), end="\t")
