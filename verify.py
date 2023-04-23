@@ -197,13 +197,8 @@ for file in problems:
 
             # should --auto-schedule be used here?
             cmd = "bin/eprover", "--auto", "tmp.p"
-            p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-            out, err = p.communicate()
-            out = str(out, "utf-8")
-            if p.returncode:
-                print(out, end="")
-                raise Exception(str(p.returncode))
-            m = re.search(r"SZS status (\w+)", out)
+            p = subprocess.run(cmd, capture_output=True, check=True, encoding="utf-8")
+            m = re.search(r"SZS status (\w+)", p.stdout)
             if m and m[1] in ("Unsatisfiable", "Theorem"):
                 continue
             raise Exception(out)
