@@ -106,16 +106,11 @@ def vars(s):
     return r
 
 
-def quantify(s, f):
+def quantify(s):
     r = vars(s)
     if not r:
-        f.write(s)
-        return
-    f.write("![")
-    f.write(",".join(r))
-    f.write("]:(")
-    f.write(s)
-    f.write(")")
+        return s
+    return f"![{','.join(r)}]: ({s})"
 
 
 for file in problems:
@@ -186,12 +181,12 @@ for file in problems:
                 f.write("tff(")
                 f.write(d.name)
                 f.write(",plain,")
-                quantify(d.term, f)
+                f.write(quantify(d.term))
                 f.write(").\n")
             f.write("tff(")
             f.write(c.name)
             f.write(",plain,~(")
-            quantify(c.term, f)
+            f.write(quantify(c.term))
             f.write(")).\n")
             f.close()
 
