@@ -43,7 +43,7 @@ for arg in args.files:
         for root, dirs, files in os.walk(arg):
             for file in files:
                 ext = os.path.splitext(file)[1]
-                if ext == ".p" and "^" not in file:
+                if ext == ".p" and "^" not in file and "_" not in file:
                     problems.append(os.path.join(root, file))
         continue
     if arg.endswith(".lst"):
