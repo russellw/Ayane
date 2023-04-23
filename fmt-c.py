@@ -108,6 +108,7 @@ def comment_block(i):
         words[k] += "."
 
     # but only if this comment block is actually a paragraph of sentences
+    # TODO: maybe just unconditionally drop trailing periods?
     s = " ".join(words)
     if s.endswith(".") and "." not in s[:-1] and "?" not in s[:-1]:
         words[k] = words[k][:-1]
