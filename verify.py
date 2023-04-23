@@ -57,7 +57,7 @@ if args.random:
 if args.number:
     problems = problems[0 : args.number]
 
-subprocess.check_call("make")
+subprocess.check_output("make")
 
 
 class Clause:
@@ -184,17 +184,10 @@ for file in problems:
                 v.append(f"tff({d.name}, plain, {quantify(d.term)}).")
             v.append(f"tff({c.name}, plain, ~({quantify(c.term)})).")
 
-            p = subprocess.run(
-                cmd,
-                input="\n".join(v),
-                capture_output=True,
-                check=True,
-                encoding="utf-8",
-            )
+            s = subprocess.check_output(cmd, input="\n".join(v), encoding="utf-8")
 
-            m = re.search(r"SZS status (\w+)", p.stdout)
-            if m and m[1] in ("Unsatisfiable", "Theorem"):
-                continue
-            raise Exception(p.stdout)
+            m = re.search(r"SZS status (\w+)", s)
+            if not (m and m[1] in ("Unsatisfiable", "Theorem")):
+                raise Exception(s)
 
     print()
