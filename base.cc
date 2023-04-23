@@ -14,6 +14,7 @@ const char* basename(const char* file) {
 }
 
 void err(const char* msg) {
+	// TODO: different exit codes for different kinds of errors?
 	if (parser::file) {
 		size_t line = 1;
 		for (auto s = (char*)heap->ptr(parser::srco); s != parser::srck; ++s)

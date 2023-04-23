@@ -17,7 +17,7 @@ LONG WINAPI handler(struct _EXCEPTION_POINTERS* ExceptionInfo) {
 }
 
 VOID CALLBACK timeout(PVOID a, BOOLEAN b) {
-	ExitProcess(2);
+	ExitProcess(7);
 }
 } // namespace
 #else

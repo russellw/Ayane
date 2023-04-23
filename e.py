@@ -81,9 +81,10 @@ for file in problems:
         p = subprocess.run(
             cmd, capture_output=True, encoding="utf-8", timeout=args.time
         )
-        if p.returncode == 3:
-            print()
-            continue
+        # if p.returncode == 3:
+        #    print()
+        #    continue
+        assert p.returncode in (0, 1)
 
         print("%0.3f" % (time.time() - t), end="\t")
         print(len(p.stdout.splitlines()), end="\t")
