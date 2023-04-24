@@ -155,7 +155,6 @@ for file in problems:
             clauses[name] = Clause(name, term, fm)
 
     # verify each clause
-    n = 0
     for c in clauses.values():
         if c.fm:
             cmd = "./ayane", "-tptp"
@@ -164,15 +163,18 @@ for file in problems:
             for d in c.fm:
                 v.append(f"tff({d.name}, plain, {quantify(d.term)}).")
             v.append(f"tff({c.name}, plain, ~({quantify(c.term)})).")
+            s = "\n".join(v)
 
-            s = subprocess.check_output(cmd, input="\n".join(v), encoding="utf-8")
+            if args.log:
+                open("a.p", "w", newline="\n").write(s)
+
+            s = subprocess.check_output(cmd, input=s, encoding="utf-8")
 
             m = re.search(r"SZS status (\w+)", s)
             if not (m and m[1] in ("Unsatisfiable", "Theorem")):
                 raise Exception(s)
 
-            n += 1
-    print(n, end="\t")
+            print(".", end="", flush=True)
 
     # total time spent on this problem
     print("%0.3f" % (time.time() - start1))
