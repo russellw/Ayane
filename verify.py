@@ -128,6 +128,7 @@ for file in problems:
     assert expected
 
     # attempt proof
+    # TODO check result versus expected
     cmd = "./ayane", "-t", str(args.time), file
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     out, err = p.communicate()
@@ -191,7 +192,7 @@ for file in problems:
             s = subprocess.check_output(cmd, input="\n".join(v), encoding="utf-8")
 
             m = re.search(r"SZS status (\w+)", s)
-            if not (m and m[1] in ("Unsatisfiable", "Theorem")):
+            if not (m and m[1] == "Unsatisfiable"):
                 raise Exception(s)
 
     print()

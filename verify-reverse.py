@@ -60,8 +60,47 @@ if args.number:
     problems = problems[0 : args.number]
 
 
+def lex(s):
+    v = []
+    i = 0
+    while i < len(s):
+        j = i
+        c = s[i]
+        if c.isspace():
+            i += 1
+            continue
+        elif c.isalnum():
+            while i < len(s) and (s[i].isalnum() or s[i] == "_"):
+                i += 1
+        elif c in ("'", '"'):
+            i += 1
+            while s[i] != c:
+                if s[i] == "\\":
+                    i += 1
+                i += 1
+            i += 1
+        else:
+            i += 1
+        v.append(s[j:i])
+    return v
+
+
+def parse(v):
+    depth = 1
+    i = 0
+    while 1:
+        t = v[i]
+        if t == "(":
+            depth += 1
+        elif t == ")":
+            depth -= 1
+            if depth == 0:
+                return i
+        i += 1
+
+
 class Clause:
-    def __init__(self, name, term, fm=None):
+    def __init__(self, name, term, fm):
         self.name = name
         self.term = term
         self.fm = fm
@@ -70,44 +109,9 @@ class Clause:
         return self.name
 
 
-def vars(s):
-    i = 0
-    r = set()
-    while i < len(s):
-        c = s[i]
-
-        # variable
-        if c.isupper():
-            j = i
-            while i < len(s) and (s[i].isalnum() or s[i] == "_"):
-                i += 1
-            r.add(s[j:i])
-            continue
-
-        # word
-        if c.isalpha():
-            i += 1
-            while i < len(s) and (s[i].isalnum() or s[i] == "_"):
-                i += 1
-            continue
-
-        # quote
-        if c in ("'", '"'):
-            i += 1
-            while s[i] != c:
-                if s[i] == "\\":
-                    i += 1
-                i += 1
-            i += 1
-            continue
-
-        # etc
-        i += 1
-    return r
-
-
-def quantify(s):
-    r = vars(s)
+def quantify(v):
+    r = set([x for x in v if x[0].isupper()])
+    s = "".join(v)
     if not r:
         return s
     return f"![{','.join(r)}]: ({s})"
@@ -121,7 +125,7 @@ for file in problems:
     # for some reason, it breaks the subprocess timeout feature
     cmd = "bin/eprover", "--auto", "-p", file
 
-    t = time.time()
+    start1 = time.time()
     try:
         p = subprocess.run(
             cmd, capture_output=True, encoding="utf-8", timeout=args.time
@@ -141,62 +145,20 @@ for file in problems:
     # clauses
     clauses = {}
     for s in p.stdout.splitlines():
-        m = re.match(r"cnf\((\w+), axiom, \((.+)\), file\('.*', \w+\)\)\.$", s)
+        m = re.match(r"cnf\((\w+), \w+, \((.+)", s)
         if m:
             name = m[1]
-            term = m[2]
-            clauses[name] = Clause(name, term)
-            continue
-
-        m = re.match(
-            r"cnf\((\w+), negated_conjecture, \((.+)\), file\('.*', \w+\)\)\.$", s
-        )
-        if m:
-            name = m[1]
-            term = m[2]
-            clauses[name] = Clause(name, term)
-            continue
-
-        m = re.match(r"cnf\((\w+), axiom, \((.+)\), \w+\)\.$", s)
-        if m:
-            name = m[1]
-            term = m[2]
-            clauses[name] = Clause(name, term)
-            continue
-
-        m = re.match(
-            r"cnf\((\w+), plain, \((.+)\), inference\(\w+,\[status\(thm\)\],\[(\w+)(, \w+)?\]\)\)\.$",
-            s,
-        )
-        if m:
-            name = m[1]
-            term = m[2]
-            fm = [m[3]]
-            if m[4]:
-                fm.append(m[4][1:])
+            v = lex(m[2])
+            i = parse(v)
+            term = v[:i]
+            fm = [clauses[t] for t in v[i:] if t in clauses]
             clauses[name] = Clause(name, term, fm)
-            continue
-
-        m = re.match(r"cnf\((\w+), negated_conjecture, \((.+)\), \w+\)\.$", s)
-        if m:
-            name = m[1]
-            term = m[2]
-            clauses[name] = Clause(name, term)
-            continue
-
-        # if s.startswith("cnf"):
-        #    raise Exception(s)
-
-    # resolve clause names
-    for c in clauses.values():
-        if c.fm is not None:
-            c.fm = [clauses[name] for name in c.fm]
 
     # verify each clause
     n = 0
     for c in clauses.values():
-        if c.fm is not None:
-            cmd = "./ayane"
+        if c.fm:
+            cmd = "./ayane", "-tptp"
 
             v = []
             for d in c.fm:
@@ -213,4 +175,4 @@ for file in problems:
     print(n, end="\t")
 
     # total time spent on this problem
-    print("%0.3f" % (time.time() - t))
+    print("%0.3f" % (time.time() - start1))
