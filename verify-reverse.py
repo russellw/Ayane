@@ -169,6 +169,10 @@ for file in problems:
             if m[4]:
                 fm.append(m[4][1:])
             clauses[name] = Clause(name, term, fm)
+            continue
+
+        if s.startswith("cnf"):
+            raise Exception(s)
 
     # resolve clause names
     for c in clauses.values():
