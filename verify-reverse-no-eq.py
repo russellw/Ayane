@@ -161,7 +161,7 @@ for file in problems:
     # clauses
     clauses = {}
     for s in p.stdout.splitlines():
-        m = re.match(r"cnf\((\w+), \w+, \((.+)", s)
+        m = re.match(r"\w\wf\((\w+), \w+, \((.+)", s)
         if m:
             name = m[1]
             v = lex(m[2])
