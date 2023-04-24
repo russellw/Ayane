@@ -141,7 +141,7 @@ for file in problems:
     # clauses
     clauses = {}
     for s in p.stdout.splitlines():
-        m = re.match(r"cnf\((\w+), plain, (.+), introduced\(definition\)\)\.$", s)
+        m = re.match(r"cnf\((\w+), axiom, \((.+)\), file\('.*', \w+\)\)\.$", s)
         if m:
             name = m[1]
             term = m[2]
@@ -149,8 +149,7 @@ for file in problems:
             continue
 
         m = re.match(
-            r"cnf\((\w+), plain, (.+), inference\((cnf),\[status\(esa\)\],\[(\w+)\]\)\)\.$",
-            s,
+            r"cnf\((\w+), negated_conjecture, \((.+)\), file\('.*', \w+\)\)\.$", s
         )
         if m:
             name = m[1]
@@ -158,8 +157,15 @@ for file in problems:
             clauses[name] = Clause(name, term)
             continue
 
+        m = re.match(r"cnf\((\w+), axiom, \((.+)\), \w+\)\.$", s)
+        if m:
+            name = m[1]
+            term = m[2]
+            clauses[name] = Clause(name, term)
+            continue
+
         m = re.match(
-            r"cnf\((\w+), plain, (.+), inference\(\w+,\[status\(thm\)\],\[(\w+)(,\w+)?\]\)\)\.$",
+            r"cnf\((\w+), plain, \((.+)\), inference\(\w+,\[status\(thm\)\],\[(\w+)(, \w+)?\]\)\)\.$",
             s,
         )
         if m:
@@ -171,8 +177,15 @@ for file in problems:
             clauses[name] = Clause(name, term, fm)
             continue
 
-        if s.startswith("cnf"):
-            raise Exception(s)
+        m = re.match(r"cnf\((\w+), negated_conjecture, \((.+)\), \w+\)\.$", s)
+        if m:
+            name = m[1]
+            term = m[2]
+            clauses[name] = Clause(name, term)
+            continue
+
+        # if s.startswith("cnf"):
+        #    raise Exception(s)
 
     # resolve clause names
     for c in clauses.values():
