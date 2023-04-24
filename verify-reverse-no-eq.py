@@ -130,7 +130,7 @@ for file in problems:
             spc = m[1]
             break
     assert spc
-    print(spc, end="\t", flush=True)
+    print(spc, end=" ", flush=True)
 
     if "NEQ" not in spc:
         print()
@@ -153,7 +153,7 @@ for file in problems:
         raise Exception(p.returncode)
 
     m = re.search(r"SZS status (\w+)", p.stdout)
-    print(m[1], end="\t", flush=True)
+    print(m[1], end=" ", flush=True)
 
     if args.log:
         open("a.log", "w", newline="\n").write(p.stdout)
