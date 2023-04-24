@@ -98,12 +98,11 @@ try:
         print("%0.3f" % t + " seconds")
         print()
 
-        if p.returncode == 1:
+        if p.returncode not in (0, 7):
             continue
-        assert p.returncode in (0, 2)
 
         r = ""
-        m = re.match("% SZS status (\w+)", out)
+        m = re.match("SZS status (\w+)", out)
         if m:
             r = m[1]
 

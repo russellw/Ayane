@@ -60,16 +60,6 @@ if args.number:
 subprocess.check_output("make")
 
 
-class Clause:
-    def __init__(self, name, term, fm=None):
-        self.name = name
-        self.term = term
-        self.fm = fm
-
-    def __repr__(self):
-        return self.name
-
-
 def vars(s):
     i = 0
     r = set()
@@ -106,6 +96,16 @@ def vars(s):
     return r
 
 
+class Clause:
+    def __init__(self, name, term, fm=None):
+        self.name = name
+        self.term = term
+        self.fm = fm
+
+    def __repr__(self):
+        return self.name
+
+
 def quantify(s):
     r = vars(s)
     if not r:
@@ -128,16 +128,26 @@ for file in problems:
     assert expected
 
     # attempt proof
-    # TODO check result versus expected
     cmd = "./ayane", "-t", str(args.time), file
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    out, err = p.communicate()
-    out = str(out, "utf-8")
-    print(out, end="")
+    p = subprocess.run(cmd, capture_output=True, encoding="utf-8")
+    print(p.stdout, end="")
+
+    # check result
+    m = re.match("SZS status (\w+)", p.stdout)
+    if m:
+        r = m[1]
+        success = [
+            "CounterSatisfiable",
+            "Satisfiable",
+            "Theorem",
+            "Unsatisfiable",
+        ]
+        if r in success:
+            assert r == expected
 
     # clauses
     clauses = {}
-    for s in out.splitlines():
+    for s in p.stdout.splitlines():
         m = re.match(r"cnf\((\w+), plain, (.+), introduced\(definition\)\)\.$", s)
         if m:
             name = m[1]
@@ -191,8 +201,7 @@ for file in problems:
 
             s = subprocess.check_output(cmd, input="\n".join(v), encoding="utf-8")
 
-            m = re.search(r"SZS status (\w+)", s)
-            if not (m and m[1] == "Unsatisfiable"):
+            if "SZS status Unsatisfiable" not in s:
                 raise Exception(s)
 
     print()
