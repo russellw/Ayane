@@ -118,7 +118,23 @@ def quantify(v):
 
 
 for file in problems:
-    print(os.path.basename(file), end="\t", flush=True)
+    print(os.path.basename(file), end="\t")
+
+    spc = None
+    for s in open(file):
+        s = s.rstrip()
+        if s and not s.startswith("%"):
+            break
+        m = re.match(r"% SPC\s+:\s+(\w+)\s*", s)
+        if m:
+            spc = m[1]
+            break
+    assert spc
+    print(spc, end="\t", flush=True)
+
+    if "NEQ" not in spc:
+        print()
+        continue
 
     # --auto makes a big difference to performance
     # don't use --auto-schedule
