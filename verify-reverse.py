@@ -9,6 +9,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     "-n", "--number", help="max number of problems to attempt", type=int
 )
+parser.add_argument("-l", "--log", help="write output to log file", action="store_true")
 parser.add_argument(
     "-r", "--random", help="attempt problems in random order", action="store_true"
 )
@@ -133,6 +134,9 @@ for file in problems:
 
     m = re.search(r"SZS status (\w+)", p.stdout)
     print(m[1], end="\t", flush=True)
+
+    if args.log:
+        open("a.log", "w", newline="\n").write(p.stdout)
 
     # clauses
     clauses = {}
