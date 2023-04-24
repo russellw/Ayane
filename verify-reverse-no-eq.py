@@ -130,9 +130,9 @@ for file in problems:
             spc = m[1]
             break
     assert spc
-    print(spc, end=" ", flush=True)
+    print(spc, end=" \t", flush=True)
 
-    if "NEQ" not in spc:
+    if "EQU" in spc or "SEQ" in spc or "PEQ" in spc or "UEQ" in spc or "NUE" in spc:
         print()
         continue
 
