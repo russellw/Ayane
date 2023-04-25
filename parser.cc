@@ -10,7 +10,7 @@
 #endif
 
 const char* parser::file;
-uint32_t parser::srco;
+char* parser::srco;
 char* parser::srck;
 
 parser::parser(const char* file) {
@@ -29,21 +29,6 @@ parser::parser(const char* file) {
 	size_t n;
 	size_t o;
 	if (strcmp(file, "stdin")) {
-		auto f = open(file, O_BINARY | O_RDONLY);
-		struct stat st;
-		if (f < 0 || fstat(f, &st)) {
-			perror(file);
-			exit(1);
-		}
-		n = st.st_size;
-		o = heap->alloc(n + 2);
-		if (read(f, heap->ptr(o), n) != n) {
-			perror(file);
-			exit(1);
-		}
-		close(f);
-		srcBytes = n + 2;
-	} else {
 #ifdef _WIN32
 		_setmode(0, O_BINARY);
 #endif
@@ -66,6 +51,21 @@ parser::parser(const char* file) {
 			if (r != block) break;
 		}
 		srcBytes = cap;
+	} else {
+		auto f = open(file, O_BINARY | O_RDONLY);
+		struct stat st;
+		if (f < 0 || fstat(f, &st)) {
+			perror(file);
+			exit(1);
+		}
+		n = st.st_size;
+		o = heap->alloc(n + 2);
+		if (read(f, heap->ptr(o), n) != n) {
+			perror(file);
+			exit(1);
+		}
+		close(f);
+		srcBytes = n + 2;
 	}
 	srco = o;
 
@@ -88,7 +88,7 @@ parser::parser(const char* file) {
 }
 
 parser::~parser() {
-	heap->free(srco, srcBytes);
+	free(srco);
 	file = old_file;
 	srco = old_srco;
 	srck = old_srck;

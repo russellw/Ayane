@@ -1,14 +1,10 @@
-// Mostly a drop-in replacement for std::vector, using the local allocator that is faster than a general-purpose heap allocator.
-// Unlike std::vector, it doesn't have a separate at() function with bounds checking. Instead, the subscript operator checks index
-// bounds, only in debug build, using assert().
+// Mostly a drop-in replacement for std::vector. Unlike std::vector, it doesn't have a separate at() function with bounds checking.
+// Instead, the subscript operator checks index bounds, only in debug build, using assert().
 
 // Usual caveat: Don't do anything that might cause reallocation (such as adding elements without having previously reserved space)
 // while holding a live iterator to the vector, or a live reference to an element
 
 // Unusual caveats:
-
-// Because it requires the local allocator to have already been initialized, and C++ does not specify the order in which global
-// initializers in different modules are run, a vec may not be a global or static variable
 
 // While elements may contain pointers to other chunks of memory they own, they must not contain internal pointers to other parts of
 // the same object. This means elements can be moved around with memmove, and in particular with realloc, which improves performance
@@ -86,7 +82,7 @@ public:
 	// not capacity.
 	~vec() {
 		del(begin(), end());
-		heap->free(o, cap * sizeof(T));
+		free(o);
 	}
 
 	// Reserve is used internally by other functions, but following std::vector, it is also made available in the API, where it is
@@ -103,7 +99,7 @@ public:
 		// realloc to be inefficient here because, knowing nothing about the semantics of vectors, it must (if actual reallocation
 		// is needed) memcpy up to capacity, not just quantity. But in practice, almost all reallocations will be caused by an
 		// element being added at the end, so quantity will be equal to capacity anyway.
-		o = heap->realloc(o, cap * sizeof(T), cap1 * sizeof(T));
+		o = xrealloc(o, cap * sizeof(T), cap1 * sizeof(T));
 
 		// Update capacity. Quantity is unchanged; that's for the caller to figure out.
 		cap = cap1;

@@ -45,9 +45,8 @@ struct parser {
 	// Current file
 	static const char* file;
 
-	// Heap allocation of source text
-	static uint32_t srco;
-	uint32_t srcBytes;
+	// Source text
+	static char* srco;
 
 	// Current position in source text
 	char* src;

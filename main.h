@@ -41,7 +41,6 @@ using std::swap;
 // General
 #include "base.h"
 #include "buf.h"
-#include "heap.h"
 #include "map.h"
 #include "set.h"
 #include "stats.h"
