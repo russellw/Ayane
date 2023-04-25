@@ -225,9 +225,9 @@ struct doing {
 		switch (tag(a)) {
 			// Boolean constants and operators can be inverted by downward-sinking NOTs
 		case tag::False:
-			return tbool(!pol);
+			return mkbool(!pol);
 		case tag::True:
-			return tbool(pol);
+			return mkbool(pol);
 
 		case tag::Not:
 			return nnf(m, !pol, a[1]);

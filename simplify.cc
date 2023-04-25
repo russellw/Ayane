@@ -108,8 +108,8 @@ term simplify(const map<term, term>& m, term a) {
 	case tag::IsInteger:
 	{
 		auto x = simplify(m, a[1]);
-		if (realConstant(x)) return tbool(isInteger(x[1]));
-		if (constant(x)) return tbool(isInteger(x));
+		if (realConstant(x)) return mkbool(isInteger(x[1]));
+		if (constant(x)) return mkbool(isInteger(x));
 		if (type(x) == kind::Integer) return tag::True;
 		return term(t, x);
 	}
@@ -128,16 +128,16 @@ term simplify(const map<term, term>& m, term a) {
 	{
 		auto x = simplify(m, a[1]);
 		auto y = simplify(m, a[2]);
-		if (constant(x) && constant(y)) return tbool(x <= y);
-		if (realConstant(x) && realConstant(y)) return tbool(x[1] <= y[1]);
+		if (constant(x) && constant(y)) return mkbool(x <= y);
+		if (realConstant(x) && realConstant(y)) return mkbool(x[1] <= y[1]);
 		return term(t, x, y);
 	}
 	case tag::Lt:
 	{
 		auto x = simplify(m, a[1]);
 		auto y = simplify(m, a[2]);
-		if (constant(x) && constant(y)) return tbool(x < y);
-		if (realConstant(x) && realConstant(y)) return tbool(x[1] < y[1]);
+		if (constant(x) && constant(y)) return mkbool(x < y);
+		if (realConstant(x) && realConstant(y)) return mkbool(x[1] < y[1]);
 		return term(t, x, y);
 	}
 	case tag::Mul:
