@@ -65,25 +65,6 @@ string keywords[] = {
 };
 
 namespace {
-// For data to be kept for the full duration of the process, we can avoid the time and memory overhead of keeping track of
-// individual allocations. This allocator is specialized; it aligns allocations only as needed by strings.
-void* alloc(size_t bytes) {
-	bytes = roundUp(bytes, 4);
-	static char* top;
-	static char* end;
-	if (end - top < bytes) {
-		auto n = max(bytes, (size_t)10000);
-		top = new char[n];
-		end = top + n;
-	}
-	auto r = top;
-#ifdef DEBUG
-	memset(r, 0xcc, bytes);
-#endif
-	top += bytes;
-	return r;
-}
-
 // Compare a counted string with a null terminated one
 bool eq(const char* s, size_t n, const char* z) {
 	while (n--)
@@ -139,6 +120,7 @@ void expand() {
 } // namespace
 
 void clearStrings() {
+	// TODO: needed?
 	for (size_t i = 0; i != cap; ++i) {
 		auto s = entries[i];
 		if (!s) continue;
@@ -161,7 +143,7 @@ string* intern(const char* s, size_t n) {
 	}
 
 	// Make a new string
-	auto r = (string*)alloc(offsetof(string, v) + n + 1);
+	auto r = (string*)xmalloc(offsetof(string, v) + n + 1);
 	memset(r, 0, offsetof(string, v));
 	memcpy(r->v, s, n);
 	r->v[n] = 0;
