@@ -30,7 +30,7 @@ term* mk(mpq_t val);
 term* mk(string* s, type ty);
 
 inline term* mkbool(bool b) {
-	return atoms + (b ? tag::True : tag::False);
+	return atoms + (b ? True : False);
 }
 
 term* var(size_t i, type ty);
@@ -63,5 +63,4 @@ inline size_t hash(const term& a) {
 	return fnv(&a, sizeof a);
 }
 
-void print(tag t);
 void print(term* a);

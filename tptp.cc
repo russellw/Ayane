@@ -19,7 +19,7 @@ void defaultType(term a, type rty) {
 	// A statement about the return type of a function call, can directly imply the type of the function. This generally does not
 	// apply to basic operators; in most cases, they already have a definite type. That is not entirely true of the arithmetic
 	// operators, but we don't try to do global type inference to figure those out.
-	if (tag(a) != tag::Fn) return;
+	if (tag(a) != Fn) return;
 
 	// This is only a default assignment, only relevant if the function does not already have a type
 	auto p = a.getAtom();
@@ -301,68 +301,68 @@ struct parser1: parser {
 			vec<term> v;
 			switch (keyword(s)) {
 			case s_ceiling:
-				return definedFunctor(tag::Ceil);
+				return definedFunctor(Ceil);
 			case s_difference:
-				return definedFunctor(tag::Sub);
+				return definedFunctor(Sub);
 			case s_distinct:
 			{
 				args(v);
 				for (auto& a: v) defaultType(a, kind::Individual);
-				vec<term> inequalities(1, tag::And);
+				vec<term> inequalities(1, And);
 				for (auto i = v.begin(), e = v.end(); i != e; ++i)
-					for (auto j = v.begin(); j != i; ++j) inequalities.push_back(term(tag::Not, term(tag::Eq, *i, *j)));
+					for (auto j = v.begin(); j != i; ++j) inequalities.push_back(term(Not, term(Eq, *i, *j)));
 				return term(inequalities);
 			}
 			case s_false:
-				return tag::False;
+				return False;
 			case s_floor:
-				return definedFunctor(tag::Floor);
+				return definedFunctor(Floor);
 			case s_greater:
 				args(v);
-				return term(tag::Lt, v[1], v[0]);
+				return term(Lt, v[1], v[0]);
 			case s_greatereq:
 				args(v);
-				return term(tag::Le, v[1], v[0]);
+				return term(Le, v[1], v[0]);
 			case s_is_int:
-				return definedFunctor(tag::IsInteger);
+				return definedFunctor(IsInteger);
 			case s_is_rat:
-				return definedFunctor(tag::IsRational);
+				return definedFunctor(IsRational);
 			case s_less:
-				return definedFunctor(tag::Lt);
+				return definedFunctor(Lt);
 			case s_lesseq:
-				return definedFunctor(tag::Le);
+				return definedFunctor(Le);
 			case s_product:
-				return definedFunctor(tag::Mul);
+				return definedFunctor(Mul);
 			case s_quotient:
-				return definedFunctor(tag::Div);
+				return definedFunctor(Div);
 			case s_quotient_e:
-				return definedFunctor(tag::DivE);
+				return definedFunctor(DivE);
 			case s_quotient_f:
-				return definedFunctor(tag::DivF);
+				return definedFunctor(DivF);
 			case s_quotient_t:
-				return definedFunctor(tag::DivT);
+				return definedFunctor(DivT);
 			case s_remainder_e:
-				return definedFunctor(tag::RemE);
+				return definedFunctor(RemE);
 			case s_remainder_f:
-				return definedFunctor(tag::RemF);
+				return definedFunctor(RemF);
 			case s_remainder_t:
-				return definedFunctor(tag::RemT);
+				return definedFunctor(RemT);
 			case s_round:
-				return definedFunctor(tag::Round);
+				return definedFunctor(Round);
 			case s_sum:
-				return definedFunctor(tag::Add);
+				return definedFunctor(Add);
 			case s_to_int:
-				return definedFunctor(tag::ToInteger);
+				return definedFunctor(ToInteger);
 			case s_to_rat:
-				return definedFunctor(tag::ToRational);
+				return definedFunctor(ToRational);
 			case s_to_real:
-				return definedFunctor(tag::ToReal);
+				return definedFunctor(ToReal);
 			case s_true:
-				return tag::True;
+				return True;
 			case s_truncate:
-				return definedFunctor(tag::Trunc);
+				return definedFunctor(Trunc);
 			case s_uminus:
-				return definedFunctor(tag::Neg);
+				return definedFunctor(Neg);
 			}
 			break;
 		}
@@ -435,7 +435,7 @@ struct parser1: parser {
 			auto b = atomicTerm();
 			defaultType(a, kind::Individual);
 			defaultType(b, kind::Individual);
-			return term(tag::Eq, a, b);
+			return term(Eq, a, b);
 		}
 		case k_ne:
 		{
@@ -443,7 +443,7 @@ struct parser1: parser {
 			auto b = atomicTerm();
 			defaultType(a, kind::Individual);
 			defaultType(b, kind::Individual);
-			return term(tag::Not, term(tag::Eq, a, b));
+			return term(Not, term(Eq, a, b));
 		}
 		}
 		defaultType(a, kind::Bool);
@@ -455,7 +455,7 @@ struct parser1: parser {
 		expect('[');
 		auto old = vars.size();
 		// TODO: check generated code
-		vec<term> v{t, tag::False};
+		vec<term> v{t, False};
 		do {
 			if (tok != k_var) err("Expected variable");
 			auto s = str;
@@ -476,7 +476,7 @@ struct parser1: parser {
 	term unary() {
 		switch (tok) {
 		case '!':
-			return quant(tag::All);
+			return quant(All);
 		case '(':
 		{
 			lex();
@@ -485,10 +485,10 @@ struct parser1: parser {
 			return a;
 		}
 		case '?':
-			return quant(tag::Exists);
+			return quant(Exists);
 		case '~':
 			lex();
-			return term(tag::Not, unary());
+			return term(Not, unary());
 		}
 		return infixUnary();
 	}
@@ -504,12 +504,12 @@ struct parser1: parser {
 		auto a = unary();
 		switch (tok) {
 		case '&':
-			return associativeLogicFormula(tag::And, a);
+			return associativeLogicFormula(And, a);
 		case '|':
-			return associativeLogicFormula(tag::Or, a);
+			return associativeLogicFormula(Or, a);
 		case k_eqv:
 			lex();
-			return term(tag::Eqv, a, unary());
+			return term(Eqv, a, unary());
 		case k_imp:
 			lex();
 			return imp(a, unary());
@@ -518,13 +518,13 @@ struct parser1: parser {
 			return imp(unary(), a);
 		case k_nand:
 			lex();
-			return term(tag::Not, term(tag::And, a, unary()));
+			return term(Not, term(And, a, unary()));
 		case k_nor:
 			lex();
-			return term(tag::Not, term(tag::Or, a, unary()));
+			return term(Not, term(Or, a, unary()));
 		case k_xor:
 			lex();
-			return term(tag::Not, term(tag::Eqv, a, unary()));
+			return term(Not, term(Eqv, a, unary()));
 		}
 		return a;
 	}
@@ -772,7 +772,7 @@ void pr(type ty) {
 	unreachable;
 }
 
-void pr(term a, term parent = tag::False);
+void pr(term a, term parent = False);
 
 void dfunctor(const char* op, term a) {
 	print(op);
@@ -810,12 +810,12 @@ bool needParens(term a, term parent) {
 
 	// Otherwise, only some parent terms have the potential to interfere with operator parsing
 	switch (tag(parent)) {
-	case tag::All:
-	case tag::And:
-	case tag::Eqv:
-	case tag::Exists:
-	case tag::Not:
-	case tag::Or:
+	case All:
+	case And:
+	case Eqv:
+	case Exists:
+	case Not:
+	case Or:
 		return 1;
 	}
 	return 0;
@@ -837,51 +837,51 @@ size_t sknames;
 
 void pr(term a, term parent) {
 	switch (tag(a)) {
-	case tag::Add:
+	case Add:
 		dfunctor("$sum", a);
 		return;
-	case tag::All:
+	case All:
 		quant('!', a);
 		return;
-	case tag::And:
+	case And:
 		infixConnective(" & ", a, parent);
 		return;
-	case tag::Ceil:
+	case Ceil:
 		dfunctor("$ceiling", a);
 		return;
-	case tag::DistinctObj:
+	case DistinctObj:
 		quote('"', a.getAtom()->s);
 		return;
-	case tag::Div:
+	case Div:
 		dfunctor("$quotient", a);
 		return;
-	case tag::DivE:
+	case DivE:
 		dfunctor("$quotient_e", a);
 		return;
-	case tag::DivF:
+	case DivF:
 		dfunctor("$quotient_f", a);
 		return;
-	case tag::DivT:
+	case DivT:
 		dfunctor("$quotient_t", a);
 		return;
-	case tag::Eq:
+	case Eq:
 		pr(a[1]);
 		putchar('=');
 		pr(a[2]);
 		return;
-	case tag::Eqv:
+	case Eqv:
 		infixConnective(" <=> ", a, parent);
 		return;
-	case tag::Exists:
+	case Exists:
 		quant('?', a);
 		return;
-	case tag::False:
+	case False:
 		print("$false");
 		return;
-	case tag::Floor:
+	case Floor:
 		dfunctor("$floor", a);
 		return;
-	case tag::Fn:
+	case Fn:
 	{
 		auto p = a.getAtom();
 		if (!p->s) {
@@ -906,72 +906,72 @@ void pr(term a, term parent) {
 		putchar(')');
 		return;
 	}
-	case tag::Integer:
+	case Integer:
 		mpz_out_str(stdout, 10, a.mpz());
 		return;
-	case tag::IsInteger:
+	case IsInteger:
 		dfunctor("$is_int", a);
 		return;
-	case tag::IsRational:
+	case IsRational:
 		dfunctor("$is_rat", a);
 		return;
-	case tag::Le:
+	case Le:
 		dfunctor("$lesseq", a);
 		return;
-	case tag::Lt:
+	case Lt:
 		dfunctor("$less", a);
 		return;
-	case tag::Mul:
+	case Mul:
 		dfunctor("$product", a);
 		return;
-	case tag::Neg:
+	case Neg:
 		dfunctor("$uminus", a);
 		return;
-	case tag::Not:
+	case Not:
 		putchar('~');
 		pr(a[1], a);
 		return;
-	case tag::Or:
+	case Or:
 		infixConnective(" | ", a, parent);
 		return;
-	case tag::Rational:
+	case Rational:
 	{
 		auto a1 = a.mpq();
 		mpq_out_str(stdout, 10, a1);
 		if (!mpz_cmp_ui(mpq_denref(a1), 1)) printf("/1");
 		return;
 	}
-	case tag::RemE:
+	case RemE:
 		dfunctor("$remainder_e", a);
 		return;
-	case tag::RemF:
+	case RemF:
 		dfunctor("$remainder_f", a);
 		return;
-	case tag::RemT:
+	case RemT:
 		dfunctor("$remainder_t", a);
 		return;
-	case tag::Round:
+	case Round:
 		dfunctor("$round", a);
 		return;
-	case tag::Sub:
+	case Sub:
 		dfunctor("$difference", a);
 		return;
-	case tag::ToInteger:
+	case ToInteger:
 		dfunctor("$to_int", a);
 		return;
-	case tag::ToRational:
+	case ToRational:
 		dfunctor("$to_rat", a);
 		return;
-	case tag::ToReal:
+	case ToReal:
 		dfunctor("$to_real", a);
 		return;
-	case tag::True:
+	case True:
 		print("$true");
 		return;
-	case tag::Trunc:
+	case Trunc:
 		dfunctor("$truncate", a);
 		return;
-	case tag::Var:
+	case Var:
 	{
 		auto i = a.varIdx();
 		if (i < 26) putchar('A' + i);
@@ -987,7 +987,7 @@ void prliterals(const clause& c) {
 	joining;
 	for (auto a: c.first) {
 		join(" | ");
-		if (tag(a) == tag::Eq) {
+		if (tag(a) == Eq) {
 			pr(a[1]);
 			print("!=");
 			pr(a[2]);

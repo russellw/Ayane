@@ -16,7 +16,7 @@ static bool eq(term a, bool ax, term b, bool bx) {
 	if (ax == bx) return 1;
 
 	// Two variables on different sides, are not equal
-	if (tag(a) == tag::Var) return 0;
+	if (tag(a) == Var) return 0;
 
 	// Compound terms on opposite sides, even though syntactically equal, could contain variables, which would make them logically
 	// unequal; to find out for sure, we would need to recur through subterms, but that is the job of match/unify, so here we just
@@ -37,7 +37,7 @@ bool match(map<term, term>& m, term a, term b) {
 
 	// Variable
 	// TODO: check variables more efficiently
-	if (tag(a) == tag::Var) {
+	if (tag(a) == Var) {
 		auto& ma = m.gadd(a);
 
 		// Existing mapping. First-order variables cannot be Boolean, which has the useful corollary that the default value of a
@@ -67,8 +67,8 @@ bool match(map<term, term>& m, term a, term b) {
 
 namespace {
 bool occurs(const map<termx, termx>& m, term a, bool ax, term b, bool bx) {
-	assert(tag(a) == tag::Var);
-	if (tag(b) == tag::Var) {
+	assert(tag(a) == Var);
+	if (tag(b) == Var) {
 		if (eq(a, ax, b, bx)) return 1;
 		auto b1 = make_pair(b, bx);
 		termx mb;
@@ -80,7 +80,7 @@ bool occurs(const map<termx, termx>& m, term a, bool ax, term b, bool bx) {
 }
 
 bool unifyVar(map<termx, termx>& m, term a, bool ax, term b, bool bx) {
-	assert(tag(a) == tag::Var);
+	assert(tag(a) == Var);
 	assert(type(a) == type(b));
 
 	// Existing mappings
@@ -109,8 +109,8 @@ bool unify(map<termx, termx>& m, term a, bool ax, term b, bool bx) {
 	if (type(a) != type(b)) return 0;
 
 	// Variable
-	if (tag(a) == tag::Var) return unifyVar(m, a, ax, b, bx);
-	if (tag(b) == tag::Var) return unifyVar(m, b, bx, a, ax);
+	if (tag(a) == Var) return unifyVar(m, a, ax, b, bx);
+	if (tag(b) == Var) return unifyVar(m, b, bx, a, ax);
 
 	// Mismatched tags
 	if (tag(a) != tag(b)) return 0;
@@ -132,7 +132,7 @@ term replace(const map<termx, termx>& m, term a, bool ax) {
 	termx ma;
 	// TODO: check only if it is a variable
 	if (m.get(a1, ma)) {
-		assert(tag(a) == tag::Var);
+		assert(tag(a) == Var);
 		return replace(m, ma.first, ma.second);
 	}
 

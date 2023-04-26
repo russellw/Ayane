@@ -14,9 +14,9 @@ szs dpll(map<term, term>& m, const set<clause>& cs) {
 	// Unit clauses
 	for (auto& c: cs1)
 		if (c.first.size() + c.second.size() == 1) {
-			if (c.first.size()) m.add(c.first[0], tag::False);
+			if (c.first.size()) m.add(c.first[0], False);
 			else
-				m.add(c.second[0], tag::True);
+				m.add(c.second[0], True);
 			return dpll(m, cs);
 		}
 
@@ -32,7 +32,7 @@ szs dpll(map<term, term>& m, const set<clause>& cs) {
 
 	// Try assigning false
 	auto m1 = m;
-	m1.add(a, tag::False);
+	m1.add(a, False);
 	if (dpll(m1, cs1) == szs::Satisfiable) {
 		m = m1;
 		return szs::Satisfiable;
@@ -40,7 +40,7 @@ szs dpll(map<term, term>& m, const set<clause>& cs) {
 
 	// Try assigning true
 	m1 = m;
-	m1.add(a, tag::True);
+	m1.add(a, True);
 	if (dpll(m1, cs1) == szs::Satisfiable) {
 		m = m1;
 		return szs::Satisfiable;

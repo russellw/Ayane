@@ -7,7 +7,7 @@ atom atoms[999];
 namespace {
 struct init {
 	init() {
-		auto n = (int)tag::end;
+		auto n = (int)end;
 		for (int i = 0; i != n; ++i) {
 			auto p = (atom*)atoms->ptr(tatoms + i * offsetof(atom, s) / 8);
 			p->t = (tag)i;
@@ -29,7 +29,7 @@ term var(size_t i, type ty) {
 	while (v.size() <= i - unboxed) {
 		auto o = atoms->alloc(offsetof(atom, idx) + 4);
 		auto p = (atom*)atoms->ptr(o);
-		p->t = tag::Var;
+		p->t = Var;
 		p->ty = ty;
 		p->idx = unboxed + v.size();
 		term a;
@@ -47,7 +47,7 @@ term distinctObj(string* s) {
 	}
 	auto o = atoms->alloc(offsetof(atom, s) + sizeof s);
 	auto p = (atom*)atoms->ptr(o);
-	p->t = tag::DistinctObj;
+	p->t = DistinctObj;
 	p->s = s->v;
 	a.raw = s->dobj = o;
 	return a;
@@ -56,13 +56,13 @@ term distinctObj(string* s) {
 term* mk(string* s, type ty) {
 	if (s->sym) {
 		auto p = (atom*)atoms->ptr(s->sym);
-		assert(p->t == tag::Fn);
+		assert(p->t == Fn);
 		assert(p->s == s->v);
 		assign(p->ty, ty);
 	} else {
 		s->sym = atoms->alloc(offsetof(atom, s) + sizeof s);
 		auto p = (atom*)atoms->ptr(s->sym);
-		p->t = tag::Fn;
+		p->t = Fn;
 		p->s = s->v;
 		p->ty = ty;
 	}
@@ -72,7 +72,7 @@ term* mk(string* s, type ty) {
 term gensym(type ty) {
 	auto o = atoms->alloc(offsetof(atom, s) + sizeof(char*));
 	auto p = (atom*)atoms->ptr(o);
-	p->t = tag::Fn;
+	p->t = Fn;
 	p->s = 0;
 	p->ty = ty;
 	term a;
@@ -197,54 +197,54 @@ term* mk(const vec<term>& v) {
 
 term::operator type() const {
 	switch (tag(*this)) {
-	case tag::Add:
-	case tag::Ceil:
-	case tag::Div:
-	case tag::DivE:
-	case tag::DivF:
-	case tag::DivT:
-	case tag::Floor:
-	case tag::Mul:
-	case tag::Neg:
-	case tag::RemE:
-	case tag::RemF:
-	case tag::RemT:
-	case tag::Round:
-	case tag::Sub:
-	case tag::Trunc:
+	case Add:
+	case Ceil:
+	case Div:
+	case DivE:
+	case DivF:
+	case DivT:
+	case Floor:
+	case Mul:
+	case Neg:
+	case RemE:
+	case RemF:
+	case RemT:
+	case Round:
+	case Sub:
+	case Trunc:
 		return type((*this)[1]);
-	case tag::All:
-	case tag::And:
-	case tag::Eq:
-	case tag::Eqv:
-	case tag::Exists:
-	case tag::False:
-	case tag::IsInteger:
-	case tag::IsRational:
-	case tag::Le:
-	case tag::Lt:
-	case tag::Not:
-	case tag::Or:
-	case tag::True:
+	case All:
+	case And:
+	case Eq:
+	case Eqv:
+	case Exists:
+	case False:
+	case IsInteger:
+	case IsRational:
+	case Le:
+	case Lt:
+	case Not:
+	case Or:
+	case True:
 		return kind::Bool;
-	case tag::DistinctObj:
+	case DistinctObj:
 		return kind::Individual;
-	case tag::Fn:
+	case Fn:
 	{
 		// TODO: optimize
 		auto ty = getAtom()->ty;
 		if (kind(ty) == kind::Fn) return ty[0];
 		return ty;
 	}
-	case tag::Integer:
-	case tag::ToInteger:
+	case Integer:
+	case ToInteger:
 		return kind::Integer;
-	case tag::Rational:
-	case tag::ToRational:
+	case Rational:
+	case ToRational:
 		return kind::Rational;
-	case tag::ToReal:
+	case ToReal:
 		return kind::Real;
-	case tag::Var:
+	case Var:
 		if (raw & t_boxed) return getAtom()->ty;
 		return type(raw & (1 << typeBits) - 1);
 	}
@@ -275,9 +275,9 @@ int cmp(term a, term b) {
 
 	// Numbers sort in numerical order
 	switch (tag(a)) {
-	case tag::Integer:
+	case Integer:
 		return mpz_cmp(a.mpz(), b.mpz());
-	case tag::Rational:
+	case Rational:
 		return mpq_cmp(a.mpq(), b.mpq());
 	}
 
@@ -297,6 +297,7 @@ int cmp(term a, term b) {
 }
 
 void print(tag t) {
+	// TODO: eliminate
 	static const char* tagNames[] = {
 #define _(x) #x,
 #include "tags.h"
@@ -306,7 +307,7 @@ void print(tag t) {
 
 void print(term a) {
 	switch (tag(a)) {
-	case tag::Fn:
+	case Fn:
 	{
 		auto p = a.getAtom();
 		auto s = p->s;
@@ -315,13 +316,13 @@ void print(term a) {
 			printf("_%p", p);
 		break;
 	}
-	case tag::Integer:
+	case Integer:
 		mpz_out_str(stdout, 10, a.mpz());
 		return;
-	case tag::Rational:
+	case Rational:
 		mpq_out_str(stdout, 10, a.mpq());
 		return;
-	case tag::Var:
+	case Var:
 		printf("%%%zu", a.varIdx());
 		return;
 	default:

@@ -28,7 +28,7 @@ void Problem::conjecture(term a, const char* file, const char* name) {
 	hasConjecture = 1;
 
 	// The formula actually added to the set whose satisfiability is to be tested, is the negated conjecture
-	auto b = term(tag::Not, a);
+	auto b = term(Not, a);
 
 	// Check where to put a formula object corresponding to this term
 	auto& o = initialFormulas.gadd(b);

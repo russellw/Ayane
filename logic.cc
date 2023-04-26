@@ -28,7 +28,7 @@ void check(term a, type ty) {
 
 	// Need to handle calls before checking the type of this term, because the type of a call is only well-defined if the type of
 	// the function is well-defined
-	if (tag(a) == tag::Fn && a.size() > 1) {
+	if (tag(a) == Fn && a.size() > 1) {
 		auto fty = a.getAtom()->ty;
 		if (kind(fty) != kind::Fn) err("Called a non-function");
 		check(a, fty.size() - 1);
@@ -49,15 +49,15 @@ void check(term a, type ty) {
 
 	// Further checks can be done depending on operator. For example, arithmetic operators should have matching numeric arguments.
 	switch (tag(a)) {
-	case tag::Add:
-	case tag::DivE:
-	case tag::DivF:
-	case tag::DivT:
-	case tag::Mul:
-	case tag::RemE:
-	case tag::RemF:
-	case tag::RemT:
-	case tag::Sub:
+	case Add:
+	case DivE:
+	case DivF:
+	case DivT:
+	case Mul:
+	case RemE:
+	case RemF:
+	case RemT:
+	case Sub:
 		check(a, 2);
 		ty = type(a[1]);
 		switch (kind(ty)) {
@@ -70,26 +70,26 @@ void check(term a, type ty) {
 		}
 		for (size_t i = 1; i != a.size(); ++i) check(a[i], ty);
 		return;
-	case tag::All:
-	case tag::Exists:
+	case All:
+	case Exists:
 		check(a[1], kind::Bool);
 		return;
-	case tag::And:
-	case tag::Eqv:
-	case tag::Not:
-	case tag::Or:
+	case And:
+	case Eqv:
+	case Not:
+	case Or:
 		for (size_t i = 1; i != a.size(); ++i) check(a[i], kind::Bool);
 		return;
-	case tag::Ceil:
-	case tag::Floor:
-	case tag::IsInteger:
-	case tag::IsRational:
-	case tag::Neg:
-	case tag::Round:
-	case tag::ToInteger:
-	case tag::ToRational:
-	case tag::ToReal:
-	case tag::Trunc:
+	case Ceil:
+	case Floor:
+	case IsInteger:
+	case IsRational:
+	case Neg:
+	case Round:
+	case ToInteger:
+	case ToRational:
+	case ToReal:
+	case Trunc:
 		check(a, 1);
 		ty = type(a[1]);
 		switch (kind(ty)) {
@@ -102,14 +102,14 @@ void check(term a, type ty) {
 		}
 		for (size_t i = 1; i != a.size(); ++i) check(a[i], ty);
 		return;
-	case tag::DistinctObj:
-	case tag::False:
-	case tag::Fn:
-	case tag::Integer:
-	case tag::Rational:
-	case tag::True:
+	case DistinctObj:
+	case False:
+	case Fn:
+	case Integer:
+	case Rational:
+	case True:
 		return;
-	case tag::Div:
+	case Div:
 		check(a, 2);
 		ty = type(a[1]);
 		switch (kind(ty)) {
@@ -121,7 +121,7 @@ void check(term a, type ty) {
 		}
 		for (size_t i = 1; i != a.size(); ++i) check(a[i], ty);
 		return;
-	case tag::Eq:
+	case Eq:
 		ty = type(a[1]);
 		switch (kind(ty)) {
 		case kind::Bool:
@@ -131,8 +131,8 @@ void check(term a, type ty) {
 		check(a[1], ty);
 		check(a[2], ty);
 		return;
-	case tag::Le:
-	case tag::Lt:
+	case Le:
+	case Lt:
 		check(a, 2);
 		ty = type(a[1]);
 		switch (kind(ty)) {
@@ -146,7 +146,7 @@ void check(term a, type ty) {
 		check(a[1], ty);
 		check(a[2], ty);
 		return;
-	case tag::Var:
+	case Var:
 		// A function would also be an invalid type for a variable, but we already checked for that
 		if (kind(ty) == kind::Bool) err("Invalid type for variable");
 		return;

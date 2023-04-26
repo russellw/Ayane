@@ -38,7 +38,7 @@ using clause = pair<vec<term>, vec<term>>;
 // and they cannot be global variables because those have to be initialized before the thread-local heap.
 // TODO: reevaluate this. maybe they could be global variables declared here and defined in heap.cc?
 #define falsec make_pair(vec<term>(), vec<term>())
-#define truec make_pair(vec<term>(), vec<term>{tag::True})
+#define truec make_pair(vec<term>(), vec<term>{True})
 
 // Matching and unification must in the general case deal with two clauses which are assumed to have logically distinct variable
 // names, but it is inefficient to provide physically distinct variable names for each clause, so we logically extend variable names

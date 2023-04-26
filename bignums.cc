@@ -66,7 +66,7 @@ atom* intern(mpz_t a) {
 
 	// Make a new object
 	auto r = (atom*)xmalloc(offsetof(atom, mpz) + sizeof(mpz_t));
-	r->t = tag::Integer;
+	r->t = Integer;
 	memcpy(r->mpz, a, sizeof r->mpz);
 
 	// Add to hash table
@@ -148,7 +148,7 @@ atom* intern(mpq_t a) {
 
 	// Make a new object
 	auto r = (atom*)xmalloc(offsetof(atom, mpq) + sizeof(mpq_t));
-	r->t = tag::Rational;
+	r->t = Rational;
 	memcpy(r->mpq, a, sizeof r->mpq);
 
 	// Add to hash table
@@ -172,7 +172,7 @@ atom* rational(const char* s) {
 }
 
 atom* real(mpq_t q) {
-	return mk(tag::ToReal, intern(q));
+	return mk(ToReal, intern(q));
 }
 
 atom* real(int n, unsigned d) {
@@ -325,7 +325,7 @@ void mpz_round(mpz_t q, mpz_t n, mpz_t d) {
 
 atom* neg(atom* a) {
 	switch (tag(a)) {
-	case tag::Integer:
+	case Integer:
 	{
 		auto a1 = a.mpz();
 		mpz_t r;
@@ -333,7 +333,7 @@ atom* neg(atom* a) {
 		mpz_neg(r, a1);
 		return intern(r);
 	}
-	case tag::Rational:
+	case Rational:
 	{
 		auto a1 = a.mpq();
 		mpq_t r;
@@ -348,7 +348,7 @@ atom* neg(atom* a) {
 atom* add(atom* a, atom* b) {
 	assert(tag(a) == tag(b));
 	switch (tag(a)) {
-	case tag::Integer:
+	case Integer:
 	{
 		auto a1 = a.mpz();
 		auto b1 = b.mpz();
@@ -357,7 +357,7 @@ atom* add(atom* a, atom* b) {
 		mpz_add(r, a1, b1);
 		return intern(r);
 	}
-	case tag::Rational:
+	case Rational:
 	{
 		auto a1 = a.mpq();
 		auto b1 = b.mpq();
@@ -373,7 +373,7 @@ atom* add(atom* a, atom* b) {
 atom* sub(atom* a, atom* b) {
 	assert(tag(a) == tag(b));
 	switch (tag(a)) {
-	case tag::Integer:
+	case Integer:
 	{
 		auto a1 = a.mpz();
 		auto b1 = b.mpz();
@@ -382,7 +382,7 @@ atom* sub(atom* a, atom* b) {
 		mpz_sub(r, a1, b1);
 		return intern(r);
 	}
-	case tag::Rational:
+	case Rational:
 	{
 		auto a1 = a.mpq();
 		auto b1 = b.mpq();
@@ -398,7 +398,7 @@ atom* sub(atom* a, atom* b) {
 atom* mul(atom* a, atom* b) {
 	assert(tag(a) == tag(b));
 	switch (tag(a)) {
-	case tag::Integer:
+	case Integer:
 	{
 		auto a1 = a.mpz();
 		auto b1 = b.mpz();
@@ -407,7 +407,7 @@ atom* mul(atom* a, atom* b) {
 		mpz_mul(r, a1, b1);
 		return intern(r);
 	}
-	case tag::Rational:
+	case Rational:
 	{
 		auto a1 = a.mpq();
 		auto b1 = b.mpq();
@@ -423,7 +423,7 @@ atom* mul(atom* a, atom* b) {
 atom* div(atom* a, atom* b) {
 	assert(tag(a) == tag(b));
 	switch (tag(a)) {
-	case tag::Integer:
+	case Integer:
 	{
 		auto a1 = a.mpz();
 		auto b1 = b.mpz();
@@ -435,7 +435,7 @@ atom* div(atom* a, atom* b) {
 		mpz_tdiv_q(r, a1, b1);
 		return intern(r);
 	}
-	case tag::Rational:
+	case Rational:
 	{
 		auto a1 = a.mpq();
 		auto b1 = b.mpq();
@@ -451,7 +451,7 @@ atom* div(atom* a, atom* b) {
 atom* divT(atom* a, atom* b) {
 	assert(tag(a) == tag(b));
 	switch (tag(a)) {
-	case tag::Integer:
+	case Integer:
 	{
 		auto a1 = a.mpz();
 		auto b1 = b.mpz();
@@ -460,7 +460,7 @@ atom* divT(atom* a, atom* b) {
 		mpz_tdiv_q(r, a1, b1);
 		return intern(r);
 	}
-	case tag::Rational:
+	case Rational:
 	{
 		auto a1 = a.mpq();
 		auto b1 = b.mpq();
@@ -488,7 +488,7 @@ atom* divT(atom* a, atom* b) {
 atom* divF(atom* a, atom* b) {
 	assert(tag(a) == tag(b));
 	switch (tag(a)) {
-	case tag::Integer:
+	case Integer:
 	{
 		auto a1 = a.mpz();
 		auto b1 = b.mpz();
@@ -497,7 +497,7 @@ atom* divF(atom* a, atom* b) {
 		mpz_fdiv_q(r, a1, b1);
 		return intern(r);
 	}
-	case tag::Rational:
+	case Rational:
 	{
 		auto a1 = a.mpq();
 		auto b1 = b.mpq();
@@ -525,7 +525,7 @@ atom* divF(atom* a, atom* b) {
 atom* divE(atom* a, atom* b) {
 	assert(tag(a) == tag(b));
 	switch (tag(a)) {
-	case tag::Integer:
+	case Integer:
 	{
 		auto a1 = a.mpz();
 		auto b1 = b.mpz();
@@ -534,7 +534,7 @@ atom* divE(atom* a, atom* b) {
 		mpz_ediv_q(r, a1, b1);
 		return intern(r);
 	}
-	case tag::Rational:
+	case Rational:
 	{
 		auto a1 = a.mpq();
 		auto b1 = b.mpq();
@@ -562,7 +562,7 @@ atom* divE(atom* a, atom* b) {
 atom* remT(atom* a, atom* b) {
 	assert(tag(a) == tag(b));
 	switch (tag(a)) {
-	case tag::Integer:
+	case Integer:
 	{
 		auto a1 = a.mpz();
 		auto b1 = b.mpz();
@@ -571,7 +571,7 @@ atom* remT(atom* a, atom* b) {
 		mpz_tdiv_r(r, a1, b1);
 		return intern(r);
 	}
-	case tag::Rational:
+	case Rational:
 	{
 		auto a1 = a.mpq();
 		auto b1 = b.mpq();
@@ -599,7 +599,7 @@ atom* remT(atom* a, atom* b) {
 atom* remF(atom* a, atom* b) {
 	assert(tag(a) == tag(b));
 	switch (tag(a)) {
-	case tag::Integer:
+	case Integer:
 	{
 		auto a1 = a.mpz();
 		auto b1 = b.mpz();
@@ -608,7 +608,7 @@ atom* remF(atom* a, atom* b) {
 		mpz_fdiv_r(r, a1, b1);
 		return intern(r);
 	}
-	case tag::Rational:
+	case Rational:
 	{
 		auto a1 = a.mpq();
 		auto b1 = b.mpq();
@@ -636,7 +636,7 @@ atom* remF(atom* a, atom* b) {
 atom* remE(atom* a, atom* b) {
 	assert(tag(a) == tag(b));
 	switch (tag(a)) {
-	case tag::Integer:
+	case Integer:
 	{
 		auto a1 = a.mpz();
 		auto b1 = b.mpz();
@@ -645,7 +645,7 @@ atom* remE(atom* a, atom* b) {
 		mpz_ediv_r(r, a1, b1);
 		return intern(r);
 	}
-	case tag::Rational:
+	case Rational:
 	{
 		auto a1 = a.mpq();
 		auto b1 = b.mpq();
@@ -673,9 +673,9 @@ atom* remE(atom* a, atom* b) {
 
 atom* ceil(atom* a) {
 	switch (tag(a)) {
-	case tag::Integer:
+	case Integer:
 		return a;
-	case tag::Rational:
+	case Rational:
 	{
 		auto a1 = a.mpq();
 		mpq_t r;
@@ -689,9 +689,9 @@ atom* ceil(atom* a) {
 
 atom* floor(atom* a) {
 	switch (tag(a)) {
-	case tag::Integer:
+	case Integer:
 		return a;
-	case tag::Rational:
+	case Rational:
 	{
 		auto a1 = a.mpq();
 		mpq_t r;
@@ -705,9 +705,9 @@ atom* floor(atom* a) {
 
 atom* trunc(atom* a) {
 	switch (tag(a)) {
-	case tag::Integer:
+	case Integer:
 		return a;
-	case tag::Rational:
+	case Rational:
 	{
 		auto a1 = a.mpq();
 		mpq_t r;
@@ -721,9 +721,9 @@ atom* trunc(atom* a) {
 
 atom* round(atom* a) {
 	switch (tag(a)) {
-	case tag::Integer:
+	case Integer:
 		return a;
-	case tag::Rational:
+	case Rational:
 	{
 		auto a1 = a.mpq();
 		mpq_t r;
@@ -737,9 +737,9 @@ atom* round(atom* a) {
 
 bool isInteger(atom* a) {
 	switch (tag(a)) {
-	case tag::Integer:
+	case Integer:
 		return 1;
-	case tag::Rational:
+	case Rational:
 	{
 		auto a1 = a.mpq();
 		return !mpz_cmp_ui(mpq_denref(a1), 1);
@@ -750,9 +750,9 @@ bool isInteger(atom* a) {
 
 atom* toInteger(atom* a) {
 	switch (tag(a)) {
-	case tag::Integer:
+	case Integer:
 		return a;
-	case tag::Rational:
+	case Rational:
 	{
 		auto a1 = a.mpq();
 		mpz_t r;
@@ -770,7 +770,7 @@ atom* toInteger(atom* a) {
 
 atom* toRational(atom* a) {
 	switch (tag(a)) {
-	case tag::Integer:
+	case Integer:
 	{
 		auto a1 = a.mpz();
 		mpq_t r;
@@ -778,7 +778,7 @@ atom* toRational(atom* a) {
 		mpz_set(mpq_numref(r), a1);
 		return intern(r);
 	}
-	case tag::Rational:
+	case Rational:
 		return a;
 	}
 	unreachable;
@@ -786,7 +786,7 @@ atom* toRational(atom* a) {
 
 atom* toReal(atom* a) {
 	switch (tag(a)) {
-	case tag::Integer:
+	case Integer:
 	{
 		auto a1 = a.mpz();
 		mpq_t r;
@@ -794,8 +794,8 @@ atom* toReal(atom* a) {
 		mpz_set(mpq_numref(r), a1);
 		return real(r);
 	}
-	case tag::Rational:
-		return intern(tag::ToReal, a);
+	case Rational:
+		return intern(ToReal, a);
 	}
 	unreachable;
 }

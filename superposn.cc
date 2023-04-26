@@ -63,17 +63,17 @@ struct cmpc {
 // rule that equality is not allowed on Boolean terms.
 bool equatable(term a, term b) {
 	if (type(a) != type(b)) return 0;
-	if (type(a) == kind::Bool) return a == tag::True || b == tag::True;
+	if (type(a) == kind::Bool) return a == True || b == True;
 	return 1;
 }
 
 term equate(term a, term b) {
 	assert(equatable(a, b));
-	if (a == tag::True) return b;
-	if (b == tag::True) return a;
+	if (a == True) return b;
+	if (b == True) return a;
 	assert(type(a) != kind::Bool);
 	assert(type(b) != kind::Bool);
-	return term(tag::Eq, a, b);
+	return term(Eq, a, b);
 }
 
 // Equality tends to generate a large number of clauses. Superposition calculus is designed to moderate the profusion of clauses
@@ -108,8 +108,8 @@ public:
 
 		// Variables are unordered unless contained in other term
 		// TODO: check how that relates to variable identity between clauses
-		if (tag(a) == tag::Var) return 0;
-		if (tag(b) == tag::Var) return occurs(b, a);
+		if (tag(a) == Var) return 0;
+		if (tag(b) == Var) return occurs(b, a);
 
 		// Sufficient condition: Exists ai >= b
 		for (size_t i = 1; i < a.size(); i++)
@@ -298,7 +298,7 @@ struct doing {
 		const vec<size_t>& posn,
 		term a) {
 		// It is never necessary to paramodulate into variables
-		if (tag(a) == tag::Var) return;
+		if (tag(a) == Var) return;
 
 		// Unify
 		map<termx, termx> m;

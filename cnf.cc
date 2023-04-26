@@ -30,19 +30,19 @@ int ncsAdd(bool pol, term a) {
 int ncs(bool pol, term a) {
 	// NO_SORT
 	switch (tag(a)) {
-	case tag::All:
-	case tag::Exists:
+	case All:
+	case Exists:
 		return ncs(pol, a[1]);
 
-	case tag::Not:
+	case Not:
 		return ncs(!pol, a[1]);
 
-	case tag::Or:
+	case Or:
 		return pol ? ncsMul(pol, a) : ncsAdd(pol, a);
-	case tag::And:
+	case And:
 		return pol ? ncsAdd(pol, a) : ncsMul(pol, a);
 
-	case tag::Eqv:
+	case Eqv:
 	{
 		auto x = a[1];
 		auto y = a[2];
@@ -113,7 +113,7 @@ struct doing {
 			break;
 		case 0:
 			// In the general case, full equivalence is needed; the new name implies and is implied by the original formula
-			a = term(tag::And, imp(b, a), imp(a, b));
+			a = term(And, imp(b, a), imp(a, b));
 			break;
 		default:
 			unreachable;
@@ -147,16 +147,16 @@ struct doing {
 		vec<term> v(1, a[0]);
 		// NO_SORT
 		switch (tag(a)) {
-		case tag::All:
-		case tag::Exists:
+		case All:
+		case Exists:
 			v.push_back(maybeRename(pol, a[1]));
 			for (size_t i = 2; i != a.size(); ++i) v.push_back(a[i]);
 			break;
 
-		case tag::Not:
-			return term(tag::Not, maybeRename(-pol, a[1]));
+		case Not:
+			return term(Not, maybeRename(-pol, a[1]));
 
-		case tag::Or:
+		case Or:
 			for (size_t i = 1; i != a.size(); ++i) v.push_back(maybeRename(pol, a[i]));
 
 			// If this formula will be used with positive polarity (including the case where it will be used both ways), we are
@@ -164,20 +164,20 @@ struct doing {
 			// rename some of the arguments
 			if (pol >= 0) maybeRename(pol, v);
 			break;
-		case tag::And:
+		case And:
 			for (size_t i = 1; i != a.size(); ++i) v.push_back(maybeRename(pol, a[i]));
 
 			// NOT-AND yields OR, so mirror the OR case
 			if (pol <= 0) maybeRename(pol, v);
 			break;
 
-		case tag::Eqv:
+		case Eqv:
 		{
 			auto x = maybeRename(0, a[1]);
 			auto y = maybeRename(0, a[2]);
 			if (ncsApprox(0, x) >= many) x = rename(0, x);
 			if (ncsApprox(0, y) >= many) y = rename(0, y);
-			return term(tag::Eqv, x, y);
+			return term(Eqv, x, y);
 		}
 
 		default:
@@ -192,7 +192,7 @@ struct doing {
 	map<term, term> all(map<term, term> m, term a) {
 		for (size_t i = 2; i != a.size(); ++i) {
 			auto x = a[i];
-			assert(tag(x) == tag::Var);
+			assert(tag(x) == Var);
 			auto y = var(vars++, type(x));
 			m.add(x, y);
 		}
@@ -205,12 +205,12 @@ struct doing {
 		// Get the surrounding universally quantified variables that will be arguments to the Skolem functions
 		set<term> args;
 		for (auto& kv: m)
-			if (tag(kv.second) == tag::Var) args.add(kv.second);
+			if (tag(kv.second) == Var) args.add(kv.second);
 
 		// Make a replacement for each existentially quantified variable
 		for (size_t i = 2; i != a.size(); ++i) {
 			auto x = a[i];
-			assert(tag(x) == tag::Var);
+			assert(tag(x) == Var);
 			auto y = skolem(type(x), args);
 			m.add(x, y);
 		}
@@ -224,37 +224,37 @@ struct doing {
 		// NO_SORT
 		switch (tag(a)) {
 			// Boolean constants and operators can be inverted by downward-sinking NOTs
-		case tag::False:
+		case False:
 			return mkbool(!pol);
-		case tag::True:
+		case True:
 			return mkbool(pol);
 
-		case tag::Not:
+		case Not:
 			return nnf(m, !pol, a[1]);
 
-		case tag::Or:
-			if (!pol) v[0] = term(tag::And);
+		case Or:
+			if (!pol) v[0] = term(And);
 			for (size_t i = 1; i != a.size(); ++i) v.push_back(nnf(m, pol, a[i]));
 			return term(v);
-		case tag::And:
-			if (!pol) v[0] = term(tag::Or);
+		case And:
+			if (!pol) v[0] = term(Or);
 			for (size_t i = 1; i != a.size(); ++i) v.push_back(nnf(m, pol, a[i]));
 			return term(v);
 
 			// Variables are mapped to new variables or Skolem functions
-		case tag::Var:
+		case Var:
 			return m.at(a);
 
 			// According to whether they are bound by universal or existential quantifiers
-		case tag::All:
+		case All:
 			m = pol ? all(m, a) : exists(m, a);
 			return nnf(m, pol, a[1]);
-		case tag::Exists:
+		case Exists:
 			m = pol ? exists(m, a) : all(m, a);
 			return nnf(m, pol, a[1]);
 
 			// Equivalence is the most difficult operator to deal with
-		case tag::Eqv:
+		case Eqv:
 		{
 			auto x = a[1];
 			auto y = a[2];
@@ -262,24 +262,23 @@ struct doing {
 			auto x1 = nnf(m, 1, x);
 			auto y0 = nnf(m, 0, y);
 			auto y1 = nnf(m, 1, y);
-			return pol ? term(tag::And, term(tag::Or, x0, y1), term(tag::Or, x1, y0))
-					   : term(tag::And, term(tag::Or, x0, y0), term(tag::Or, x1, y1));
+			return pol ? term(And, term(Or, x0, y1), term(Or, x1, y0)) : term(And, term(Or, x0, y0), term(Or, x1, y1));
 		}
 		}
 		for (size_t i = 1; i != a.size(); ++i) v.push_back(nnf(m, 1, a[i]));
 		a = term(v);
-		return pol ? a : term(tag::Not, a);
+		return pol ? a : term(Not, a);
 	}
 
 	// Distribute OR down into AND, completing the layering of the operators for CNF. This is the second place where exponential
 	// expansion would occur, had selected formulas not already been renamed.
 	term distribute(term a) {
-		vec<term> v(1, term(tag::And));
+		vec<term> v(1, term(And));
 		switch (tag(a)) {
-		case tag::And:
+		case And:
 			for (size_t i = 1; i != a.size(); ++i) v.push_back(distribute(a[i]));
 			break;
-		case tag::Or:
+		case Or:
 		{
 			// Arguments can be taken without loss of generality as ANDs
 			vec<vec<term>> ands;
@@ -288,13 +287,13 @@ struct doing {
 				auto b = distribute(a[i]);
 
 				// And make a flat layer of ANDs
-				ands.push_back(flatten(tag::And, b));
+				ands.push_back(flatten(And, b));
 			}
 
 			// OR distributes over AND by Cartesian product
 			// TODO: can this be done by reference?
 			for (auto u: cartProduct(ands)) {
-				u.insert(u.begin(), term(tag::Or));
+				u.insert(u.begin(), term(Or));
 				v.push_back(term(u));
 			}
 			break;
@@ -308,15 +307,15 @@ struct doing {
 	// Convert a suitably rearranged term into actual clauses
 	void clauseTerm(term a, vec<term>& neg, vec<term>& pos) {
 		switch (tag(a)) {
-		case tag::All:
-		case tag::And:
-		case tag::Eqv:
-		case tag::Exists:
+		case All:
+		case And:
+		case Eqv:
+		case Exists:
 			unreachable;
-		case tag::Not:
+		case Not:
 			neg.push_back(a[1]);
 			return;
-		case tag::Or:
+		case Or:
 			for (size_t i = 1; i != a.size(); ++i) clauseTerm(a[i], neg, pos);
 			return;
 		}
@@ -335,7 +334,7 @@ struct doing {
 
 	// And record the clauses
 	void csTerm(term from, term a) {
-		for (auto& b: flatten(tag::And, a)) {
+		for (auto& b: flatten(And, a)) {
 			auto c = clauseTerm(b);
 			if (c == truec) continue;
 			proofCnf.add(c, from);

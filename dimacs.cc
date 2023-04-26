@@ -77,11 +77,11 @@ struct parser1: parser {
 			if (tok != k_id) err("Expected count");
 			lex();
 		}
-		vec<term> literals(1, term(tag::Or));
+		vec<term> literals(1, term(Or));
 		for (;;) switch (tok) {
 			case '-':
 				lex();
-				literals.push_back(term(tag::Not, var()));
+				literals.push_back(term(Not, var()));
 				break;
 			case 0:
 				if (literals.size()) add(literals);

@@ -2,12 +2,12 @@
 
 static void freeVars(set<term> boundv, term a, set<term>& freev) {
 	switch (tag(a)) {
-	case tag::All:
-	case tag::Exists:
+	case All:
+	case Exists:
 		for (size_t i = 2; i != a.size(); ++i) boundv.add(a[i]);
 		freeVars(boundv, a[1], freev);
 		return;
-	case tag::Var:
+	case Var:
 		if (boundv.count(a)) return;
 		freev.add(a);
 		return;
@@ -17,8 +17,8 @@ static void freeVars(set<term> boundv, term a, set<term>& freev) {
 
 // SORT
 equation eqn(term a) {
-	if (tag(a) == tag::Eq) return make_pair(a[1], a[2]);
-	return make_pair(a, tag::True);
+	if (tag(a) == Eq) return make_pair(a[1], a[2]);
+	return make_pair(a, True);
 }
 
 static void flatten(tag t, term a, vec<term>& r) {
@@ -42,7 +42,7 @@ set<term> freeVars(term a) {
 }
 
 term imp(term a, term b) {
-	return term(tag::Or, term(tag::Not, a), b);
+	return term(Or, term(Not, a), b);
 }
 
 bool occurs(term a, term b) {
@@ -55,7 +55,7 @@ bool occurs(term a, term b) {
 term quantify(term a) {
 	auto vars = freeVars(a);
 	if (vars.empty()) return a;
-	vec<term> v(1, term(tag::All));
+	vec<term> v(1, term(All));
 	v.push_back(a);
 	for (auto x: vars) v.push_back(x);
 	return term(v);

@@ -173,17 +173,17 @@ void testSubsume() {
 	assert(subsumes(d, c));
 
 	// (a = x) <= (a = b)
-	pos.push_back(term(tag::Eq, a, x));
+	pos.push_back(term(Eq, a, x));
 	c = mkClause(neg, pos);
-	pos.push_back(term(tag::Eq, a, b));
+	pos.push_back(term(Eq, a, b));
 	d = mkClause(neg, pos);
 	assert(subsumes(c, d));
 	assert(!subsumes(d, c));
 
 	// (x = a) <= (a = b)
-	pos.push_back(term(tag::Eq, x, a));
+	pos.push_back(term(Eq, x, a));
 	c = mkClause(neg, pos);
-	pos.push_back(term(tag::Eq, a, b));
+	pos.push_back(term(Eq, a, b));
 	d = mkClause(neg, pos);
 	assert(subsumes(c, d));
 	assert(!subsumes(d, c));
@@ -236,14 +236,14 @@ void testCnf() {
 	// False
 	cs.clear();
 	cs1.clear();
-	cnf(tag::False, cs);
+	cnf(False, cs);
 	assert(cs.size() == 1);
 	assert(*cs.begin() == falsec);
 
 	// True
 	cs.clear();
 	cs1.clear();
-	cnf(tag::True, cs);
+	cnf(True, cs);
 	assert(cs.size() == 0);
 
 	term a = gensym(kind::Bool);
@@ -260,7 +260,7 @@ void testCnf() {
 	// !a
 	cs.clear();
 	cs1.clear();
-	cnf(term(tag::Not, a), cs);
+	cnf(term(Not, a), cs);
 	assert(cs.size() == 1);
 	c = *cs.begin();
 	assert(c.first == vec<term>{a});
@@ -269,7 +269,7 @@ void testCnf() {
 	// !!a
 	cs.clear();
 	cs1.clear();
-	cnf(term(tag::Not, term(tag::Not, a)), cs);
+	cnf(term(Not, term(Not, a)), cs);
 	assert(cs.size() == 1);
 	c = *cs.begin();
 	assert(c.first.empty());
@@ -278,14 +278,14 @@ void testCnf() {
 	// !true
 	cs.clear();
 	cs1.clear();
-	cnf(term(tag::Not, tag::True), cs);
+	cnf(term(Not, True), cs);
 	assert(cs.size() == 1);
 	assert(*cs.begin() == falsec);
 
 	// !false
 	cs.clear();
 	cs1.clear();
-	cnf(term(tag::Not, tag::False), cs);
+	cnf(term(Not, False), cs);
 	assert(cs.size() == 0);
 
 	term b = gensym(kind::Bool);
@@ -293,7 +293,7 @@ void testCnf() {
 	// a || b
 	cs.clear();
 	cs1.clear();
-	cnf(term(tag::Or, a, b), cs);
+	cnf(term(Or, a, b), cs);
 	assert(cs.size() == 1);
 	c = *cs.begin();
 	assert(c.first.empty());
@@ -302,7 +302,7 @@ void testCnf() {
 	// a && b
 	cs.clear();
 	cs1.clear();
-	cnf(term(tag::And, a, b), cs);
+	cnf(term(And, a, b), cs);
 	assert(cs.size() == 2);
 	cs1.add(make_pair(vec<term>(), vec<term>{a}));
 	cs1.add(make_pair(vec<term>(), vec<term>{b}));
@@ -315,7 +315,7 @@ void testCnf() {
 	// a1 || a2 || a3
 	cs.clear();
 	cs1.clear();
-	cnf(term(tag::Or, a1, a2, a3), cs);
+	cnf(term(Or, a1, a2, a3), cs);
 	assert(cs.size() == 1);
 	c = *cs.begin();
 	assert(c.first.empty());
@@ -324,7 +324,7 @@ void testCnf() {
 	// (a1 || a2) || a3
 	cs.clear();
 	cs1.clear();
-	cnf(term(tag::Or, term(tag::Or, a1, a2), a3), cs);
+	cnf(term(Or, term(Or, a1, a2), a3), cs);
 	assert(cs.size() == 1);
 	c = *cs.begin();
 	assert(c.first.empty());
@@ -333,7 +333,7 @@ void testCnf() {
 	// a1 || (a2 || a3)
 	cs.clear();
 	cs1.clear();
-	cnf(term(tag::Or, a1, term(tag::Or, a2, a3)), cs);
+	cnf(term(Or, a1, term(Or, a2, a3)), cs);
 	assert(cs.size() == 1);
 	c = *cs.begin();
 	assert(c.first.empty());
@@ -342,7 +342,7 @@ void testCnf() {
 	// a1 && a2 && a3
 	cs.clear();
 	cs1.clear();
-	cnf(term(tag::And, a1, a2, a3), cs);
+	cnf(term(And, a1, a2, a3), cs);
 	assert(cs.size() == 3);
 	cs1.add(make_pair(vec<term>(), vec<term>{a1}));
 	cs1.add(make_pair(vec<term>(), vec<term>{a2}));
@@ -352,7 +352,7 @@ void testCnf() {
 	// (a1 && a2) && a3
 	cs.clear();
 	cs1.clear();
-	cnf(term(tag::And, term(tag::And, a1, a2), a3), cs);
+	cnf(term(And, term(And, a1, a2), a3), cs);
 	assert(cs.size() == 3);
 	cs1.add(make_pair(vec<term>(), vec<term>{a1}));
 	cs1.add(make_pair(vec<term>(), vec<term>{a2}));
@@ -362,7 +362,7 @@ void testCnf() {
 	// a1 && (a2 && a3)
 	cs.clear();
 	cs1.clear();
-	cnf(term(tag::And, a1, term(tag::And, a2, a3)), cs);
+	cnf(term(And, a1, term(And, a2, a3)), cs);
 	assert(cs.size() == 3);
 	cs1.add(make_pair(vec<term>(), vec<term>{a1}));
 	cs1.add(make_pair(vec<term>(), vec<term>{a2}));
@@ -372,7 +372,7 @@ void testCnf() {
 	// !(a1 || a2 || a3)
 	cs.clear();
 	cs1.clear();
-	cnf(term(tag::Not, term(tag::Or, a1, a2, a3)), cs);
+	cnf(term(Not, term(Or, a1, a2, a3)), cs);
 	assert(cs.size() == 3);
 	cs1.add(make_pair(vec<term>{a1}, vec<term>()));
 	cs1.add(make_pair(vec<term>{a2}, vec<term>()));
@@ -382,7 +382,7 @@ void testCnf() {
 	// !(a1 && a2 && a3)
 	cs.clear();
 	cs1.clear();
-	cnf(term(tag::Not, term(tag::And, a1, a2, a3)), cs);
+	cnf(term(Not, term(And, a1, a2, a3)), cs);
 	assert(cs.size() == 1);
 	cs1.add(make_pair(vec<term>{a1, a2, a3}, vec<term>()));
 	assert(cs == cs1);
@@ -390,32 +390,32 @@ void testCnf() {
 	// False <=> false
 	cs.clear();
 	cs1.clear();
-	cnf(term(tag::Eqv, tag::False, tag::False), cs);
+	cnf(term(Eqv, False, False), cs);
 	assert(cs.size() == 0);
 
 	// True <=> true
 	cs.clear();
 	cs1.clear();
-	cnf(term(tag::Eqv, tag::True, tag::True), cs);
+	cnf(term(Eqv, True, True), cs);
 	assert(cs.size() == 0);
 
 	// False <=> true
 	cs.clear();
 	cs1.clear();
-	cnf(term(tag::Eqv, tag::False, tag::True), cs);
+	cnf(term(Eqv, False, True), cs);
 	assert(cs.size() == 1);
 	assert(*cs.begin() == falsec);
 
 	// a <=> a
 	cs.clear();
 	cs1.clear();
-	cnf(term(tag::Eqv, a, a), cs);
+	cnf(term(Eqv, a, a), cs);
 	assert(cs.size() == 0);
 
 	// a => a
 	cs.clear();
 	cs1.clear();
-	cnf(term(tag::Or, term(tag::Not, a), a), cs);
+	cnf(term(Or, term(Not, a), a), cs);
 	assert(cs.size() == 0);
 
 	term b1 = gensym(kind::Bool);
@@ -425,7 +425,7 @@ void testCnf() {
 	// a || (b1 && b2 && b3)
 	cs.clear();
 	cs1.clear();
-	cnf(term(tag::Or, a, term(tag::And, b1, b2, b3)), cs);
+	cnf(term(Or, a, term(And, b1, b2, b3)), cs);
 	assert(cs.size() == 3);
 	cs1.add(make_pair(vec<term>(), vec<term>{a, b1}));
 	cs1.add(make_pair(vec<term>(), vec<term>{a, b2}));
@@ -448,7 +448,7 @@ void testCnf() {
 	// !p(s1, s2, s3)
 	cs.clear();
 	cs1.clear();
-	cnf(term(tag::Not, term(p, s1, s2, s3)), cs);
+	cnf(term(Not, term(p, s1, s2, s3)), cs);
 	assert(cs.size() == 1);
 	cs1.add(make_pair(vec<term>{term(p, s1, s2, s3)}, vec<term>()));
 	assert(cs == cs1);
@@ -460,17 +460,17 @@ void testCnf() {
 	// n1 == 42
 	cs.clear();
 	cs1.clear();
-	cnf(term(tag::Eq, n1, integer(42)), cs);
+	cnf(term(Eq, n1, integer(42)), cs);
 	assert(cs.size() == 1);
-	cs1.add(make_pair(vec<term>(), vec<term>{term(tag::Eq, n1, integer(42))}));
+	cs1.add(make_pair(vec<term>(), vec<term>{term(Eq, n1, integer(42))}));
 	assert(cs == cs1);
 
 	// n1 + n2 + n3 != 99
 	cs.clear();
 	cs1.clear();
-	cnf(term(tag::Not, term(tag::Eq, term(tag::Add, term(tag::Add, n1, n2), n3), integer(99))), cs);
+	cnf(term(Not, term(Eq, term(Add, term(Add, n1, n2), n3), integer(99))), cs);
 	assert(cs.size() == 1);
-	cs1.add(make_pair(vec<term>{term(tag::Eq, term(tag::Add, term(tag::Add, n1, n2), n3), integer(99))}, vec<term>()));
+	cs1.add(make_pair(vec<term>{term(Eq, term(Add, term(Add, n1, n2), n3), integer(99))}, vec<term>()));
 	assert(cs == cs1);
 }
 
@@ -638,7 +638,7 @@ void testGraph3() {
 
 term replace(const map<term, term>& m, term a) {
 	if (m.count(a)) {
-		assert(tag(a) == tag::Var);
+		assert(tag(a) == Var);
 		return replace(m, m.at(a));
 	}
 
@@ -947,19 +947,19 @@ void testDpll() {
 
 	// False
 	cs.clear();
-	cs.add(make_pair(vec<term>(), vec<term>{tag::False}));
+	cs.add(make_pair(vec<term>(), vec<term>{False}));
 	m.clear();
 	assert(dpll(m, cs) == szs::Unsatisfiable);
 
 	// False | false
 	cs.clear();
-	cs.add(make_pair(vec<term>(), vec<term>{tag::False, tag::False}));
+	cs.add(make_pair(vec<term>(), vec<term>{False, False}));
 	m.clear();
 	assert(dpll(m, cs) == szs::Unsatisfiable);
 
 	// !true
 	cs.clear();
-	cs.add(make_pair(vec<term>{tag::True}, vec<term>()));
+	cs.add(make_pair(vec<term>{True}, vec<term>()));
 	m.clear();
 	assert(dpll(m, cs) == szs::Unsatisfiable);
 
@@ -972,14 +972,14 @@ void testDpll() {
 
 	// True | true
 	cs.clear();
-	cs.add(make_pair(vec<term>(), vec<term>{tag::True, tag::True}));
+	cs.add(make_pair(vec<term>(), vec<term>{True, True}));
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 	assert(m.empty());
 
 	// !false
 	cs.clear();
-	cs.add(make_pair(vec<term>{tag::False}, vec<term>()));
+	cs.add(make_pair(vec<term>{False}, vec<term>()));
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 	assert(m.empty());
@@ -990,7 +990,7 @@ void testDpll() {
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 	assert(m.size() == 1);
-	assert(m.at(a) == tag::True);
+	assert(m.at(a) == True);
 
 	// a | a
 	cs.clear();
@@ -998,7 +998,7 @@ void testDpll() {
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 	assert(m.size() == 1);
-	assert(m.at(a) == tag::True);
+	assert(m.at(a) == True);
 
 	// !a
 	cs.clear();
@@ -1006,7 +1006,7 @@ void testDpll() {
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 	assert(m.size() == 1);
-	assert(m.at(a) == tag::False);
+	assert(m.at(a) == False);
 
 	// !a | a
 	cs.clear();
@@ -1027,7 +1027,7 @@ void testDpll() {
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 	assert(m.size() == 1);
-	assert(m.at(b) == tag::True);
+	assert(m.at(b) == True);
 
 	// a & b
 	cs.clear();
@@ -1036,52 +1036,38 @@ void testDpll() {
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 	assert(m.size() == 2);
-	assert(m.at(a) == tag::True);
-	assert(m.at(b) == tag::True);
+	assert(m.at(a) == True);
+	assert(m.at(b) == True);
 
 	// Cnf
 
 	// True <=> (true <=> true)
 	cs.clear();
-	cnf(term(tag::Eqv, tag::True, term(tag::Eqv, tag::True, tag::True)), cs);
+	cnf(term(Eqv, True, term(Eqv, True, True)), cs);
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 
 	// True <=> (true <=> (true <=> true))
 	cs.clear();
-	cnf(term(tag::Eqv, tag::True, term(tag::Eqv, tag::True, term(tag::Eqv, tag::True, tag::True))), cs);
+	cnf(term(Eqv, True, term(Eqv, True, term(Eqv, True, True))), cs);
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 
 	// True <=> (true <=> (true <=> (true <=> true)))
 	cs.clear();
-	cnf(term(tag::Eqv, tag::True, term(tag::Eqv, tag::True, term(tag::Eqv, tag::True, term(tag::Eqv, tag::True, tag::True)))), cs);
+	cnf(term(Eqv, True, term(Eqv, True, term(Eqv, True, term(Eqv, True, True)))), cs);
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 
 	// True <=> (true <=> (true <=> (true <=> (true <=> true))))
 	cs.clear();
-	cnf(term(
-			tag::Eqv,
-			tag::True,
-			term(tag::Eqv, tag::True, term(tag::Eqv, tag::True, term(tag::Eqv, tag::True, term(tag::Eqv, tag::True, tag::True))))),
-		cs);
+	cnf(term(Eqv, True, term(Eqv, True, term(Eqv, True, term(Eqv, True, term(Eqv, True, True))))), cs);
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 
 	// True <=> (true <=> (true <=> (true <=> (true <=> (true <=> true)))))
 	cs.clear();
-	cnf(term(
-			tag::Eqv,
-			tag::True,
-			term(
-				tag::Eqv,
-				tag::True,
-				term(
-					tag::Eqv,
-					tag::True,
-					term(tag::Eqv, tag::True, term(tag::Eqv, tag::True, term(tag::Eqv, tag::True, tag::True)))))),
-		cs);
+	cnf(term(Eqv, True, term(Eqv, True, term(Eqv, True, term(Eqv, True, term(Eqv, True, term(Eqv, True, True)))))), cs);
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 
@@ -1092,51 +1078,51 @@ void testDpll() {
 
 	// p & q & r
 	cs.clear();
-	cnf(term(tag::And, p, q, r), cs);
+	cnf(term(And, p, q, r), cs);
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 	assert(m.size() == 3);
-	assert(m.at(p) == tag::True);
-	assert(m.at(q) == tag::True);
-	assert(m.at(r) == tag::True);
+	assert(m.at(p) == True);
+	assert(m.at(q) == True);
+	assert(m.at(r) == True);
 
 	// (p & q) & r
 	cs.clear();
-	cnf(term(tag::And, term(tag::And, p, q), r), cs);
+	cnf(term(And, term(And, p, q), r), cs);
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 	assert(m.size() == 3);
-	assert(m.at(p) == tag::True);
-	assert(m.at(q) == tag::True);
-	assert(m.at(r) == tag::True);
+	assert(m.at(p) == True);
+	assert(m.at(q) == True);
+	assert(m.at(r) == True);
 
 	// p & (q & r)
 	cs.clear();
-	cnf(term(tag::And, p, term(tag::And, q, r)), cs);
+	cnf(term(And, p, term(And, q, r)), cs);
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 	assert(m.size() == 3);
-	assert(m.at(p) == tag::True);
-	assert(m.at(q) == tag::True);
-	assert(m.at(r) == tag::True);
+	assert(m.at(p) == True);
+	assert(m.at(q) == True);
+	assert(m.at(r) == True);
 
 	// p | q | r
 	cs.clear();
-	cnf(term(tag::Or, p, q, r), cs);
+	cnf(term(Or, p, q, r), cs);
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 	assert(m.size());
 
 	// (p | q) | r
 	cs.clear();
-	cnf(term(tag::Or, term(tag::Or, p, q), r), cs);
+	cnf(term(Or, term(Or, p, q), r), cs);
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 	assert(m.size());
 
 	// p | (q | r)
 	cs.clear();
-	cnf(term(tag::Or, p, term(tag::Or, q, r)), cs);
+	cnf(term(Or, p, term(Or, q, r)), cs);
 	m.clear();
 	assert(dpll(m, cs) == szs::Satisfiable);
 	assert(m.size());
@@ -1156,15 +1142,15 @@ void test() {
 	term y = var(0, kind::Individual);
 	term z = var(2, kind::Individual);
 
-	assert(tag(x) == tag::Var);
+	assert(tag(x) == Var);
 	assert(x == y);
 	assert(x != z);
 
-	term a = term(tag::And, tag::True, tag::True);
+	term a = term(And, True, True);
 	assert(a[1] == a[1]);
 	assert(a.size() == 3);
 
-	term b = term(tag::And, tag::True, tag::True);
+	term b = term(And, True, True);
 	assert(a == b);
 
 	// Collections
@@ -1437,182 +1423,182 @@ void test() {
 
 	// Types
 	map<term, term> types;
-	assert(type(term(tag::True)) == kind::Bool);
+	assert(type(term(True)) == kind::Bool);
 	assert(type(integer(11)) == kind::Integer);
 	assert(type(rational(1, 1)) == kind::Rational);
 	assert(type(var(100, kind::Individual)) == kind::Individual);
-	assert(type(term(tag::And, tag::False, tag::True)) == kind::Bool);
+	assert(type(term(And, False, True)) == kind::Bool);
 
 	// Eval
 	map<term, term> m;
-	assert(simplify(m, term(tag::Eq, integer(3), integer(3))) == tag::True);
-	assert(simplify(m, term(tag::Eq, integer(3), integer(4))) == tag::False);
-	assert(simplify(m, term(tag::IsInteger, integer(3))) == tag::True);
-	assert(simplify(m, term(tag::IsInteger, rational(3, 1))) == tag::True);
-	assert(simplify(m, term(tag::IsInteger, rational(3, 2))) == tag::False);
+	assert(simplify(m, term(Eq, integer(3), integer(3))) == True);
+	assert(simplify(m, term(Eq, integer(3), integer(4))) == False);
+	assert(simplify(m, term(IsInteger, integer(3))) == True);
+	assert(simplify(m, term(IsInteger, rational(3, 1))) == True);
+	assert(simplify(m, term(IsInteger, rational(3, 2))) == False);
 
-	assert(simplify(m, term(tag::DivF, integer(5), integer(3))) == integer(1));
-	assert(simplify(m, term(tag::DivF, integer(-5), integer(3))) == integer(-2));
-	assert(simplify(m, term(tag::DivF, integer(5), integer(-3))) == integer(-2));
-	assert(simplify(m, term(tag::DivF, integer(-5), integer(-3))) == integer(1));
-	assert(simplify(m, term(tag::DivF, rational(5, 1), rational(3, 1))) == rational(1, 1));
-	assert(simplify(m, term(tag::DivF, rational(-5, 1), rational(3, 1))) == rational(-2, 1));
-	assert(simplify(m, term(tag::DivF, rational(5, 1), rational(-3, 1))) == rational(-2, 1));
-	assert(simplify(m, term(tag::DivF, rational(-5, 1), rational(-3, 1))) == rational(1, 1));
+	assert(simplify(m, term(DivF, integer(5), integer(3))) == integer(1));
+	assert(simplify(m, term(DivF, integer(-5), integer(3))) == integer(-2));
+	assert(simplify(m, term(DivF, integer(5), integer(-3))) == integer(-2));
+	assert(simplify(m, term(DivF, integer(-5), integer(-3))) == integer(1));
+	assert(simplify(m, term(DivF, rational(5, 1), rational(3, 1))) == rational(1, 1));
+	assert(simplify(m, term(DivF, rational(-5, 1), rational(3, 1))) == rational(-2, 1));
+	assert(simplify(m, term(DivF, rational(5, 1), rational(-3, 1))) == rational(-2, 1));
+	assert(simplify(m, term(DivF, rational(-5, 1), rational(-3, 1))) == rational(1, 1));
 
-	assert(simplify(m, term(tag::RemF, integer(5), integer(3))) == integer(2));
-	assert(simplify(m, term(tag::RemF, integer(-5), integer(3))) == integer(1));
-	assert(simplify(m, term(tag::RemF, integer(5), integer(-3))) == integer(-1));
-	assert(simplify(m, term(tag::RemF, integer(-5), integer(-3))) == integer(-2));
-	assert(simplify(m, term(tag::RemF, rational(5, 1), rational(3, 1))) == rational(2, 1));
-	assert(simplify(m, term(tag::RemF, rational(-5, 1), rational(3, 1))) == rational(1, 1));
-	assert(simplify(m, term(tag::RemF, rational(5, 1), rational(-3, 1))) == rational(-1, 1));
-	assert(simplify(m, term(tag::RemF, rational(-5, 1), rational(-3, 1))) == rational(-2, 1));
+	assert(simplify(m, term(RemF, integer(5), integer(3))) == integer(2));
+	assert(simplify(m, term(RemF, integer(-5), integer(3))) == integer(1));
+	assert(simplify(m, term(RemF, integer(5), integer(-3))) == integer(-1));
+	assert(simplify(m, term(RemF, integer(-5), integer(-3))) == integer(-2));
+	assert(simplify(m, term(RemF, rational(5, 1), rational(3, 1))) == rational(2, 1));
+	assert(simplify(m, term(RemF, rational(-5, 1), rational(3, 1))) == rational(1, 1));
+	assert(simplify(m, term(RemF, rational(5, 1), rational(-3, 1))) == rational(-1, 1));
+	assert(simplify(m, term(RemF, rational(-5, 1), rational(-3, 1))) == rational(-2, 1));
 
-	assert(simplify(m, term(tag::DivT, integer(5), integer(3))) == integer(5 / 3));
-	assert(simplify(m, term(tag::DivT, integer(-5), integer(3))) == integer(-5 / 3));
-	assert(simplify(m, term(tag::DivT, integer(5), integer(-3))) == integer(5 / -3));
-	assert(simplify(m, term(tag::DivT, integer(-5), integer(-3))) == integer(-5 / -3));
-	assert(simplify(m, term(tag::DivT, integer(5), integer(3))) == integer(1));
-	assert(simplify(m, term(tag::DivT, integer(-5), integer(3))) == integer(-1));
-	assert(simplify(m, term(tag::DivT, integer(5), integer(-3))) == integer(-1));
-	assert(simplify(m, term(tag::DivT, integer(-5), integer(-3))) == integer(1));
-	assert(simplify(m, term(tag::DivT, rational(5, 1), rational(3, 1))) == rational(1, 1));
-	assert(simplify(m, term(tag::DivT, rational(-5, 1), rational(3, 1))) == rational(-1, 1));
-	assert(simplify(m, term(tag::DivT, rational(5, 1), rational(-3, 1))) == rational(-1, 1));
-	assert(simplify(m, term(tag::DivT, rational(-5, 1), rational(-3, 1))) == rational(1, 1));
+	assert(simplify(m, term(DivT, integer(5), integer(3))) == integer(5 / 3));
+	assert(simplify(m, term(DivT, integer(-5), integer(3))) == integer(-5 / 3));
+	assert(simplify(m, term(DivT, integer(5), integer(-3))) == integer(5 / -3));
+	assert(simplify(m, term(DivT, integer(-5), integer(-3))) == integer(-5 / -3));
+	assert(simplify(m, term(DivT, integer(5), integer(3))) == integer(1));
+	assert(simplify(m, term(DivT, integer(-5), integer(3))) == integer(-1));
+	assert(simplify(m, term(DivT, integer(5), integer(-3))) == integer(-1));
+	assert(simplify(m, term(DivT, integer(-5), integer(-3))) == integer(1));
+	assert(simplify(m, term(DivT, rational(5, 1), rational(3, 1))) == rational(1, 1));
+	assert(simplify(m, term(DivT, rational(-5, 1), rational(3, 1))) == rational(-1, 1));
+	assert(simplify(m, term(DivT, rational(5, 1), rational(-3, 1))) == rational(-1, 1));
+	assert(simplify(m, term(DivT, rational(-5, 1), rational(-3, 1))) == rational(1, 1));
 
-	assert(simplify(m, term(tag::RemT, integer(5), integer(3))) == integer(5 % 3));
-	assert(simplify(m, term(tag::RemT, integer(-5), integer(3))) == integer(-5 % 3));
-	assert(simplify(m, term(tag::RemT, integer(5), integer(-3))) == integer(5 % -3));
-	assert(simplify(m, term(tag::RemT, integer(-5), integer(-3))) == integer(-5 % -3));
-	assert(simplify(m, term(tag::RemT, integer(5), integer(3))) == integer(2));
-	assert(simplify(m, term(tag::RemT, integer(-5), integer(3))) == integer(-2));
-	assert(simplify(m, term(tag::RemT, integer(5), integer(-3))) == integer(2));
-	assert(simplify(m, term(tag::RemT, integer(-5), integer(-3))) == integer(-2));
-	assert(simplify(m, term(tag::RemT, rational(5, 1), rational(3, 1))) == rational(2, 1));
-	assert(simplify(m, term(tag::RemT, rational(-5, 1), rational(3, 1))) == rational(-2, 1));
-	assert(simplify(m, term(tag::RemT, rational(5, 1), rational(-3, 1))) == rational(2, 1));
-	assert(simplify(m, term(tag::RemT, rational(-5, 1), rational(-3, 1))) == rational(-2, 1));
+	assert(simplify(m, term(RemT, integer(5), integer(3))) == integer(5 % 3));
+	assert(simplify(m, term(RemT, integer(-5), integer(3))) == integer(-5 % 3));
+	assert(simplify(m, term(RemT, integer(5), integer(-3))) == integer(5 % -3));
+	assert(simplify(m, term(RemT, integer(-5), integer(-3))) == integer(-5 % -3));
+	assert(simplify(m, term(RemT, integer(5), integer(3))) == integer(2));
+	assert(simplify(m, term(RemT, integer(-5), integer(3))) == integer(-2));
+	assert(simplify(m, term(RemT, integer(5), integer(-3))) == integer(2));
+	assert(simplify(m, term(RemT, integer(-5), integer(-3))) == integer(-2));
+	assert(simplify(m, term(RemT, rational(5, 1), rational(3, 1))) == rational(2, 1));
+	assert(simplify(m, term(RemT, rational(-5, 1), rational(3, 1))) == rational(-2, 1));
+	assert(simplify(m, term(RemT, rational(5, 1), rational(-3, 1))) == rational(2, 1));
+	assert(simplify(m, term(RemT, rational(-5, 1), rational(-3, 1))) == rational(-2, 1));
 
-	assert(simplify(m, term(tag::DivE, integer(7), integer(3))) == integer(2));
-	assert(simplify(m, term(tag::DivE, integer(-7), integer(3))) == integer(-3));
-	assert(simplify(m, term(tag::DivE, integer(7), integer(-3))) == integer(-2));
-	assert(simplify(m, term(tag::DivE, integer(-7), integer(-3))) == integer(3));
-	assert(simplify(m, term(tag::DivE, rational(7, 1), rational(3, 1))) == rational(2, 1));
-	assert(simplify(m, term(tag::DivE, rational(-7, 1), rational(3, 1))) == rational(-3, 1));
-	assert(simplify(m, term(tag::DivE, rational(7, 1), rational(-3, 1))) == rational(-2, 1));
-	assert(simplify(m, term(tag::DivE, rational(-7, 1), rational(-3, 1))) == rational(3, 1));
+	assert(simplify(m, term(DivE, integer(7), integer(3))) == integer(2));
+	assert(simplify(m, term(DivE, integer(-7), integer(3))) == integer(-3));
+	assert(simplify(m, term(DivE, integer(7), integer(-3))) == integer(-2));
+	assert(simplify(m, term(DivE, integer(-7), integer(-3))) == integer(3));
+	assert(simplify(m, term(DivE, rational(7, 1), rational(3, 1))) == rational(2, 1));
+	assert(simplify(m, term(DivE, rational(-7, 1), rational(3, 1))) == rational(-3, 1));
+	assert(simplify(m, term(DivE, rational(7, 1), rational(-3, 1))) == rational(-2, 1));
+	assert(simplify(m, term(DivE, rational(-7, 1), rational(-3, 1))) == rational(3, 1));
 
-	assert(simplify(m, term(tag::RemE, integer(7), integer(3))) == integer(1));
-	assert(simplify(m, term(tag::RemE, integer(-7), integer(3))) == integer(2));
-	assert(simplify(m, term(tag::RemE, integer(7), integer(-3))) == integer(1));
-	assert(simplify(m, term(tag::RemE, integer(-7), integer(-3))) == integer(2));
-	assert(simplify(m, term(tag::RemE, rational(7, 1), rational(3, 1))) == rational(1, 1));
-	assert(simplify(m, term(tag::RemE, rational(-7, 1), rational(3, 1))) == rational(2, 1));
-	assert(simplify(m, term(tag::RemE, rational(7, 1), rational(-3, 1))) == rational(1, 1));
-	assert(simplify(m, term(tag::RemE, rational(-7, 1), rational(-3, 1))) == rational(2, 1));
+	assert(simplify(m, term(RemE, integer(7), integer(3))) == integer(1));
+	assert(simplify(m, term(RemE, integer(-7), integer(3))) == integer(2));
+	assert(simplify(m, term(RemE, integer(7), integer(-3))) == integer(1));
+	assert(simplify(m, term(RemE, integer(-7), integer(-3))) == integer(2));
+	assert(simplify(m, term(RemE, rational(7, 1), rational(3, 1))) == rational(1, 1));
+	assert(simplify(m, term(RemE, rational(-7, 1), rational(3, 1))) == rational(2, 1));
+	assert(simplify(m, term(RemE, rational(7, 1), rational(-3, 1))) == rational(1, 1));
+	assert(simplify(m, term(RemE, rational(-7, 1), rational(-3, 1))) == rational(2, 1));
 
-	assert(simplify(m, term(tag::Ceil, integer(0))) == integer(0));
-	assert(simplify(m, term(tag::Ceil, rational(0, 1))) == rational(0, 1));
-	assert(simplify(m, term(tag::Ceil, rational(1, 10))) == rational(1, 1));
-	assert(simplify(m, term(tag::Ceil, rational(5, 10))) == rational(1, 1));
-	assert(simplify(m, term(tag::Ceil, rational(9, 10))) == rational(1, 1));
-	assert(simplify(m, term(tag::Ceil, rational(-1, 10))) == rational(0, 1));
-	assert(simplify(m, term(tag::Ceil, rational(-5, 10))) == rational(0, 1));
-	assert(simplify(m, term(tag::Ceil, rational(-9, 10))) == rational(0, 1));
+	assert(simplify(m, term(Ceil, integer(0))) == integer(0));
+	assert(simplify(m, term(Ceil, rational(0, 1))) == rational(0, 1));
+	assert(simplify(m, term(Ceil, rational(1, 10))) == rational(1, 1));
+	assert(simplify(m, term(Ceil, rational(5, 10))) == rational(1, 1));
+	assert(simplify(m, term(Ceil, rational(9, 10))) == rational(1, 1));
+	assert(simplify(m, term(Ceil, rational(-1, 10))) == rational(0, 1));
+	assert(simplify(m, term(Ceil, rational(-5, 10))) == rational(0, 1));
+	assert(simplify(m, term(Ceil, rational(-9, 10))) == rational(0, 1));
 
-	assert(simplify(m, term(tag::Floor, integer(0))) == integer(0));
-	assert(simplify(m, term(tag::Floor, rational(0, 1))) == rational(0, 1));
-	assert(simplify(m, term(tag::Floor, rational(1, 10))) == rational(0, 1));
-	assert(simplify(m, term(tag::Floor, rational(5, 10))) == rational(0, 1));
-	assert(simplify(m, term(tag::Floor, rational(9, 10))) == rational(0, 1));
-	assert(simplify(m, term(tag::Floor, rational(-1, 10))) == rational(-1, 1));
-	assert(simplify(m, term(tag::Floor, rational(-5, 10))) == rational(-1, 1));
-	assert(simplify(m, term(tag::Floor, rational(-9, 10))) == rational(-1, 1));
+	assert(simplify(m, term(Floor, integer(0))) == integer(0));
+	assert(simplify(m, term(Floor, rational(0, 1))) == rational(0, 1));
+	assert(simplify(m, term(Floor, rational(1, 10))) == rational(0, 1));
+	assert(simplify(m, term(Floor, rational(5, 10))) == rational(0, 1));
+	assert(simplify(m, term(Floor, rational(9, 10))) == rational(0, 1));
+	assert(simplify(m, term(Floor, rational(-1, 10))) == rational(-1, 1));
+	assert(simplify(m, term(Floor, rational(-5, 10))) == rational(-1, 1));
+	assert(simplify(m, term(Floor, rational(-9, 10))) == rational(-1, 1));
 
-	assert(simplify(m, term(tag::Trunc, integer(0))) == integer(0));
-	assert(simplify(m, term(tag::Trunc, rational(0, 1))) == rational(0, 1));
-	assert(simplify(m, term(tag::Trunc, rational(1, 10))) == rational(0, 1));
-	assert(simplify(m, term(tag::Trunc, rational(5, 10))) == rational(0, 1));
-	assert(simplify(m, term(tag::Trunc, rational(9, 10))) == rational(0, 1));
-	assert(simplify(m, term(tag::Trunc, rational(-1, 10))) == rational(0, 1));
-	assert(simplify(m, term(tag::Trunc, rational(-5, 10))) == rational(0, 1));
-	assert(simplify(m, term(tag::Trunc, rational(-9, 10))) == rational(0, 1));
+	assert(simplify(m, term(Trunc, integer(0))) == integer(0));
+	assert(simplify(m, term(Trunc, rational(0, 1))) == rational(0, 1));
+	assert(simplify(m, term(Trunc, rational(1, 10))) == rational(0, 1));
+	assert(simplify(m, term(Trunc, rational(5, 10))) == rational(0, 1));
+	assert(simplify(m, term(Trunc, rational(9, 10))) == rational(0, 1));
+	assert(simplify(m, term(Trunc, rational(-1, 10))) == rational(0, 1));
+	assert(simplify(m, term(Trunc, rational(-5, 10))) == rational(0, 1));
+	assert(simplify(m, term(Trunc, rational(-9, 10))) == rational(0, 1));
 
-	assert(simplify(m, term(tag::Round, integer(0))) == integer(0));
-	assert(simplify(m, term(tag::Round, rational(0, 1))) == rational(0, 1));
-	assert(simplify(m, term(tag::Round, rational(1, 10))) == rational(0, 1));
-	assert(simplify(m, term(tag::Round, rational(5, 10))) == rational(0, 1));
-	assert(simplify(m, term(tag::Round, rational(9, 10))) == rational(1, 1));
-	assert(simplify(m, term(tag::Round, rational(-1, 10))) == rational(0, 1));
-	assert(simplify(m, term(tag::Round, rational(-5, 10))) == rational(0, 1));
-	assert(simplify(m, term(tag::Round, rational(-9, 10))) == rational(-1, 1));
-	assert(simplify(m, term(tag::Round, rational(15, 10))) == rational(2, 1));
-	assert(simplify(m, term(tag::Round, rational(25, 10))) == rational(2, 1));
-	assert(simplify(m, term(tag::Round, rational(35, 10))) == rational(4, 1));
-	assert(simplify(m, term(tag::Round, rational(45, 10))) == rational(4, 1));
+	assert(simplify(m, term(Round, integer(0))) == integer(0));
+	assert(simplify(m, term(Round, rational(0, 1))) == rational(0, 1));
+	assert(simplify(m, term(Round, rational(1, 10))) == rational(0, 1));
+	assert(simplify(m, term(Round, rational(5, 10))) == rational(0, 1));
+	assert(simplify(m, term(Round, rational(9, 10))) == rational(1, 1));
+	assert(simplify(m, term(Round, rational(-1, 10))) == rational(0, 1));
+	assert(simplify(m, term(Round, rational(-5, 10))) == rational(0, 1));
+	assert(simplify(m, term(Round, rational(-9, 10))) == rational(-1, 1));
+	assert(simplify(m, term(Round, rational(15, 10))) == rational(2, 1));
+	assert(simplify(m, term(Round, rational(25, 10))) == rational(2, 1));
+	assert(simplify(m, term(Round, rational(35, 10))) == rational(4, 1));
+	assert(simplify(m, term(Round, rational(45, 10))) == rational(4, 1));
 
-	assert(simplify(m, term(tag::Add, rational(1, 7), rational(2, 7))) == rational(3, 7));
-	assert(simplify(m, term(tag::Add, real(1, 7), real(2, 7))) == real(3, 7));
+	assert(simplify(m, term(Add, rational(1, 7), rational(2, 7))) == rational(3, 7));
+	assert(simplify(m, term(Add, real(1, 7), real(2, 7))) == real(3, 7));
 
-	assert(simplify(m, term(tag::IsInteger, rational(5, 5))) == tag::True);
-	assert(simplify(m, term(tag::IsInteger, rational(5, 10))) == tag::False);
+	assert(simplify(m, term(IsInteger, rational(5, 5))) == True);
+	assert(simplify(m, term(IsInteger, rational(5, 10))) == False);
 
-	assert(simplify(m, term(tag::ToInteger, integer(0))) == integer(0));
-	assert(simplify(m, term(tag::ToInteger, rational(0, 1))) == integer(0));
-	assert(simplify(m, term(tag::ToInteger, rational(1, 10))) == integer(0));
-	assert(simplify(m, term(tag::ToInteger, rational(5, 10))) == integer(0));
-	assert(simplify(m, term(tag::ToInteger, rational(9, 10))) == integer(0));
-	assert(simplify(m, term(tag::ToInteger, rational(-1, 10))) == integer(-1));
-	assert(simplify(m, term(tag::ToInteger, rational(-5, 10))) == integer(-1));
-	assert(simplify(m, term(tag::ToInteger, rational(-9, 10))) == integer(-1));
+	assert(simplify(m, term(ToInteger, integer(0))) == integer(0));
+	assert(simplify(m, term(ToInteger, rational(0, 1))) == integer(0));
+	assert(simplify(m, term(ToInteger, rational(1, 10))) == integer(0));
+	assert(simplify(m, term(ToInteger, rational(5, 10))) == integer(0));
+	assert(simplify(m, term(ToInteger, rational(9, 10))) == integer(0));
+	assert(simplify(m, term(ToInteger, rational(-1, 10))) == integer(-1));
+	assert(simplify(m, term(ToInteger, rational(-5, 10))) == integer(-1));
+	assert(simplify(m, term(ToInteger, rational(-9, 10))) == integer(-1));
 
-	assert(simplify(m, term(tag::ToRational, integer(7))) == rational(7, 1));
-	assert(simplify(m, term(tag::ToRational, rational(7, 1))) == rational(7, 1));
+	assert(simplify(m, term(ToRational, integer(7))) == rational(7, 1));
+	assert(simplify(m, term(ToRational, rational(7, 1))) == rational(7, 1));
 
-	assert(simplify(m, term(tag::ToReal, integer(7))) == real(7, 1));
-	assert(simplify(m, term(tag::ToReal, rational(7, 1))) == real(7, 1));
+	assert(simplify(m, term(ToReal, integer(7))) == real(7, 1));
+	assert(simplify(m, term(ToReal, rational(7, 1))) == real(7, 1));
 
-	assert(simplify(m, term(tag::Ceil, real(5, 1))) == real(5, 1));
-	assert(simplify(m, term(tag::IsInteger, real(5, 1))) == tag::True);
-	assert(simplify(m, term(tag::IsInteger, gensym(kind::Integer))) == tag::True);
+	assert(simplify(m, term(Ceil, real(5, 1))) == real(5, 1));
+	assert(simplify(m, term(IsInteger, real(5, 1))) == True);
+	assert(simplify(m, term(IsInteger, gensym(kind::Integer))) == True);
 
 	a = gensym(kind::Integer);
-	assert(simplify(m, term(tag::Neg, a)) == term(tag::Neg, a));
-	assert(simplify(m, term(tag::Ceil, a)) == term(tag::Ceil, a));
-	assert(simplify(m, term(tag::Floor, a)) == term(tag::Floor, a));
-	assert(simplify(m, term(tag::Trunc, a)) == term(tag::Trunc, a));
-	assert(simplify(m, term(tag::Round, a)) == term(tag::Round, a));
-	assert(simplify(m, term(tag::IsInteger, a)) == tag::True);
-	assert(simplify(m, term(tag::IsRational, a)) == tag::True);
-	assert(simplify(m, term(tag::ToInteger, a)) == a);
-	assert(simplify(m, term(tag::ToRational, a)) == term(tag::ToRational, a));
-	assert(simplify(m, term(tag::ToReal, a)) == term(tag::ToReal, a));
+	assert(simplify(m, term(Neg, a)) == term(Neg, a));
+	assert(simplify(m, term(Ceil, a)) == term(Ceil, a));
+	assert(simplify(m, term(Floor, a)) == term(Floor, a));
+	assert(simplify(m, term(Trunc, a)) == term(Trunc, a));
+	assert(simplify(m, term(Round, a)) == term(Round, a));
+	assert(simplify(m, term(IsInteger, a)) == True);
+	assert(simplify(m, term(IsRational, a)) == True);
+	assert(simplify(m, term(ToInteger, a)) == a);
+	assert(simplify(m, term(ToRational, a)) == term(ToRational, a));
+	assert(simplify(m, term(ToReal, a)) == term(ToReal, a));
 
 	a = gensym(kind::Rational);
-	assert(simplify(m, term(tag::Neg, a)) == term(tag::Neg, a));
-	assert(simplify(m, term(tag::Ceil, a)) == term(tag::Ceil, a));
-	assert(simplify(m, term(tag::Floor, a)) == term(tag::Floor, a));
-	assert(simplify(m, term(tag::Trunc, a)) == term(tag::Trunc, a));
-	assert(simplify(m, term(tag::Round, a)) == term(tag::Round, a));
-	assert(simplify(m, term(tag::IsInteger, a)) == term(tag::IsInteger, a));
-	assert(simplify(m, term(tag::IsRational, a)) == tag::True);
-	assert(simplify(m, term(tag::ToInteger, a)) == term(tag::ToInteger, a));
-	assert(simplify(m, term(tag::ToRational, a)) == a);
-	assert(simplify(m, term(tag::ToReal, a)) == term(tag::ToReal, a));
+	assert(simplify(m, term(Neg, a)) == term(Neg, a));
+	assert(simplify(m, term(Ceil, a)) == term(Ceil, a));
+	assert(simplify(m, term(Floor, a)) == term(Floor, a));
+	assert(simplify(m, term(Trunc, a)) == term(Trunc, a));
+	assert(simplify(m, term(Round, a)) == term(Round, a));
+	assert(simplify(m, term(IsInteger, a)) == term(IsInteger, a));
+	assert(simplify(m, term(IsRational, a)) == True);
+	assert(simplify(m, term(ToInteger, a)) == term(ToInteger, a));
+	assert(simplify(m, term(ToRational, a)) == a);
+	assert(simplify(m, term(ToReal, a)) == term(ToReal, a));
 
 	a = gensym(kind::Real);
-	assert(simplify(m, term(tag::Neg, a)) == term(tag::Neg, a));
-	assert(simplify(m, term(tag::Ceil, a)) == term(tag::Ceil, a));
-	assert(simplify(m, term(tag::Floor, a)) == term(tag::Floor, a));
-	assert(simplify(m, term(tag::Trunc, a)) == term(tag::Trunc, a));
-	assert(simplify(m, term(tag::Round, a)) == term(tag::Round, a));
-	assert(simplify(m, term(tag::IsInteger, a)) == term(tag::IsInteger, a));
-	assert(simplify(m, term(tag::IsRational, a)) == term(tag::IsRational, a));
-	assert(simplify(m, term(tag::ToInteger, a)) == term(tag::ToInteger, a));
-	assert(simplify(m, term(tag::ToRational, a)) == term(tag::ToRational, a));
-	assert(simplify(m, term(tag::ToReal, a)) == a);
+	assert(simplify(m, term(Neg, a)) == term(Neg, a));
+	assert(simplify(m, term(Ceil, a)) == term(Ceil, a));
+	assert(simplify(m, term(Floor, a)) == term(Floor, a));
+	assert(simplify(m, term(Trunc, a)) == term(Trunc, a));
+	assert(simplify(m, term(Round, a)) == term(Round, a));
+	assert(simplify(m, term(IsInteger, a)) == term(IsInteger, a));
+	assert(simplify(m, term(IsRational, a)) == term(IsRational, a));
+	assert(simplify(m, term(ToInteger, a)) == term(ToInteger, a));
+	assert(simplify(m, term(ToRational, a)) == term(ToRational, a));
+	assert(simplify(m, term(ToReal, a)) == a);
 
 	// Unification
 	testMatch();
@@ -1630,17 +1616,17 @@ void test() {
 	assert(fv.size() == 1);
 	assert(*fv.begin() == x);
 
-	fv = freeVars(term(tag::Eq, x, x));
+	fv = freeVars(term(Eq, x, x));
 	assert(fv.size() == 1);
 	assert(*fv.begin() == x);
 
-	fv = freeVars(term(tag::Eq, x, y));
+	fv = freeVars(term(Eq, x, y));
 	assert(fv.size() == 2);
 
-	fv = freeVars(term(tag::Eq, a, a));
+	fv = freeVars(term(Eq, a, a));
 	assert(fv.size() == 0);
 
-	fv = freeVars(term(tag::All, term(tag::Eq, x, y), x));
+	fv = freeVars(term(All, term(Eq, x, y), x));
 	assert(fv.size() == 1);
 	assert(*fv.begin() == y);
 
@@ -1649,7 +1635,7 @@ void test() {
 
 	// flattenTerm
 	vec<term> r{integer(1), integer(2), integer(3), integer(4), integer(5)};
-	assert(flatten(tag::Add, term(tag::Add, integer(1), integer(2), term(tag::Add, integer(3), integer(4), integer(5)))) == r);
+	assert(flatten(Add, term(Add, integer(1), integer(2), term(Add, integer(3), integer(4), integer(5)))) == r);
 
 	// Vectors
 	assert(sum(vec<size_t>{1, 2, 3}) == 6);

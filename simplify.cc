@@ -3,12 +3,12 @@
 namespace {
 bool constant(term a) {
 	switch (tag(a)) {
-	case tag::DistinctObj:
-	case tag::Integer:
-	case tag::Rational:
-	case tag::True:
+	case DistinctObj:
+	case Integer:
+	case Rational:
+	case True:
 		return 1;
-	case tag::False:
+	case False:
 		// In the superposition calculus, true only shows up as an argument of equality and false never shows up as an argument
 		unreachable;
 	}
@@ -16,7 +16,7 @@ bool constant(term a) {
 }
 
 bool realConstant(term a) {
-	return tag(a) == tag::ToReal && tag(a[1]) == tag::Rational;
+	return tag(a) == ToReal && tag(a[1]) == Rational;
 }
 } // namespace
 
@@ -24,77 +24,77 @@ term simplify(const map<term, term>& m, term a) {
 	// TODO: other simplifications e.g. x+0, x*1
 	auto t = tag(a);
 	switch (t) {
-	case tag::Add:
+	case Add:
 	{
 		auto x = simplify(m, a[1]);
 		auto y = simplify(m, a[2]);
 		if (constant(x) && constant(y)) return x + y;
-		if (realConstant(x) && realConstant(y)) return term(tag::ToReal, x[1] + y[1]);
+		if (realConstant(x) && realConstant(y)) return term(ToReal, x[1] + y[1]);
 		return term(t, x, y);
 	}
-	case tag::Ceil:
+	case Ceil:
 	{
 		auto x = simplify(m, a[1]);
-		if (realConstant(x)) return term(tag::ToReal, ceil(x[1]));
+		if (realConstant(x)) return term(ToReal, ceil(x[1]));
 		if (constant(x)) return ceil(x);
 		return term(t, x);
 	}
-	case tag::DistinctObj:
-	case tag::False:
-	case tag::Integer:
-	case tag::Rational:
-	case tag::True:
+	case DistinctObj:
+	case False:
+	case Integer:
+	case Rational:
+	case True:
 		return a;
-	case tag::Div:
+	case Div:
 	{
 		auto x = simplify(m, a[1]);
 		auto y = simplify(m, a[2]);
 		if (constant(x) && constant(y)) return x / y;
-		if (realConstant(x) && realConstant(y)) return term(tag::ToReal, x[1] / y[1]);
+		if (realConstant(x) && realConstant(y)) return term(ToReal, x[1] / y[1]);
 		return term(t, x, y);
 	}
-	case tag::DivE:
+	case DivE:
 	{
 		auto x = simplify(m, a[1]);
 		auto y = simplify(m, a[2]);
 		if (constant(x) && constant(y)) return divE(x, y);
-		if (realConstant(x) && realConstant(y)) return term(tag::ToReal, divE(x[1], y[1]));
+		if (realConstant(x) && realConstant(y)) return term(ToReal, divE(x[1], y[1]));
 		return term(t, x, y);
 	}
-	case tag::DivF:
+	case DivF:
 	{
 		auto x = simplify(m, a[1]);
 		auto y = simplify(m, a[2]);
 		if (constant(x) && constant(y)) return divF(x, y);
-		if (realConstant(x) && realConstant(y)) return term(tag::ToReal, divF(x[1], y[1]));
+		if (realConstant(x) && realConstant(y)) return term(ToReal, divF(x[1], y[1]));
 		return term(t, x, y);
 	}
-	case tag::DivT:
+	case DivT:
 	{
 		auto x = simplify(m, a[1]);
 		auto y = simplify(m, a[2]);
 		if (constant(x) && constant(y)) return divT(x, y);
-		if (realConstant(x) && realConstant(y)) return term(tag::ToReal, divT(x[1], y[1]));
+		if (realConstant(x) && realConstant(y)) return term(ToReal, divT(x[1], y[1]));
 		return term(t, x, y);
 	}
-	case tag::Eq:
+	case Eq:
 	{
 		auto x = simplify(m, a[1]);
 		auto y = simplify(m, a[2]);
-		if (x == y) return tag::True;
+		if (x == y) return True;
 		// TODO: optimize?
-		if (constant(x) && constant(y)) return tag::False;
-		if (realConstant(x) && realConstant(y)) return tag::False;
+		if (constant(x) && constant(y)) return False;
+		if (realConstant(x) && realConstant(y)) return False;
 		return term(t, x, y);
 	}
-	case tag::Floor:
+	case Floor:
 	{
 		auto x = simplify(m, a[1]);
-		if (realConstant(x)) return term(tag::ToReal, floor(x[1]));
+		if (realConstant(x)) return term(ToReal, floor(x[1]));
 		if (constant(x)) return floor(x);
 		return term(t, x);
 	}
-	case tag::Fn:
+	case Fn:
 	{
 		if (a.size() == 1) {
 			// TODO: optimize
@@ -105,26 +105,26 @@ term simplify(const map<term, term>& m, term a) {
 		for (size_t i = 1; i != a.size(); ++i) v.push_back(simplify(m, a[i]));
 		return term(v);
 	}
-	case tag::IsInteger:
+	case IsInteger:
 	{
 		auto x = simplify(m, a[1]);
 		if (realConstant(x)) return mkbool(isInteger(x[1]));
 		if (constant(x)) return mkbool(isInteger(x));
-		if (type(x) == kind::Integer) return tag::True;
+		if (type(x) == kind::Integer) return True;
 		return term(t, x);
 	}
-	case tag::IsRational:
+	case IsRational:
 	{
 		auto x = simplify(m, a[1]);
-		if (realConstant(x) || constant(x)) return tag::True;
+		if (realConstant(x) || constant(x)) return True;
 		switch (kind(type(x))) {
 		case kind::Integer:
 		case kind::Rational:
-			return tag::True;
+			return True;
 		}
 		return term(t, x);
 	}
-	case tag::Le:
+	case Le:
 	{
 		auto x = simplify(m, a[1]);
 		auto y = simplify(m, a[2]);
@@ -132,7 +132,7 @@ term simplify(const map<term, term>& m, term a) {
 		if (realConstant(x) && realConstant(y)) return mkbool(x[1] <= y[1]);
 		return term(t, x, y);
 	}
-	case tag::Lt:
+	case Lt:
 	{
 		auto x = simplify(m, a[1]);
 		auto y = simplify(m, a[2]);
@@ -140,61 +140,61 @@ term simplify(const map<term, term>& m, term a) {
 		if (realConstant(x) && realConstant(y)) return mkbool(x[1] < y[1]);
 		return term(t, x, y);
 	}
-	case tag::Mul:
+	case Mul:
 	{
 		auto x = simplify(m, a[1]);
 		auto y = simplify(m, a[2]);
 		if (constant(x) && constant(y)) return x * y;
-		if (realConstant(x) && realConstant(y)) return term(tag::ToReal, x[1] * y[1]);
+		if (realConstant(x) && realConstant(y)) return term(ToReal, x[1] * y[1]);
 		return term(t, x, y);
 	}
-	case tag::Neg:
+	case Neg:
 	{
 		auto x = simplify(m, a[1]);
-		if (realConstant(x)) return term(tag::ToReal, -x[1]);
+		if (realConstant(x)) return term(ToReal, -x[1]);
 		if (constant(x)) return -x;
 		return term(t, x);
 	}
-	case tag::RemE:
+	case RemE:
 	{
 		auto x = simplify(m, a[1]);
 		auto y = simplify(m, a[2]);
 		if (constant(x) && constant(y)) return remE(x, y);
-		if (realConstant(x) && realConstant(y)) return term(tag::ToReal, remE(x[1], y[1]));
+		if (realConstant(x) && realConstant(y)) return term(ToReal, remE(x[1], y[1]));
 		return term(t, x, y);
 	}
-	case tag::RemF:
+	case RemF:
 	{
 		auto x = simplify(m, a[1]);
 		auto y = simplify(m, a[2]);
 		if (constant(x) && constant(y)) return remF(x, y);
-		if (realConstant(x) && realConstant(y)) return term(tag::ToReal, remF(x[1], y[1]));
+		if (realConstant(x) && realConstant(y)) return term(ToReal, remF(x[1], y[1]));
 		return term(t, x, y);
 	}
-	case tag::RemT:
+	case RemT:
 	{
 		auto x = simplify(m, a[1]);
 		auto y = simplify(m, a[2]);
 		if (constant(x) && constant(y)) return remT(x, y);
-		if (realConstant(x) && realConstant(y)) return term(tag::ToReal, remT(x[1], y[1]));
+		if (realConstant(x) && realConstant(y)) return term(ToReal, remT(x[1], y[1]));
 		return term(t, x, y);
 	}
-	case tag::Round:
+	case Round:
 	{
 		auto x = simplify(m, a[1]);
-		if (realConstant(x)) return term(tag::ToReal, round(x[1]));
+		if (realConstant(x)) return term(ToReal, round(x[1]));
 		if (constant(x)) return round(x);
 		return term(t, x);
 	}
-	case tag::Sub:
+	case Sub:
 	{
 		auto x = simplify(m, a[1]);
 		auto y = simplify(m, a[2]);
 		if (constant(x) && constant(y)) return x - y;
-		if (realConstant(x) && realConstant(y)) return term(tag::ToReal, x[1] - y[1]);
+		if (realConstant(x) && realConstant(y)) return term(ToReal, x[1] - y[1]);
 		return term(t, x, y);
 	}
-	case tag::ToInteger:
+	case ToInteger:
 	{
 		auto x = simplify(m, a[1]);
 		if (realConstant(x)) return toInteger(x[1]);
@@ -202,7 +202,7 @@ term simplify(const map<term, term>& m, term a) {
 		if (type(x) == kind::Integer) return x;
 		return term(t, x);
 	}
-	case tag::ToRational:
+	case ToRational:
 	{
 		auto x = simplify(m, a[1]);
 		if (realConstant(x)) return x[1];
@@ -210,22 +210,22 @@ term simplify(const map<term, term>& m, term a) {
 		if (type(x) == kind::Rational) return x;
 		return term(t, x);
 	}
-	case tag::ToReal:
+	case ToReal:
 	{
 		auto x = simplify(m, a[1]);
 		if (realConstant(x)) return x;
-		if (constant(x)) return term(tag::ToReal, toRational(x));
+		if (constant(x)) return term(ToReal, toRational(x));
 		if (type(x) == kind::Real) return x;
 		return term(t, x);
 	}
-	case tag::Trunc:
+	case Trunc:
 	{
 		auto x = simplify(m, a[1]);
-		if (realConstant(x)) return term(tag::ToReal, trunc(x[1]));
+		if (realConstant(x)) return term(ToReal, trunc(x[1]));
 		if (constant(x)) return trunc(x);
 		return term(t, x);
 	}
-	case tag::Var:
+	case Var:
 		if (m.count(a)) return m.at(a);
 		return a;
 	}
@@ -238,9 +238,9 @@ clause simplify(const map<term, term>& m, const clause& c) {
 	for (auto& a: c.first) {
 		auto b = simplify(m, a);
 		switch (tag(b)) {
-		case tag::False:
+		case False:
 			return truec;
-		case tag::True:
+		case True:
 			continue;
 		}
 		neg.push_back(b);
@@ -250,9 +250,9 @@ clause simplify(const map<term, term>& m, const clause& c) {
 	for (auto& a: c.second) {
 		auto b = simplify(m, a);
 		switch (tag(b)) {
-		case tag::False:
+		case False:
 			continue;
-		case tag::True:
+		case True:
 			return truec;
 		}
 		pos.push_back(b);
