@@ -66,7 +66,7 @@ atom* intern(mpz_t a) {
 
 	// Make a new object
 	auto r = (atom*)xmalloc(offsetof(atom, mpz) + sizeof(mpz_t));
-	r->t = Integer;
+	r->tag = Integer;
 	memcpy(r->mpz, a, sizeof r->mpz);
 
 	// Add to hash table
@@ -148,7 +148,7 @@ atom* intern(mpq_t a) {
 
 	// Make a new object
 	auto r = (atom*)xmalloc(offsetof(atom, mpq) + sizeof(mpq_t));
-	r->t = Rational;
+	r->tag = Rational;
 	memcpy(r->mpq, a, sizeof r->mpq);
 
 	// Add to hash table
@@ -171,11 +171,11 @@ atom* rational(const char* s) {
 	return intern(r);
 }
 
-atom* real(mpq_t q) {
+term* real(mpq_t q) {
 	return mk(ToReal, intern(q));
 }
 
-atom* real(int n, unsigned d) {
+term* real(int n, unsigned d) {
 	mpq_t r;
 	mpq_init(r);
 	mpq_set_si(r, n, d);
@@ -183,7 +183,7 @@ atom* real(int n, unsigned d) {
 	return real(r);
 }
 
-atom* real(const char* s) {
+term* real(const char* s) {
 	// GMP string to integer or rational doesn't handle leading +, so for consistency, this function doesn't either
 	assert(*s != '+');
 

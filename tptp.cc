@@ -281,7 +281,7 @@ struct parser1: parser {
 		expect(')');
 	}
 
-	term definedFunctor(tag t) {
+	term definedFunctor(int tag) {
 		vec<term> v(1, t);
 		args(v);
 		return term(v);
@@ -450,7 +450,7 @@ struct parser1: parser {
 		return a;
 	}
 
-	term quant(tag t) {
+	term quant(int tag) {
 		lex();
 		expect('[');
 		auto old = vars.size();
@@ -493,7 +493,7 @@ struct parser1: parser {
 		return infixUnary();
 	}
 
-	term associativeLogicFormula(tag t, term a) {
+	term associativeLogicFormula(int tag, term a) {
 		vec<term> v{t, a};
 		auto k = tok;
 		while (eat(k)) v.push_back(unary());

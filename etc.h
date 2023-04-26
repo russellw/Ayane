@@ -1,6 +1,6 @@
 // SORT
 equation eqn(term a);
-vec<term> flatten(tag t, term a);
+vec<term> flatten(int tag, term a);
 set<term> freeVars(term a);
 term imp(term a, term b);
 bool occurs(term a, term b);

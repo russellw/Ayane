@@ -21,7 +21,7 @@ equation eqn(term a) {
 	return make_pair(a, True);
 }
 
-static void flatten(tag t, term a, vec<term>& r) {
+static void flatten(int tag, term a, vec<term>& r) {
 	if (tag(a) == t) {
 		for (size_t i = 1; i != a.size(); ++i) flatten(t, a[i], r);
 		return;
@@ -29,7 +29,7 @@ static void flatten(tag t, term a, vec<term>& r) {
 	r.push_back(a);
 }
 
-vec<term> flatten(tag t, term a) {
+vec<term> flatten(int tag, term a) {
 	vec<term> r;
 	flatten(t, a, r);
 	return r;

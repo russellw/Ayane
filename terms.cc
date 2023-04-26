@@ -296,7 +296,7 @@ int cmp(term a, term b) {
 	return memcmp(&a, &b, sizeof a);
 }
 
-void print(tag t) {
+void print(int tag) {
 	// TODO: eliminate
 	static const char* tagNames[] = {
 #define _(x) #x,
