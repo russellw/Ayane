@@ -1,11 +1,14 @@
 #include "main.h"
 
+// Numbers need to be interned, to preserve the property that equal terms have pointer equality, and in particular that they have
+// the same hash codes
+
 // TODO: divide this functionality between terms and simplify?
 // Integers
 namespace mpzs {
 size_t cap = 4;
 size_t qty;
-uint32_t* entries;
+atom** entries;
 
 size_t hash(mpz_t a) {
 	return mpz_get_ui(a);
@@ -15,35 +18,33 @@ bool eq(atom* a, mpz_t b) {
 	return !mpz_cmp(a->mpz, b);
 }
 
-static size_t slot(uint32_t* entries, size_t cap, mpz_t a) {
+static size_t slot(atom** entries, size_t cap, mpz_t a) {
 	size_t mask = cap - 1;
 	auto i = hash(a) & mask;
-	while (entries[i] && !eq((atom*)atoms->ptr(entries[i]), a)) i = (i + 1) & mask;
+	while (entries[i] && !eq(entries[i], a)) i = (i + 1) & mask;
 	return i;
 }
 
 void expand() {
 	assert(isPow2(cap));
 	auto cap1 = cap * 2;
-	auto entries1 = (uint32_t*)atoms->ptr(atoms->calloc(cap1 * sizeof *entries));
+	auto entries1 = (atom**)xcalloc(cap1, sizeof *entries);
 	// TODO: check generated code
 	for (auto i = entries, e = entries + cap; i != e; ++i) {
-		auto o = *i;
-		if (!o) continue;
-		auto p = (atom*)atoms->ptr(o);
-		entries1[slot(entries1, cap1, p->mpz)] = o;
+		auto a = *i;
+		if (a) entries1[slot(entries1, cap1, a->mpz)] = a;
 	}
-	atoms->free(atoms->offset(entries), cap * sizeof *entries);
+	free(entries);
 	cap = cap1;
 	entries = entries1;
 }
 
 void init() {
 	assert(isPow2(cap));
-	entries = (uint32_t*)atoms->ptr(atoms->calloc(cap * 4));
+	entries = (atom**)xcalloc(cap, sizeof *entries);
 }
 
-size_t intern(mpz_t a) {
+atom* intern(mpz_t a) {
 	auto i = slot(entries, cap, a);
 
 	// If we have seen this before, return the existing object
@@ -61,13 +62,12 @@ size_t intern(mpz_t a) {
 	}
 
 	// Make a new object
-	auto o = atoms->alloc(offsetof(atom, mpz) + sizeof(mpz_t));
-	auto p = (atom*)atoms->ptr(o);
-	p->t = tag::Integer;
-	memcpy(p->mpz, a, sizeof p->mpz);
+	auto r = xmalloc(offsetof(atom, mpz) + sizeof(mpz_t));
+	r->t = tag::Integer;
+	memcpy(r->mpz, a, sizeof r->mpz);
 
 	// Add to hash table
-	return entries[i] = o;
+	return entries[i] = r;
 }
 } // namespace mpzs
 
@@ -91,7 +91,7 @@ term integer(const char* s) {
 namespace mpqs {
 size_t cap = 4;
 size_t qty;
-uint32_t* entries;
+atom** entries;
 
 size_t hash(mpq_t a) {
 	return hashCombine(mpz_get_ui(mpq_numref(a)), mpz_get_ui(mpq_denref(a)));
@@ -101,35 +101,33 @@ bool eq(atom* a, mpq_t b) {
 	return mpq_equal(a->mpq, b);
 }
 
-static size_t slot(uint32_t* entries, size_t cap, mpq_t a) {
+static size_t slot(atom** entries, size_t cap, mpq_t a) {
 	size_t mask = cap - 1;
 	auto i = hash(a) & mask;
-	while (entries[i] && !eq((atom*)atoms->ptr(entries[i]), a)) i = (i + 1) & mask;
+	while (entries[i] && !eq(entries[i], a)) i = (i + 1) & mask;
 	return i;
 }
 
 void expand() {
 	assert(isPow2(cap));
 	auto cap1 = cap * 2;
-	auto entries1 = (uint32_t*)atoms->ptr(atoms->calloc(cap1 * sizeof *entries));
+	auto entries1 = (atom**)xcalloc(cap1, sizeof *entries);
 	// TODO: check generated code
 	for (auto i = entries, e = entries + cap; i != e; ++i) {
-		auto o = *i;
-		if (!o) continue;
-		auto p = (atom*)atoms->ptr(o);
-		entries1[slot(entries1, cap1, p->mpq)] = o;
+		auto a = *i;
+		if (a) entries1[slot(entries1, cap1, a->mpq)] = a;
 	}
-	atoms->free(atoms->offset(entries), cap * sizeof *entries);
+	free(entries);
 	cap = cap1;
 	entries = entries1;
 }
 
 void init() {
 	assert(isPow2(cap));
-	entries = (uint32_t*)atoms->ptr(atoms->calloc(cap * 4));
+	entries = (atom**)xcalloc(cap, sizeof *entries);
 }
 
-size_t intern(mpq_t a) {
+atom* intern(mpq_t a) {
 	auto i = slot(entries, cap, a);
 
 	// If we have seen this before, return the existing object
@@ -147,13 +145,12 @@ size_t intern(mpq_t a) {
 	}
 
 	// Make a new object
-	auto o = atoms->alloc(offsetof(atom, mpq) + sizeof(mpq_t));
-	auto p = (atom*)atoms->ptr(o);
-	p->t = tag::Rational;
-	memcpy(p->mpq, a, sizeof p->mpq);
+	auto r = xmalloc(offsetof(atom, mpq) + sizeof(mpq_t));
+	r->t = tag::Rational;
+	memcpy(r->mpq, a, sizeof r->mpq);
 
 	// Add to hash table
-	return entries[i] = o;
+	return entries[i] = r;
 }
 } // namespace mpqs
 
