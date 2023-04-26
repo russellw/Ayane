@@ -41,4 +41,4 @@ bool isInteger(atom* a);
 
 atom* toInteger(atom* a);
 atom* toRational(atom* a);
-atom* toReal(atom* a);
+term* toReal(atom* a);

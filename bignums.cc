@@ -327,18 +327,16 @@ atom* neg(atom* a) {
 	switch (a->tag) {
 	case Integer:
 	{
-		auto a1 = a.mpz();
 		mpz_t r;
 		mpz_init(r);
-		mpz_neg(r, a1);
+		mpz_neg(r, a->mpz);
 		return intern(r);
 	}
 	case Rational:
 	{
-		auto a1 = a.mpq();
 		mpq_t r;
 		mpq_init(r);
-		mpq_neg(r, a1);
+		mpq_neg(r, a->mpq);
 		return intern(r);
 	}
 	}
@@ -350,20 +348,16 @@ atom* add(atom* a, atom* b) {
 	switch (a->tag) {
 	case Integer:
 	{
-		auto a1 = a.mpz();
-		auto b1 = b.mpz();
 		mpz_t r;
 		mpz_init(r);
-		mpz_add(r, a1, b1);
+		mpz_add(r, a->mpz, b->mpz);
 		return intern(r);
 	}
 	case Rational:
 	{
-		auto a1 = a.mpq();
-		auto b1 = b.mpq();
 		mpq_t r;
 		mpq_init(r);
-		mpq_add(r, a1, b1);
+		mpq_add(r, a->mpq, b->mpq);
 		return intern(r);
 	}
 	}
@@ -375,20 +369,16 @@ atom* sub(atom* a, atom* b) {
 	switch (a->tag) {
 	case Integer:
 	{
-		auto a1 = a.mpz();
-		auto b1 = b.mpz();
 		mpz_t r;
 		mpz_init(r);
-		mpz_sub(r, a1, b1);
+		mpz_sub(r, a->mpz, b->mpz);
 		return intern(r);
 	}
 	case Rational:
 	{
-		auto a1 = a.mpq();
-		auto b1 = b.mpq();
 		mpq_t r;
 		mpq_init(r);
-		mpq_sub(r, a1, b1);
+		mpq_sub(r, a->mpq, b->mpq);
 		return intern(r);
 	}
 	}
@@ -400,20 +390,16 @@ atom* mul(atom* a, atom* b) {
 	switch (a->tag) {
 	case Integer:
 	{
-		auto a1 = a.mpz();
-		auto b1 = b.mpz();
 		mpz_t r;
 		mpz_init(r);
-		mpz_mul(r, a1, b1);
+		mpz_mul(r, a->mpz, b->mpz);
 		return intern(r);
 	}
 	case Rational:
 	{
-		auto a1 = a.mpq();
-		auto b1 = b.mpq();
 		mpq_t r;
 		mpq_init(r);
-		mpq_mul(r, a1, b1);
+		mpq_mul(r, a->mpq, b->mpq);
 		return intern(r);
 	}
 	}
@@ -425,23 +411,19 @@ atom* div(atom* a, atom* b) {
 	switch (a->tag) {
 	case Integer:
 	{
-		auto a1 = a.mpz();
-		auto b1 = b.mpz();
 		mpz_t r;
 		mpz_init(r);
 
 		// TPTP does not define integer division with unspecified rounding mode, but most programming languages nowadays define it
 		// as truncating. Todo: Does SMT-LIB use this?
-		mpz_tdiv_q(r, a1, b1);
+		mpz_tdiv_q(r, a->mpz, b->mpz);
 		return intern(r);
 	}
 	case Rational:
 	{
-		auto a1 = a.mpq();
-		auto b1 = b.mpq();
 		mpq_t r;
 		mpq_init(r);
-		mpq_div(r, a1, b1);
+		mpq_div(r, a->mpq, b->mpq);
 		return intern(r);
 	}
 	}
@@ -453,25 +435,20 @@ atom* divT(atom* a, atom* b) {
 	switch (a->tag) {
 	case Integer:
 	{
-		auto a1 = a.mpz();
-		auto b1 = b.mpz();
 		mpz_t r;
 		mpz_init(r);
-		mpz_tdiv_q(r, a1, b1);
+		mpz_tdiv_q(r, a->mpz, b->mpz);
 		return intern(r);
 	}
 	case Rational:
 	{
-		auto a1 = a.mpq();
-		auto b1 = b.mpq();
-
 		mpz_t xnum_yden;
 		mpz_init(xnum_yden);
-		mpz_mul(xnum_yden, mpq_numref(a1), mpq_denref(b1));
+		mpz_mul(xnum_yden, mpq_numref(a->mpq), mpq_denref(b->mpq));
 
 		mpz_t xden_ynum;
 		mpz_init(xden_ynum);
-		mpz_mul(xden_ynum, mpq_denref(a1), mpq_numref(b1));
+		mpz_mul(xden_ynum, mpq_denref(a->mpq), mpq_numref(b->mpq));
 
 		mpq_t r;
 		mpq_init(r);
@@ -490,25 +467,20 @@ atom* divF(atom* a, atom* b) {
 	switch (a->tag) {
 	case Integer:
 	{
-		auto a1 = a.mpz();
-		auto b1 = b.mpz();
 		mpz_t r;
 		mpz_init(r);
-		mpz_fdiv_q(r, a1, b1);
+		mpz_fdiv_q(r, a->mpz, b->mpz);
 		return intern(r);
 	}
 	case Rational:
 	{
-		auto a1 = a.mpq();
-		auto b1 = b.mpq();
-
 		mpz_t xnum_yden;
 		mpz_init(xnum_yden);
-		mpz_mul(xnum_yden, mpq_numref(a1), mpq_denref(b1));
+		mpz_mul(xnum_yden, mpq_numref(a->mpq), mpq_denref(b->mpq));
 
 		mpz_t xden_ynum;
 		mpz_init(xden_ynum);
-		mpz_mul(xden_ynum, mpq_denref(a1), mpq_numref(b1));
+		mpz_mul(xden_ynum, mpq_denref(a->mpq), mpq_numref(b->mpq));
 
 		mpq_t r;
 		mpq_init(r);
@@ -527,25 +499,20 @@ atom* divE(atom* a, atom* b) {
 	switch (a->tag) {
 	case Integer:
 	{
-		auto a1 = a.mpz();
-		auto b1 = b.mpz();
 		mpz_t r;
 		mpz_init(r);
-		mpz_ediv_q(r, a1, b1);
+		mpz_ediv_q(r, a->mpz, b->mpz);
 		return intern(r);
 	}
 	case Rational:
 	{
-		auto a1 = a.mpq();
-		auto b1 = b.mpq();
-
 		mpz_t xnum_yden;
 		mpz_init(xnum_yden);
-		mpz_mul(xnum_yden, mpq_numref(a1), mpq_denref(b1));
+		mpz_mul(xnum_yden, mpq_numref(a->mpq), mpq_denref(b->mpq));
 
 		mpz_t xden_ynum;
 		mpz_init(xden_ynum);
-		mpz_mul(xden_ynum, mpq_denref(a1), mpq_numref(b1));
+		mpz_mul(xden_ynum, mpq_denref(a->mpq), mpq_numref(b->mpq));
 
 		mpq_t r;
 		mpq_init(r);
@@ -564,25 +531,20 @@ atom* remT(atom* a, atom* b) {
 	switch (a->tag) {
 	case Integer:
 	{
-		auto a1 = a.mpz();
-		auto b1 = b.mpz();
 		mpz_t r;
 		mpz_init(r);
-		mpz_tdiv_r(r, a1, b1);
+		mpz_tdiv_r(r, a->mpz, b->mpz);
 		return intern(r);
 	}
 	case Rational:
 	{
-		auto a1 = a.mpq();
-		auto b1 = b.mpq();
-
 		mpz_t xnum_yden;
 		mpz_init(xnum_yden);
-		mpz_mul(xnum_yden, mpq_numref(a1), mpq_denref(b1));
+		mpz_mul(xnum_yden, mpq_numref(a->mpq), mpq_denref(b->mpq));
 
 		mpz_t xden_ynum;
 		mpz_init(xden_ynum);
-		mpz_mul(xden_ynum, mpq_denref(a1), mpq_numref(b1));
+		mpz_mul(xden_ynum, mpq_denref(a->mpq), mpq_numref(b->mpq));
 
 		mpq_t r;
 		mpq_init(r);
@@ -601,25 +563,20 @@ atom* remF(atom* a, atom* b) {
 	switch (a->tag) {
 	case Integer:
 	{
-		auto a1 = a.mpz();
-		auto b1 = b.mpz();
 		mpz_t r;
 		mpz_init(r);
-		mpz_fdiv_r(r, a1, b1);
+		mpz_fdiv_r(r, a->mpz, b->mpz);
 		return intern(r);
 	}
 	case Rational:
 	{
-		auto a1 = a.mpq();
-		auto b1 = b.mpq();
-
 		mpz_t xnum_yden;
 		mpz_init(xnum_yden);
-		mpz_mul(xnum_yden, mpq_numref(a1), mpq_denref(b1));
+		mpz_mul(xnum_yden, mpq_numref(a->mpq), mpq_denref(b->mpq));
 
 		mpz_t xden_ynum;
 		mpz_init(xden_ynum);
-		mpz_mul(xden_ynum, mpq_denref(a1), mpq_numref(b1));
+		mpz_mul(xden_ynum, mpq_denref(a->mpq), mpq_numref(b->mpq));
 
 		mpq_t r;
 		mpq_init(r);
@@ -638,25 +595,20 @@ atom* remE(atom* a, atom* b) {
 	switch (a->tag) {
 	case Integer:
 	{
-		auto a1 = a.mpz();
-		auto b1 = b.mpz();
 		mpz_t r;
 		mpz_init(r);
-		mpz_ediv_r(r, a1, b1);
+		mpz_ediv_r(r, a->mpz, b->mpz);
 		return intern(r);
 	}
 	case Rational:
 	{
-		auto a1 = a.mpq();
-		auto b1 = b.mpq();
-
 		mpz_t xnum_yden;
 		mpz_init(xnum_yden);
-		mpz_mul(xnum_yden, mpq_numref(a1), mpq_denref(b1));
+		mpz_mul(xnum_yden, mpq_numref(a->mpq), mpq_denref(b->mpq));
 
 		mpz_t xden_ynum;
 		mpz_init(xden_ynum);
-		mpz_mul(xden_ynum, mpq_denref(a1), mpq_numref(b1));
+		mpz_mul(xden_ynum, mpq_denref(a->mpq), mpq_numref(b->mpq));
 
 		mpq_t r;
 		mpq_init(r);
@@ -677,10 +629,9 @@ atom* ceil(atom* a) {
 		return a;
 	case Rational:
 	{
-		auto a1 = a.mpq();
 		mpq_t r;
 		mpq_init(r);
-		mpz_cdiv_q(mpq_numref(r), mpq_numref(a1), mpq_denref(a1));
+		mpz_cdiv_q(mpq_numref(r), mpq_numref(a->mpq), mpq_denref(a->mpq));
 		return intern(r);
 	}
 	}
@@ -693,10 +644,9 @@ atom* floor(atom* a) {
 		return a;
 	case Rational:
 	{
-		auto a1 = a.mpq();
 		mpq_t r;
 		mpq_init(r);
-		mpz_fdiv_q(mpq_numref(r), mpq_numref(a1), mpq_denref(a1));
+		mpz_fdiv_q(mpq_numref(r), mpq_numref(a->mpq), mpq_denref(a->mpq));
 		return intern(r);
 	}
 	}
@@ -709,10 +659,9 @@ atom* trunc(atom* a) {
 		return a;
 	case Rational:
 	{
-		auto a1 = a.mpq();
 		mpq_t r;
 		mpq_init(r);
-		mpz_tdiv_q(mpq_numref(r), mpq_numref(a1), mpq_denref(a1));
+		mpz_tdiv_q(mpq_numref(r), mpq_numref(a->mpq), mpq_denref(a->mpq));
 		return intern(r);
 	}
 	}
@@ -725,10 +674,9 @@ atom* round(atom* a) {
 		return a;
 	case Rational:
 	{
-		auto a1 = a.mpq();
 		mpq_t r;
 		mpq_init(r);
-		mpz_round(mpq_numref(r), mpq_numref(a1), mpq_denref(a1));
+		mpz_round(mpq_numref(r), mpq_numref(a->mpq), mpq_denref(a->mpq));
 		return intern(r);
 	}
 	}
@@ -740,10 +688,7 @@ bool isInteger(atom* a) {
 	case Integer:
 		return 1;
 	case Rational:
-	{
-		auto a1 = a.mpq();
-		return !mpz_cmp_ui(mpq_denref(a1), 1);
-	}
+		return !mpz_cmp_ui(mpq_denref(a->mpq), 1);
 	}
 	unreachable;
 }
@@ -754,14 +699,13 @@ atom* toInteger(atom* a) {
 		return a;
 	case Rational:
 	{
-		auto a1 = a.mpq();
 		mpz_t r;
 		mpz_init(r);
 
 		// Different languages have different conventions on the default rounding mode for converting fractions to integers. TPTP
 		// defines it as floor, so that is used here. To use a different rounding mode, explicity round the rational number first,
 		// and then convert to integer.
-		mpz_fdiv_q(r, mpq_numref(a1), mpq_denref(a1));
+		mpz_fdiv_q(r, mpq_numref(a->mpq), mpq_denref(a->mpq));
 		return intern(r);
 	}
 	}
@@ -772,10 +716,9 @@ atom* toRational(atom* a) {
 	switch (a->tag) {
 	case Integer:
 	{
-		auto a1 = a.mpz();
 		mpq_t r;
 		mpq_init(r);
-		mpz_set(mpq_numref(r), a1);
+		mpz_set(mpq_numref(r), a->mpz);
 		return intern(r);
 	}
 	case Rational:
@@ -784,18 +727,17 @@ atom* toRational(atom* a) {
 	unreachable;
 }
 
-atom* toReal(atom* a) {
+term* toReal(atom* a) {
 	switch (a->tag) {
 	case Integer:
 	{
-		auto a1 = a.mpz();
 		mpq_t r;
 		mpq_init(r);
-		mpz_set(mpq_numref(r), a1);
+		mpz_set(mpq_numref(r), a->mpz);
 		return real(r);
 	}
 	case Rational:
-		return intern(ToReal, a);
+		return mk(ToReal, a);
 	}
 	unreachable;
 }
