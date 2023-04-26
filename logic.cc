@@ -28,7 +28,7 @@ void check(term a, type ty) {
 
 	// Need to handle calls before checking the type of this term, because the type of a call is only well-defined if the type of
 	// the function is well-defined
-	if (tag(a) == Fn && a.size() > 1) {
+	if (a->tag == Fn && a.size() > 1) {
 		auto fty = a.getAtom()->ty;
 		if (kind(fty) != kind::Fn) err("Called a non-function");
 		check(a, fty.size() - 1);
@@ -48,7 +48,7 @@ void check(term a, type ty) {
 	if (type(a) != ty) err("Type mismatch");
 
 	// Further checks can be done depending on operator. For example, arithmetic operators should have matching numeric arguments.
-	switch (tag(a)) {
+	switch (a->tag) {
 	case Add:
 	case DivE:
 	case DivF:

@@ -638,7 +638,7 @@ void testGraph3() {
 
 term replace(const map<term, term>& m, term a) {
 	if (m.count(a)) {
-		assert(tag(a) == Var);
+		assert(a->tag == Var);
 		return replace(m, m.at(a));
 	}
 

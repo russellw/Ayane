@@ -29,7 +29,7 @@ int ncsAdd(bool pol, term a) {
 
 int ncs(bool pol, term a) {
 	// NO_SORT
-	switch (tag(a)) {
+	switch (a->tag) {
 	case All:
 	case Exists:
 		return ncs(pol, a[1]);
@@ -146,7 +146,7 @@ struct doing {
 	term maybeRename(int pol, term a) {
 		vec<term> v(1, a[0]);
 		// NO_SORT
-		switch (tag(a)) {
+		switch (a->tag) {
 		case All:
 		case Exists:
 			v.push_back(maybeRename(pol, a[1]));
@@ -222,7 +222,7 @@ struct doing {
 	term nnf(map<term, term> m, bool pol, term a) {
 		vec<term> v(1, a[0]);
 		// NO_SORT
-		switch (tag(a)) {
+		switch (a->tag) {
 			// Boolean constants and operators can be inverted by downward-sinking NOTs
 		case False:
 			return mkbool(!pol);
@@ -274,7 +274,7 @@ struct doing {
 	// expansion would occur, had selected formulas not already been renamed.
 	term distribute(term a) {
 		vec<term> v(1, term(And));
-		switch (tag(a)) {
+		switch (a->tag) {
 		case And:
 			for (size_t i = 1; i != a.size(); ++i) v.push_back(distribute(a[i]));
 			break;
@@ -306,7 +306,7 @@ struct doing {
 
 	// Convert a suitably rearranged term into actual clauses
 	void clauseTerm(term a, vec<term>& neg, vec<term>& pos) {
-		switch (tag(a)) {
+		switch (a->tag) {
 		case All:
 		case And:
 		case Eqv:

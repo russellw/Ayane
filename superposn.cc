@@ -108,8 +108,8 @@ public:
 
 		// Variables are unordered unless contained in other term
 		// TODO: check how that relates to variable identity between clauses
-		if (tag(a) == Var) return 0;
-		if (tag(b) == Var) return occurs(b, a);
+		if (a->tag == Var) return 0;
+		if (b->tag == Var) return occurs(b, a);
 
 		// Sufficient condition: Exists ai >= b
 		for (size_t i = 1; i < a.size(); i++)
@@ -125,7 +125,7 @@ public:
 		if (c) return c > 0;
 
 		// Same operators should mean similar terms
-		assert(tag(a) == tag(b));
+		assert(a->tag == b->tag);
 		assert(a.size() == b.size());
 		assert(a[0] == b[0]);
 
@@ -298,7 +298,7 @@ struct doing {
 		const vec<size_t>& posn,
 		term a) {
 		// It is never necessary to paramodulate into variables
-		if (tag(a) == Var) return;
+		if (a->tag == Var) return;
 
 		// Unify
 		map<termx, termx> m;

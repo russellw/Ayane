@@ -1,7 +1,7 @@
 #include "main.h"
 
 static void freeVars(set<term> boundv, term a, set<term>& freev) {
-	switch (tag(a)) {
+	switch (a->tag) {
 	case All:
 	case Exists:
 		for (size_t i = 2; i != a.size(); ++i) boundv.add(a[i]);
@@ -17,12 +17,12 @@ static void freeVars(set<term> boundv, term a, set<term>& freev) {
 
 // SORT
 equation eqn(term a) {
-	if (tag(a) == Eq) return make_pair(a[1], a[2]);
+	if (a->tag == Eq) return make_pair(a[1], a[2]);
 	return make_pair(a, True);
 }
 
 static void flatten(int tag, term a, vec<term>& r) {
-	if (tag(a) == t) {
+	if (a->tag == t) {
 		for (size_t i = 1; i != a.size(); ++i) flatten(t, a[i], r);
 		return;
 	}

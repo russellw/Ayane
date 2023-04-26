@@ -271,10 +271,10 @@ int cmp(term a, term b) {
 	if (a == b) return 0;
 
 	// If the tags differ, just sort in tag order; not meaningful, but it doesn't have to be meaningful, just consistent
-	if (tag(a) != tag(b)) return (int)tag(a) - (int)tag(b);
+	if (a->tag != b->tag) return (int)a->tag - (int)b->tag;
 
 	// Numbers sort in numerical order
-	switch (tag(a)) {
+	switch (a->tag) {
 	case Integer:
 		return mpz_cmp(a.mpz(), b.mpz());
 	case Rational:
@@ -306,7 +306,7 @@ void print(int tag) {
 }
 
 void print(term a) {
-	switch (tag(a)) {
+	switch (a->tag) {
 	case Fn:
 	{
 		auto p = a.getAtom();
@@ -326,7 +326,7 @@ void print(term a) {
 		printf("%%%zu", a.varIdx());
 		return;
 	default:
-		print(tag(a));
+		print(a->tag);
 		break;
 	}
 	if (a.size() == 1) return;

@@ -324,7 +324,7 @@ void mpz_round(mpz_t q, mpz_t n, mpz_t d) {
 } // namespace
 
 atom* neg(atom* a) {
-	switch (tag(a)) {
+	switch (a->tag) {
 	case Integer:
 	{
 		auto a1 = a.mpz();
@@ -346,8 +346,8 @@ atom* neg(atom* a) {
 }
 
 atom* add(atom* a, atom* b) {
-	assert(tag(a) == tag(b));
-	switch (tag(a)) {
+	assert(a->tag == b->tag);
+	switch (a->tag) {
 	case Integer:
 	{
 		auto a1 = a.mpz();
@@ -371,8 +371,8 @@ atom* add(atom* a, atom* b) {
 }
 
 atom* sub(atom* a, atom* b) {
-	assert(tag(a) == tag(b));
-	switch (tag(a)) {
+	assert(a->tag == b->tag);
+	switch (a->tag) {
 	case Integer:
 	{
 		auto a1 = a.mpz();
@@ -396,8 +396,8 @@ atom* sub(atom* a, atom* b) {
 }
 
 atom* mul(atom* a, atom* b) {
-	assert(tag(a) == tag(b));
-	switch (tag(a)) {
+	assert(a->tag == b->tag);
+	switch (a->tag) {
 	case Integer:
 	{
 		auto a1 = a.mpz();
@@ -421,8 +421,8 @@ atom* mul(atom* a, atom* b) {
 }
 
 atom* div(atom* a, atom* b) {
-	assert(tag(a) == tag(b));
-	switch (tag(a)) {
+	assert(a->tag == b->tag);
+	switch (a->tag) {
 	case Integer:
 	{
 		auto a1 = a.mpz();
@@ -449,8 +449,8 @@ atom* div(atom* a, atom* b) {
 }
 
 atom* divT(atom* a, atom* b) {
-	assert(tag(a) == tag(b));
-	switch (tag(a)) {
+	assert(a->tag == b->tag);
+	switch (a->tag) {
 	case Integer:
 	{
 		auto a1 = a.mpz();
@@ -486,8 +486,8 @@ atom* divT(atom* a, atom* b) {
 }
 
 atom* divF(atom* a, atom* b) {
-	assert(tag(a) == tag(b));
-	switch (tag(a)) {
+	assert(a->tag == b->tag);
+	switch (a->tag) {
 	case Integer:
 	{
 		auto a1 = a.mpz();
@@ -523,8 +523,8 @@ atom* divF(atom* a, atom* b) {
 }
 
 atom* divE(atom* a, atom* b) {
-	assert(tag(a) == tag(b));
-	switch (tag(a)) {
+	assert(a->tag == b->tag);
+	switch (a->tag) {
 	case Integer:
 	{
 		auto a1 = a.mpz();
@@ -560,8 +560,8 @@ atom* divE(atom* a, atom* b) {
 }
 
 atom* remT(atom* a, atom* b) {
-	assert(tag(a) == tag(b));
-	switch (tag(a)) {
+	assert(a->tag == b->tag);
+	switch (a->tag) {
 	case Integer:
 	{
 		auto a1 = a.mpz();
@@ -597,8 +597,8 @@ atom* remT(atom* a, atom* b) {
 }
 
 atom* remF(atom* a, atom* b) {
-	assert(tag(a) == tag(b));
-	switch (tag(a)) {
+	assert(a->tag == b->tag);
+	switch (a->tag) {
 	case Integer:
 	{
 		auto a1 = a.mpz();
@@ -634,8 +634,8 @@ atom* remF(atom* a, atom* b) {
 }
 
 atom* remE(atom* a, atom* b) {
-	assert(tag(a) == tag(b));
-	switch (tag(a)) {
+	assert(a->tag == b->tag);
+	switch (a->tag) {
 	case Integer:
 	{
 		auto a1 = a.mpz();
@@ -672,7 +672,7 @@ atom* remE(atom* a, atom* b) {
 }
 
 atom* ceil(atom* a) {
-	switch (tag(a)) {
+	switch (a->tag) {
 	case Integer:
 		return a;
 	case Rational:
@@ -688,7 +688,7 @@ atom* ceil(atom* a) {
 }
 
 atom* floor(atom* a) {
-	switch (tag(a)) {
+	switch (a->tag) {
 	case Integer:
 		return a;
 	case Rational:
@@ -704,7 +704,7 @@ atom* floor(atom* a) {
 }
 
 atom* trunc(atom* a) {
-	switch (tag(a)) {
+	switch (a->tag) {
 	case Integer:
 		return a;
 	case Rational:
@@ -720,7 +720,7 @@ atom* trunc(atom* a) {
 }
 
 atom* round(atom* a) {
-	switch (tag(a)) {
+	switch (a->tag) {
 	case Integer:
 		return a;
 	case Rational:
@@ -736,7 +736,7 @@ atom* round(atom* a) {
 }
 
 bool isInteger(atom* a) {
-	switch (tag(a)) {
+	switch (a->tag) {
 	case Integer:
 		return 1;
 	case Rational:
@@ -749,7 +749,7 @@ bool isInteger(atom* a) {
 }
 
 atom* toInteger(atom* a) {
-	switch (tag(a)) {
+	switch (a->tag) {
 	case Integer:
 		return a;
 	case Rational:
@@ -769,7 +769,7 @@ atom* toInteger(atom* a) {
 }
 
 atom* toRational(atom* a) {
-	switch (tag(a)) {
+	switch (a->tag) {
 	case Integer:
 	{
 		auto a1 = a.mpz();
@@ -785,7 +785,7 @@ atom* toRational(atom* a) {
 }
 
 atom* toReal(atom* a) {
-	switch (tag(a)) {
+	switch (a->tag) {
 	case Integer:
 	{
 		auto a1 = a.mpz();

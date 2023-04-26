@@ -19,7 +19,7 @@ void defaultType(term a, type rty) {
 	// A statement about the return type of a function call, can directly imply the type of the function. This generally does not
 	// apply to basic operators; in most cases, they already have a definite type. That is not entirely true of the arithmetic
 	// operators, but we don't try to do global type inference to figure those out.
-	if (tag(a) != Fn) return;
+	if (a->tag != Fn) return;
 
 	// This is only a default assignment, only relevant if the function does not already have a type
 	auto p = a.getAtom();
@@ -836,7 +836,7 @@ void infixConnective(const char* op, term a, term parent) {
 size_t sknames;
 
 void pr(term a, term parent) {
-	switch (tag(a)) {
+	switch (a->tag) {
 	case Add:
 		dfunctor("$sum", a);
 		return;
@@ -987,7 +987,7 @@ void prliterals(const clause& c) {
 	joining;
 	for (auto a: c.first) {
 		join(" | ");
-		if (tag(a) == Eq) {
+		if (a->tag == Eq) {
 			pr(a[1]);
 			print("!=");
 			pr(a[2]);

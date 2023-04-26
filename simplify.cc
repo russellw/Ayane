@@ -2,7 +2,7 @@
 
 namespace {
 bool constant(term a) {
-	switch (tag(a)) {
+	switch (a->tag) {
 	case DistinctObj:
 	case Integer:
 	case Rational:
@@ -16,13 +16,13 @@ bool constant(term a) {
 }
 
 bool realConstant(term a) {
-	return tag(a) == ToReal && tag(a[1]) == Rational;
+	return a->tag == ToReal && tag(a[1]) == Rational;
 }
 } // namespace
 
 term simplify(const map<term, term>& m, term a) {
 	// TODO: other simplifications e.g. x+0, x*1
-	auto t = tag(a);
+	auto t = a->tag;
 	switch (t) {
 	case Add:
 	{
@@ -237,7 +237,7 @@ clause simplify(const map<term, term>& m, const clause& c) {
 	vec<term> neg;
 	for (auto& a: c.first) {
 		auto b = simplify(m, a);
-		switch (tag(b)) {
+		switch (b->tag) {
 		case False:
 			return truec;
 		case True:
@@ -249,7 +249,7 @@ clause simplify(const map<term, term>& m, const clause& c) {
 	vec<term> pos;
 	for (auto& a: c.second) {
 		auto b = simplify(m, a);
-		switch (tag(b)) {
+		switch (b->tag) {
 		case False:
 			continue;
 		case True:
