@@ -1,11 +1,11 @@
-enum tag {
+enum {
 #define _(x) x,
 #include "tags.h"
 	end
 };
 
 struct term {
-	tag t;
+	int tag;
 	uint32_t n;
 };
 
@@ -43,6 +43,7 @@ struct compound {
 	term* v[];
 };
 
+term* mk(int tag, term* a);
 term* mk(term* a, term* b);
 term* mk(term* a, term* b, term* c);
 term* mk(term* a, term* b, term* c, term* d);
