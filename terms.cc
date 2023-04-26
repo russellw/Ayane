@@ -1,15 +1,13 @@
 #include "main.h"
 
 // Atoms
-Heap<8>* atoms;
-uint32_t tatoms;
+atom atoms[999];
+// TODO: fix count
 
 namespace {
 struct init {
 	init() {
-		atoms = Heap<8>::make();
 		auto n = (int)tag::end;
-		tatoms = atoms->alloc(n * offsetof(atom, s));
 		for (int i = 0; i != n; ++i) {
 			auto p = (atom*)atoms->ptr(tatoms + i * offsetof(atom, s) / 8);
 			p->t = (tag)i;
@@ -55,7 +53,7 @@ term distinctObj(string* s) {
 	return a;
 }
 
-term::term(string* s, type ty) {
+term* mk(string* s, type ty) {
 	if (s->sym) {
 		auto p = (atom*)atoms->ptr(s->sym);
 		assert(p->t == tag::Fn);
@@ -152,7 +150,7 @@ size_t intern(const term* s, size_t n) {
 }
 } // namespace comps
 
-term::term(term a, term b) {
+term* mk(term a, term b) {
 	const int n = 2;
 	term v[n];
 	v[0] = a;
@@ -160,7 +158,7 @@ term::term(term a, term b) {
 	raw = t_compound | comps::intern(v, n);
 }
 
-term::term(term a, term b, term c) {
+term* mk(term a, term b, term c) {
 	const int n = 3;
 	term v[n];
 	v[0] = a;
@@ -169,7 +167,7 @@ term::term(term a, term b, term c) {
 	raw = t_compound | comps::intern(v, n);
 }
 
-term::term(term a, term b, term c, term d) {
+term* mk(term a, term b, term c, term d) {
 	const int n = 4;
 	term v[n];
 	v[0] = a;
@@ -179,7 +177,7 @@ term::term(term a, term b, term c, term d) {
 	raw = t_compound | comps::intern(v, n);
 }
 
-term::term(term a, term b, term c, term d, term e) {
+term* mk(term a, term b, term c, term d, term e) {
 	const int n = 5;
 	term v[n];
 	v[0] = a;
@@ -190,7 +188,7 @@ term::term(term a, term b, term c, term d, term e) {
 	raw = t_compound | comps::intern(v, n);
 }
 
-term::term(const vec<term>& v) {
+term* mk(const vec<term>& v) {
 	assert(v.size());
 	if (v.size() == 1) *this = v[0];
 	else
@@ -265,17 +263,6 @@ type ftype(type rty, const set<term>& args) {
 	vec<type> v(1, rty);
 	for (auto a: args) v.push_back(type(a));
 	return type(kind::Fn, v);
-}
-
-size_t term::size() const {
-	if (!(raw & t_compound)) return 1;
-	return getCompound()->n;
-}
-
-term term::operator[](size_t i) const {
-	assert(i < size());
-	if (!(raw & t_compound)) return *this;
-	return getCompound()->v[i];
 }
 
 // TODO: eliminate this?

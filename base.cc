@@ -18,7 +18,7 @@ void err(const char* msg) {
 	// TODO: different exit codes for different kinds of errors?
 	if (parser::file) {
 		size_t line = 1;
-		for (auto s = (char*)heap->ptr(parser::srco); s != parser::srck; ++s)
+		for (auto s = parser::srco; s != parser::srck; ++s)
 			if (*s == '\n') ++line;
 		fprintf(stderr, "%s:%zu: %s\n", parser::file, line, msg);
 	} else

@@ -30,7 +30,8 @@ private:
 	// rest is uninitialized memory that serves as a buffer to make it efficient to add new elements one at a time)
 	uint32_t cap;
 	uint32_t qty;
-	uint32_t o;
+	// TODO: name?
+	T* o;
 
 	// Initialize the vector, only for use in constructors; assumes in particular that the pointer to allocated memory is not yet
 	// initialized
@@ -38,7 +39,7 @@ private:
 		// TODO: if n == 0, default to some more predictive capacity?
 		cap = n;
 		qty = n;
-		o = heap->alloc(cap * sizeof(T));
+		o = (T*)xmalloc(cap * sizeof(T));
 	}
 
 	// Turn some elements back into uninitialized memory
@@ -204,11 +205,11 @@ public:
 
 	// Iterators
 	iterator begin() {
-		return (T*)heap->ptr(o);
+		return o;
 	}
 
 	const_iterator begin() const {
-		return (T*)heap->ptr(o);
+		return o;
 	}
 
 	iterator end() {
