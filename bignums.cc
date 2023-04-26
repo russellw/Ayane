@@ -130,29 +130,29 @@ struct init {
 } // namespace mpqs
 
 atom* intern(mpq_t a) {
-	auto i = slot(entries, cap, a);
+	auto i = mpqs::slot(mpqs::entries, mpqs::cap, a);
 
 	// If we have seen this before, return the existing object
-	if (entries[i]) {
+	if (mpqs::entries[i]) {
 		// TODO: cache result in local?
 		mpq_clear(a);
-		return entries[i];
+		return mpqs::entries[i];
 	}
 
 	// Expand the hash table if necessary
-	if (++qty > cap * 3 / 4) {
-		expand();
-		i = slot(entries, cap, a);
-		assert(!entries[i]);
+	if (++mpqs::qty > mpqs::cap * 3 / 4) {
+		mpqs::expand();
+		i = mpqs::slot(mpqs::entries, mpqs::cap, a);
+		assert(!mpqs::entries[i]);
 	}
 
 	// Make a new object
-	auto r = xmalloc(offsetof(atom, mpq) + sizeof(mpq_t));
+	auto r = (atom*)xmalloc(offsetof(atom, mpq) + sizeof(mpq_t));
 	r->t = tag::Rational;
 	memcpy(r->mpq, a, sizeof r->mpq);
 
 	// Add to hash table
-	return entries[i] = r;
+	return mpqs::entries[i] = r;
 }
 
 atom* rational(int n, unsigned d) {
