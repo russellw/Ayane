@@ -1,6 +1,7 @@
 // Strings are interned for fast comparison, and fast access to associated types and symbols. The latter are stored as raw offsets
 // rather than in their typed wrappers, to make it possible to statically initialize the array of keywords.
 struct string {
+	// TODO: move some of these to map objects?
 	uint32_t dobj;
 	uint32_t sym;
 	uint32_t ty;

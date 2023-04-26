@@ -39,23 +39,26 @@ void expand() {
 	entries = entries1;
 }
 
-void init() {
-	assert(isPow2(cap));
-	entries = (atom**)xcalloc(cap, sizeof *entries);
-}
+struct init {
+	init() {
+		assert(isPow2(cap));
+		entries = (atom**)xcalloc(cap, sizeof *entries);
+	}
+} _;
+} // namespace mpzs
 
 atom* intern(mpz_t a) {
-	auto i = slot(entries, cap, a);
+	auto i = mpzs::slot(mpzs::entries, mpzs::cap, a);
 
 	// If we have seen this before, return the existing object
-	if (entries[i]) {
+	if (mpzs::entries[i]) {
 		// TODO: cache result in local?
 		mpz_clear(a);
-		return entries[i];
+		return mpzs::entries[i];
 	}
 
 	// Expand the hash table if necessary
-	if (++qty > cap * 3 / 4) {
+	if (++mpzs::qty > cap * 3 / 4) {
 		expand();
 		i = slot(entries, cap, a);
 		assert(!entries[i]);
@@ -68,11 +71,6 @@ atom* intern(mpz_t a) {
 
 	// Add to hash table
 	return entries[i] = r;
-}
-} // namespace mpzs
-
-term::term(mpz_t a) {
-	raw = mpzs::intern(a);
 }
 
 term integer(int n) {
@@ -122,10 +120,13 @@ void expand() {
 	entries = entries1;
 }
 
-void init() {
-	assert(isPow2(cap));
-	entries = (atom**)xcalloc(cap, sizeof *entries);
-}
+struct init {
+	init() {
+		assert(isPow2(cap));
+		entries = (atom**)xcalloc(cap, sizeof *entries);
+	}
+} _;
+} // namespace mpqs
 
 atom* intern(mpq_t a) {
 	auto i = slot(entries, cap, a);
@@ -151,11 +152,6 @@ atom* intern(mpq_t a) {
 
 	// Add to hash table
 	return entries[i] = r;
-}
-} // namespace mpqs
-
-term::term(mpq_t a) {
-	raw = mpqs::intern(a);
 }
 
 term rational(int n, unsigned d) {
@@ -271,13 +267,6 @@ term real(const char* s) {
 
 	// Wrap result in term designating it as a real number
 	return real(r);
-}
-
-// The number tables must be initialized after the atom heap, and C++ does not guarantee the order in which global constructors in
-// different modules will be called, so the number tables must be initialized with an explicit function
-void initBignums() {
-	mpzs::init();
-	mpqs::init();
 }
 
 // Arithmetic

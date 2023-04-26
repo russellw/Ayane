@@ -1,4 +1,5 @@
-void initBignums();
+atom* intern(mpz_t a);
+atom* intern(mpq_t a);
 
 // Functions for making arbitrary precision numbers for convenience, accept integer or string input and will intern the result so
 // equality tests can simply compare pointers

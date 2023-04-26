@@ -240,7 +240,6 @@ int main(int argc, const char** argv) {
 #ifdef _WIN32
 	AddVectoredExceptionHandler(0, handler);
 #endif
-	initBignums();
 
 	// Run unit tests, if this is a debug build
 	test();
