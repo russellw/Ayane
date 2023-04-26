@@ -58,31 +58,32 @@ atom* intern(mpz_t a) {
 	}
 
 	// Expand the hash table if necessary
-	if (++mpzs::qty > cap * 3 / 4) {
-		expand();
-		i = slot(entries, cap, a);
-		assert(!entries[i]);
+	if (++mpzs::qty > mpzs::cap * 3 / 4) {
+		mpzs::expand();
+		i = mpzs::slot(mpzs::entries, mpzs::cap, a);
+		assert(!mpzs::entries[i]);
 	}
 
 	// Make a new object
-	auto r = xmalloc(offsetof(atom, mpz) + sizeof(mpz_t));
+	auto r = (atom*)xmalloc(offsetof(atom, mpz) + sizeof(mpz_t));
 	r->t = tag::Integer;
 	memcpy(r->mpz, a, sizeof r->mpz);
 
 	// Add to hash table
-	return entries[i] = r;
+	return mpzs::entries[i] = r;
 }
 
-term integer(int n) {
+atom* integer(int n) {
+	// TODO: name
 	mpz_t r;
 	mpz_init_set_si(r, n);
-	return term(r);
+	return intern(r);
 }
 
-term integer(const char* s) {
+atom* integer(const char* s) {
 	mpz_t r;
 	if (mpz_init_set_str(r, s, 10)) err("Invalid integer");
-	return term(r);
+	return intern(r);
 }
 
 // Rationals
@@ -154,27 +155,27 @@ atom* intern(mpq_t a) {
 	return entries[i] = r;
 }
 
-term rational(int n, unsigned d) {
+atom* rational(int n, unsigned d) {
 	mpq_t r;
 	mpq_init(r);
 	mpq_set_si(r, n, d);
 	mpq_canonicalize(r);
-	return term(r);
+	return intern(r);
 }
 
-term rational(const char* s) {
+atom* rational(const char* s) {
 	mpq_t r;
 	mpq_init(r);
 	if (mpq_set_str(r, s, 10)) err("Invalid rational");
 	mpq_canonicalize(r);
-	return term(r);
+	return intern(r);
 }
 
-term real(mpq_t q) {
-	return term(tag::ToReal, term(q));
+atom* real(mpq_t q) {
+	return mk(tag::ToReal, intern(q));
 }
 
-term real(int n, unsigned d) {
+atom* real(int n, unsigned d) {
 	mpq_t r;
 	mpq_init(r);
 	mpq_set_si(r, n, d);
@@ -182,7 +183,7 @@ term real(int n, unsigned d) {
 	return real(r);
 }
 
-term real(const char* s) {
+atom* real(const char* s) {
 	// GMP string to integer or rational doesn't handle leading +, so for consistency, this function doesn't either
 	assert(*s != '+');
 
@@ -322,7 +323,7 @@ void mpz_round(mpz_t q, mpz_t n, mpz_t d) {
 }
 } // namespace
 
-term operator-(term a) {
+atom* neg(atom* a) {
 	switch (tag(a)) {
 	case tag::Integer:
 	{
@@ -330,7 +331,7 @@ term operator-(term a) {
 		mpz_t r;
 		mpz_init(r);
 		mpz_neg(r, a1);
-		return term(r);
+		return intern(r);
 	}
 	case tag::Rational:
 	{
@@ -338,13 +339,13 @@ term operator-(term a) {
 		mpq_t r;
 		mpq_init(r);
 		mpq_neg(r, a1);
-		return term(r);
+		return intern(r);
 	}
 	}
 	unreachable;
 }
 
-term operator+(term a, term b) {
+atom* add(atom* a, atom* b) {
 	assert(tag(a) == tag(b));
 	switch (tag(a)) {
 	case tag::Integer:
@@ -354,7 +355,7 @@ term operator+(term a, term b) {
 		mpz_t r;
 		mpz_init(r);
 		mpz_add(r, a1, b1);
-		return term(r);
+		return intern(r);
 	}
 	case tag::Rational:
 	{
@@ -363,13 +364,13 @@ term operator+(term a, term b) {
 		mpq_t r;
 		mpq_init(r);
 		mpq_add(r, a1, b1);
-		return term(r);
+		return intern(r);
 	}
 	}
 	unreachable;
 }
 
-term operator-(term a, term b) {
+atom* sub(atom* a, atom* b) {
 	assert(tag(a) == tag(b));
 	switch (tag(a)) {
 	case tag::Integer:
@@ -379,7 +380,7 @@ term operator-(term a, term b) {
 		mpz_t r;
 		mpz_init(r);
 		mpz_sub(r, a1, b1);
-		return term(r);
+		return intern(r);
 	}
 	case tag::Rational:
 	{
@@ -388,13 +389,13 @@ term operator-(term a, term b) {
 		mpq_t r;
 		mpq_init(r);
 		mpq_sub(r, a1, b1);
-		return term(r);
+		return intern(r);
 	}
 	}
 	unreachable;
 }
 
-term operator*(term a, term b) {
+atom* mul(atom* a, atom* b) {
 	assert(tag(a) == tag(b));
 	switch (tag(a)) {
 	case tag::Integer:
@@ -404,7 +405,7 @@ term operator*(term a, term b) {
 		mpz_t r;
 		mpz_init(r);
 		mpz_mul(r, a1, b1);
-		return term(r);
+		return intern(r);
 	}
 	case tag::Rational:
 	{
@@ -413,13 +414,13 @@ term operator*(term a, term b) {
 		mpq_t r;
 		mpq_init(r);
 		mpq_mul(r, a1, b1);
-		return term(r);
+		return intern(r);
 	}
 	}
 	unreachable;
 }
 
-term operator/(term a, term b) {
+atom* div(atom* a, atom* b) {
 	assert(tag(a) == tag(b));
 	switch (tag(a)) {
 	case tag::Integer:
@@ -430,9 +431,9 @@ term operator/(term a, term b) {
 		mpz_init(r);
 
 		// TPTP does not define integer division with unspecified rounding mode, but most programming languages nowadays define it
-		// as truncating
+		// as truncating. Todo: Does SMT-LIB use this?
 		mpz_tdiv_q(r, a1, b1);
-		return term(r);
+		return intern(r);
 	}
 	case tag::Rational:
 	{
@@ -441,13 +442,13 @@ term operator/(term a, term b) {
 		mpq_t r;
 		mpq_init(r);
 		mpq_div(r, a1, b1);
-		return term(r);
+		return intern(r);
 	}
 	}
 	unreachable;
 }
 
-term divT(term a, term b) {
+atom* divT(atom* a, atom* b) {
 	assert(tag(a) == tag(b));
 	switch (tag(a)) {
 	case tag::Integer:
@@ -457,7 +458,7 @@ term divT(term a, term b) {
 		mpz_t r;
 		mpz_init(r);
 		mpz_tdiv_q(r, a1, b1);
-		return term(r);
+		return intern(r);
 	}
 	case tag::Rational:
 	{
@@ -478,13 +479,13 @@ term divT(term a, term b) {
 
 		mpz_clear(xden_ynum);
 		mpz_clear(xnum_yden);
-		return term(r);
+		return intern(r);
 	}
 	}
 	unreachable;
 }
 
-term divF(term a, term b) {
+atom* divF(atom* a, atom* b) {
 	assert(tag(a) == tag(b));
 	switch (tag(a)) {
 	case tag::Integer:
@@ -494,7 +495,7 @@ term divF(term a, term b) {
 		mpz_t r;
 		mpz_init(r);
 		mpz_fdiv_q(r, a1, b1);
-		return term(r);
+		return intern(r);
 	}
 	case tag::Rational:
 	{
@@ -515,13 +516,13 @@ term divF(term a, term b) {
 
 		mpz_clear(xden_ynum);
 		mpz_clear(xnum_yden);
-		return term(r);
+		return intern(r);
 	}
 	}
 	unreachable;
 }
 
-term divE(term a, term b) {
+atom* divE(atom* a, atom* b) {
 	assert(tag(a) == tag(b));
 	switch (tag(a)) {
 	case tag::Integer:
@@ -531,7 +532,7 @@ term divE(term a, term b) {
 		mpz_t r;
 		mpz_init(r);
 		mpz_ediv_q(r, a1, b1);
-		return term(r);
+		return intern(r);
 	}
 	case tag::Rational:
 	{
@@ -552,13 +553,13 @@ term divE(term a, term b) {
 
 		mpz_clear(xden_ynum);
 		mpz_clear(xnum_yden);
-		return term(r);
+		return intern(r);
 	}
 	}
 	unreachable;
 }
 
-term remT(term a, term b) {
+atom* remT(atom* a, atom* b) {
 	assert(tag(a) == tag(b));
 	switch (tag(a)) {
 	case tag::Integer:
@@ -568,7 +569,7 @@ term remT(term a, term b) {
 		mpz_t r;
 		mpz_init(r);
 		mpz_tdiv_r(r, a1, b1);
-		return term(r);
+		return intern(r);
 	}
 	case tag::Rational:
 	{
@@ -589,13 +590,13 @@ term remT(term a, term b) {
 
 		mpz_clear(xden_ynum);
 		mpz_clear(xnum_yden);
-		return term(r);
+		return intern(r);
 	}
 	}
 	unreachable;
 }
 
-term remF(term a, term b) {
+atom* remF(atom* a, atom* b) {
 	assert(tag(a) == tag(b));
 	switch (tag(a)) {
 	case tag::Integer:
@@ -605,7 +606,7 @@ term remF(term a, term b) {
 		mpz_t r;
 		mpz_init(r);
 		mpz_fdiv_r(r, a1, b1);
-		return term(r);
+		return intern(r);
 	}
 	case tag::Rational:
 	{
@@ -626,13 +627,13 @@ term remF(term a, term b) {
 
 		mpz_clear(xden_ynum);
 		mpz_clear(xnum_yden);
-		return term(r);
+		return intern(r);
 	}
 	}
 	unreachable;
 }
 
-term remE(term a, term b) {
+atom* remE(atom* a, atom* b) {
 	assert(tag(a) == tag(b));
 	switch (tag(a)) {
 	case tag::Integer:
@@ -642,7 +643,7 @@ term remE(term a, term b) {
 		mpz_t r;
 		mpz_init(r);
 		mpz_ediv_r(r, a1, b1);
-		return term(r);
+		return intern(r);
 	}
 	case tag::Rational:
 	{
@@ -664,13 +665,13 @@ term remE(term a, term b) {
 		// TODO: free in reverse order?
 		mpz_clear(xden_ynum);
 		mpz_clear(xnum_yden);
-		return term(r);
+		return intern(r);
 	}
 	}
 	unreachable;
 }
 
-term ceil(term a) {
+atom* ceil(atom* a) {
 	switch (tag(a)) {
 	case tag::Integer:
 		return a;
@@ -680,13 +681,13 @@ term ceil(term a) {
 		mpq_t r;
 		mpq_init(r);
 		mpz_cdiv_q(mpq_numref(r), mpq_numref(a1), mpq_denref(a1));
-		return term(r);
+		return intern(r);
 	}
 	}
 	unreachable;
 }
 
-term floor(term a) {
+atom* floor(atom* a) {
 	switch (tag(a)) {
 	case tag::Integer:
 		return a;
@@ -696,13 +697,13 @@ term floor(term a) {
 		mpq_t r;
 		mpq_init(r);
 		mpz_fdiv_q(mpq_numref(r), mpq_numref(a1), mpq_denref(a1));
-		return term(r);
+		return intern(r);
 	}
 	}
 	unreachable;
 }
 
-term trunc(term a) {
+atom* trunc(atom* a) {
 	switch (tag(a)) {
 	case tag::Integer:
 		return a;
@@ -712,13 +713,13 @@ term trunc(term a) {
 		mpq_t r;
 		mpq_init(r);
 		mpz_tdiv_q(mpq_numref(r), mpq_numref(a1), mpq_denref(a1));
-		return term(r);
+		return intern(r);
 	}
 	}
 	unreachable;
 }
 
-term round(term a) {
+atom* round(atom* a) {
 	switch (tag(a)) {
 	case tag::Integer:
 		return a;
@@ -728,13 +729,13 @@ term round(term a) {
 		mpq_t r;
 		mpq_init(r);
 		mpz_round(mpq_numref(r), mpq_numref(a1), mpq_denref(a1));
-		return term(r);
+		return intern(r);
 	}
 	}
 	unreachable;
 }
 
-bool isInteger(term a) {
+bool isInteger(atom* a) {
 	switch (tag(a)) {
 	case tag::Integer:
 		return 1;
@@ -747,7 +748,7 @@ bool isInteger(term a) {
 	unreachable;
 }
 
-term toInteger(term a) {
+atom* toInteger(atom* a) {
 	switch (tag(a)) {
 	case tag::Integer:
 		return a;
@@ -761,13 +762,13 @@ term toInteger(term a) {
 		// defines it as floor, so that is used here. To use a different rounding mode, explicity round the rational number first,
 		// and then convert to integer.
 		mpz_fdiv_q(r, mpq_numref(a1), mpq_denref(a1));
-		return term(r);
+		return intern(r);
 	}
 	}
 	unreachable;
 }
 
-term toRational(term a) {
+atom* toRational(atom* a) {
 	switch (tag(a)) {
 	case tag::Integer:
 	{
@@ -775,7 +776,7 @@ term toRational(term a) {
 		mpq_t r;
 		mpq_init(r);
 		mpz_set(mpq_numref(r), a1);
-		return term(r);
+		return intern(r);
 	}
 	case tag::Rational:
 		return a;
@@ -783,7 +784,7 @@ term toRational(term a) {
 	unreachable;
 }
 
-term toReal(term a) {
+atom* toReal(atom* a) {
 	switch (tag(a)) {
 	case tag::Integer:
 	{
@@ -794,7 +795,7 @@ term toReal(term a) {
 		return real(r);
 	}
 	case tag::Rational:
-		return term(tag::ToReal, a);
+		return intern(tag::ToReal, a);
 	}
 	unreachable;
 }

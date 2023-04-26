@@ -3,42 +3,42 @@ atom* intern(mpq_t a);
 
 // Functions for making arbitrary precision numbers for convenience, accept integer or string input and will intern the result so
 // equality tests can simply compare pointers
-term integer(int n);
-term integer(const char* s);
+atom* integer(int n);
+atom* integer(const char* s);
 
-term rational(int n, unsigned d);
-term rational(const char* s);
+atom* rational(int n, unsigned d);
+atom* rational(const char* s);
 
 // Real number literals are represented as rational number literals wrapped in ToReal. It's a function call that is not actually
 // evaluated, since there is no representation of real number literals as such.
-term real(mpq_t q);
-term real(int n, unsigned d);
+atom* real(mpq_t q);
+atom* real(int n, unsigned d);
 
 // Per TPTP syntax, decimal/exponent string parses to a real number literal
-term real(const char* s);
+atom* real(const char* s);
 
 // Arithmetic is polymorphic on integers and rationals
-term operator-(term a);
-term operator+(term a, term b);
-term operator-(term a, term b);
-term operator*(term a, term b);
-term operator/(term a, term b);
+atom* neg(atom* a);
+atom* add(atom* a, atom* b);
+atom* sub(atom* a, atom* b);
+atom* mul(atom* a, atom* b);
+atom* div(atom* a, atom* b);
 
-term divT(term a, term b);
-term divF(term a, term b);
-term divE(term a, term b);
-term remT(term a, term b);
-term remF(term a, term b);
-term remE(term a, term b);
+atom* divT(atom* a, atom* b);
+atom* divF(atom* a, atom* b);
+atom* divE(atom* a, atom* b);
+atom* remT(atom* a, atom* b);
+atom* remF(atom* a, atom* b);
+atom* remE(atom* a, atom* b);
 
-term ceil(term a);
-term floor(term a);
-term trunc(term a);
-term round(term a);
+atom* ceil(atom* a);
+atom* floor(atom* a);
+atom* trunc(atom* a);
+atom* round(atom* a);
 
 // So is converting numbers between types
-bool isInteger(term a);
+bool isInteger(atom* a);
 
-term toInteger(term a);
-term toRational(term a);
-term toReal(term a);
+atom* toInteger(atom* a);
+atom* toRational(atom* a);
+atom* toReal(atom* a);
