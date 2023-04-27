@@ -158,17 +158,13 @@ public:
 	// Also new: Add a key and value, only if not already present
 	bool add(const K& k, const V& v) {
 		// TODO: rename v to r
-		entry* entries;
 		size_t i;
 		if (cap) {
-			entries = (entry*)heap->ptr(o);
 			i = slot(entries, cap, k);
 			if (entries[i].first) return 0;
 		}
-
 		if (++qty > (size_t)cap * 3 / 4) {
 			expand();
-			entries = (entry*)heap->ptr(o);
 			i = slot(entries, cap, k);
 			assert(!entries[i].first);
 		}
@@ -177,21 +173,17 @@ public:
 		return 1;
 	}
 
-	// This does the same thing as std::unordered_map operator[]. It should be used only in quite specialized circumstances; using
-	// it elsewhere will silently yield suboptimal code, so it seems better to give it a name that can be searched for, and makes it
+	// This does the same thing as std::unordered_map operator[]. It should be used only in specialized circumstances; using it
+	// elsewhere will silently yield suboptimal code, so it seems better to give it a name that can be searched for, and makes it
 	// clear that it should not be used by default.
 	V& gadd(const K& k) {
-		entry* entries;
 		size_t i;
 		if (cap) {
-			entries = (entry*)heap->ptr(o);
 			i = slot(entries, cap, k);
 			if (entries[i].first) return entries[i].second.second;
 		}
-
 		if (++qty > (size_t)cap * 3 / 4) {
 			expand();
-			entries = (entry*)heap->ptr(o);
 			i = slot(entries, cap, k);
 			assert(!entries[i].first);
 		}
