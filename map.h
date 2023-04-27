@@ -94,6 +94,7 @@ public:
 		cap = b.cap;
 		qty = b.qty;
 		entries = (entry*)xcalloc(cap, sizeof(entry));
+		// TODO: straight memcpy could be used here
 		copy(b.entries, b.cap, entries, cap);
 	}
 
@@ -113,7 +114,7 @@ public:
 		if (cap < b.cap) {
 			free(entries);
 			cap = b.cap;
-			entries = xcalloc(cap, sizeof(entry));
+			entries = (entry*)xcalloc(cap, sizeof(entry));
 		}
 		copy(b.entries, b.cap, entries, cap);
 		return *this;

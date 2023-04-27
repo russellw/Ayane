@@ -60,7 +60,6 @@ using std::swap;
 #include "cnf.h"
 #include "dpll.h"
 #include "etc.h"
-#include "graph.h"
 #include "simplify.h"
 #include "subsume.h"
 #include "superposn.h"

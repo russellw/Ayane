@@ -1,10 +1,11 @@
 template <class T> struct set {
+	// TODO: still needed?
 	using entry = pair<bool, T>;
 
 private:
 	uint32_t cap;
 	uint32_t qty;
-	uint32_t o;
+	entry* entries;
 
 	static size_t slot(entry* entries, size_t cap, const T& x) {
 		size_t mask = cap - 1;
@@ -13,7 +14,7 @@ private:
 		return i;
 	}
 
-	void copy(entry* entries, size_t cap, entry* entries1, size_t cap1) {
+	static void copy(entry* entries, size_t cap, entry* entries1, size_t cap1) {
 		for (auto p = entries, e = p + cap; p != e; ++p) {
 			if (!p->first) continue;
 			auto i = slot(entries1, cap1, p->second);
@@ -25,14 +26,12 @@ private:
 
 	void expand() {
 		assert(isPow2(cap));
-		auto cap1 = cap * 2;
-		auto o1 = heap->calloc(cap1 * sizeof(entry));
-		auto entries = (entry*)heap->ptr(o);
-		auto entries1 = (entry*)heap->ptr(o1);
+		size_t cap1 = cap * 2;
+		auto entries1 = (entry*)xcalloc(cap1, sizeof(entry));
 		copy(entries, cap, entries1, cap1);
-		heap->free(o, cap * sizeof(entry));
+		free(entries);
 		cap = cap1;
-		o = o1;
+		entries = entries1;
 	}
 
 public:
@@ -87,16 +86,14 @@ public:
 	explicit set() {
 		cap = 4;
 		qty = 0;
-		o = heap->calloc(cap * sizeof(entry));
+		entries = (entry*)xcalloc(cap, sizeof(entry));
 	}
 
 	set(const set& b) {
 		cap = b.cap;
 		qty = b.qty;
-		o = heap->calloc(cap * sizeof(entry));
-		auto bentries = (entry*)heap->ptr(b.o);
-		auto entries = (entry*)heap->ptr(o);
-		copy(bentries, b.cap, entries, cap);
+		entries = (entry*)xcalloc(cap, sizeof(entry));
+		copy(b.entries, b.cap, entries, cap);
 	}
 
 	set& operator=(const set& b) {
@@ -109,36 +106,30 @@ public:
 		clear();
 		qty = b.qty;
 		if (cap < b.cap) {
-			heap->free(o, cap * sizeof(entry));
+			free(entries);
 			cap = b.cap;
-			o = heap->calloc(cap * sizeof(entry));
+			entries = (entry*)xcalloc(cap, sizeof(entry));
 		}
-		auto bentries = (entry*)heap->ptr(b.o);
-		auto entries = (entry*)heap->ptr(o);
-		copy(bentries, b.cap, entries, cap);
+		copy(b.entries, b.cap, entries, cap);
 		return *this;
 	}
 
 	~set() {
-		for (auto p = (entry*)heap->ptr(o), e = p + cap; p != e; ++p)
+		for (auto p = entries, e = p + cap; p != e; ++p)
 			if (p->first) p->second.~T();
-		heap->free(o, cap * sizeof(entry));
+		free(entries);
 	}
 
 	bool count(const T& x) const {
-		auto entries = (entry*)heap->ptr(o);
 		auto i = slot(entries, cap, x);
 		return entries[i].first;
 	}
 
 	bool add(const T& x) {
-		auto entries = (entry*)heap->ptr(o);
 		auto i = slot(entries, cap, x);
 		if (entries[i].first) return 0;
-
 		if (++qty > (size_t)cap * 3 / 4) {
 			expand();
-			entries = (entry*)heap->ptr(o);
 			i = slot(entries, cap, x);
 			assert(!entries[i].first);
 		}
@@ -154,29 +145,6 @@ public:
 	// in one operation turns out to be common, the code should be changed to reallocate just once.
 	void add(const T* first, const T* last) {
 		for (auto i = first; i != last; ++i) add(*i);
-	}
-
-	// This is inefficient; erasing an element takes O(N) time and extra memory allocation. The tradeoff is the state of the hash
-	// table stays simple, so all other operations stay fast. This is a good trade if erasing elements is rare. If that turns out
-	// not to be the case, a more complex design that marks the locations of erased elements will be needed.
-	void erase(const T& x) {
-		auto entries = (entry*)heap->ptr(o);
-		auto i = slot(entries, cap, x);
-		if (!entries[i].first) return;
-
-		auto o1 = heap->calloc(cap * sizeof(entry));
-		auto entries1 = (entry*)heap->ptr(o1);
-		for (auto p = entries, e = p + cap; p != e; ++p) {
-			if (!p->first) continue;
-			if (p->second == x) continue;
-			auto i = slot(entries1, cap, p->second);
-			assert(!entries1[i].first);
-			entries1[i].first = 1;
-			new (&entries1[i].second) T(p->second);
-		}
-		heap->free(o, cap * sizeof(entry));
-		--qty;
-		o = o1;
 	}
 
 	void clear() {
