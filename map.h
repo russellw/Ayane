@@ -1,11 +1,12 @@
 template <class K, class V> struct map {
 	using T = pair<K, V>;
+	// TODO: still needed?
 	using entry = pair<bool, T>;
 
 private:
 	uint32_t cap;
 	uint32_t qty;
-	uint32_t o;
+	entry* entries;
 
 	static size_t slot(entry* entries, size_t cap, const K& k) {
 		assert(cap);
@@ -15,7 +16,7 @@ private:
 		return i;
 	}
 
-	void copy(entry* entries, size_t cap, entry* entries1, size_t cap1) {
+	static void copy(entry* entries, size_t cap, entry* entries1, size_t cap1) {
 		for (auto p = entries, e = p + cap; p != e; ++p) {
 			if (!p->first) continue;
 			auto i = slot(entries1, cap1, p->second.first);
@@ -27,13 +28,11 @@ private:
 
 	void expand() {
 		size_t cap1 = cap ? cap * 2 : 4;
-		size_t o1 = heap->calloc(cap1 * sizeof(entry));
-		auto entries = (entry*)heap->ptr(o);
-		auto entries1 = (entry*)heap->ptr(o1);
+		auto entries1 = (entry*)xcalloc(cap1, sizeof(entry));
 		copy(entries, cap, entries1, cap1);
-		heap->free(o, cap * sizeof(entry));
+		free(entries);
 		cap = cap1;
-		o = o1;
+		entries = entries1;
 	}
 
 public:
@@ -85,28 +84,26 @@ public:
 		}
 	};
 
-	explicit map() {
+	map() {
 		cap = 0;
 		qty = 0;
-		o = 0;
+		entries = 0;
 	}
 
 	map(const map& b) {
 		cap = b.cap;
 		qty = b.qty;
-		o = heap->calloc(cap * sizeof(entry));
-		auto bentries = (entry*)heap->ptr(b.o);
-		auto entries = (entry*)heap->ptr(o);
-		copy(bentries, b.cap, entries, cap);
+		entries = (entry*)xcalloc(cap, sizeof(entry));
+		copy(b.entries, b.cap, entries, cap);
 	}
 
 	// TODO: extend this to other  containers
 	map(map&& b) {
 		cap = b.cap;
 		qty = b.qty;
-		o = b.o;
+		entries = b.entries;
 		b.cap = 0;
-		b.o = 0;
+		b.entries = 0;
 	}
 
 	map& operator=(const map& b) {
@@ -114,27 +111,25 @@ public:
 		clear();
 		qty = b.qty;
 		if (cap < b.cap) {
-			heap->free(o, cap * sizeof(entry));
+			free(entries);
 			cap = b.cap;
-			o = heap->calloc(cap * sizeof(entry));
+			entries = xcalloc(cap, sizeof(entry));
 		}
-		auto bentries = (entry*)heap->ptr(b.o);
-		auto entries = (entry*)heap->ptr(o);
-		copy(bentries, b.cap, entries, cap);
+		copy(b.entries, b.cap, entries, cap);
 		return *this;
 	}
 
 	~map() {
-		for (auto p = (entry*)heap->ptr(o), e = p + cap; p != e; ++p)
+		for (auto p = entries, e = p + cap; p != e; ++p)
 			if (p->first) p->second.~T();
-		heap->free(o, cap * sizeof(entry));
+		free(entries);
 	}
 
 	// Same as the standard library API: Check whether a key exists in the map
 	bool count(const K& k) const {
+		// TODO: init to cap=4 to eliminate special case?
 		if (!cap) return 0;
 
-		auto entries = (entry*)heap->ptr(o);
 		auto i = slot(entries, cap, k);
 		return entries[i].first;
 	}
@@ -142,7 +137,6 @@ public:
 	// Similar to the standard library API: Get the value, if you know a key is present. The validity of this is checked only in
 	// debug build.
 	const V& at(const K& k) const {
-		auto entries = (entry*)heap->ptr(o);
 		auto i = slot(entries, cap, k);
 		assert(entries[i].first);
 		return entries[i].second.second;
@@ -151,9 +145,9 @@ public:
 	// This is a new function, inspired by other languages; it checks for the existence of a key, gets the value if it exists, but
 	// doesn't touch the map if not
 	bool get(const K& k, V& v) const {
+		// TODO: is K ever more than a scalar?
 		if (!cap) return 0;
 
-		auto entries = (entry*)heap->ptr(o);
 		auto i = slot(entries, cap, k);
 		if (!entries[i].first) return 0;
 
@@ -163,6 +157,7 @@ public:
 
 	// Also new: Add a key and value, only if not already present
 	bool add(const K& k, const V& v) {
+		// TODO: rename v to r
 		entry* entries;
 		size_t i;
 		if (cap) {
@@ -207,7 +202,7 @@ public:
 	}
 
 	void clear() {
-		for (auto p = (entry*)heap->ptr(o), e = p + cap; p != e; ++p)
+		for (auto p = entries, e = p + cap; p != e; ++p)
 			if (p->first) {
 				p->first = 0;
 				p->second.~T();
@@ -226,14 +221,14 @@ public:
 
 	// Iterators
 	iterator begin() const {
-		auto p = (entry*)heap->ptr(o);
+		auto p = entries;
 		auto e = p + cap;
 		while (p != e && !p->first) ++p;
 		return iterator(p, e);
 	}
 
 	iterator end() const {
-		auto e = (entry*)heap->ptr(o) + cap;
+		auto e = entries + cap;
 		return iterator(e, e);
 	}
 };

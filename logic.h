@@ -57,3 +57,5 @@ using Proof = map<clause, pair<rule, vec<clause>>>;
 
 // Type check
 void check(term* a, type ty);
+
+// TODO: change representation for more mechanical sympathy

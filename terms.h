@@ -43,6 +43,7 @@ struct compound {
 	term* v[];
 };
 
+// TODO: naming convention?
 term* mk(int tag);
 term* mk(int tag, term* a);
 term* mk(int tag, term* a, term* b);
