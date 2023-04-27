@@ -777,7 +777,7 @@ void pr(term a, term parent = False);
 void dfunctor(const char* op, term a) {
 	print(op);
 	putchar('(');
-	for (size_t i = 1; i != a.size(); ++i) {
+	for (size_t i = 1; i < a->n(); ++i) {
 		if (i > 1) putchar(',');
 		pr(a[i]);
 	}
@@ -788,7 +788,7 @@ void quant(char op, term a) {
 	putchar(op);
 	putchar('[');
 	joining;
-	for (size_t i = 2; i != a.size(); ++i) {
+	for (size_t i = 2; i < a->n(); ++i) {
 		join(',');
 		auto x = a[i];
 		pr(x);

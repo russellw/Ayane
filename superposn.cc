@@ -13,7 +13,7 @@ bool isNumeric(term a) {
 
 bool hasNumeric(term a) {
 	if (isNumeric(a)) return 1;
-	for (size_t i = 1; i != a.size(); ++i)
+	for (size_t i = 1; i < a->n(); ++i)
 		if (hasNumeric(a[i])) return 1;
 	return 0;
 }
