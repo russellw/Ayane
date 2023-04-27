@@ -100,7 +100,7 @@ struct doing {
 	// Rename formulas to avoid exponential expansion. It's tricky to do this while in the middle of doing other things, easier to
 	// be sure of the logic if it's done as a separate pass first.
 	term* rename(int pol, term* a) {
-		auto b = skolem(type(a), freeVars(a));
+		auto b = skolem(getType(a), freeVars(a));
 		// NO_SORT
 		switch (pol) {
 		case 1:
@@ -144,7 +144,7 @@ struct doing {
 	// efficient to rename on a global basis, but in practice, nontrivial subformulas are rarely duplicated (e.g. less than 1% of
 	// the nontrivial formulas in the TPTP), so this is probably not worth doing.
 	term* maybeRename(int pol, term* a) {
-		vec<term*> v(1, a[0]);
+		vec<term*> v(1, at(a, 0));
 		// NO_SORT
 		switch (a->tag) {
 		case All:
@@ -192,8 +192,8 @@ struct doing {
 	map<term*, term*> all(map<term*, term*> m, term* a) {
 		for (size_t i = 2; i < a->n; ++i) {
 			auto x = at(a, i);
-			assert(tag(x) == Var);
-			auto y = var(vars++, type(x));
+			assert(x->tag == Var);
+			auto y = var(vars++, ((atom*)x)->ty);
 			m.add(x, y);
 		}
 		return m;
@@ -205,13 +205,13 @@ struct doing {
 		// Get the surrounding universally quantified variables that will be arguments to the Skolem functions
 		set<term*> args;
 		for (auto& kv: m)
-			if (tag(kv.second) == Var) args.add(kv.second);
+			if (kv.second->tag == Var) args.add(kv.second);
 
 		// Make a replacement for each existentially quantified variable
 		for (size_t i = 2; i < a->n; ++i) {
 			auto x = at(a, i);
-			assert(tag(x) == Var);
-			auto y = skolem(type(x), args);
+			assert(x->tag == Var);
+			auto y = skolem(((atom*)x)->ty, args);
 			m.add(x, y);
 		}
 		return m;
@@ -220,7 +220,7 @@ struct doing {
 	// Negation normal form consists of several transformations that are as easy to do at the same time: Move NOTs inward to the
 	// literal layer, flipping things around on the way, while simultaneously resolving quantifiers
 	term* nnf(map<term*, term*> m, bool pol, term* a) {
-		vec<term*> v(1, a[0]);
+		vec<term*> v(1, at(a, 0));
 		// NO_SORT
 		switch (a->tag) {
 			// Boolean constants and operators can be inverted by downward-sinking NOTs

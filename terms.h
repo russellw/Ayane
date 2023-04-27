@@ -43,12 +43,14 @@ struct compound {
 	term* v[];
 };
 
+term* mk(int tag);
 term* mk(int tag, term* a);
+term* mk(int tag, term* a, term* b);
 term* mk(term* a, term* b);
 term* mk(term* a, term* b, term* c);
 term* mk(term* a, term* b, term* c, term* d);
 term* mk(term* a, term* b, term* c, term* d, term* e);
-term* mk(const vec<term>& v);
+term* mk(const vec<term*>& v);
 type getType(term* a);
 
 inline term* at(term* a, size_t i) {
@@ -57,7 +59,7 @@ inline term* at(term* a, size_t i) {
 }
 
 type ftype(type rty, const term* first, const term* last);
-type ftype(type rty, const set<term>& args);
+type ftype(type rty, const set<term*>& args);
 
 inline size_t hash(const term& a) {
 	return fnv(&a, sizeof a);

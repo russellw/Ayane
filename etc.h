@@ -1,10 +1,10 @@
 // SORT
-equation eqn(term a);
-vec<term> flatten(int tag, term a);
-set<term> freeVars(term a);
-term imp(term a, term b);
-bool occurs(term a, term b);
-term quantify(term a);
+equation eqn(term* a);
+vec<term*> flatten(int tag, term* a);
+set<term*> freeVars(term* a);
+term* imp(term* a, term* b);
+bool occurs(term* a, term* b);
+term* quantify(term* a);
 clause uniq(const clause& c);
 set<clause> uniq(const set<clause>& cs);
 ///
