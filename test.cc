@@ -1147,7 +1147,7 @@ void test() {
 	assert(x != z);
 
 	term a = term(And, True, True);
-	assert(a[1] == a[1]);
+	assert(at(a, 1) == at(a, 1));
 	assert(a.size() == 3);
 
 	term b = term(And, True, True);

@@ -5,7 +5,7 @@ static void freeVars(set<term> boundv, term a, set<term>& freev) {
 	case All:
 	case Exists:
 		for (size_t i = 2; i < a->n; ++i) boundv.add(at(a, i));
-		freeVars(boundv, a[1], freev);
+		freeVars(boundv, at(a, 1), freev);
 		return;
 	case Var:
 		if (boundv.count(a)) return;
@@ -17,7 +17,7 @@ static void freeVars(set<term> boundv, term a, set<term>& freev) {
 
 // SORT
 equation eqn(term a) {
-	if (a->tag == Eq) return make_pair(a[1], a[2]);
+	if (a->tag == Eq) return make_pair(at(a, 1), at(a, 2));
 	return make_pair(a, True);
 }
 
