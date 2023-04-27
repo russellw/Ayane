@@ -12,7 +12,7 @@ int ncs(bool pol, term* a);
 int ncsMul(bool pol, term* a) {
 	int n = 1;
 	for (size_t i = 1; i < a->n; ++i) {
-		n *= ncs(pol, a[i]);
+		n *= ncs(pol, at(a, i));
 		if (n >= many) return many;
 	}
 	return n;
@@ -21,7 +21,7 @@ int ncsMul(bool pol, term* a) {
 int ncsAdd(bool pol, term* a) {
 	int n = 0;
 	for (size_t i = 1; i < a->n; ++i) {
-		n += ncs(pol, a[i]);
+		n += ncs(pol, at(a, i));
 		if (n >= many) return many;
 	}
 	return n;
@@ -150,14 +150,14 @@ struct doing {
 		case All:
 		case Exists:
 			v.push_back(maybeRename(pol, a[1]));
-			for (size_t i = 2; i < a->n; ++i) v.push_back(a[i]);
+			for (size_t i = 2; i < a->n; ++i) v.push_back(at(a, i));
 			break;
 
 		case Not:
 			return mk(Not, maybeRename(-pol, a[1]));
 
 		case Or:
-			for (size_t i = 1; i < a->n; ++i) v.push_back(maybeRename(pol, a[i]));
+			for (size_t i = 1; i < a->n; ++i) v.push_back(maybeRename(pol, at(a, i)));
 
 			// If this formula will be used with positive polarity (including the case where it will be used both ways), we are
 			// looking at OR over possible ANDs, which would produce exponential expansion at the distribution stage, so may need to
@@ -165,7 +165,7 @@ struct doing {
 			if (pol >= 0) maybeRename(pol, v);
 			break;
 		case And:
-			for (size_t i = 1; i < a->n; ++i) v.push_back(maybeRename(pol, a[i]));
+			for (size_t i = 1; i < a->n; ++i) v.push_back(maybeRename(pol, at(a, i)));
 
 			// NOT-AND yields OR, so mirror the OR case
 			if (pol <= 0) maybeRename(pol, v);
@@ -191,7 +191,7 @@ struct doing {
 	// variables. So we rename each quantified variable to a new variable of the same type.
 	map<term*, term*> all(map<term*, term*> m, term* a) {
 		for (size_t i = 2; i < a->n; ++i) {
-			auto x = a[i];
+			auto x = at(a, i);
 			assert(tag(x) == Var);
 			auto y = var(vars++, type(x));
 			m.add(x, y);
@@ -209,7 +209,7 @@ struct doing {
 
 		// Make a replacement for each existentially quantified variable
 		for (size_t i = 2; i < a->n; ++i) {
-			auto x = a[i];
+			auto x = at(a, i);
 			assert(tag(x) == Var);
 			auto y = skolem(type(x), args);
 			m.add(x, y);
@@ -234,11 +234,11 @@ struct doing {
 
 		case Or:
 			if (!pol) v[0] = mk(And);
-			for (size_t i = 1; i < a->n; ++i) v.push_back(nnf(m, pol, a[i]));
+			for (size_t i = 1; i < a->n; ++i) v.push_back(nnf(m, pol, at(a, i)));
 			return mk(v);
 		case And:
 			if (!pol) v[0] = mk(Or);
-			for (size_t i = 1; i < a->n; ++i) v.push_back(nnf(m, pol, a[i]));
+			for (size_t i = 1; i < a->n; ++i) v.push_back(nnf(m, pol, at(a, i)));
 			return mk(v);
 
 			// Variables are mapped to new variables or Skolem functions
@@ -265,7 +265,7 @@ struct doing {
 			return pol ? mk(And, mk(Or, x0, y1), mk(Or, x1, y0)) : mk(And, mk(Or, x0, y0), mk(Or, x1, y1));
 		}
 		}
-		for (size_t i = 1; i < a->n; ++i) v.push_back(nnf(m, 1, a[i]));
+		for (size_t i = 1; i < a->n; ++i) v.push_back(nnf(m, 1, at(a, i)));
 		a = mk(v);
 		return pol ? a : mk(Not, a);
 	}
@@ -276,7 +276,7 @@ struct doing {
 		vec<term*> v(1, mk(And));
 		switch (a->tag) {
 		case And:
-			for (size_t i = 1; i < a->n; ++i) v.push_back(distribute(a[i]));
+			for (size_t i = 1; i < a->n; ++i) v.push_back(distribute(at(a, i)));
 			break;
 		case Or:
 		{
@@ -284,7 +284,7 @@ struct doing {
 			vec<vec<term*>> ands;
 			for (size_t i = 1; i < a->n; ++i) {
 				// Recur
-				auto b = distribute(a[i]);
+				auto b = distribute(at(a, i));
 
 				// And make a flat layer of ANDs
 				ands.push_back(flatten(And, b));
@@ -316,7 +316,7 @@ struct doing {
 			neg.push_back(a[1]);
 			return;
 		case Or:
-			for (size_t i = 1; i < a->n; ++i) clauseTerm(a[i], neg, pos);
+			for (size_t i = 1; i < a->n; ++i) clauseTerm(at(a, i), neg, pos);
 			return;
 		}
 		pos.push_back(a);

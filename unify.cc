@@ -61,7 +61,7 @@ bool match(map<term, term>& m, term a, term b) {
 	if (b.size() != n) return 0;
 	if (a[0] != b[0]) return 0;
 	for (size_t i = 1; i != n; ++i)
-		if (!match(m, a[i], b[i])) return 0;
+		if (!match(m, at(a, i), b[i])) return 0;
 	return 1;
 }
 
@@ -123,7 +123,7 @@ bool unify(map<termx, termx>& m, term a, bool ax, term b, bool bx) {
 	if (b.size() != n) return 0;
 	if (a[0] != b[0]) return 0;
 	for (size_t i = 1; i != n; ++i)
-		if (!unify(m, a[i], ax, b[i], bx)) return 0;
+		if (!unify(m, at(a, i), ax, b[i], bx)) return 0;
 	return 1;
 }
 
@@ -138,6 +138,6 @@ term replace(const map<termx, termx>& m, term a, bool ax) {
 
 	auto n = a.size();
 	vec<term> v(1, a[0]);
-	for (size_t i = 1; i != n; ++i) v.push_back(replace(m, a[i], ax));
+	for (size_t i = 1; i != n; ++i) v.push_back(replace(m, at(a, i), ax));
 	return term(v);
 }

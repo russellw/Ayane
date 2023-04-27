@@ -278,7 +278,7 @@ template <class T> bool operator==(const vec<T>& a, const vec<T>& b) {
 	auto n = a.size();
 	if (n != b.size()) return 0;
 	for (size_t i = 0; i != n; ++i)
-		if (a[i] != b[i]) return 0;
+		if (at(a, i) != b[i]) return 0;
 	return 1;
 }
 

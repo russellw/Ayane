@@ -286,7 +286,7 @@ int cmp(term a, term b) {
 	auto bn = b.size();
 	auto n = min(an, bn);
 	for (size_t i = 1; i != n; ++i) {
-		auto c = cmp(a[i], b[i]);
+		auto c = cmp(at(a, i), b[i]);
 		if (c) return c;
 	}
 	if (an - bn) return an - bn;

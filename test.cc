@@ -644,7 +644,7 @@ term replace(const map<term, term>& m, term a) {
 
 	auto n = a.size();
 	vec<term> v(1, a[0]);
-	for (size_t i = 1; i != n; ++i) v.push_back(replace(m, a[i]));
+	for (size_t i = 1; i != n; ++i) v.push_back(replace(m, at(a, i)));
 	return term(v);
 }
 

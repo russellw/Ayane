@@ -14,7 +14,7 @@ bool isNumeric(term a) {
 bool hasNumeric(term a) {
 	if (isNumeric(a)) return 1;
 	for (size_t i = 1; i < a->n; ++i)
-		if (hasNumeric(a[i])) return 1;
+		if (hasNumeric(at(a, i))) return 1;
 	return 0;
 }
 
@@ -41,7 +41,7 @@ term splice(term a, const vec<size_t>& posn, size_t i, term b) {
 // Passive clauses are stored in a priority queue with smaller clauses first
 size_t weight(term a) {
 	size_t n = 1;
-	for (size_t i = 1; i < a.size(); ++i) n += weight(a[i]);
+	for (size_t i = 1; i < a.size(); ++i) n += weight(at(a, i));
 	return n;
 }
 
@@ -113,7 +113,7 @@ public:
 
 		// Sufficient condition: Exists ai >= b
 		for (size_t i = 1; i < a.size(); i++)
-			if (ge(a[i], b)) return 1;
+			if (ge(at(a, i), b)) return 1;
 
 		// Necessary condition: a > all bi
 		for (size_t i = 1; i < b.size(); i++)
@@ -131,8 +131,8 @@ public:
 
 		// Lexicographic extension
 		for (size_t i = 1; i < a.size(); i++) {
-			if (gt(a[i], b[i])) return 1;
-			if (a[i] != b[i]) return 0;
+			if (gt(at(a, i), b[i])) return 1;
+			if (at(a, i) != b[i]) return 0;
 		}
 
 		// Having found no differences, the terms must be equal, but we already checked for that first thing, so something is wrong
@@ -355,7 +355,7 @@ struct doing {
 		for (size_t i = 1; i < a.size(); ++i) {
 			auto p(posn);
 			p.push_back(i);
-			descend(c, d, ci, c0, c1, di, d0, d1, p, a[i]);
+			descend(c, d, ci, c0, c1, di, d0, d1, p, at(a, i));
 		}
 	}
 
