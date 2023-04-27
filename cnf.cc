@@ -7,27 +7,27 @@ const int many = 50;
 // How many clauses a term will expand into, for the purpose of deciding when subformulas need to be renamed. The answer could
 // exceed the range of a fixed-size integer, but then we don't actually need the number, we only need to know whether it went over
 // the threshold.
-int ncs(bool pol, term a);
+int ncs(bool pol, term* a);
 
-int ncsMul(bool pol, term a) {
+int ncsMul(bool pol, term* a) {
 	int n = 1;
-	for (size_t i = 1; i < a->n(); ++i) {
+	for (size_t i = 1; i < a->n; ++i) {
 		n *= ncs(pol, a[i]);
 		if (n >= many) return many;
 	}
 	return n;
 }
 
-int ncsAdd(bool pol, term a) {
+int ncsAdd(bool pol, term* a) {
 	int n = 0;
-	for (size_t i = 1; i < a->n(); ++i) {
+	for (size_t i = 1; i < a->n; ++i) {
 		n += ncs(pol, a[i]);
 		if (n >= many) return many;
 	}
 	return n;
 }
 
-int ncs(bool pol, term a) {
+int ncs(bool pol, term* a) {
 	// NO_SORT
 	switch (a->tag) {
 	case All:
@@ -74,7 +74,7 @@ int ncs(bool pol, term a) {
 // context that is both positive and negative, we add the two values for the number of clauses; this doesn't have a clear
 // mathematical justification, but seems as reasonable as anything else, and simple enough that there are hopefully few ways it can
 // go wrong.
-int ncsApprox(int pol, term a) {
+int ncsApprox(int pol, term* a) {
 	int n = 0;
 	if (pol >= 0) n += ncs(1, a);
 	if (pol <= 0) n += ncs(0, a);
@@ -84,22 +84,22 @@ int ncsApprox(int pol, term a) {
 struct doing {
 	// SORT
 	set<clause>& cs;
-	set<term> defs;
+	set<term*> defs;
 	ProofCnf& proofCnf;
 	size_t vars = 0;
 	///
 
 	// Skolem functions replace existentially quantified variables, also formulas that are renamed to avoid exponential expansion
-	term skolem(type rty, const set<term>& args) {
-		vec<term> v(1, gensym(ftype(rty, args)));
+	term* skolem(type rty, const set<term*>& args) {
+		vec<term*> v(1, gensym(ftype(rty, args)));
 		// TODO: single call instead of loop?
 		for (auto b: args) v.push_back(b);
-		return term(v);
+		return mk(v);
 	}
 
 	// Rename formulas to avoid exponential expansion. It's tricky to do this while in the middle of doing other things, easier to
 	// be sure of the logic if it's done as a separate pass first.
-	term rename(int pol, term a) {
+	term* rename(int pol, term* a) {
 		auto b = skolem(type(a), freeVars(a));
 		// NO_SORT
 		switch (pol) {
@@ -113,7 +113,7 @@ struct doing {
 			break;
 		case 0:
 			// In the general case, full equivalence is needed; the new name implies and is implied by the original formula
-			a = term(And, imp(b, a), imp(a, b));
+			a = mk(And, imp(b, a), imp(a, b));
 			break;
 		default:
 			unreachable;
@@ -124,11 +124,11 @@ struct doing {
 
 	// Maybe rename some of the arguments to an OR-over-AND (taking polarity into account), where the number of clauses generated
 	// would be the product of the arguments
-	void maybeRename(int pol, vec<term>& v) {
+	void maybeRename(int pol, vec<term*>& v) {
 		// Sorting the arguments doesn't change the meaning of the formula, because AND and OR are commutative. The effect is that
 		// if only some of them are to be renamed, we will leave the simple ones alone and end up renaming the complicated ones,
 		// which is probably what we want.
-		sort(v.begin() + 1, v.end(), [=](term a, term b) { return ncsApprox(pol, a) < ncsApprox(pol, b); });
+		sort(v.begin() + 1, v.end(), [=](term* a, term* b) { return ncsApprox(pol, a) < ncsApprox(pol, b); });
 		int n = 1;
 		for (size_t i = 1; i != v.size(); ++i) {
 			auto m = ncsApprox(pol, v[i]);
@@ -143,21 +143,21 @@ struct doing {
 	// considered in isolation each time, so that each occurrence could end up with a different name. In principle, it would be more
 	// efficient to rename on a global basis, but in practice, nontrivial subformulas are rarely duplicated (e.g. less than 1% of
 	// the nontrivial formulas in the TPTP), so this is probably not worth doing.
-	term maybeRename(int pol, term a) {
-		vec<term> v(1, a[0]);
+	term* maybeRename(int pol, term* a) {
+		vec<term*> v(1, a[0]);
 		// NO_SORT
 		switch (a->tag) {
 		case All:
 		case Exists:
 			v.push_back(maybeRename(pol, a[1]));
-			for (size_t i = 2; i < a->n(); ++i) v.push_back(a[i]);
+			for (size_t i = 2; i < a->n; ++i) v.push_back(a[i]);
 			break;
 
 		case Not:
-			return term(Not, maybeRename(-pol, a[1]));
+			return mk(Not, maybeRename(-pol, a[1]));
 
 		case Or:
-			for (size_t i = 1; i < a->n(); ++i) v.push_back(maybeRename(pol, a[i]));
+			for (size_t i = 1; i < a->n; ++i) v.push_back(maybeRename(pol, a[i]));
 
 			// If this formula will be used with positive polarity (including the case where it will be used both ways), we are
 			// looking at OR over possible ANDs, which would produce exponential expansion at the distribution stage, so may need to
@@ -165,7 +165,7 @@ struct doing {
 			if (pol >= 0) maybeRename(pol, v);
 			break;
 		case And:
-			for (size_t i = 1; i < a->n(); ++i) v.push_back(maybeRename(pol, a[i]));
+			for (size_t i = 1; i < a->n; ++i) v.push_back(maybeRename(pol, a[i]));
 
 			// NOT-AND yields OR, so mirror the OR case
 			if (pol <= 0) maybeRename(pol, v);
@@ -177,20 +177,20 @@ struct doing {
 			auto y = maybeRename(0, a[2]);
 			if (ncsApprox(0, x) >= many) x = rename(0, x);
 			if (ncsApprox(0, y) >= many) y = rename(0, y);
-			return term(Eqv, x, y);
+			return mk(Eqv, x, y);
 		}
 
 		default:
 			return a;
 		}
-		return term(v);
+		return mk(v);
 	}
 
 	// For-all doesn't need much work to convert. Clauses contain variables with implied for-all. The tricky part is that quantifier
 	// binds variables to local scope, so the same variable name used in two for-all's corresponds to two different logical
 	// variables. So we rename each quantified variable to a new variable of the same type.
-	map<term, term> all(map<term, term> m, term a) {
-		for (size_t i = 2; i < a->n(); ++i) {
+	map<term*, term*> all(map<term*, term*> m, term* a) {
+		for (size_t i = 2; i < a->n; ++i) {
 			auto x = a[i];
 			assert(tag(x) == Var);
 			auto y = var(vars++, type(x));
@@ -201,14 +201,14 @@ struct doing {
 
 	// Each existentially quantified variable is replaced with a Skolem function whose parameters are all the surrounding
 	// universally quantified variables
-	map<term, term> exists(map<term, term> m, term a) {
+	map<term*, term*> exists(map<term*, term*> m, term* a) {
 		// Get the surrounding universally quantified variables that will be arguments to the Skolem functions
-		set<term> args;
+		set<term*> args;
 		for (auto& kv: m)
 			if (tag(kv.second) == Var) args.add(kv.second);
 
 		// Make a replacement for each existentially quantified variable
-		for (size_t i = 2; i < a->n(); ++i) {
+		for (size_t i = 2; i < a->n; ++i) {
 			auto x = a[i];
 			assert(tag(x) == Var);
 			auto y = skolem(type(x), args);
@@ -219,8 +219,8 @@ struct doing {
 
 	// Negation normal form consists of several transformations that are as easy to do at the same time: Move NOTs inward to the
 	// literal layer, flipping things around on the way, while simultaneously resolving quantifiers
-	term nnf(map<term, term> m, bool pol, term a) {
-		vec<term> v(1, a[0]);
+	term* nnf(map<term*, term*> m, bool pol, term* a) {
+		vec<term*> v(1, a[0]);
 		// NO_SORT
 		switch (a->tag) {
 			// Boolean constants and operators can be inverted by downward-sinking NOTs
@@ -233,13 +233,13 @@ struct doing {
 			return nnf(m, !pol, a[1]);
 
 		case Or:
-			if (!pol) v[0] = term(And);
-			for (size_t i = 1; i < a->n(); ++i) v.push_back(nnf(m, pol, a[i]));
-			return term(v);
+			if (!pol) v[0] = mk(And);
+			for (size_t i = 1; i < a->n; ++i) v.push_back(nnf(m, pol, a[i]));
+			return mk(v);
 		case And:
-			if (!pol) v[0] = term(Or);
-			for (size_t i = 1; i < a->n(); ++i) v.push_back(nnf(m, pol, a[i]));
-			return term(v);
+			if (!pol) v[0] = mk(Or);
+			for (size_t i = 1; i < a->n; ++i) v.push_back(nnf(m, pol, a[i]));
+			return mk(v);
 
 			// Variables are mapped to new variables or Skolem functions
 		case Var:
@@ -262,27 +262,27 @@ struct doing {
 			auto x1 = nnf(m, 1, x);
 			auto y0 = nnf(m, 0, y);
 			auto y1 = nnf(m, 1, y);
-			return pol ? term(And, term(Or, x0, y1), term(Or, x1, y0)) : term(And, term(Or, x0, y0), term(Or, x1, y1));
+			return pol ? mk(And, mk(Or, x0, y1), mk(Or, x1, y0)) : mk(And, mk(Or, x0, y0), mk(Or, x1, y1));
 		}
 		}
-		for (size_t i = 1; i < a->n(); ++i) v.push_back(nnf(m, 1, a[i]));
-		a = term(v);
-		return pol ? a : term(Not, a);
+		for (size_t i = 1; i < a->n; ++i) v.push_back(nnf(m, 1, a[i]));
+		a = mk(v);
+		return pol ? a : mk(Not, a);
 	}
 
 	// Distribute OR down into AND, completing the layering of the operators for CNF. This is the second place where exponential
 	// expansion would occur, had selected formulas not already been renamed.
-	term distribute(term a) {
-		vec<term> v(1, term(And));
+	term* distribute(term* a) {
+		vec<term*> v(1, mk(And));
 		switch (a->tag) {
 		case And:
-			for (size_t i = 1; i < a->n(); ++i) v.push_back(distribute(a[i]));
+			for (size_t i = 1; i < a->n; ++i) v.push_back(distribute(a[i]));
 			break;
 		case Or:
 		{
 			// Arguments can be taken without loss of generality as ANDs
-			vec<vec<term>> ands;
-			for (size_t i = 1; i < a->n(); ++i) {
+			vec<vec<term*>> ands;
+			for (size_t i = 1; i < a->n; ++i) {
 				// Recur
 				auto b = distribute(a[i]);
 
@@ -293,19 +293,19 @@ struct doing {
 			// OR distributes over AND by Cartesian product
 			// TODO: can this be done by reference?
 			for (auto u: cartProduct(ands)) {
-				u.insert(u.begin(), term(Or));
-				v.push_back(term(u));
+				u.insert(u.begin(), mk(Or));
+				v.push_back(mk(u));
 			}
 			break;
 		}
 		default:
 			return a;
 		}
-		return term(v);
+		return mk(v);
 	}
 
 	// Convert a suitably rearranged term into actual clauses
-	void clauseTerm(term a, vec<term>& neg, vec<term>& pos) {
+	void clauseTerm(term* a, vec<term*>& neg, vec<term*>& pos) {
 		switch (a->tag) {
 		case All:
 		case And:
@@ -316,24 +316,24 @@ struct doing {
 			neg.push_back(a[1]);
 			return;
 		case Or:
-			for (size_t i = 1; i < a->n(); ++i) clauseTerm(a[i], neg, pos);
+			for (size_t i = 1; i < a->n; ++i) clauseTerm(a[i], neg, pos);
 			return;
 		}
 		pos.push_back(a);
 	}
 
-	clause clauseTerm(term a) {
-		vec<term> neg;
-		vec<term> pos;
+	clause clauseTerm(term* a) {
+		vec<term*> neg;
+		vec<term*> pos;
 		clauseTerm(a, neg, pos);
 		auto c = make_pair(neg, pos);
-		c = simplify(map<term, term>(), c);
+		c = simplify(map<term*, term*>(), c);
 		c = uniq(c);
 		return c;
 	}
 
 	// And record the clauses
-	void csTerm(term from, term a) {
+	void csTerm(term* from, term* a) {
 		for (auto& b: flatten(And, a)) {
 			auto c = clauseTerm(b);
 			if (c == truec) continue;
@@ -343,14 +343,14 @@ struct doing {
 	}
 
 	// Top level
-	doing(const set<term>& initialFormulas, ProofCnf& proofCnf, set<clause>& cs): proofCnf(proofCnf), cs(cs) {
+	doing(const set<term*>& initialFormulas, ProofCnf& proofCnf, set<clause>& cs): proofCnf(proofCnf), cs(cs) {
 		// First run each input formula through the full process: Rename subformulas where necessary to avoid exponential expansion,
 		// then convert to negation normal form, distribute OR into AND, and convert to clauses
 		for (auto a: initialFormulas) {
 			auto from = a;
 			a = maybeRename(1, a);
 			vars = 0;
-			a = nnf(map<term, term>(), 1, a);
+			a = nnf(map<term*, term*>(), 1, a);
 			a = distribute(a);
 			csTerm(from, a);
 		}
@@ -361,7 +361,7 @@ struct doing {
 		for (auto a: defs) {
 			auto from = a;
 			vars = 0;
-			a = nnf(map<term, term>(), 1, a);
+			a = nnf(map<term*, term*>(), 1, a);
 			a = distribute(a);
 			csTerm(from, a);
 		}
@@ -369,6 +369,6 @@ struct doing {
 };
 } // namespace
 
-void cnf(const set<term>& initialFormulas, ProofCnf& proofCnf, set<clause>& cs) {
+void cnf(const set<term*>& initialFormulas, ProofCnf& proofCnf, set<clause>& cs) {
 	doing _(initialFormulas, proofCnf, cs);
 }

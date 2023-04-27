@@ -33,7 +33,7 @@ void check(term a, type ty) {
 		if (kind(fty) != kind::Fn) err("Called a non-function");
 		check(a, fty.size() - 1);
 		if (ty != fty[0]) err("Type mismatch");
-		for (size_t i = 1; i < a->n(); ++i) {
+		for (size_t i = 1; i < a->n; ++i) {
 			switch (kind(fty[i])) {
 			case kind::Bool:
 			case kind::Fn:
@@ -68,7 +68,7 @@ void check(term a, type ty) {
 		default:
 			err("Invalid type for arithmetic");
 		}
-		for (size_t i = 1; i < a->n(); ++i) check(a[i], ty);
+		for (size_t i = 1; i < a->n; ++i) check(a[i], ty);
 		return;
 	case All:
 	case Exists:
@@ -78,7 +78,7 @@ void check(term a, type ty) {
 	case Eqv:
 	case Not:
 	case Or:
-		for (size_t i = 1; i < a->n(); ++i) check(a[i], kind::Bool);
+		for (size_t i = 1; i < a->n; ++i) check(a[i], kind::Bool);
 		return;
 	case Ceil:
 	case Floor:
@@ -100,7 +100,7 @@ void check(term a, type ty) {
 		default:
 			err("Invalid type for arithmetic");
 		}
-		for (size_t i = 1; i < a->n(); ++i) check(a[i], ty);
+		for (size_t i = 1; i < a->n; ++i) check(a[i], ty);
 		return;
 	case DistinctObj:
 	case False:
@@ -119,7 +119,7 @@ void check(term a, type ty) {
 		default:
 			err("Invalid type for rational division");
 		}
-		for (size_t i = 1; i < a->n(); ++i) check(a[i], ty);
+		for (size_t i = 1; i < a->n; ++i) check(a[i], ty);
 		return;
 	case Eq:
 		ty = type(a[1]);

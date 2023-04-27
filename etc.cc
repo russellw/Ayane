@@ -4,7 +4,7 @@ static void freeVars(set<term> boundv, term a, set<term>& freev) {
 	switch (a->tag) {
 	case All:
 	case Exists:
-		for (size_t i = 2; i < a->n(); ++i) boundv.add(a[i]);
+		for (size_t i = 2; i < a->n; ++i) boundv.add(a[i]);
 		freeVars(boundv, a[1], freev);
 		return;
 	case Var:
@@ -12,7 +12,7 @@ static void freeVars(set<term> boundv, term a, set<term>& freev) {
 		freev.add(a);
 		return;
 	}
-	for (size_t i = 1; i < a->n(); ++i) freeVars(boundv, a[i], freev);
+	for (size_t i = 1; i < a->n; ++i) freeVars(boundv, a[i], freev);
 }
 
 // SORT
@@ -23,7 +23,7 @@ equation eqn(term a) {
 
 static void flatten(int tag, term a, vec<term>& r) {
 	if (a->tag == t) {
-		for (size_t i = 1; i < a->n(); ++i) flatten(t, a[i], r);
+		for (size_t i = 1; i < a->n; ++i) flatten(t, a[i], r);
 		return;
 	}
 	r.push_back(a);
