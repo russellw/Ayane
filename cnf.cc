@@ -191,6 +191,7 @@ Term* nnf(bool pol, Term* a, vec<pair<Term*, Term*>>& m);
 // binds variables to local scope, so the same variable name used in two for-all's corresponds to two different logical variables.
 // So we rename each quantified variable to a new variable of the same type.
 Term* all(int pol, Term* a, vec<pair<Term*, Term*>>& m) {
+	// TODO: does it actually need to be new variables, if the parser has in any case not been allowing variable shadowing, because of types?
 	auto o = m.n;
 	for (size_t i = 2; i < a->n; ++i) {
 		auto x = at(a, i);
@@ -248,31 +249,28 @@ Term* nnf(bool pol, Term* a, vec<pair<Term*, Term*>>& m) {
 		for (size_t i = 1; i < a->n; ++i) v.add(nnf(pol, at(a, i), m));
 		return term(v);
 
-		// Variables are mapped to new variables or Skolem functions
 	case Var:
-		return m.at(a);
+		// Variables are mapped to new variables or Skolem functions
+		return get(a, m);
 
-		// According to whether they are bound by universal or existential quantifiers
 	case All:
-		m = pol ? all(m, a) : exists(m, a);
-		return nnf(m, pol, at(a, 1));
+		return pol ? all(pol, a, m) : exists(pol, a, m);
 	case Exists:
-		m = pol ? exists(m, a) : all(m, a);
-		return nnf(m, pol, at(a, 1));
+		return pol ? exists(pol, a, m) : all(pol, a, m);
 
-		// Equivalence is the most difficult operator to deal with
 	case Eqv:
 	{
+		// Equivalence is the most difficult operator to deal with
 		auto x = at(a, 1);
 		auto y = at(a, 2);
-		auto x0 = nnf(m, 0, x);
-		auto x1 = nnf(m, 1, x);
-		auto y0 = nnf(m, 0, y);
-		auto y1 = nnf(m, 1, y);
+		auto x0 = nnf(0, x, m);
+		auto x1 = nnf(1, x, m);
+		auto y0 = nnf(0, y, m);
+		auto y1 = nnf(1, y, m);
 		return pol ? term(And, term(Or, x0, y1), term(Or, x1, y0)) : term(And, term(Or, x0, y0), term(Or, x1, y1));
 	}
 	}
-	for (size_t i = 1; i < a->n; ++i) v.add(nnf(m, 1, at(a, i)));
+	for (size_t i = 1; i < a->n; ++i) v.add(nnf(1, at(a, i), m));
 	a = term(v);
 	return pol ? a : term(Not, a);
 }
