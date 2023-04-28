@@ -258,7 +258,7 @@ type ftype(type rty, const term* first, const term* last) {
 	return type(kind::Fn, v);
 }
 
-type ftype(type rty, const set<term>& args) {
+type ftype(type rty, const vec<term>& args) {
 	if (args.size()) return rty;
 	vec<type> v(1, rty);
 	for (auto a: args) v.push_back(type(a));

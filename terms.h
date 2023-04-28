@@ -60,10 +60,6 @@ inline term* at(term* a, size_t i) {
 }
 
 type ftype(type rty, const term* first, const term* last);
-type ftype(type rty, const set<term*>& args);
-
-inline size_t hash(const term& a) {
-	return fnv(&a, sizeof a);
-}
+type ftype(type rty, const vec<term*>& args);
 
 void print(term* a);

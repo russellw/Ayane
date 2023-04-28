@@ -43,7 +43,6 @@ using std::swap;
 #include "base.h"
 #include "buf.h"
 #include "map.h"
-#include "set.h"
 #include "stats.h"
 #include "strings.h"
 #include "vec.h"
