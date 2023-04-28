@@ -6,10 +6,10 @@ szs dpll(map<term, term>& m, const set<clause>& cs) {
 
 	// If we have all true clauses, satisfiable; as simplify filters out tautologies, this amounts to a check that no clauses remain
 	// unsatisfied
-	if (cs1.empty()) return szs::Satisfiable;
+	if (cs1.empty()) return z_Satisfiable;
 
 	// If we have any false clause, not satisfiable
-	if (cs1.count(falsec)) return szs::Unsatisfiable;
+	if (cs1.count(falsec)) return z_Unsatisfiable;
 
 	// Unit clauses
 	for (auto& c: cs1)
@@ -33,19 +33,19 @@ szs dpll(map<term, term>& m, const set<clause>& cs) {
 	// Try assigning false
 	auto m1 = m;
 	m1.add(a, False);
-	if (dpll(m1, cs1) == szs::Satisfiable) {
+	if (dpll(m1, cs1) == z_Satisfiable) {
 		m = m1;
-		return szs::Satisfiable;
+		return z_Satisfiable;
 	}
 
 	// Try assigning true
 	m1 = m;
 	m1.add(a, True);
-	if (dpll(m1, cs1) == szs::Satisfiable) {
+	if (dpll(m1, cs1) == z_Satisfiable) {
 		m = m1;
-		return szs::Satisfiable;
+		return z_Satisfiable;
 	}
 
 	// Fail
-	return szs::Unsatisfiable;
+	return z_Unsatisfiable;
 }

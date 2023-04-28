@@ -284,19 +284,19 @@ int main(int argc, const char** argv) {
 
 		// The SZS ontology uses different result values depending on whether the problem contains a conjecture
 		if (problem.hasConjecture) switch (r) {
-			case szs::Satisfiable:
-				r = szs::CounterSatisfiable;
+			case z_Satisfiable:
+				r = z_CounterSatisfiable;
 				break;
-			case szs::Unsatisfiable:
-				r = szs::Theorem;
+			case z_Unsatisfiable:
+				r = z_Theorem;
 				break;
 			}
 
 		// Print result, and proof if we have one
 		printf("%% SZS status %s for %s\n", szsNames[(int)r], bname);
 		switch (r) {
-		case szs::Theorem:
-		case szs::Unsatisfiable:
+		case z_Theorem:
+		case z_Unsatisfiable:
 			if (proof.count(falsec)) {
 				problem.setProof(proofCnf, proof);
 				printf("%% SZS output start CNFRefutation for %s\n", bname);

@@ -7,17 +7,13 @@ enum {
 extern const char* ruleNames[];
 
 // The SZS ontologies for automated reasoning software, or at least, the subset thereof that is used here
-enum class szs {
-#define _(x) x,
+enum {
+#define _(x) z##x,
 #include "szs.h"
 	end
 };
 
 extern const char* szsNames[];
-
-inline void print(szs status) {
-	print(szsNames[(int)status]);
-}
 
 // Equality can be represented in term form like any other binary operator, but there are also algorithms that need to pay
 // particular attention to equations, e.g. in order to apply them in both directions, enough that it is worth having a specific type

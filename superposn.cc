@@ -151,7 +151,7 @@ struct doing {
 	// If a complete saturation proof procedure finds no more possible derivations, then the problem is satisfiable. In practice,
 	// this almost never happens for nontrivial problems, but serves as a good way to test the completeness of the prover on some
 	// trivial problems. However, if completeness was lost for any reason, then we will need to report failure instead.
-	szs result = szs::Satisfiable;
+	szs result = z_Satisfiable;
 
 	void qclause(rule rl, const vec<clause>& from, const vec<term>& neg, const vec<term>& pos) {
 		incStat("qclause");
@@ -384,7 +384,7 @@ struct doing {
 		// incomplete, so that failure to derive a contradiction, means the result is inconclusive rather than satisfiable.
 		for (auto c: cs)
 			if (hasNumeric(simplify(map<term, term>(), c))) {
-				result = szs::GaveUp;
+				result = z_GaveUp;
 				break;
 			}
 
@@ -406,7 +406,7 @@ struct doing {
 
 			// Derived false
 			if (g == falsec) {
-				result = szs::Unsatisfiable;
+				result = z_Unsatisfiable;
 				return;
 			}
 

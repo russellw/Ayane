@@ -786,59 +786,59 @@ void testDpll() {
 	// No clauses
 	cs.clear();
 	m.clear();
-	assert(dpll(m, cs) == szs::Satisfiable);
+	assert(dpll(m, cs) == z_Satisfiable);
 	assert(m.empty());
 
 	// False
 	cs.clear();
 	cs.add(falsec);
 	m.clear();
-	assert(dpll(m, cs) == szs::Unsatisfiable);
+	assert(dpll(m, cs) == z_Unsatisfiable);
 
 	// False
 	cs.clear();
 	cs.add(make_pair(vec<term>(), vec<term>{False}));
 	m.clear();
-	assert(dpll(m, cs) == szs::Unsatisfiable);
+	assert(dpll(m, cs) == z_Unsatisfiable);
 
 	// False | false
 	cs.clear();
 	cs.add(make_pair(vec<term>(), vec<term>{False, False}));
 	m.clear();
-	assert(dpll(m, cs) == szs::Unsatisfiable);
+	assert(dpll(m, cs) == z_Unsatisfiable);
 
 	// !true
 	cs.clear();
 	cs.add(make_pair(vec<term>{True}, vec<term>()));
 	m.clear();
-	assert(dpll(m, cs) == szs::Unsatisfiable);
+	assert(dpll(m, cs) == z_Unsatisfiable);
 
 	// True
 	cs.clear();
 	cs.add(truec);
 	m.clear();
-	assert(dpll(m, cs) == szs::Satisfiable);
+	assert(dpll(m, cs) == z_Satisfiable);
 	assert(m.empty());
 
 	// True | true
 	cs.clear();
 	cs.add(make_pair(vec<term>(), vec<term>{True, True}));
 	m.clear();
-	assert(dpll(m, cs) == szs::Satisfiable);
+	assert(dpll(m, cs) == z_Satisfiable);
 	assert(m.empty());
 
 	// !false
 	cs.clear();
 	cs.add(make_pair(vec<term>{False}, vec<term>()));
 	m.clear();
-	assert(dpll(m, cs) == szs::Satisfiable);
+	assert(dpll(m, cs) == z_Satisfiable);
 	assert(m.empty());
 
 	// a
 	cs.clear();
 	cs.add(make_pair(vec<term>(), vec<term>{a}));
 	m.clear();
-	assert(dpll(m, cs) == szs::Satisfiable);
+	assert(dpll(m, cs) == z_Satisfiable);
 	assert(m.size() == 1);
 	assert(m.at(a) == True);
 
@@ -846,7 +846,7 @@ void testDpll() {
 	cs.clear();
 	cs.add(make_pair(vec<term>(), vec<term>{a, a}));
 	m.clear();
-	assert(dpll(m, cs) == szs::Satisfiable);
+	assert(dpll(m, cs) == z_Satisfiable);
 	assert(m.size() == 1);
 	assert(m.at(a) == True);
 
@@ -854,7 +854,7 @@ void testDpll() {
 	cs.clear();
 	cs.add(make_pair(vec<term>{a}, vec<term>()));
 	m.clear();
-	assert(dpll(m, cs) == szs::Satisfiable);
+	assert(dpll(m, cs) == z_Satisfiable);
 	assert(m.size() == 1);
 	assert(m.at(a) == False);
 
@@ -862,20 +862,20 @@ void testDpll() {
 	cs.clear();
 	cs.add(make_pair(vec<term>{a}, vec<term>{a}));
 	m.clear();
-	assert(dpll(m, cs) == szs::Satisfiable);
+	assert(dpll(m, cs) == z_Satisfiable);
 
 	// !a & a
 	cs.clear();
 	cs.add(make_pair(vec<term>{a}, vec<term>()));
 	cs.add(make_pair(vec<term>(), vec<term>{a}));
 	m.clear();
-	assert(dpll(m, cs) == szs::Unsatisfiable);
+	assert(dpll(m, cs) == z_Unsatisfiable);
 
 	// b
 	cs.clear();
 	cs.add(make_pair(vec<term>(), vec<term>{b}));
 	m.clear();
-	assert(dpll(m, cs) == szs::Satisfiable);
+	assert(dpll(m, cs) == z_Satisfiable);
 	assert(m.size() == 1);
 	assert(m.at(b) == True);
 
@@ -884,7 +884,7 @@ void testDpll() {
 	cs.add(make_pair(vec<term>(), vec<term>{a}));
 	cs.add(make_pair(vec<term>(), vec<term>{b}));
 	m.clear();
-	assert(dpll(m, cs) == szs::Satisfiable);
+	assert(dpll(m, cs) == z_Satisfiable);
 	assert(m.size() == 2);
 	assert(m.at(a) == True);
 	assert(m.at(b) == True);
@@ -895,31 +895,31 @@ void testDpll() {
 	cs.clear();
 	cnf(term(Eqv, True, term(Eqv, True, True)), cs);
 	m.clear();
-	assert(dpll(m, cs) == szs::Satisfiable);
+	assert(dpll(m, cs) == z_Satisfiable);
 
 	// True <=> (true <=> (true <=> true))
 	cs.clear();
 	cnf(term(Eqv, True, term(Eqv, True, term(Eqv, True, True))), cs);
 	m.clear();
-	assert(dpll(m, cs) == szs::Satisfiable);
+	assert(dpll(m, cs) == z_Satisfiable);
 
 	// True <=> (true <=> (true <=> (true <=> true)))
 	cs.clear();
 	cnf(term(Eqv, True, term(Eqv, True, term(Eqv, True, term(Eqv, True, True)))), cs);
 	m.clear();
-	assert(dpll(m, cs) == szs::Satisfiable);
+	assert(dpll(m, cs) == z_Satisfiable);
 
 	// True <=> (true <=> (true <=> (true <=> (true <=> true))))
 	cs.clear();
 	cnf(term(Eqv, True, term(Eqv, True, term(Eqv, True, term(Eqv, True, term(Eqv, True, True))))), cs);
 	m.clear();
-	assert(dpll(m, cs) == szs::Satisfiable);
+	assert(dpll(m, cs) == z_Satisfiable);
 
 	// True <=> (true <=> (true <=> (true <=> (true <=> (true <=> true)))))
 	cs.clear();
 	cnf(term(Eqv, True, term(Eqv, True, term(Eqv, True, term(Eqv, True, term(Eqv, True, term(Eqv, True, True)))))), cs);
 	m.clear();
-	assert(dpll(m, cs) == szs::Satisfiable);
+	assert(dpll(m, cs) == z_Satisfiable);
 
 	int i = 1;
 	term p = gensym(kind::Bool);
@@ -930,7 +930,7 @@ void testDpll() {
 	cs.clear();
 	cnf(term(And, p, q, r), cs);
 	m.clear();
-	assert(dpll(m, cs) == szs::Satisfiable);
+	assert(dpll(m, cs) == z_Satisfiable);
 	assert(m.size() == 3);
 	assert(m.at(p) == True);
 	assert(m.at(q) == True);
@@ -940,7 +940,7 @@ void testDpll() {
 	cs.clear();
 	cnf(term(And, term(And, p, q), r), cs);
 	m.clear();
-	assert(dpll(m, cs) == szs::Satisfiable);
+	assert(dpll(m, cs) == z_Satisfiable);
 	assert(m.size() == 3);
 	assert(m.at(p) == True);
 	assert(m.at(q) == True);
@@ -950,7 +950,7 @@ void testDpll() {
 	cs.clear();
 	cnf(term(And, p, term(And, q, r)), cs);
 	m.clear();
-	assert(dpll(m, cs) == szs::Satisfiable);
+	assert(dpll(m, cs) == z_Satisfiable);
 	assert(m.size() == 3);
 	assert(m.at(p) == True);
 	assert(m.at(q) == True);
@@ -960,21 +960,21 @@ void testDpll() {
 	cs.clear();
 	cnf(term(Or, p, q, r), cs);
 	m.clear();
-	assert(dpll(m, cs) == szs::Satisfiable);
+	assert(dpll(m, cs) == z_Satisfiable);
 	assert(m.size());
 
 	// (p | q) | r
 	cs.clear();
 	cnf(term(Or, term(Or, p, q), r), cs);
 	m.clear();
-	assert(dpll(m, cs) == szs::Satisfiable);
+	assert(dpll(m, cs) == z_Satisfiable);
 	assert(m.size());
 
 	// p | (q | r)
 	cs.clear();
 	cnf(term(Or, p, term(Or, q, r)), cs);
 	m.clear();
-	assert(dpll(m, cs) == szs::Satisfiable);
+	assert(dpll(m, cs) == z_Satisfiable);
 	assert(m.size());
 }
 } // namespace
