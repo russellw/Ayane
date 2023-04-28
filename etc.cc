@@ -1,5 +1,10 @@
 #include "main.h"
 
+const char* szsNames[] = {
+#define _(x) #x,
+#include "szs.h"
+};
+
 static void freeVars(set<term*> boundv, term* a, set<term*>& freev) {
 	switch (a->tag) {
 	case All:

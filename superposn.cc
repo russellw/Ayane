@@ -144,7 +144,6 @@ struct doing {
 	// SORT
 	int mode;
 	lexicographicPathOrder order;
-	std::priority_queue<clause, vec<clause>, cmpc> passive;
 	Proof& proof;
 	///
 

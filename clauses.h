@@ -7,6 +7,7 @@ enum {
 extern const char* ruleNames[];
 
 struct IFormula {
+	int rule;
 	IFormula* from[2];
 };
 
@@ -16,4 +17,9 @@ struct Formula: IFormula {
 	Term* tm;
 };
 
-struct Clause: IFormula {};
+struct Clause: IFormula {
+	size_t neg;
+	Term* atoms[];
+};
+
+std::priority_queue<Clause*, vec<Clause*>, cmpc> passive;
