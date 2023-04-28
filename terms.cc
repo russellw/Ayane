@@ -1,7 +1,7 @@
 #include "main.h"
 
 // Atoms
-atom atoms[999];
+Atom atoms[999];
 // TODO: fix count
 
 namespace {

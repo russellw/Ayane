@@ -4,13 +4,13 @@ enum {
 	end
 };
 
-struct term {
+struct Term {
 	int tag;
 	uint32_t n;
 };
 
 // Atoms
-struct atom: term {
+struct Atom: Term {
 	type ty;
 	union {
 		const char* s;
@@ -20,7 +20,7 @@ struct atom: term {
 	};
 };
 
-extern atom atoms[];
+extern Atom atoms[];
 
 term* mk(mpz_t val);
 term* mk(mpq_t val);
@@ -39,7 +39,7 @@ term* gensym(type ty);
 term* distinctObj(string* s);
 
 // Compound terms contain other terms, but maintain value semantics. Like atoms, they are interned.
-struct compound {
+struct Compound {
 	term* v[];
 };
 
