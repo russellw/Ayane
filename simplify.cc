@@ -233,7 +233,7 @@ term* simplify(const map<term*, term*>& m, term* a) {
 }
 
 // TODO: normalize variables
-clause simplify(const map<term*, term*>& m, const clause& c) {
+clause simplify(const map<term*, term*>& m, Clause* c) {
 	vec<term*> neg;
 	for (auto& a: c.first) {
 		auto b = simplify(m, a);

@@ -71,7 +71,7 @@ term* quantify(term* a) {
 // calculus:
 // https://stackoverflow.com/questions/29164610/why-are-clauses-multisets
 // So we represent them as bags (or lists, ignoring the order) and let the algorithms that prefer sets, discard duplicate literals
-clause uniq(const clause& c) {
+clause uniq(Clause* c) {
 	vec<term*> neg;
 	for (auto& a: c.first)
 		if (find(neg.begin(), neg.end(), a) == neg.end()) neg.push_back(a);

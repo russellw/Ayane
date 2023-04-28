@@ -14,7 +14,7 @@ set<term*> freeVars(term* a);
 term* imp(term* a, term* b);
 bool occurs(term* a, term* b);
 term* quantify(term* a);
-clause uniq(const clause& c);
+clause uniq(Clause* c);
 set<clause> uniq(const set<clause>& cs);
 ///
 

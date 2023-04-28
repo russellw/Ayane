@@ -1,3 +1,3 @@
-bool subsumes(const clause& c, const clause& d);
-bool subsumesForward(const set<clause>& cs, const clause& d);
-set<clause> subsumeBackward(const set<clause>& cs, const clause& d);
+bool subsumes(Clause* c, Clause* d);
+bool subsumesForward(const set<clause>& cs, Clause* d);
+set<clause> subsumeBackward(const set<clause>& cs, Clause* d);

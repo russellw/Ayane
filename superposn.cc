@@ -38,26 +38,6 @@ term splice(term a, const vec<size_t>& posn, size_t i, term b) {
 	return term(v);
 }
 
-// Passive clauses are stored in a priority queue with smaller clauses first
-size_t weight(term a) {
-	size_t n = 1;
-	for (size_t i = 1; i < a.size(); ++i) n += weight(at(a, i));
-	return n;
-}
-
-size_t weight(const clause& c) {
-	size_t n = 0;
-	for (auto a: c.first) n += weight(a);
-	for (auto a: c.second) n += weight(a);
-	return n;
-}
-
-struct cmpc {
-	bool operator()(const clause& c, const clause& d) {
-		return weight(c) > weight(d);
-	}
-};
-
 // First-order logic usually takes the view that equality is a special case, but superposition calculus takes the view that equality
 // is the general case. Non-equality predicates are considered to be equations 'p=true'; this is a special exemption from the usual
 // rule that equality is not allowed on Boolean terms.
@@ -192,7 +172,7 @@ struct doing {
 	*/
 
 	// Check, substitute and make new clause
-	void resolve(const clause& c, size_t ci, term c0, term c1) {
+	void resolve(Clause* c, size_t ci, term c0, term c1) {
 		// Unify
 		map<termx, termx> m;
 		if (!unify(m, c0, 0, c1, 0)) return;
@@ -211,7 +191,7 @@ struct doing {
 	}
 
 	// For each negative equation
-	void resolve(const clause& c) {
+	void resolve(Clause* c) {
 		for (size_t ci = 0; ci != c.first.size(); ++ci) {
 			auto e = eqn(c.first[ci]);
 			resolve(c, ci, e.first, e.second);
@@ -228,7 +208,7 @@ struct doing {
 	*/
 
 	// Check, substitute and make new clause
-	void factor(const clause& c, size_t ci, term c0, term c1, size_t di, term d0, term d1) {
+	void factor(Clause* c, size_t ci, term c0, term c1, size_t di, term d0, term d1) {
 		// If these two terms are not equatable (for which the types must match, and predicates can only be equated with True),
 		// substituting terms for variables would not make them become so
 		if (!equatable(c1, d1)) return;
@@ -252,7 +232,7 @@ struct doing {
 	}
 
 	// For each positive equation (both directions) again
-	void factor(const clause& c, size_t ci, term c0, term c1) {
+	void factor(Clause* c, size_t ci, term c0, term c1) {
 		for (size_t di = 0; di != c.second.size(); ++di) {
 			if (di == ci) continue;
 			auto e = eqn(c.second[di]);
@@ -262,7 +242,7 @@ struct doing {
 	}
 
 	// For each positive equation (both directions)
-	void factor(const clause& c) {
+	void factor(Clause* c) {
 		for (size_t ci = 0; ci != c.second.size(); ++ci) {
 			auto e = eqn(c.second[ci]);
 			factor(c, ci, e.first, e.second);
@@ -285,17 +265,8 @@ struct doing {
 	// nontrivial and almost identical code, we specify here a single inference rule controlled by the mode flag
 
 	// Check, substitute and make new clause
-	void superposn(
-		const clause& c,
-		const clause& d,
-		size_t ci,
-		term c0,
-		term c1,
-		size_t di,
-		term d0,
-		term d1,
-		const vec<size_t>& posn,
-		term a) {
+	void
+	superposn(Clause* c, Clause* d, size_t ci, term c0, term c1, size_t di, term d0, term d1, const vec<size_t>& posn, term a) {
 		// It is never necessary to paramodulate into variables
 		if (a->tag == Var) return;
 
@@ -339,17 +310,7 @@ struct doing {
 	}
 
 	// Descend into subterms
-	void descend(
-		const clause& c,
-		const clause& d,
-		size_t ci,
-		term c0,
-		term c1,
-		size_t di,
-		term d0,
-		term d1,
-		const vec<size_t>& posn,
-		term a) {
+	void descend(Clause* c, Clause* d, size_t ci, term c0, term c1, size_t di, term d0, term d1, const vec<size_t>& posn, term a) {
 		superposn(c, d, ci, c0, c1, di, d0, d1, posn, a);
 		for (size_t i = 1; i < a.size(); ++i) {
 			auto p(posn);
@@ -359,7 +320,7 @@ struct doing {
 	}
 
 	// For each (mode)ve equation in d (both directions)
-	void superposn(const clause& c, const clause& d, size_t ci, term c0, term c1) {
+	void superposn(Clause* c, Clause* d, size_t ci, term c0, term c1) {
 		auto& dmode = mode ? d.second : d.first;
 		for (size_t di = 0; di != dmode.size(); ++di) {
 			auto e = eqn(dmode[di]);
@@ -369,7 +330,7 @@ struct doing {
 	}
 
 	// For each positive equation in c (both directions)
-	void superposn(const clause& c, const clause& d) {
+	void superposn(Clause* c, Clause* d) {
 		for (size_t ci = 0; ci != c.second.size(); ++ci) {
 			auto e = eqn(c.second[ci]);
 			superposn(c, d, ci, e.first, e.second);

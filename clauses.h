@@ -18,8 +18,17 @@ struct Formula: IFormula {
 };
 
 struct Clause: IFormula {
-	size_t neg;
+	uint32_t neg, n;
 	Term* atoms[];
 };
 
-std::priority_queue<Clause*, vec<Clause*>, cmpc> passive;
+// Passive clauses are stored in a priority queue with smaller clauses first
+size_t cost(Clause* c);
+
+struct CompareClauses {
+	bool operator()(Clause* c, Clause* d) {
+		return cost(c) > cost(d);
+	}
+};
+
+extern std::priority_queue<Clause*, vec<Clause*>, CompareClauses> passive;

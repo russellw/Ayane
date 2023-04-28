@@ -983,7 +983,7 @@ void pr(term a, term parent) {
 	unreachable;
 }
 
-void prliterals(const clause& c) {
+void prliterals(Clause* c) {
 	joining;
 	for (auto a: c.first) {
 		join(" | ");
@@ -1004,7 +1004,7 @@ void prliterals(const clause& c) {
 }
 } // namespace
 
-void tptpClause(const clause& c, size_t id) {
+void tptpClause(Clause* c, size_t id) {
 	printf("cnf(%zu, plain, ", id);
 	prliterals(c);
 	print(").\n");

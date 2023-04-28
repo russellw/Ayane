@@ -78,7 +78,7 @@ size_t Problem::walk(term a) {
 	return i;
 }
 
-size_t Problem::walk(const ProofCnf& proofCnf, const Proof& proof, const clause& c) {
+size_t Problem::walk(const ProofCnf& proofCnf, const Proof& proof, Clause* c) {
 	auto& o = visitedcs.gadd(c);
 	if (o) return o;
 

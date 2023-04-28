@@ -65,7 +65,7 @@ bool match(map<term, term>& m, vec<term> c, vec<term> d, vec<term> c2, vec<term>
 }
 } // namespace
 
-bool subsumes(const clause& c, const clause& d) {
+bool subsumes(Clause* c, Clause* d) {
 	incStat("subsumes");
 
 	// Negative and positive sides need to be matched separately, though of course with shared variable assignments
@@ -98,7 +98,7 @@ bool subsumes(const clause& c, const clause& d) {
 	return match(m, c1, d1, c2, d2);
 }
 
-bool subsumesForward(const set<clause>& cs, const clause& d) {
+bool subsumesForward(const set<clause>& cs, Clause* d) {
 	for (auto& c: cs)
 		if (subsumes(c, d)) {
 			incStat("subsumesForward");
@@ -107,7 +107,7 @@ bool subsumesForward(const set<clause>& cs, const clause& d) {
 	return 0;
 }
 
-set<clause> subsumeBackward(const set<clause>& cs, const clause& d) {
+set<clause> subsumeBackward(const set<clause>& cs, Clause* d) {
 	set<clause> r;
 	for (auto& c: cs)
 		if (subsumes(d, c)) incStat("subsumeBackward");

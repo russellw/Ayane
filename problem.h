@@ -46,7 +46,7 @@ struct Clause: AbstractFormula {
 	const rule rl;
 	const uint32_t from, from1;
 
-	Clause(const clause& c, rule rl, size_t from, size_t from1)
+	Clause(Clause* c, rule rl, size_t from, size_t from1)
 		: AbstractFormula(FormulaClass::Clause), c(c), rl(rl), from(from), from1(from1) {
 	}
 };
@@ -102,7 +102,7 @@ private:
 	map<clause, uint32_t> visitedcs;
 
 	size_t walk(term a);
-	size_t walk(const ProofCnf& proofCnf, const Proof& proof, const clause& c);
+	size_t walk(const ProofCnf& proofCnf, const Proof& proof, Clause* c);
 
 public:
 	vec<uint32_t> proofv;
