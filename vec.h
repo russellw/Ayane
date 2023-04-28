@@ -1,16 +1,16 @@
-// Mostly a drop-in replacement for std::vector. Unlike std::vector, it doesn't have a separate at() function with bounds checking.
+// Partly a drop-in replacement for std::vector. Unlike std::vector, it doesn't have a separate at() function with bounds checking.
 // Instead, the subscript operator checks index bounds, only in debug build, using assert().
 
 // Usual caveat: Don't do anything that might cause reallocation (such as adding elements without having previously reserved space)
-// while holding a live iterator to the vector, or a live reference to an element
+// while holding a live iterator to the vector, or a live pointer to an element
 
-// Unusual caveats:
+// Unusual caveat:
 
 // While elements may contain pointers to other chunks of memory they own, they must not contain internal pointers to other parts of
 // the same object. This means elements can be moved around with memmove, and in particular with realloc, which improves performance
 // in some cases.
 
-// Anything which doesn't meet these requirements, should use std::vector instead
+// Anything which doesn't meet this requirement, should use std::vector instead
 template <class T> struct vec {
 	using size_type = size_t;
 	using difference_type = ptrdiff_t;
@@ -74,6 +74,7 @@ public:
 	}
 
 	vec(const vec& b) {
+		// TODO: disable?
 		init(b.qty);
 		auto i = begin();
 		for (auto& x: b) new (i++) T(x);

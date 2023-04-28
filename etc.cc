@@ -5,21 +5,6 @@ const char* szsNames[] = {
 #include "szs.h"
 };
 
-static void freeVars(set<Term*> boundv, Term* a, set<Term*>& freev) {
-	switch (a->tag) {
-	case All:
-	case Exists:
-		for (size_t i = 2; i < a->n; ++i) boundv.add(at(a, i));
-		freeVars(boundv, at(a, 1), freev);
-		return;
-	case Var:
-		if (boundv.count(a)) return;
-		freev.add(a);
-		return;
-	}
-	for (size_t i = 1; i < a->n; ++i) freeVars(boundv, at(a, i), freev);
-}
-
 // SORT
 Eqn eqn(Term* a) {
 	if (a->tag == Eq) return make_pair(at(a, 1), at(a, 2));
@@ -44,6 +29,21 @@ set<Term*> freeVars(Term* a) {
 	set<Term*> r;
 	freeVars(set<Term*>(), a, r);
 	return r;
+}
+
+void freeVars(Term* a, set<Term*> boundv, set<Term*>& freev) {
+	switch (a->tag) {
+	case All:
+	case Exists:
+		for (size_t i = 2; i < a->n; ++i) boundv.add(at(a, i));
+		freeVars(at(a, 1), boundv, freev);
+		return;
+	case Var:
+		if (boundv.count(a)) return;
+		freev.add(a);
+		return;
+	}
+	for (size_t i = 1; i < a->n; ++i) freeVars(at(a, i), boundv, freev);
 }
 
 Term* imp(Term* a, Term* b) {
@@ -81,11 +81,5 @@ clause uniq(Clause* c) {
 		if (find(pos.begin(), pos.end(), a) == pos.end()) pos.push_back(a);
 
 	return make_pair(neg, pos);
-}
-
-set<clause> uniq(const set<clause>& cs) {
-	set<clause> r;
-	for (auto& c: cs) r.add(uniq(c));
-	return r;
 }
 ///
