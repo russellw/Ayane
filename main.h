@@ -50,7 +50,7 @@ using std::swap;
 #include "terms.h"
 
 #include "bignums.h"
-#include "logic.h"
+#include "clauses.h"
 
 // Algorithms
 #include "cnf.h"

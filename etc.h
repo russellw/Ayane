@@ -1,3 +1,12 @@
+// The SZS ontologies for automated reasoning software, or at least, the subset thereof that is used here
+enum {
+#define _(x) z_##x,
+#include "szs.h"
+	end
+};
+
+extern const char* szsNames[];
+
 // SORT
 equation eqn(term* a);
 vec<term*> flatten(int tag, term* a);
