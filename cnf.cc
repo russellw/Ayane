@@ -323,12 +323,10 @@ struct doing {
 	}
 
 	clause clauseTerm(Term* a) {
-		vec<Term*> neg;
-		vec<Term*> pos;
+		vec<Term*> neg, pos;
 		clauseTerm(a, neg, pos);
 		auto c = make_pair(neg, pos);
 		c = simplify(map<Term*, Term*>(), c);
-		c = uniq(c);
 		return c;
 	}
 

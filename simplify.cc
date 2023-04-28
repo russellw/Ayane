@@ -23,6 +23,7 @@ bool realConstant(Term* a) {
 Term* simplify(const map<Term*, Term*>& m, Term* a) {
 	// TODO: other simplifications e.g. x+0, x*1
 	auto t = a->tag;
+	// TODO: could this be folded into term creation?
 	switch (t) {
 	case Add:
 	{
@@ -230,46 +231,4 @@ Term* simplify(const map<Term*, Term*>& m, Term* a) {
 		return a;
 	}
 	unreachable;
-}
-
-// TODO: normalize variables
-clause simplify(const map<Term*, Term*>& m, Clause* c) {
-	vec<Term*> neg;
-	for (auto& a: c.first) {
-		auto b = simplify(m, a);
-		switch (b->tag) {
-		case False:
-			return truec;
-		case True:
-			continue;
-		}
-		neg.push_back(b);
-	}
-
-	vec<Term*> pos;
-	for (auto& a: c.second) {
-		auto b = simplify(m, a);
-		switch (b->tag) {
-		case False:
-			continue;
-		case True:
-			return truec;
-		}
-		pos.push_back(b);
-	}
-
-	for (auto& a: neg)
-		if (find(pos.begin(), pos.end(), a) != pos.end()) return truec;
-
-	return make_pair(neg, pos);
-}
-
-set<clause> simplify(const map<Term*, Term*>& m, const set<clause>& cs) {
-	set<clause> r;
-	for (auto& c0: cs) {
-		auto c = simplify(m, c0);
-		if (c == truec) continue;
-		r.add(c);
-	}
-	return r;
 }

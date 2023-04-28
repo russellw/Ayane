@@ -11,12 +11,25 @@ struct IFormula {
 	IFormula* from[2];
 };
 
+// In the DIMACS and TPTP formats, clauses can be provided directly, but this is not as straightforward as it sounds, because there
+// is still the distinction between the not necessarily simplified input version and the simplified version required by proof
+// procedures, and since this kind of input is rarely used nowadays, there is no good reason to provide a special code path for it.
+// So input clauses are just treated as formulas.
 struct Formula: IFormula {
 	char* file;
 	char* name;
 	Term* tm;
 };
 
+// Most of the logic doesn't care whether the problem contained a conjecture, but it needs to be remembered for e.g. the specifics
+// of SZS output.
+extern Formula* conjecture;
+
+// Are clauses sets of literals, or bags? It would seem logical to represent them as sets, and some algorithms prefer it that way,
+// but unfortunately there are important algorithms that will break unless they are represented as bags, such as the superposition
+// calculus:
+// https://stackoverflow.com/questions/29164610/why-are-clauses-multisets
+// So we represent them as bags (or lists, ignoring the order) and let the algorithms that prefer sets, discard duplicate literals
 struct Clause: IFormula {
 	uint32_t neg, n;
 	Term* atoms[];

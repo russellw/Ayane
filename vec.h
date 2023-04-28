@@ -25,7 +25,7 @@ template <class T> struct vec {
 	using reverse_iterator = std::reverse_iterator<iterator>;
 	using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-	uint32_t cap, n;
+	uint32_t n, cap;
 	// TODO: optimize for small sizes
 	T* data;
 

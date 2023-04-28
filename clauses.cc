@@ -5,7 +5,7 @@ const char* ruleNames[] = {
 #include "rules.h"
 };
 
-std::priority_queue<Clause*, vec<Clause*>, CompareClauses> passive;
+Formula* conjecture;
 
 static size_t cost(Term* a) {
 	size_t n = 1;
@@ -18,3 +18,5 @@ size_t cost(Clause* c) {
 	for (size_t i = 0; i < c->n; ++i) n += cost(c->atoms[i]);
 	return n;
 }
+
+std::priority_queue<Clause*, vec<Clause*>, CompareClauses> passive;

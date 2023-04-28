@@ -13,7 +13,6 @@ void freeVars(Term* a, vec<Term*> boundv, vec<Term*>& freev);
 Term* imp(Term* a, Term* b);
 bool occurs(Term* a, Term* b);
 Term* quantify(Term* a);
-clause uniq(Clause* c);
 ///
 
 template <class T> void cartProduct(const vec<vec<T>>& vs, size_t i, vec<size_t>& js, vec<vec<T>>& rs) {

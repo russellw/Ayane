@@ -60,21 +60,4 @@ Term* quantify(Term* a) {
 	for (auto x: vars) v.push_back(x);
 	return mk(v);
 }
-
-// Are clauses sets of literals, or bags? It would seem logical to represent them as sets, and some algorithms prefer it that way,
-// but unfortunately there are important algorithms that will break unless they are represented as bags, such as the superposition
-// calculus:
-// https://stackoverflow.com/questions/29164610/why-are-clauses-multisets
-// So we represent them as bags (or lists, ignoring the order) and let the algorithms that prefer sets, discard duplicate literals
-clause uniq(Clause* c) {
-	vec<Term*> neg;
-	for (auto& a: c.first)
-		if (find(neg.begin(), neg.end(), a) == neg.end()) neg.push_back(a);
-
-	vec<Term*> pos;
-	for (auto& a: c.second)
-		if (find(pos.begin(), pos.end(), a) == pos.end()) pos.push_back(a);
-
-	return make_pair(neg, pos);
-}
 ///
