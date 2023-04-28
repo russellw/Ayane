@@ -46,7 +46,7 @@ void freeVars(Term* a, vec<Term*> boundv, vec<Term*>& freev) {
 }
 
 Term* imp(Term* a, Term* b) {
-	return mk(Or, mk(Not, a), b);
+	return term(Or, term(Not, a), b);
 }
 
 bool occurs(Term* a, Term* b) {
@@ -59,9 +59,9 @@ bool occurs(Term* a, Term* b) {
 Term* quantify(Term* a) {
 	auto vars = freeVars(a);
 	if (vars.empty()) return a;
-	vec<Term*> v(1, mk(All));
+	vec<Term*> v(1, term(All));
 	v.add(a);
 	for (auto x: vars) v.add(x);
-	return mk(v);
+	return term(v);
 }
 ///

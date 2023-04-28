@@ -22,14 +22,14 @@ struct Atom: Term {
 
 extern Atom atoms[];
 
-Term* mk(mpz_t val);
-Term* mk(mpq_t val);
+Term* term(mpz_t val);
+Term* term(mpq_t val);
 
 // Wrapping a symbol in a term is a common operation. Specifying the type at the same time is less so, but still common enough for
 // this function to be useful.
-Term* mk(string* s, type ty);
+Term* term(string* s, type ty);
 
-inline Term* mkbool(bool b) {
+inline Term* tbool(bool b) {
 	return atoms + (b ? True : False);
 }
 
@@ -44,14 +44,14 @@ struct Compound {
 };
 
 // TODO: naming convention?
-Term* mk(int tag);
-Term* mk(int tag, Term* a);
-Term* mk(int tag, Term* a, Term* b);
-Term* mk(Term* a, Term* b);
-Term* mk(Term* a, Term* b, Term* c);
-Term* mk(Term* a, Term* b, Term* c, Term* d);
-Term* mk(Term* a, Term* b, Term* c, Term* d, Term* e);
-Term* mk(const vec<Term*>& v);
+Term* term(int tag);
+Term* term(int tag, Term* a);
+Term* term(int tag, Term* a, Term* b);
+Term* term(Term* a, Term* b);
+Term* term(Term* a, Term* b, Term* c);
+Term* term(Term* a, Term* b, Term* c, Term* d);
+Term* term(Term* a, Term* b, Term* c, Term* d, Term* e);
+Term* term(const vec<Term*>& v);
 type getType(Term* a);
 
 inline Term* at(Term* a, size_t i) {

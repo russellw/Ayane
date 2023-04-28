@@ -86,7 +86,7 @@ Term* skolem(type rty, const vec<Term*>& args) {
 	vec<Term*> v(1, gensym(ftype(rty, args)));
 	// TODO: single call instead of loop?
 	for (auto b: args) v.add(b);
-	return mk(v);
+	return term(v);
 }
 
 // SORT
@@ -112,7 +112,7 @@ Term* rename(int pol, Term* a) {
 		break;
 	case 0:
 		// In the general case, full equivalence is needed; the new name implies and is implied by the original formula
-		a = mk(And, imp(b, a), imp(a, b));
+		a = term(And, imp(b, a), imp(a, b));
 		break;
 	default:
 		unreachable;
@@ -153,7 +153,7 @@ Term* maybeRename(int pol, Term* a) {
 		break;
 
 	case Not:
-		return mk(Not, maybeRename(-pol, at(a, 1)));
+		return term(Not, maybeRename(-pol, at(a, 1)));
 
 	case Or:
 		for (size_t i = 1; i < a->n; ++i) v.add(maybeRename(pol, at(a, i)));
@@ -176,13 +176,13 @@ Term* maybeRename(int pol, Term* a) {
 		auto y = maybeRename(0, at(a, 2));
 		if (ncsApprox(0, x) >= many) x = rename(0, x);
 		if (ncsApprox(0, y) >= many) y = rename(0, y);
-		return mk(Eqv, x, y);
+		return term(Eqv, x, y);
 	}
 
 	default:
 		return a;
 	}
-	return mk(v);
+	return term(v);
 }
 
 Term* nnf(bool pol, Term* a, vec<pair<Term*, Term*>>& m);
@@ -232,21 +232,21 @@ Term* nnf(bool pol, Term* a, vec<pair<Term*, Term*>>& m) {
 	switch (a->tag) {
 	case False:
 		// Boolean constants and operators can be inverted by downward-sinking NOTs
-		return mkbool(!pol);
+		return tbool(!pol);
 	case True:
-		return mkbool(pol);
+		return tbool(pol);
 
 	case Not:
 		return nnf(!pol, at(a, 1), m);
 
 	case Or:
-		if (!pol) v[0] = mk(And);
+		if (!pol) v[0] = term(And);
 		for (size_t i = 1; i < a->n; ++i) v.add(nnf(pol, at(a, i), m));
-		return mk(v);
+		return term(v);
 	case And:
-		if (!pol) v[0] = mk(Or);
+		if (!pol) v[0] = term(Or);
 		for (size_t i = 1; i < a->n; ++i) v.add(nnf(pol, at(a, i), m));
-		return mk(v);
+		return term(v);
 
 		// Variables are mapped to new variables or Skolem functions
 	case Var:
@@ -269,18 +269,18 @@ Term* nnf(bool pol, Term* a, vec<pair<Term*, Term*>>& m) {
 		auto x1 = nnf(m, 1, x);
 		auto y0 = nnf(m, 0, y);
 		auto y1 = nnf(m, 1, y);
-		return pol ? mk(And, mk(Or, x0, y1), mk(Or, x1, y0)) : mk(And, mk(Or, x0, y0), mk(Or, x1, y1));
+		return pol ? term(And, term(Or, x0, y1), term(Or, x1, y0)) : term(And, term(Or, x0, y0), term(Or, x1, y1));
 	}
 	}
 	for (size_t i = 1; i < a->n; ++i) v.add(nnf(m, 1, at(a, i)));
-	a = mk(v);
-	return pol ? a : mk(Not, a);
+	a = term(v);
+	return pol ? a : term(Not, a);
 }
 
 // Distribute OR down into AND, completing the layering of the operators for CNF. This is the second place where exponential
 // expansion would occur, had selected formulas not already been renamed.
 Term* distribute(Term* a) {
-	vec<Term*> v(1, mk(And));
+	vec<Term*> v(1, term(And));
 	switch (a->tag) {
 	case And:
 		for (size_t i = 1; i < a->n; ++i) v.add(distribute(at(a, i)));
@@ -300,15 +300,15 @@ Term* distribute(Term* a) {
 		// OR distributes over AND by Cartesian product
 		// TODO: can this be done by reference?
 		for (auto u: cartProduct(ands)) {
-			u.insert(u.begin(), mk(Or));
-			v.add(mk(u));
+			u.insert(u.begin(), term(Or));
+			v.add(term(u));
 		}
 		break;
 	}
 	default:
 		return a;
 	}
-	return mk(v);
+	return term(v);
 }
 
 // Convert a suitably rearranged term into actual clauses

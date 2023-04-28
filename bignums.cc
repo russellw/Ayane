@@ -172,7 +172,7 @@ Atom* rational(const char* s) {
 }
 
 Term* real(mpq_t q) {
-	return mk(ToReal, intern(q));
+	return term(ToReal, intern(q));
 }
 
 Term* real(int n, unsigned d) {
@@ -737,7 +737,7 @@ Term* toReal(Atom* a) {
 		return real(r);
 	}
 	case Rational:
-		return mk(ToReal, a);
+		return term(ToReal, a);
 	}
 	unreachable;
 }

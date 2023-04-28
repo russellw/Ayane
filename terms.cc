@@ -53,7 +53,7 @@ term distinctObj(string* s) {
 	return a;
 }
 
-Term* mk(string* s, type ty) {
+Term* term(string* s, type ty) {
 	if (s->sym) {
 		auto p = (Atom*)atoms->ptr(s->sym);
 		assert(p->t == Fn);
@@ -150,7 +150,7 @@ size_t intern(const Term* s, size_t n) {
 }
 } // namespace comps
 
-Term* mk(term a, term b) {
+Term* term(term a, term b) {
 	const int n = 2;
 	term v[n];
 	v[0] = a;
@@ -158,7 +158,7 @@ Term* mk(term a, term b) {
 	raw = t_compound | comps::intern(v, n);
 }
 
-Term* mk(term a, term b, term c) {
+Term* term(term a, term b, term c) {
 	const int n = 3;
 	term v[n];
 	v[0] = a;
@@ -167,7 +167,7 @@ Term* mk(term a, term b, term c) {
 	raw = t_compound | comps::intern(v, n);
 }
 
-Term* mk(term a, term b, term c, term d) {
+Term* term(term a, term b, term c, term d) {
 	const int n = 4;
 	term v[n];
 	v[0] = a;
@@ -177,7 +177,7 @@ Term* mk(term a, term b, term c, term d) {
 	raw = t_compound | comps::intern(v, n);
 }
 
-Term* mk(term a, term b, term c, term d, term e) {
+Term* term(term a, term b, term c, term d, term e) {
 	const int n = 5;
 	term v[n];
 	v[0] = a;
@@ -188,7 +188,7 @@ Term* mk(term a, term b, term c, term d, term e) {
 	raw = t_compound | comps::intern(v, n);
 }
 
-Term* mk(const vec<term>& v) {
+Term* term(const vec<term>& v) {
 	assert(v.size());
 	if (v.size() == 1) *this = v[0];
 	else
