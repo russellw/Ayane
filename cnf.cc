@@ -185,59 +185,67 @@ Term* maybeRename(int pol, Term* a) {
 	return mk(v);
 }
 
+Term* nnf(bool pol, Term* a, vec<pair<Term*, Term*>>& m);
+
 // For-all doesn't need much work to convert. Clauses contain variables with implied for-all. The tricky part is that quantifier
 // binds variables to local scope, so the same variable name used in two for-all's corresponds to two different logical variables.
 // So we rename each quantified variable to a new variable of the same type.
-map<Term*, Term*> all(map<Term*, Term*> m, Term* a) {
+Term* all(int pol, Term* a, vec<pair<Term*, Term*>>& m) {
+	auto o = m.n;
 	for (size_t i = 2; i < a->n; ++i) {
 		auto x = at(a, i);
 		assert(x->tag == Var);
 		auto y = var(vars++, ((Atom*)x)->ty);
-		m.add(x, y);
+		m.add(make_pair(x, y));
 	}
-	return m;
+	a = nnf(pol, at(a, 1), m);
+	m.n = o;
+	return a;
 }
 
 // Each existentially quantified variable is replaced with a Skolem function whose parameters are all the surrounding universally
 // quantified variables
-map<Term*, Term*> exists(map<Term*, Term*> m, Term* a) {
+Term* exists(int pol, Term* a, vec<pair<Term*, Term*>>& m) {
 	// Get the surrounding universally quantified variables that will be arguments to the Skolem functions
 	vec<Term*> args;
-	for (auto& kv: m)
-		if (kv.second->tag == Var) args.add(kv.second);
+	for (auto& xy: m)
+		if (xy.second->tag == Var) args.add(xy.second);
 
 	// Make a replacement for each existentially quantified variable
+	auto o = m.n;
 	for (size_t i = 2; i < a->n; ++i) {
 		auto x = at(a, i);
 		assert(x->tag == Var);
 		auto y = skolem(((Atom*)x)->ty, args);
-		m.add(x, y);
+		m.add(make_pair(x, y));
 	}
-	return m;
+	a = nnf(pol, at(a, 1), m);
+	m.n = o;
+	return a;
 }
 
 // Negation normal form consists of several transformations that are as easy to do at the same time: Move NOTs inward to the literal
 // layer, flipping things around on the way, while simultaneously resolving quantifiers
-Term* nnf(map<Term*, Term*> m, bool pol, Term* a) {
+Term* nnf(bool pol, Term* a, vec<pair<Term*, Term*>>& m) {
 	vec<Term*> v(1, at(a, 0));
 	// NO_SORT
 	switch (a->tag) {
-		// Boolean constants and operators can be inverted by downward-sinking NOTs
 	case False:
+		// Boolean constants and operators can be inverted by downward-sinking NOTs
 		return mkbool(!pol);
 	case True:
 		return mkbool(pol);
 
 	case Not:
-		return nnf(m, !pol, at(a, 1));
+		return nnf(!pol, at(a, 1), m);
 
 	case Or:
 		if (!pol) v[0] = mk(And);
-		for (size_t i = 1; i < a->n; ++i) v.add(nnf(m, pol, at(a, i)));
+		for (size_t i = 1; i < a->n; ++i) v.add(nnf(pol, at(a, i), m));
 		return mk(v);
 	case And:
 		if (!pol) v[0] = mk(Or);
-		for (size_t i = 1; i < a->n; ++i) v.add(nnf(m, pol, at(a, i)));
+		for (size_t i = 1; i < a->n; ++i) v.add(nnf(pol, at(a, i), m));
 		return mk(v);
 
 		// Variables are mapped to new variables or Skolem functions

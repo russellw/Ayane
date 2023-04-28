@@ -26,6 +26,7 @@ vec<Term*> flatten(int tag, Term* a) {
 }
 
 void freeVars(Term* a, vec<Term*> boundv, vec<Term*>& freev) {
+	// TODO: boundv static?
 	switch (a->tag) {
 	case All:
 	case Exists:
