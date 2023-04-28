@@ -12,6 +12,7 @@
 
 // Anything which doesn't meet this requirement, should use std::vector instead
 template <class T> struct vec {
+	// TODO: simplify
 	using size_type = size_t;
 	using difference_type = ptrdiff_t;
 
@@ -24,14 +25,13 @@ template <class T> struct vec {
 	using reverse_iterator = std::reverse_iterator<iterator>;
 	using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-private:
 	// The current state of the vector consists of a pointer to a block of allocated memory, the capacity (how much space, as a
 	// multiple of the element size, has been allocated), and quantity (how much of the space consists of actual valid elements; the
 	// rest is uninitialized memory that serves as a buffer to make it efficient to add new elements one at a time)
 	uint32_t cap;
 	uint32_t qty;
-	// TODO: name?
-	T* o;
+	// TODO: optimize for small sizes
+	T* data;
 
 	// Initialize the vector, only for use in constructors; assumes in particular that the pointer to allocated memory is not yet
 	// initialized
@@ -39,7 +39,7 @@ private:
 		// TODO: if n == 0, default to some more predictive capacity?
 		cap = n;
 		qty = n;
-		o = (T*)xmalloc(cap * sizeof(T));
+		data = (T*)xmalloc(cap * sizeof(T));
 	}
 
 	// Turn some elements back into uninitialized memory
@@ -48,7 +48,6 @@ private:
 		while (i != j) i++->~T();
 	}
 
-public:
 	// Constructors use placement new to initialize elements where necessary with copies of source elements
 	// TODO: constructor that takes estimated initial capacity
 	explicit vec(size_t n = 0) {
@@ -84,7 +83,7 @@ public:
 	// not capacity.
 	~vec() {
 		del(begin(), end());
-		free(o);
+		free(data);
 	}
 
 	// Reserve is used internally by other functions, but following std::vector, it is also made available in the API, where it is
@@ -101,7 +100,7 @@ public:
 		// realloc to be inefficient here because, knowing nothing about the semantics of vectors, it must (if actual reallocation
 		// is needed) memcpy up to capacity, not just quantity. But in practice, almost all reallocations will be caused by an
 		// element being added at the end, so quantity will be equal to capacity anyway.
-		o = xrealloc(o, cap * sizeof(T), cap1 * sizeof(T));
+		data = xrealloc(data, cap * sizeof(T), cap1 * sizeof(T));
 
 		// Update capacity. Quantity is unchanged; that's for the caller to figure out.
 		cap = cap1;
@@ -195,22 +194,13 @@ public:
 		return !qty;
 	}
 
-	// Data access
-	T* data() {
-		return begin();
-	}
-
-	const T* data() const {
-		return begin();
-	}
-
 	// Iterators
 	iterator begin() {
-		return o;
+		return data;
 	}
 
 	const_iterator begin() const {
-		return o;
+		return data;
 	}
 
 	iterator end() {
