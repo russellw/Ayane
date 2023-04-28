@@ -25,22 +25,17 @@ vec<Term*> flatten(int tag, Term* a) {
 	return r;
 }
 
-set<Term*> freeVars(Term* a) {
-	set<Term*> r;
-	freeVars(set<Term*>(), a, r);
-	return r;
-}
-
-void freeVars(Term* a, set<Term*> boundv, set<Term*>& freev) {
+void freeVars(Term* a, vec<Term*> boundv, vec<Term*>& freev) {
 	switch (a->tag) {
 	case All:
 	case Exists:
+	{
 		for (size_t i = 2; i < a->n; ++i) boundv.add(at(a, i));
 		freeVars(at(a, 1), boundv, freev);
 		return;
+	}
 	case Var:
-		if (boundv.count(a)) return;
-		freev.add(a);
+		if (!boundv.has(a) && !freev.has(a)) freev.push_back(a);
 		return;
 	}
 	for (size_t i = 1; i < a->n; ++i) freeVars(at(a, i), boundv, freev);

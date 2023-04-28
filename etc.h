@@ -9,7 +9,7 @@ extern const char* szsNames[];
 // SORT
 Eqn eqn(Term* a);
 vec<Term*> flatten(int tag, Term* a);
-set<Term*> freeVars(Term* a);
+void freeVars(Term* a, vec<Term*> boundv, vec<Term*>& freev);
 Term* imp(Term* a, Term* b);
 bool occurs(Term* a, Term* b);
 Term* quantify(Term* a);

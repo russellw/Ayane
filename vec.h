@@ -1,14 +1,14 @@
-// Partly a drop-in replacement for std::vector. Unlike std::vector, it doesn't have a separate at() function with bounds checking.
-// Instead, the subscript operator checks index bounds, only in debug build, using assert().
+// Partly a replacement for std::vector
+
+// Unlike std::vector, doesn't have a separate at() function with bounds checking. Instead, the subscript operator checks index
+// bounds, only in debug build, using assert().
 
 // Usual caveat: Don't do anything that might cause reallocation (such as adding elements without having previously reserved space)
 // while holding a live iterator to the vector, or a live pointer to an element
 
-// Unusual caveat:
-
-// While elements may contain pointers to other chunks of memory they own, they must not contain internal pointers to other parts of
-// the same object. This means elements can be moved around with memmove, and in particular with realloc, which improves performance
-// in some cases.
+// Unusual caveat: While elements may contain pointers to other chunks of memory they own, they must not contain internal pointers
+// to other parts of the same object. This means elements can be moved around with memmove, and in particular with realloc, which
+// improves performance in some cases.
 
 // Anything which doesn't meet this requirement, should use std::vector instead
 template <class T> struct vec {
@@ -25,20 +25,16 @@ template <class T> struct vec {
 	using reverse_iterator = std::reverse_iterator<iterator>;
 	using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-	// The current state of the vector consists of a pointer to a block of allocated memory, the capacity (how much space, as a
-	// multiple of the element size, has been allocated), and quantity (how much of the space consists of actual valid elements; the
-	// rest is uninitialized memory that serves as a buffer to make it efficient to add new elements one at a time)
-	uint32_t cap;
-	uint32_t qty;
+	uint32_t cap, n;
 	// TODO: optimize for small sizes
 	T* data;
 
 	// Initialize the vector, only for use in constructors; assumes in particular that the pointer to allocated memory is not yet
 	// initialized
-	void init(size_t n) {
-		// TODO: if n == 0, default to some more predictive capacity?
-		cap = n;
-		qty = n;
+	void init(size_t o) {
+		// TODO: if o == 0, default to some more predictive capacity?
+		cap = o;
+		n = o;
 		data = (T*)xmalloc(cap * sizeof(T));
 	}
 
@@ -50,13 +46,13 @@ template <class T> struct vec {
 
 	// Constructors use placement new to initialize elements where necessary with copies of source elements
 	// TODO: constructor that takes estimated initial capacity
-	explicit vec(size_t n = 0) {
-		init(n);
+	explicit vec(size_t o = 0) {
+		init(o);
 		for (auto i = begin(), e = end(); i != e; ++i) new (i) T;
 	}
 
-	explicit vec(size_t n, const T& b) {
-		init(n);
+	explicit vec(size_t o, const T& b) {
+		init(o);
 		for (auto i = begin(), e = end(); i != e; ++i) new (i) T(b);
 	}
 
@@ -74,13 +70,13 @@ template <class T> struct vec {
 
 	vec(const vec& b) {
 		// TODO: disable?
-		init(b.qty);
+		init(b.n);
 		auto i = begin();
 		for (auto& x: b) new (i++) T(x);
 	}
 
-	// Destructor calls element destructors, but only on those elements that have actually been initialized, i.e. up to quantity,
-	// not capacity.
+	// Destructor calls element destructors, but only on those elements that have actually been initialized, i.e. up to size, not
+	// capacity.
 	~vec() {
 		del(begin(), end());
 		free(data);
@@ -90,31 +86,31 @@ template <class T> struct vec {
 	// semantically mostly a no-op, but serves as an optimization hint. The case where it is important for correctness is if you
 	// want to do something like adding new elements while holding a live iterator to the vector or a live reference to an element;
 	// reserving enough space in advance, can ensure that reallocation doesn't need to happen on the fly.
-	void reserve(size_t n) {
-		if (n <= cap) return;
+	void reserve(size_t o) {
+		if (o <= cap) return;
 
 		// Make sure adding one element at a time is amortized constant time
-		auto cap1 = max(n, (size_t)cap * 2);
+		auto cap1 = max(o, (size_t)cap * 2);
 
 		// Realloc is okay because of the precondition that elements have no internal pointers. It is theoretically possible for
 		// realloc to be inefficient here because, knowing nothing about the semantics of vectors, it must (if actual reallocation
-		// is needed) memcpy up to capacity, not just quantity. But in practice, almost all reallocations will be caused by an
-		// element being added at the end, so quantity will be equal to capacity anyway.
+		// is needed) memcpy up to capacity, not just size. But in practice, almost all reallocations will be caused by an element
+		// being added at the end, so size will be equal to capacity anyway.
 		data = xrealloc(data, cap * sizeof(T), cap1 * sizeof(T));
 
-		// Update capacity. Quantity is unchanged; that's for the caller to figure out.
+		// Update capacity. Size is unchanged; that's for the caller to figure out.
 		cap = cap1;
 	}
 
 	void push_back(const T& x) {
-		reserve(qty + 1);
+		reserve(n + 1);
 		new (end()) T(x);
-		++qty;
+		++n;
 	}
 
 	void pop_back() {
-		assert(qty);
-		--qty;
+		assert(n);
+		--n;
 		end()->~T();
 	}
 
@@ -125,17 +121,17 @@ template <class T> struct vec {
 		del(begin(), end());
 
 		// Make room for new elements
-		reserve(b.qty);
+		reserve(b.n);
 
 		// Assign the new elements. These can be objects with pointers to data they own (just not internal pointers), so it cannot
 		// be done with memcpy. The assignment operator must leave the original object untouched, so it cannot be done with a move
 		// constructor. But we have already freed the existing elements (thereby turning the entire array into uninitialized
 		// memory), so it can be done with placement new calling a copy constructor.
 
-		// An alternative approach would have used the element assignment operator up to min(qty, b.qty). However, this would have
-		// made the code more complicated (two different mop-up cases to consider, depending on which vector was larger) and would
-		// almost certainly have made it no faster.
-		qty = b.qty;
+		// An alternative approach would have used the element assignment operator up to min(n, b.n). However, this would have made
+		// the code more complicated (two different mop-up cases to consider, depending on which vector was larger) and would almost
+		// certainly have made it no faster.
+		n = b.n;
 		auto i = begin();
 		for (auto& x: b) new (i++) T(x);
 		return *this;
@@ -146,14 +142,14 @@ template <class T> struct vec {
 		auto i = position - begin();
 
 		assert(first <= last);
-		auto n = last - first;
+		auto o = last - first;
 
-		reserve(qty + n);
+		reserve(n + o);
 		position = begin() + i;
-		memmove(position + n, position, (qty - i) * sizeof(T));
+		memmove(position + o, position, (n - i) * sizeof(T));
 		auto r = position;
 		for (auto p = first; p != last; ++p) new (r++) T(*p);
-		qty += n;
+		n += o;
 	}
 
 	void insert(T* position, const T& x) {
@@ -166,7 +162,7 @@ template <class T> struct vec {
 		assert(first <= last);
 		del(first, last);
 		memmove(first, last, (end() - last) * sizeof(T));
-		qty -= last - first;
+		n -= last - first;
 	}
 
 	void erase(T* position) {
@@ -175,10 +171,11 @@ template <class T> struct vec {
 
 	// This could be used to either expand or shrink the vector. At the moment it is only used for shrinking, so that is the only
 	// supported case.
-	void resize(size_t n) {
-		assert(n <= qty);
-		del(begin() + n, end());
-		qty = n;
+	void resize(size_t o) {
+		// TODO: inline
+		assert(o <= n);
+		del(begin() + o, end());
+		n = o;
 	}
 
 	void clear() {
@@ -187,11 +184,13 @@ template <class T> struct vec {
 
 	// Capacity
 	size_t size() const {
-		return qty;
+		// TODO: inline
+		return n;
 	}
 
 	bool empty() const {
-		return !qty;
+		// TODO: inline
+		return !n;
 	}
 
 	// Iterators
@@ -204,11 +203,11 @@ template <class T> struct vec {
 	}
 
 	iterator end() {
-		return begin() + qty;
+		return begin() + n;
 	}
 
 	const_iterator end() const {
-		return begin() + qty;
+		return begin() + n;
 	}
 
 	reverse_iterator rbegin() {
@@ -229,33 +228,40 @@ template <class T> struct vec {
 
 	// Element access
 	T& operator[](size_t i) {
-		assert(i < qty);
+		assert(i < n);
 		return begin()[i];
 	}
 
 	const T& operator[](size_t i) const {
-		assert(i < qty);
+		assert(i < n);
 		return begin()[i];
 	}
 
 	T& front() {
-		assert(qty);
+		assert(n);
 		return *begin();
 	}
 
 	const T& front() const {
-		assert(qty);
+		assert(n);
 		return *begin();
 	}
 
 	T& back() {
-		assert(qty);
-		return begin()[qty - 1];
+		assert(n);
+		return begin()[n - 1];
 	}
 
 	const T& back() const {
-		assert(qty);
-		return begin()[qty - 1];
+		assert(n);
+		return begin()[n - 1];
+	}
+
+	// Etc
+	bool has(const T& x) {
+		for (auto& y: *this)
+			if (y == x) return 1;
+		return 0;
 	}
 };
 
@@ -266,9 +272,9 @@ template <class T> size_t hash(const vec<T>& a) {
 }
 
 template <class T> bool operator==(const vec<T>& a, const vec<T>& b) {
-	auto n = a.size();
-	if (n != b.size()) return 0;
-	for (size_t i = 0; i != n; ++i)
+	auto o = a.size();
+	if (o != b.size()) return 0;
+	for (size_t i = 0; i != o; ++i)
 		if (at(a, i) != b[i]) return 0;
 	return 1;
 }
