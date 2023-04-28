@@ -5,7 +5,7 @@ const char* szsNames[] = {
 #include "szs.h"
 };
 
-static void freeVars(set<term*> boundv, term* a, set<term*>& freev) {
+static void freeVars(set<Term*> boundv, Term* a, set<Term*>& freev) {
 	switch (a->tag) {
 	case All:
 	case Exists:
@@ -21,12 +21,12 @@ static void freeVars(set<term*> boundv, term* a, set<term*>& freev) {
 }
 
 // SORT
-equation eqn(term* a) {
+equation eqn(Term* a) {
 	if (a->tag == Eq) return make_pair(at(a, 1), at(a, 2));
 	return make_pair(a, True);
 }
 
-static void flatten(int tag, term* a, vec<term*>& r) {
+static void flatten(int tag, Term* a, vec<Term*>& r) {
 	if (a->tag == t) {
 		for (size_t i = 1; i < a->n; ++i) flatten(t, at(a, i), r);
 		return;
@@ -34,33 +34,33 @@ static void flatten(int tag, term* a, vec<term*>& r) {
 	r.push_back(a);
 }
 
-vec<term*> flatten(int tag, term* a) {
-	vec<term*> r;
+vec<Term*> flatten(int tag, Term* a) {
+	vec<Term*> r;
 	flatten(t, a, r);
 	return r;
 }
 
-set<term*> freeVars(term* a) {
-	set<term*> r;
-	freeVars(set<term*>(), a, r);
+set<Term*> freeVars(Term* a) {
+	set<Term*> r;
+	freeVars(set<Term*>(), a, r);
 	return r;
 }
 
-term* imp(term* a, term* b) {
+Term* imp(Term* a, Term* b) {
 	return mk(Or, mk(Not, a), b);
 }
 
-bool occurs(term* a, term* b) {
+bool occurs(Term* a, Term* b) {
 	if (a == b) return 1;
 	for (size_t i = 1; i != b.size(); ++i)
 		if (occurs(a, b[i])) return 1;
 	return 0;
 }
 
-term* quantify(term* a) {
+Term* quantify(Term* a) {
 	auto vars = freeVars(a);
 	if (vars.empty()) return a;
-	vec<term*> v(1, mk(All));
+	vec<Term*> v(1, mk(All));
 	v.push_back(a);
 	for (auto x: vars) v.push_back(x);
 	return mk(v);
@@ -72,11 +72,11 @@ term* quantify(term* a) {
 // https://stackoverflow.com/questions/29164610/why-are-clauses-multisets
 // So we represent them as bags (or lists, ignoring the order) and let the algorithms that prefer sets, discard duplicate literals
 clause uniq(Clause* c) {
-	vec<term*> neg;
+	vec<Term*> neg;
 	for (auto& a: c.first)
 		if (find(neg.begin(), neg.end(), a) == neg.end()) neg.push_back(a);
 
-	vec<term*> pos;
+	vec<Term*> pos;
 	for (auto& a: c.second)
 		if (find(pos.begin(), pos.end(), a) == pos.end()) pos.push_back(a);
 

@@ -53,7 +53,7 @@ term distinctObj(string* s) {
 	return a;
 }
 
-term* mk(string* s, type ty) {
+Term* mk(string* s, type ty) {
 	if (s->sym) {
 		auto p = (atom*)atoms->ptr(s->sym);
 		assert(p->t == Fn);
@@ -84,12 +84,12 @@ term gensym(type ty) {
 Heap<>* compounds;
 
 namespace comps {
-bool eq(const term* s, size_t n, const compound* z) {
+bool eq(const Term* s, size_t n, const compound* z) {
 	if (n != z->n) return 0;
 	return !memcmp(s, z->v, n * sizeof *s);
 }
 
-size_t slot(uint32_t* entries, size_t cap, const term* s, size_t n) {
+size_t slot(uint32_t* entries, size_t cap, const Term* s, size_t n) {
 	size_t mask = cap - 1;
 	auto i = fnv(s, n * sizeof *s) & mask;
 	while (entries[i] && !eq(s, n, (compound*)compounds->ptr(entries[i]))) i = (i + 1) & mask;
@@ -122,7 +122,7 @@ void expand() {
 	entries = entries1;
 }
 
-size_t intern(const term* s, size_t n) {
+size_t intern(const Term* s, size_t n) {
 	incStat("term");
 	auto i = slot(entries, cap, s, n);
 
@@ -150,7 +150,7 @@ size_t intern(const term* s, size_t n) {
 }
 } // namespace comps
 
-term* mk(term a, term b) {
+Term* mk(term a, term b) {
 	const int n = 2;
 	term v[n];
 	v[0] = a;
@@ -158,7 +158,7 @@ term* mk(term a, term b) {
 	raw = t_compound | comps::intern(v, n);
 }
 
-term* mk(term a, term b, term c) {
+Term* mk(term a, term b, term c) {
 	const int n = 3;
 	term v[n];
 	v[0] = a;
@@ -167,7 +167,7 @@ term* mk(term a, term b, term c) {
 	raw = t_compound | comps::intern(v, n);
 }
 
-term* mk(term a, term b, term c, term d) {
+Term* mk(term a, term b, term c, term d) {
 	const int n = 4;
 	term v[n];
 	v[0] = a;
@@ -177,7 +177,7 @@ term* mk(term a, term b, term c, term d) {
 	raw = t_compound | comps::intern(v, n);
 }
 
-term* mk(term a, term b, term c, term d, term e) {
+Term* mk(term a, term b, term c, term d, term e) {
 	const int n = 5;
 	term v[n];
 	v[0] = a;
@@ -188,7 +188,7 @@ term* mk(term a, term b, term c, term d, term e) {
 	raw = t_compound | comps::intern(v, n);
 }
 
-term* mk(const vec<term>& v) {
+Term* mk(const vec<term>& v) {
 	assert(v.size());
 	if (v.size() == 1) *this = v[0];
 	else
@@ -251,7 +251,7 @@ term::operator type() const {
 	unreachable;
 }
 
-type ftype(type rty, const term* first, const term* last) {
+type ftype(type rty, const Term* first, const Term* last) {
 	if (first == last) return rty;
 	vec<type> v(1, rty);
 	for (auto i = first; i != last; ++i) v.push_back(type(*i));

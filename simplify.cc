@@ -1,7 +1,7 @@
 #include "main.h"
 
 namespace {
-bool constant(term* a) {
+bool constant(Term* a) {
 	switch (a->tag) {
 	case DistinctObj:
 	case Integer:
@@ -15,12 +15,12 @@ bool constant(term* a) {
 	return 0;
 }
 
-bool realConstant(term* a) {
+bool realConstant(Term* a) {
 	return a->tag == ToReal && tag(at(a, 1)) == Rational;
 }
 } // namespace
 
-term* simplify(const map<term*, term*>& m, term* a) {
+Term* simplify(const map<Term*, Term*>& m, Term* a) {
 	// TODO: other simplifications e.g. x+0, x*1
 	auto t = a->tag;
 	switch (t) {
@@ -101,7 +101,7 @@ term* simplify(const map<term*, term*>& m, term* a) {
 			if (m.count(a)) return m.at(a);
 			return a;
 		}
-		vec<term*> v(1, a[0]);
+		vec<Term*> v(1, a[0]);
 		for (size_t i = 1; i < a->n; ++i) v.push_back(simplify(m, at(a, i)));
 		return mk(v);
 	}
@@ -233,8 +233,8 @@ term* simplify(const map<term*, term*>& m, term* a) {
 }
 
 // TODO: normalize variables
-clause simplify(const map<term*, term*>& m, Clause* c) {
-	vec<term*> neg;
+clause simplify(const map<Term*, Term*>& m, Clause* c) {
+	vec<Term*> neg;
 	for (auto& a: c.first) {
 		auto b = simplify(m, a);
 		switch (b->tag) {
@@ -246,7 +246,7 @@ clause simplify(const map<term*, term*>& m, Clause* c) {
 		neg.push_back(b);
 	}
 
-	vec<term*> pos;
+	vec<Term*> pos;
 	for (auto& a: c.second) {
 		auto b = simplify(m, a);
 		switch (b->tag) {
@@ -264,7 +264,7 @@ clause simplify(const map<term*, term*>& m, Clause* c) {
 	return make_pair(neg, pos);
 }
 
-set<clause> simplify(const map<term*, term*>& m, const set<clause>& cs) {
+set<clause> simplify(const map<Term*, Term*>& m, const set<clause>& cs) {
 	set<clause> r;
 	for (auto& c0: cs) {
 		auto c = simplify(m, c0);

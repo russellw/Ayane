@@ -8,12 +8,12 @@ enum {
 extern const char* szsNames[];
 
 // SORT
-equation eqn(term* a);
-vec<term*> flatten(int tag, term* a);
-set<term*> freeVars(term* a);
-term* imp(term* a, term* b);
-bool occurs(term* a, term* b);
-term* quantify(term* a);
+equation eqn(Term* a);
+vec<Term*> flatten(int tag, Term* a);
+set<Term*> freeVars(Term* a);
+Term* imp(Term* a, Term* b);
+bool occurs(Term* a, Term* b);
+Term* quantify(Term* a);
 clause uniq(Clause* c);
 set<clause> uniq(const set<clause>& cs);
 ///
