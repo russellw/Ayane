@@ -52,6 +52,12 @@ using std::swap;
 #include "bignums.h"
 #include "clauses.h"
 
+// I/O
+#include "parser.h"
+
+#include "dimacs.h"
+#include "tptp.h"
+
 // Algorithms
 #include "cnf.h"
 #include "etc.h"
@@ -59,13 +65,6 @@ using std::swap;
 #include "subsume.h"
 #include "superposn.h"
 #include "unify.h"
-
-// I/O
-#include "parser.h"
-#include "problem.h"
-
-#include "dimacs.h"
-#include "tptp.h"
 
 // Unit tests
 #include "test.h"

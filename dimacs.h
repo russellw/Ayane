@@ -1,1 +1,1 @@
-void parseDimacs(const char* file, Problem& problem);
+void parseDimacs(const char* file);

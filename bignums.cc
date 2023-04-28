@@ -65,7 +65,7 @@ Atom* intern(mpz_t a) {
 	}
 
 	// Make a new object
-	auto r = (Atom*)xmalloc(offsetof(atom, mpz) + sizeof(mpz_t));
+	auto r = (Atom*)xmalloc(offsetof(Atom, mpz) + sizeof(mpz_t));
 	r->tag = Integer;
 	memcpy(r->mpz, a, sizeof r->mpz);
 
@@ -147,7 +147,7 @@ Atom* intern(mpq_t a) {
 	}
 
 	// Make a new object
-	auto r = (Atom*)xmalloc(offsetof(atom, mpq) + sizeof(mpq_t));
+	auto r = (Atom*)xmalloc(offsetof(Atom, mpq) + sizeof(mpq_t));
 	r->tag = Rational;
 	memcpy(r->mpq, a, sizeof r->mpq);
 
