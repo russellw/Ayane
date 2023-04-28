@@ -8,6 +8,9 @@
 #include <dbghelp.h>
 #endif
 
+#include <map>
+#include <vector>
+
 namespace {
 void printItem(size_t n, const char* caption) {
 	auto s = buf + sizeof buf - 1;

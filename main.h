@@ -14,11 +14,9 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
-#include <map>
 #include <queue>
 #include <unordered_map>
 #include <utility>
-#include <vector>
 // TODO: eliminate
 using std::all_of;
 using std::any_of;
@@ -42,7 +40,6 @@ using std::swap;
 // General
 #include "base.h"
 #include "buf.h"
-#include "map.h"
 #include "stats.h"
 #include "strings.h"
 #include "vec.h"

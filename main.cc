@@ -32,7 +32,7 @@ enum {
 };
 
 namespace {
-const char* extension(const char* file) {
+const char* ext(const char* file) {
 	auto s = strrchr(file, '.');
 	return s ? s + 1 : "";
 }
@@ -85,9 +85,8 @@ double optDouble(int argc, const char** argv, int& i, const char* oa) {
 
 // SORT
 bool cnfOnly;
-std::vector<const char*> files;
+vec<const char*> files;
 int inputLanguage;
-size_t memLimit = (size_t)1 << (sizeof(void*) == 4 ? 30 : 31);
 int outputLanguage;
 ///
 
@@ -97,7 +96,7 @@ void parse(int argc, const char** argv) {
 
 		// File
 		if (*s != '-') {
-			if (!strcmp(extension(s), "lst")) {
+			if (!strcmp(ext(s), "lst")) {
 				vec<const char*> v;
 				listParser p(s, v);
 				parse(v.size(), v.data());
@@ -175,21 +174,14 @@ void parse(int argc, const char** argv) {
 				"-dimacs-in    Set DIMACS as input format\n"
 				"-dimacs-out   Set DIMACS as output format\n"
 				"-h            Show help\n"
-				"-m megabytes  Memory limit (default %zu)\n"
 				"-t seconds    Time limit\n"
 				"-tptp         Set TPTP as input and output format\n"
 				"-tptp-in      Set TPTP as input format\n"
 				"-tptp-out     Set TPTP as output format\n"
 				"-V            Show version\n"
 				///
-				,
-				memLimit / (1 << 20));
+			);
 			exit(0);
-		case s_m:
-		case s_memory:
-		case s_memorylimit:
-			memLimit = optDouble(argc, argv, i, oa) * (1 << 20);
-			continue;
 		case s_tptp:
 			inputLanguage = tptp;
 			outputLanguage = tptp;
@@ -202,15 +194,12 @@ void parse(int argc, const char** argv) {
 			continue;
 		case s_V:
 		case s_version:
-			printf(
-				"Ayane version " version ", %zu-bit "
+			printf("Ayane " version);
+			if (sizeof(void*) == 4) printf(", 32 bits");
 #ifdef DEBUG
-				"debug"
-#else
-				"release"
+			printf(", debug build");
 #endif
-				" build\n",
-				sizeof(void*) * 8);
+			putchar('\n');
 			exit(0);
 		}
 		fprintf(stderr, "%s: Unknown option\n", argv[i]);
@@ -220,7 +209,7 @@ void parse(int argc, const char** argv) {
 
 int inputLang(const char* file) {
 	if (inputLanguage) return inputLanguage;
-	switch (keyword(intern(extension(file)))) {
+	switch (keyword(intern(ext(file)))) {
 	case s_ax:
 	case s_p:
 		return tptp;
