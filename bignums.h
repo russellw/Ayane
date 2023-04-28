@@ -1,13 +1,13 @@
-atom* intern(mpz_t a);
-atom* intern(mpq_t a);
+Atom* intern(mpz_t a);
+Atom* intern(mpq_t a);
 
 // Functions for making arbitrary precision numbers for convenience, accept integer or string input and will intern the result so
 // equality tests can simply compare pointers
-atom* integer(int n);
-atom* integer(const char* s);
+Atom* integer(int n);
+Atom* integer(const char* s);
 
-atom* rational(int n, unsigned d);
-atom* rational(const char* s);
+Atom* rational(int n, unsigned d);
+Atom* rational(const char* s);
 
 // Real number literals are represented as rational number literals wrapped in ToReal. It's a function call that is not actually
 // evaluated, since there is no representation of real number literals as such.
@@ -18,27 +18,27 @@ Term* real(int n, unsigned d);
 Term* real(const char* s);
 
 // Arithmetic is polymorphic on integers and rationals
-atom* neg(atom* a);
-atom* add(atom* a, atom* b);
-atom* sub(atom* a, atom* b);
-atom* mul(atom* a, atom* b);
-atom* div(atom* a, atom* b);
+Atom* neg(Atom* a);
+Atom* add(Atom* a, Atom* b);
+Atom* sub(Atom* a, Atom* b);
+Atom* mul(Atom* a, Atom* b);
+Atom* div(Atom* a, Atom* b);
 
-atom* divT(atom* a, atom* b);
-atom* divF(atom* a, atom* b);
-atom* divE(atom* a, atom* b);
-atom* remT(atom* a, atom* b);
-atom* remF(atom* a, atom* b);
-atom* remE(atom* a, atom* b);
+Atom* divT(Atom* a, Atom* b);
+Atom* divF(Atom* a, Atom* b);
+Atom* divE(Atom* a, Atom* b);
+Atom* remT(Atom* a, Atom* b);
+Atom* remF(Atom* a, Atom* b);
+Atom* remE(Atom* a, Atom* b);
 
-atom* ceil(atom* a);
-atom* floor(atom* a);
-atom* trunc(atom* a);
-atom* round(atom* a);
+Atom* ceil(Atom* a);
+Atom* floor(Atom* a);
+Atom* trunc(Atom* a);
+Atom* round(Atom* a);
 
 // So is converting numbers between types
-bool isInteger(atom* a);
+bool isInteger(Atom* a);
 
-atom* toInteger(atom* a);
-atom* toRational(atom* a);
-Term* toReal(atom* a);
+Atom* toInteger(Atom* a);
+Atom* toRational(Atom* a);
+Term* toReal(Atom* a);

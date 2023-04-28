@@ -193,7 +193,7 @@ struct doing {
 		for (size_t i = 2; i < a->n; ++i) {
 			auto x = at(a, i);
 			assert(x->tag == Var);
-			auto y = var(vars++, ((atom*)x)->ty);
+			auto y = var(vars++, ((Atom*)x)->ty);
 			m.add(x, y);
 		}
 		return m;
@@ -211,7 +211,7 @@ struct doing {
 		for (size_t i = 2; i < a->n; ++i) {
 			auto x = at(a, i);
 			assert(x->tag == Var);
-			auto y = skolem(((atom*)x)->ty, args);
+			auto y = skolem(((Atom*)x)->ty, args);
 			m.add(x, y);
 		}
 		return m;

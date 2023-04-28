@@ -2,13 +2,12 @@
 enum {
 #define _(x) z_##x,
 #include "szs.h"
-	end
 };
 
 extern const char* szsNames[];
 
 // SORT
-equation eqn(Term* a);
+Eqn eqn(Term* a);
 vec<Term*> flatten(int tag, Term* a);
 set<Term*> freeVars(Term* a);
 Term* imp(Term* a, Term* b);

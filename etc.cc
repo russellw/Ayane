@@ -21,7 +21,7 @@ static void freeVars(set<Term*> boundv, Term* a, set<Term*>& freev) {
 }
 
 // SORT
-equation eqn(Term* a) {
+Eqn eqn(Term* a) {
 	if (a->tag == Eq) return make_pair(at(a, 1), at(a, 2));
 	return make_pair(a, True);
 }

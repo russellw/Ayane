@@ -54,7 +54,6 @@ using std::swap;
 
 // Algorithms
 #include "cnf.h"
-#include "dpll.h"
 #include "etc.h"
 #include "simplify.h"
 #include "subsume.h"

@@ -8,17 +8,17 @@
 namespace mpzs {
 size_t cap = 4;
 size_t qty;
-atom** entries;
+Atom** entries;
 
 size_t hash(mpz_t a) {
 	return mpz_get_ui(a);
 }
 
-bool eq(atom* a, mpz_t b) {
+bool eq(Atom* a, mpz_t b) {
 	return !mpz_cmp(a->mpz, b);
 }
 
-static size_t slot(atom** entries, size_t cap, mpz_t a) {
+static size_t slot(Atom** entries, size_t cap, mpz_t a) {
 	size_t mask = cap - 1;
 	auto i = hash(a) & mask;
 	while (entries[i] && !eq(entries[i], a)) i = (i + 1) & mask;
@@ -28,7 +28,7 @@ static size_t slot(atom** entries, size_t cap, mpz_t a) {
 void expand() {
 	assert(isPow2(cap));
 	auto cap1 = cap * 2;
-	auto entries1 = (atom**)xcalloc(cap1, sizeof *entries);
+	auto entries1 = (Atom**)xcalloc(cap1, sizeof *entries);
 	// TODO: check generated code
 	for (auto i = entries, e = entries + cap; i != e; ++i) {
 		auto a = *i;
@@ -42,12 +42,12 @@ void expand() {
 struct init {
 	init() {
 		assert(isPow2(cap));
-		entries = (atom**)xcalloc(cap, sizeof *entries);
+		entries = (Atom**)xcalloc(cap, sizeof *entries);
 	}
 } _;
 } // namespace mpzs
 
-atom* intern(mpz_t a) {
+Atom* intern(mpz_t a) {
 	auto i = mpzs::slot(mpzs::entries, mpzs::cap, a);
 
 	// If we have seen this before, return the existing object
@@ -65,7 +65,7 @@ atom* intern(mpz_t a) {
 	}
 
 	// Make a new object
-	auto r = (atom*)xmalloc(offsetof(atom, mpz) + sizeof(mpz_t));
+	auto r = (Atom*)xmalloc(offsetof(atom, mpz) + sizeof(mpz_t));
 	r->tag = Integer;
 	memcpy(r->mpz, a, sizeof r->mpz);
 
@@ -73,14 +73,14 @@ atom* intern(mpz_t a) {
 	return mpzs::entries[i] = r;
 }
 
-atom* integer(int n) {
+Atom* integer(int n) {
 	// TODO: name
 	mpz_t r;
 	mpz_init_set_si(r, n);
 	return intern(r);
 }
 
-atom* integer(const char* s) {
+Atom* integer(const char* s) {
 	mpz_t r;
 	if (mpz_init_set_str(r, s, 10)) err("Invalid integer");
 	return intern(r);
@@ -90,17 +90,17 @@ atom* integer(const char* s) {
 namespace mpqs {
 size_t cap = 4;
 size_t qty;
-atom** entries;
+Atom** entries;
 
 size_t hash(mpq_t a) {
 	return hashCombine(mpz_get_ui(mpq_numref(a)), mpz_get_ui(mpq_denref(a)));
 }
 
-bool eq(atom* a, mpq_t b) {
+bool eq(Atom* a, mpq_t b) {
 	return mpq_equal(a->mpq, b);
 }
 
-static size_t slot(atom** entries, size_t cap, mpq_t a) {
+static size_t slot(Atom** entries, size_t cap, mpq_t a) {
 	size_t mask = cap - 1;
 	auto i = hash(a) & mask;
 	while (entries[i] && !eq(entries[i], a)) i = (i + 1) & mask;
@@ -110,7 +110,7 @@ static size_t slot(atom** entries, size_t cap, mpq_t a) {
 void expand() {
 	assert(isPow2(cap));
 	auto cap1 = cap * 2;
-	auto entries1 = (atom**)xcalloc(cap1, sizeof *entries);
+	auto entries1 = (Atom**)xcalloc(cap1, sizeof *entries);
 	// TODO: check generated code
 	for (auto i = entries, e = entries + cap; i != e; ++i) {
 		auto a = *i;
@@ -124,12 +124,12 @@ void expand() {
 struct init {
 	init() {
 		assert(isPow2(cap));
-		entries = (atom**)xcalloc(cap, sizeof *entries);
+		entries = (Atom**)xcalloc(cap, sizeof *entries);
 	}
 } _;
 } // namespace mpqs
 
-atom* intern(mpq_t a) {
+Atom* intern(mpq_t a) {
 	auto i = mpqs::slot(mpqs::entries, mpqs::cap, a);
 
 	// If we have seen this before, return the existing object
@@ -147,7 +147,7 @@ atom* intern(mpq_t a) {
 	}
 
 	// Make a new object
-	auto r = (atom*)xmalloc(offsetof(atom, mpq) + sizeof(mpq_t));
+	auto r = (Atom*)xmalloc(offsetof(atom, mpq) + sizeof(mpq_t));
 	r->tag = Rational;
 	memcpy(r->mpq, a, sizeof r->mpq);
 
@@ -155,7 +155,7 @@ atom* intern(mpq_t a) {
 	return mpqs::entries[i] = r;
 }
 
-atom* rational(int n, unsigned d) {
+Atom* rational(int n, unsigned d) {
 	mpq_t r;
 	mpq_init(r);
 	mpq_set_si(r, n, d);
@@ -163,7 +163,7 @@ atom* rational(int n, unsigned d) {
 	return intern(r);
 }
 
-atom* rational(const char* s) {
+Atom* rational(const char* s) {
 	mpq_t r;
 	mpq_init(r);
 	if (mpq_set_str(r, s, 10)) err("Invalid rational");
@@ -323,7 +323,7 @@ void mpz_round(mpz_t q, mpz_t n, mpz_t d) {
 }
 } // namespace
 
-atom* neg(atom* a) {
+Atom* neg(Atom* a) {
 	switch (a->tag) {
 	case Integer:
 	{
@@ -343,7 +343,7 @@ atom* neg(atom* a) {
 	unreachable;
 }
 
-atom* add(atom* a, atom* b) {
+Atom* add(Atom* a, Atom* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Integer:
@@ -364,7 +364,7 @@ atom* add(atom* a, atom* b) {
 	unreachable;
 }
 
-atom* sub(atom* a, atom* b) {
+Atom* sub(Atom* a, Atom* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Integer:
@@ -385,7 +385,7 @@ atom* sub(atom* a, atom* b) {
 	unreachable;
 }
 
-atom* mul(atom* a, atom* b) {
+Atom* mul(Atom* a, Atom* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Integer:
@@ -406,7 +406,7 @@ atom* mul(atom* a, atom* b) {
 	unreachable;
 }
 
-atom* div(atom* a, atom* b) {
+Atom* div(Atom* a, Atom* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Integer:
@@ -430,7 +430,7 @@ atom* div(atom* a, atom* b) {
 	unreachable;
 }
 
-atom* divT(atom* a, atom* b) {
+Atom* divT(Atom* a, Atom* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Integer:
@@ -462,7 +462,7 @@ atom* divT(atom* a, atom* b) {
 	unreachable;
 }
 
-atom* divF(atom* a, atom* b) {
+Atom* divF(Atom* a, Atom* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Integer:
@@ -494,7 +494,7 @@ atom* divF(atom* a, atom* b) {
 	unreachable;
 }
 
-atom* divE(atom* a, atom* b) {
+Atom* divE(Atom* a, Atom* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Integer:
@@ -526,7 +526,7 @@ atom* divE(atom* a, atom* b) {
 	unreachable;
 }
 
-atom* remT(atom* a, atom* b) {
+Atom* remT(Atom* a, Atom* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Integer:
@@ -558,7 +558,7 @@ atom* remT(atom* a, atom* b) {
 	unreachable;
 }
 
-atom* remF(atom* a, atom* b) {
+Atom* remF(Atom* a, Atom* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Integer:
@@ -590,7 +590,7 @@ atom* remF(atom* a, atom* b) {
 	unreachable;
 }
 
-atom* remE(atom* a, atom* b) {
+Atom* remE(Atom* a, Atom* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Integer:
@@ -623,7 +623,7 @@ atom* remE(atom* a, atom* b) {
 	unreachable;
 }
 
-atom* ceil(atom* a) {
+Atom* ceil(Atom* a) {
 	switch (a->tag) {
 	case Integer:
 		return a;
@@ -638,7 +638,7 @@ atom* ceil(atom* a) {
 	unreachable;
 }
 
-atom* floor(atom* a) {
+Atom* floor(Atom* a) {
 	switch (a->tag) {
 	case Integer:
 		return a;
@@ -653,7 +653,7 @@ atom* floor(atom* a) {
 	unreachable;
 }
 
-atom* trunc(atom* a) {
+Atom* trunc(Atom* a) {
 	switch (a->tag) {
 	case Integer:
 		return a;
@@ -668,7 +668,7 @@ atom* trunc(atom* a) {
 	unreachable;
 }
 
-atom* round(atom* a) {
+Atom* round(Atom* a) {
 	switch (a->tag) {
 	case Integer:
 		return a;
@@ -683,7 +683,7 @@ atom* round(atom* a) {
 	unreachable;
 }
 
-bool isInteger(atom* a) {
+bool isInteger(Atom* a) {
 	switch (a->tag) {
 	case Integer:
 		return 1;
@@ -693,7 +693,7 @@ bool isInteger(atom* a) {
 	unreachable;
 }
 
-atom* toInteger(atom* a) {
+Atom* toInteger(Atom* a) {
 	switch (a->tag) {
 	case Integer:
 		return a;
@@ -712,7 +712,7 @@ atom* toInteger(atom* a) {
 	unreachable;
 }
 
-atom* toRational(atom* a) {
+Atom* toRational(Atom* a) {
 	switch (a->tag) {
 	case Integer:
 	{
@@ -727,7 +727,7 @@ atom* toRational(atom* a) {
 	unreachable;
 }
 
-Term* toReal(atom* a) {
+Term* toReal(Atom* a) {
 	switch (a->tag) {
 	case Integer:
 	{

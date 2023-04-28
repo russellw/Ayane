@@ -9,7 +9,7 @@ struct init {
 	init() {
 		auto n = (int)end;
 		for (int i = 0; i != n; ++i) {
-			auto p = (atom*)atoms->ptr(tatoms + i * offsetof(atom, s) / 8);
+			auto p = (Atom*)atoms->ptr(tatoms + i * offsetof(atom, s) / 8);
 			p->t = (tag)i;
 		}
 	}
@@ -28,7 +28,7 @@ term var(size_t i, type ty) {
 	auto& v = boxedVars.gadd(ty);
 	while (v.size() <= i - unboxed) {
 		auto o = atoms->alloc(offsetof(atom, idx) + 4);
-		auto p = (atom*)atoms->ptr(o);
+		auto p = (Atom*)atoms->ptr(o);
 		p->t = Var;
 		p->ty = ty;
 		p->idx = unboxed + v.size();
@@ -46,7 +46,7 @@ term distinctObj(string* s) {
 		return a;
 	}
 	auto o = atoms->alloc(offsetof(atom, s) + sizeof s);
-	auto p = (atom*)atoms->ptr(o);
+	auto p = (Atom*)atoms->ptr(o);
 	p->t = DistinctObj;
 	p->s = s->v;
 	a.raw = s->dobj = o;
@@ -55,13 +55,13 @@ term distinctObj(string* s) {
 
 Term* mk(string* s, type ty) {
 	if (s->sym) {
-		auto p = (atom*)atoms->ptr(s->sym);
+		auto p = (Atom*)atoms->ptr(s->sym);
 		assert(p->t == Fn);
 		assert(p->s == s->v);
 		assign(p->ty, ty);
 	} else {
 		s->sym = atoms->alloc(offsetof(atom, s) + sizeof s);
-		auto p = (atom*)atoms->ptr(s->sym);
+		auto p = (Atom*)atoms->ptr(s->sym);
 		p->t = Fn;
 		p->s = s->v;
 		p->ty = ty;
@@ -71,7 +71,7 @@ Term* mk(string* s, type ty) {
 
 term gensym(type ty) {
 	auto o = atoms->alloc(offsetof(atom, s) + sizeof(char*));
-	auto p = (atom*)atoms->ptr(o);
+	auto p = (Atom*)atoms->ptr(o);
 	p->t = Fn;
 	p->s = 0;
 	p->ty = ty;
