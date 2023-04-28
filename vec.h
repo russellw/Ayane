@@ -102,7 +102,7 @@ template <class T> struct vec {
 		cap = cap1;
 	}
 
-	void push_back(const T& x) {
+	void add(const T& x) {
 		reserve(n + 1);
 		new (end()) T(x);
 		++n;

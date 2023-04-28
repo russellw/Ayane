@@ -261,7 +261,7 @@ struct parser1: parser {
 	type topLevelType() {
 		if (eat('(')) {
 			vec<type> v(1);
-			do v.push_back(atomicType());
+			do v.add(atomicType());
 			while (eat('*'));
 			expect(')');
 			expect('>');
@@ -276,7 +276,7 @@ struct parser1: parser {
 	// Terms
 	void args(vec<term>& v) {
 		expect('(');
-		do v.push_back(atomicTerm());
+		do v.add(atomicTerm());
 		while (eat(','));
 		expect(')');
 	}
@@ -310,7 +310,7 @@ struct parser1: parser {
 				for (auto& a: v) defaultType(a, kind::Individual);
 				vec<term> inequalities(1, And);
 				for (auto i = v.begin(), e = v.end(); i != e; ++i)
-					for (auto j = v.begin(); j != i; ++j) inequalities.push_back(term(Not, term(Eq, *i, *j)));
+					for (auto j = v.begin(); j != i; ++j) inequalities.add(term(Not, term(Eq, *i, *j)));
 				return term(inequalities);
 			}
 			case s_false:
@@ -419,7 +419,7 @@ struct parser1: parser {
 				if (i->first == s) return i->second;
 			if (!cnfMode) err("Unknown variable");
 			auto x = var(vars.size(), kind::Individual);
-			vars.push_back(make_pair(s, x));
+			vars.add(make_pair(s, x));
 			return x;
 		}
 		}
@@ -463,8 +463,8 @@ struct parser1: parser {
 			type ty = kind::Individual;
 			if (eat(':')) ty = atomicType();
 			auto x = var(vars.size(), ty);
-			vars.push_back(make_pair(s, x));
-			v.push_back(x);
+			vars.add(make_pair(s, x));
+			v.add(x);
 		} while (eat(','));
 		expect(']');
 		expect(':');
@@ -496,7 +496,7 @@ struct parser1: parser {
 	term associativeLogicFormula(int tag, term a) {
 		vec<term> v{t, a};
 		auto k = tok;
-		while (eat(k)) v.push_back(unary());
+		while (eat(k)) v.add(unary());
 		return term(v);
 	}
 

@@ -85,7 +85,7 @@ size_t ncsApprox(int pol, Term* a) {
 Term* skolem(type rty, const vec<Term*>& args) {
 	vec<Term*> v(1, gensym(ftype(rty, args)));
 	// TODO: single call instead of loop?
-	for (auto b: args) v.push_back(b);
+	for (auto b: args) v.add(b);
 	return mk(v);
 }
 
@@ -97,7 +97,9 @@ size_t vars = 0;
 // Rename formulas to avoid exponential expansion. It's tricky to do this while in the middle of doing other things, easier to be
 // sure of the logic if it's done as a separate pass first.
 Term* rename(int pol, Term* a) {
-	auto b = skolem(getType(a), freeVars(a));
+	vec<Term*> freev;
+	freeVars(a, vec<Term*>(), freev);
+	auto b = skolem(getType(a), freev);
 	// NO_SORT
 	switch (pol) {
 	case 1:
@@ -146,15 +148,15 @@ Term* maybeRename(int pol, Term* a) {
 	switch (a->tag) {
 	case All:
 	case Exists:
-		v.push_back(maybeRename(pol, at(a, 1)));
-		for (size_t i = 2; i < a->n; ++i) v.push_back(at(a, i));
+		v.add(maybeRename(pol, at(a, 1)));
+		for (size_t i = 2; i < a->n; ++i) v.add(at(a, i));
 		break;
 
 	case Not:
 		return mk(Not, maybeRename(-pol, at(a, 1)));
 
 	case Or:
-		for (size_t i = 1; i < a->n; ++i) v.push_back(maybeRename(pol, at(a, i)));
+		for (size_t i = 1; i < a->n; ++i) v.add(maybeRename(pol, at(a, i)));
 
 		// If this formula will be used with positive polarity (including the case where it will be used both ways), we are looking
 		// at OR over possible ANDs, which would produce exponential expansion at the distribution stage, so may need to rename some
@@ -162,7 +164,7 @@ Term* maybeRename(int pol, Term* a) {
 		if (pol >= 0) maybeRename(pol, v);
 		break;
 	case And:
-		for (size_t i = 1; i < a->n; ++i) v.push_back(maybeRename(pol, at(a, i)));
+		for (size_t i = 1; i < a->n; ++i) v.add(maybeRename(pol, at(a, i)));
 
 		// NOT-AND yields OR, so mirror the OR case
 		if (pol <= 0) maybeRename(pol, v);
@@ -231,11 +233,11 @@ Term* nnf(map<Term*, Term*> m, bool pol, Term* a) {
 
 	case Or:
 		if (!pol) v[0] = mk(And);
-		for (size_t i = 1; i < a->n; ++i) v.push_back(nnf(m, pol, at(a, i)));
+		for (size_t i = 1; i < a->n; ++i) v.add(nnf(m, pol, at(a, i)));
 		return mk(v);
 	case And:
 		if (!pol) v[0] = mk(Or);
-		for (size_t i = 1; i < a->n; ++i) v.push_back(nnf(m, pol, at(a, i)));
+		for (size_t i = 1; i < a->n; ++i) v.add(nnf(m, pol, at(a, i)));
 		return mk(v);
 
 		// Variables are mapped to new variables or Skolem functions
@@ -262,7 +264,7 @@ Term* nnf(map<Term*, Term*> m, bool pol, Term* a) {
 		return pol ? mk(And, mk(Or, x0, y1), mk(Or, x1, y0)) : mk(And, mk(Or, x0, y0), mk(Or, x1, y1));
 	}
 	}
-	for (size_t i = 1; i < a->n; ++i) v.push_back(nnf(m, 1, at(a, i)));
+	for (size_t i = 1; i < a->n; ++i) v.add(nnf(m, 1, at(a, i)));
 	a = mk(v);
 	return pol ? a : mk(Not, a);
 }
@@ -273,7 +275,7 @@ Term* distribute(Term* a) {
 	vec<Term*> v(1, mk(And));
 	switch (a->tag) {
 	case And:
-		for (size_t i = 1; i < a->n; ++i) v.push_back(distribute(at(a, i)));
+		for (size_t i = 1; i < a->n; ++i) v.add(distribute(at(a, i)));
 		break;
 	case Or:
 	{
@@ -284,14 +286,14 @@ Term* distribute(Term* a) {
 			auto b = distribute(at(a, i));
 
 			// And make a flat layer of ANDs
-			ands.push_back(flatten(And, b));
+			ands.add(flatten(And, b));
 		}
 
 		// OR distributes over AND by Cartesian product
 		// TODO: can this be done by reference?
 		for (auto u: cartProduct(ands)) {
 			u.insert(u.begin(), mk(Or));
-			v.push_back(mk(u));
+			v.add(mk(u));
 		}
 		break;
 	}
@@ -310,13 +312,13 @@ void clauseTerm(Term* a, vec<Term*>& neg, vec<Term*>& pos) {
 	case Exists:
 		unreachable;
 	case Not:
-		neg.push_back(at(a, 1));
+		neg.add(at(a, 1));
 		return;
 	case Or:
 		for (size_t i = 1; i < a->n; ++i) clauseTerm(at(a, i), neg, pos);
 		return;
 	}
-	pos.push_back(a);
+	pos.add(a);
 }
 
 clause clauseTerm(Term* a) {

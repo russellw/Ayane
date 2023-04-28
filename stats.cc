@@ -72,7 +72,7 @@ void incTrace() {
 		*buf = 0;
 		if (SymGetLineFromAddr64(process, addr, &displacement, &loc)) sprintf(buf, "%s:%d: ", loc.FileName, (int)loc.LineNumber);
 		strcat(buf, si->Name);
-		v.push_back(intern(buf)->v);
+		v.add(intern(buf)->v);
 	}
 	++traces[v];
 #endif
@@ -88,7 +88,7 @@ void printStats() {
 
 	if (strStats.size()) {
 		vec<const char*> v;
-		for (auto p: strStats) v.push_back(p.first);
+		for (auto p: strStats) v.add(p.first);
 		sort(v.begin(), v.end(), [=](const char* a, const char* b) { return strcmp(a, b) < 0; });
 		for (auto k: v) printItem(strStats[k], k);
 		putchar('\n');
@@ -96,7 +96,7 @@ void printStats() {
 
 	if (numStats.size()) {
 		vec<size_t> v;
-		for (auto p: numStats) v.push_back(p.first);
+		for (auto p: numStats) v.add(p.first);
 		sort(v.begin(), v.end());
 		uint64_t totQty = 0;
 		uint64_t totVal = 0;

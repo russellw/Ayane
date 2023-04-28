@@ -55,7 +55,7 @@ struct listParser: parser {
 			auto r = new char[n + 1];
 			memcpy(r, src, n);
 			r[n] = 0;
-			v.push_back(r);
+			v.add(r);
 
 			// Continue
 			src = s;
@@ -102,7 +102,7 @@ void parse(int argc, const char** argv) {
 				parse(v.size(), v.data());
 				continue;
 			}
-			files.push_back(s);
+			files.add(s);
 			continue;
 		}
 
@@ -235,7 +235,7 @@ int main(int argc, const char** argv) {
 
 	// Command line arguments
 	parse(argc - 1, argv + 1);
-	if (files.empty()) files.push_back("stdin");
+	if (files.empty()) files.add("stdin");
 
 	// If no input file was specified, we default to reading standard input, but that still requires input language to be specified,
 	// so with no arguments, just print a usage message

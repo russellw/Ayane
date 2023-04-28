@@ -59,7 +59,7 @@ size_t Problem::walk(term a) {
 
 		// But if it is the negated conjecture, we do need to add the conjecture before it, to the list of formulas to print out in
 		// the proof
-		if (f->Class == FormulaClass::Negation) proofv.push_back(((NegatedFormula*)f)->from);
+		if (f->Class == FormulaClass::Negation) proofv.add(((NegatedFormula*)f)->from);
 	} else {
 		// Not one of the initial formulas, so it must be a definition introduced during CNF conversion. Make a formula object for
 		// it. (Some definitions may not be involved in the proof. By waiting to make formula objects until they are definitely
@@ -72,7 +72,7 @@ size_t Problem::walk(term a) {
 	o = i;
 
 	// Add it to the list of formulas to be printed out
-	proofv.push_back(i);
+	proofv.add(i);
 
 	// And return a reference to the object
 	return i;
@@ -112,7 +112,7 @@ size_t Problem::walk(const ProofCnf& proofCnf, const Proof& proof, Clause* c) {
 	new (f) Clause(c, rl, from, from1);
 
 	// Add it to the list of clauses to be printed out, in order after its sources
-	proofv.push_back(r);
+	proofv.add(r);
 
 	// And return a reference to the object
 	return r;

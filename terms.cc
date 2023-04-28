@@ -34,7 +34,7 @@ term var(size_t i, type ty) {
 		p->idx = unboxed + v.size();
 		term a;
 		a.raw = term::t_var | term::t_boxed | o;
-		v.push_back(a);
+		v.add(a);
 	}
 	return v[i - unboxed];
 }
@@ -254,14 +254,14 @@ term::operator type() const {
 type ftype(type rty, const Term* first, const Term* last) {
 	if (first == last) return rty;
 	vec<type> v(1, rty);
-	for (auto i = first; i != last; ++i) v.push_back(type(*i));
+	for (auto i = first; i != last; ++i) v.add(type(*i));
 	return type(kind::Fn, v);
 }
 
 type ftype(type rty, const vec<term>& args) {
 	if (args.size()) return rty;
 	vec<type> v(1, rty);
-	for (auto a: args) v.push_back(type(a));
+	for (auto a: args) v.add(type(a));
 	return type(kind::Fn, v);
 }
 

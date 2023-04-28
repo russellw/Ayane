@@ -138,6 +138,6 @@ term replace(const map<termx, termx>& m, term a, bool ax) {
 
 	auto n = a.size();
 	vec<term> v(1, a[0]);
-	for (size_t i = 1; i != n; ++i) v.push_back(replace(m, at(a, i), ax));
+	for (size_t i = 1; i != n; ++i) v.add(replace(m, at(a, i), ax));
 	return term(v);
 }

@@ -180,11 +180,11 @@ struct doing {
 		// Negative literals
 		vec<term> neg;
 		for (size_t i = 0; i != c.first.size(); ++i)
-			if (i != ci) neg.push_back(replace(m, c.first[i], 0));
+			if (i != ci) neg.add(replace(m, c.first[i], 0));
 
 		// Positive literals
 		vec<term> pos;
-		for (size_t i = 0; i != c.second.size(); ++i) pos.push_back(replace(m, c.second[i], 0));
+		for (size_t i = 0; i != c.second.size(); ++i) pos.add(replace(m, c.second[i], 0));
 
 		// Make new clause
 		qclause(r_er, vec<clause>{c}, neg, pos);
@@ -219,13 +219,13 @@ struct doing {
 
 		// Negative literals
 		vec<term> neg;
-		for (size_t i = 0; i != c.first.size(); ++i) neg.push_back(replace(m, c.first[i], 0));
-		neg.push_back(equate(replace(m, c1, 0), replace(m, d1, 0)));
+		for (size_t i = 0; i != c.first.size(); ++i) neg.add(replace(m, c.first[i], 0));
+		neg.add(equate(replace(m, c1, 0), replace(m, d1, 0)));
 
 		// Positive literals
 		vec<term> pos;
 		for (size_t i = 0; i != c.second.size(); ++i)
-			if (i != di) pos.push_back(replace(m, c.second[i], 0));
+			if (i != di) pos.add(replace(m, c.second[i], 0));
 
 		// Make new clause
 		qclause(r_ef, vec<clause>{c}, neg, pos);
@@ -276,19 +276,19 @@ struct doing {
 
 		// Negative literals
 		vec<term> neg;
-		for (size_t i = 0; i != c.first.size(); ++i) neg.push_back(replace(m, c.first[i], 0));
+		for (size_t i = 0; i != c.first.size(); ++i) neg.add(replace(m, c.first[i], 0));
 		for (size_t i = 0; i != d.first.size(); ++i) {
 			if (!mode && i == di) continue;
-			neg.push_back(replace(m, d.first[i], 1));
+			neg.add(replace(m, d.first[i], 1));
 		}
 
 		// Positive literals
 		vec<term> pos;
 		for (size_t i = 0; i != c.second.size(); ++i)
-			if (i != ci) pos.push_back(replace(m, c.second[i], 0));
+			if (i != ci) pos.add(replace(m, c.second[i], 0));
 		for (size_t i = 0; i != d.second.size(); ++i) {
 			if (mode && i == di) continue;
-			pos.push_back(replace(m, d.second[i], 1));
+			pos.add(replace(m, d.second[i], 1));
 		}
 
 		// To calculate d0(c1), we first perform the replacement of variables with substitute values, on the component terms, then
@@ -303,7 +303,7 @@ struct doing {
 		// Make equation
 		if (!equatable(d0c1, d1)) return;
 		auto& v = mode ? pos : neg;
-		v.push_back(equate(d0c1, d1));
+		v.add(equate(d0c1, d1));
 
 		// Make new clause
 		qclause(r_sp, vec<clause>{c, d}, neg, pos);
@@ -314,7 +314,7 @@ struct doing {
 		superposn(c, d, ci, c0, c1, di, d0, d1, posn, a);
 		for (size_t i = 1; i < a.size(); ++i) {
 			auto p(posn);
-			p.push_back(i);
+			p.add(i);
 			descend(c, d, ci, c0, c1, di, d0, d1, p, at(a, i));
 		}
 	}

@@ -81,13 +81,13 @@ struct parser1: parser {
 		for (;;) switch (tok) {
 			case '-':
 				lex();
-				literals.push_back(term(Not, var()));
+				literals.add(term(Not, var()));
 				break;
 			case 0:
 				if (literals.size()) add(literals);
 				return;
 			case k_id:
-				literals.push_back(var());
+				literals.add(var());
 				break;
 			case k_zero:
 			{

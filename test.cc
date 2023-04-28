@@ -35,187 +35,187 @@ void testSubsume() {
 
 	// False <= p
 	c = mkClause(neg, pos);
-	pos.push_back(p);
+	pos.add(p);
 	d = mkClause(neg, pos);
 	assert(subsumes(c, d));
 	assert(!subsumes(d, c));
 
 	// p <= p
-	pos.push_back(p);
+	pos.add(p);
 	c = mkClause(neg, pos);
 	d = c;
 	assert(subsumes(c, d));
 
 	// !p <= !p
-	neg.push_back(p);
+	neg.add(p);
 	c = mkClause(neg, pos);
 	d = c;
 	assert(subsumes(c, d));
 
 	// p <= p | p
-	pos.push_back(p);
+	pos.add(p);
 	c = mkClause(neg, pos);
-	pos.push_back(p);
-	pos.push_back(p);
+	pos.add(p);
+	pos.add(p);
 	d = mkClause(neg, pos);
 	assert(subsumes(c, d));
 	assert(!subsumes(d, c));
 
 	// p !<= !p
-	pos.push_back(p);
+	pos.add(p);
 	c = mkClause(neg, pos);
-	neg.push_back(p);
+	neg.add(p);
 	d = mkClause(neg, pos);
 	assert(!subsumes(c, d));
 	assert(!subsumes(d, c));
 
 	// p | q <= q | p
-	pos.push_back(p);
-	pos.push_back(q);
+	pos.add(p);
+	pos.add(q);
 	c = mkClause(neg, pos);
-	pos.push_back(q);
-	pos.push_back(p);
+	pos.add(q);
+	pos.add(p);
 	d = mkClause(neg, pos);
 	assert(subsumes(c, d));
 	assert(subsumes(d, c));
 
 	// p | q <= p | q | p
-	pos.push_back(p);
-	pos.push_back(q);
+	pos.add(p);
+	pos.add(q);
 	c = mkClause(neg, pos);
-	pos.push_back(p);
-	pos.push_back(q);
-	pos.push_back(p);
+	pos.add(p);
+	pos.add(q);
+	pos.add(p);
 	d = mkClause(neg, pos);
 	assert(subsumes(c, d));
 	assert(!subsumes(d, c));
 
 	// p(a) | p(b) | q(a) | q(b) | <= p(a) | q(a) | p(b) | q(b)
-	pos.push_back(term(p1, a));
-	pos.push_back(term(p1, b));
-	pos.push_back(term(q1, a));
-	pos.push_back(term(q1, b));
+	pos.add(term(p1, a));
+	pos.add(term(p1, b));
+	pos.add(term(q1, a));
+	pos.add(term(q1, b));
 	c = mkClause(neg, pos);
-	pos.push_back(term(p1, a));
-	pos.push_back(term(q1, a));
-	pos.push_back(term(p1, b));
-	pos.push_back(term(q1, b));
+	pos.add(term(p1, a));
+	pos.add(term(q1, a));
+	pos.add(term(p1, b));
+	pos.add(term(q1, b));
 	d = mkClause(neg, pos);
 	assert(subsumes(c, d));
 	assert(subsumes(d, c));
 
 	// p(x,y) <= p(a,b)
-	pos.push_back(term(p2, x, y));
+	pos.add(term(p2, x, y));
 	c = mkClause(neg, pos);
-	pos.push_back(term(p2, a, b));
+	pos.add(term(p2, a, b));
 	d = mkClause(neg, pos);
 	assert(subsumes(c, d));
 	assert(!subsumes(d, c));
 
 	// p(x,x) !<= p(a,b)
-	pos.push_back(term(p2, x, x));
+	pos.add(term(p2, x, x));
 	c = mkClause(neg, pos);
-	pos.push_back(term(p2, a, b));
+	pos.add(term(p2, a, b));
 	d = mkClause(neg, pos);
 	assert(!subsumes(c, d));
 	assert(!subsumes(d, c));
 
 	// p(x) <= p(y)
-	pos.push_back(term(p1, x));
+	pos.add(term(p1, x));
 	c = mkClause(neg, pos);
-	pos.push_back(term(p1, y));
+	pos.add(term(p1, y));
 	d = mkClause(neg, pos);
 	assert(subsumes(c, d));
 	assert(subsumes(d, c));
 
 	// p(x) | p(a(x)) | p(a(a(x))) <= p(y) | p(a(y)) | p(a(a(y)))
-	pos.push_back(term(p1, x));
-	pos.push_back(term(p1, term(a1, x)));
-	pos.push_back(term(p1, term(a1, term(a1, x))));
+	pos.add(term(p1, x));
+	pos.add(term(p1, term(a1, x)));
+	pos.add(term(p1, term(a1, term(a1, x))));
 	c = mkClause(neg, pos);
-	pos.push_back(term(p1, y));
-	pos.push_back(term(p1, term(a1, y)));
-	pos.push_back(term(p1, term(a1, term(a1, y))));
+	pos.add(term(p1, y));
+	pos.add(term(p1, term(a1, y)));
+	pos.add(term(p1, term(a1, term(a1, y))));
 	d = mkClause(neg, pos);
 	assert(subsumes(c, d));
 	assert(subsumes(d, c));
 
 	// p(x) | p(a) <= p(a) | p(b)
-	pos.push_back(term(p1, x));
-	pos.push_back(term(p1, a));
+	pos.add(term(p1, x));
+	pos.add(term(p1, a));
 	c = mkClause(neg, pos);
-	pos.push_back(term(p1, a));
-	pos.push_back(term(p1, b));
+	pos.add(term(p1, a));
+	pos.add(term(p1, b));
 	d = mkClause(neg, pos);
 	assert(subsumes(c, d));
 	assert(!subsumes(d, c));
 
 	// p(x) | p(a(x)) <= p(a(y)) | p(y)
-	pos.push_back(term(p1, x));
-	pos.push_back(term(p1, term(a1, x)));
+	pos.add(term(p1, x));
+	pos.add(term(p1, term(a1, x)));
 	c = mkClause(neg, pos);
-	pos.push_back(term(p1, term(a1, y)));
-	pos.push_back(term(p1, y));
+	pos.add(term(p1, term(a1, y)));
+	pos.add(term(p1, y));
 	d = mkClause(neg, pos);
 	assert(subsumes(c, d));
 	assert(subsumes(d, c));
 
 	// p(x) | p(a(x)) | p(a(a(x))) <= p(a(a(y))) | p(a(y)) | p(y)
-	pos.push_back(term(p1, x));
-	pos.push_back(term(p1, term(a1, x)));
-	pos.push_back(term(p1, term(a1, term(a1, x))));
+	pos.add(term(p1, x));
+	pos.add(term(p1, term(a1, x)));
+	pos.add(term(p1, term(a1, term(a1, x))));
 	c = mkClause(neg, pos);
-	pos.push_back(term(p1, term(a1, term(a1, y))));
-	pos.push_back(term(p1, term(a1, y)));
-	pos.push_back(term(p1, y));
+	pos.add(term(p1, term(a1, term(a1, y))));
+	pos.add(term(p1, term(a1, y)));
+	pos.add(term(p1, y));
 	d = mkClause(neg, pos);
 	assert(subsumes(c, d));
 	assert(subsumes(d, c));
 
 	// (a = x) <= (a = b)
-	pos.push_back(term(Eq, a, x));
+	pos.add(term(Eq, a, x));
 	c = mkClause(neg, pos);
-	pos.push_back(term(Eq, a, b));
+	pos.add(term(Eq, a, b));
 	d = mkClause(neg, pos);
 	assert(subsumes(c, d));
 	assert(!subsumes(d, c));
 
 	// (x = a) <= (a = b)
-	pos.push_back(term(Eq, x, a));
+	pos.add(term(Eq, x, a));
 	c = mkClause(neg, pos);
-	pos.push_back(term(Eq, a, b));
+	pos.add(term(Eq, a, b));
 	d = mkClause(neg, pos);
 	assert(subsumes(c, d));
 	assert(!subsumes(d, c));
 
 	// !p(y) | !p(x) | q(x) <= !p(a) | !p(b) | q(b)
-	neg.push_back(term(p1, y));
-	neg.push_back(term(p1, x));
-	pos.push_back(term(q1, x));
+	neg.add(term(p1, y));
+	neg.add(term(p1, x));
+	pos.add(term(q1, x));
 	c = mkClause(neg, pos);
-	neg.push_back(term(p1, a));
-	neg.push_back(term(p1, b));
-	pos.push_back(term(q1, b));
+	neg.add(term(p1, a));
+	neg.add(term(p1, b));
+	pos.add(term(q1, b));
 	d = mkClause(neg, pos);
 	assert(subsumes(c, d));
 	assert(!subsumes(d, c));
 
 	// !p(x) | !p(y) | q(x) <= !p(a) | !p(b) | q(b)
-	neg.push_back(term(p1, x));
-	neg.push_back(term(p1, y));
-	pos.push_back(term(q1, x));
+	neg.add(term(p1, x));
+	neg.add(term(p1, y));
+	pos.add(term(q1, x));
 	c = mkClause(neg, pos);
-	neg.push_back(term(p1, a));
-	neg.push_back(term(p1, b));
-	pos.push_back(term(q1, b));
+	neg.add(term(p1, a));
+	neg.add(term(p1, b));
+	pos.add(term(q1, b));
 	d = mkClause(neg, pos);
 	assert(subsumes(c, d));
 	assert(!subsumes(d, c));
 
 	// p(x,a(x)) !<= p(a(y),a(y))
-	pos.push_back(term(p2, x, term(a1, x)));
+	pos.add(term(p2, x, term(a1, x)));
 	c = mkClause(neg, pos);
-	pos.push_back(term(p2, term(a1, y), term(a1, y)));
+	pos.add(term(p2, term(a1, y), term(a1, y)));
 	d = mkClause(neg, pos);
 	assert(!subsumes(c, d));
 	assert(!subsumes(d, c));
@@ -494,7 +494,7 @@ term replace(const map<term, term>& m, term a) {
 
 	auto n = a.size();
 	vec<term> v(1, a[0]);
-	for (size_t i = 1; i != n; ++i) v.push_back(replace(m, at(a, i)));
+	for (size_t i = 1; i != n; ++i) v.add(replace(m, at(a, i)));
 	return term(v);
 }
 
@@ -733,20 +733,20 @@ void testCartProduct() {
 	vec<vec<int>> qs;
 	vec<int> q;
 	q.clear();
-	q.push_back(a0);
-	q.push_back(a1);
-	qs.push_back(q);
+	q.add(a0);
+	q.add(a1);
+	qs.add(q);
 	q.clear();
-	q.push_back(b0);
-	q.push_back(b1);
-	q.push_back(b2);
-	qs.push_back(q);
+	q.add(b0);
+	q.add(b1);
+	q.add(b2);
+	qs.add(q);
 	q.clear();
-	q.push_back(c0);
-	q.push_back(c1);
-	q.push_back(c2);
-	q.push_back(c3);
-	qs.push_back(q);
+	q.add(c0);
+	q.add(c1);
+	q.add(c2);
+	q.add(c3);
+	qs.add(q);
 	auto rs = cartProduct(qs);
 	size_t i = 0;
 	assert(eq(rs[i++], a0, b0, c0));
@@ -1005,29 +1005,29 @@ void test() {
 
 	// Collections
 	vec<term> v;
-	v.push_back(x);
-	v.push_back(y);
-	v.push_back(z);
+	v.add(x);
+	v.add(y);
+	v.add(z);
 	assert(v[0] == x);
 	assert(v[1] == y);
 	assert(v[2] == z);
 	heap->check();
 
 	vec<term> u;
-	u.push_back(x);
-	u.push_back(y);
-	u.push_back(z);
+	u.add(x);
+	u.add(y);
+	u.add(z);
 	assert(u == v);
 
 	vec<size_t> vi;
-	vi.push_back(1);
-	vi.push_back(2);
-	vi.push_back(3);
+	vi.add(1);
+	vi.add(2);
+	vi.add(3);
 
 	vec<size_t> vi2;
-	vi2.push_back(1);
-	vi2.push_back(2);
-	vi2.push_back(2);
+	vi2.add(1);
+	vi2.add(2);
+	vi2.add(2);
 
 	set<vec<size_t>> vis;
 	vis.add(vi);
@@ -1180,7 +1180,7 @@ void test() {
 
 	{
 		vec<char> v;
-		for (int i = 0; i < 10; ++i) v.push_back(i);
+		for (int i = 0; i < 10; ++i) v.add(i);
 		assert(v.size() == 10);
 		assert(v.end() - v.begin() == 10);
 		for (int i = 0; i < 10; ++i) assert(v[i] == i);

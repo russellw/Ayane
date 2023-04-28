@@ -103,7 +103,7 @@ Term* simplify(const map<Term*, Term*>& m, Term* a) {
 			return a;
 		}
 		vec<Term*> v(1, a[0]);
-		for (size_t i = 1; i < a->n; ++i) v.push_back(simplify(m, at(a, i)));
+		for (size_t i = 1; i < a->n; ++i) v.add(simplify(m, at(a, i)));
 		return mk(v);
 	}
 	case IsInteger:

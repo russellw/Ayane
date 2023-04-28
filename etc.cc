@@ -16,7 +16,7 @@ static void flatten(int tag, Term* a, vec<Term*>& r) {
 		for (size_t i = 1; i < a->n; ++i) flatten(t, at(a, i), r);
 		return;
 	}
-	r.push_back(a);
+	r.add(a);
 }
 
 vec<Term*> flatten(int tag, Term* a) {
@@ -30,12 +30,15 @@ void freeVars(Term* a, vec<Term*> boundv, vec<Term*>& freev) {
 	case All:
 	case Exists:
 	{
+		auto o = boundv.n;
+		// TODO: batch add
 		for (size_t i = 2; i < a->n; ++i) boundv.add(at(a, i));
 		freeVars(at(a, 1), boundv, freev);
+		boundv.n = o;
 		return;
 	}
 	case Var:
-		if (!boundv.has(a) && !freev.has(a)) freev.push_back(a);
+		if (!boundv.has(a) && !freev.has(a)) freev.add(a);
 		return;
 	}
 	for (size_t i = 1; i < a->n; ++i) freeVars(at(a, i), boundv, freev);
@@ -56,8 +59,8 @@ Term* quantify(Term* a) {
 	auto vars = freeVars(a);
 	if (vars.empty()) return a;
 	vec<Term*> v(1, mk(All));
-	v.push_back(a);
-	for (auto x: vars) v.push_back(x);
+	v.add(a);
+	for (auto x: vars) v.add(x);
 	return mk(v);
 }
 ///
