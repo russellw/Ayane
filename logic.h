@@ -1,14 +1,10 @@
 // Names of the inference rules used by the program, for use in tracking inferences and printing proofs
-enum class rule {
-#define _(x) x,
+enum {
+#define _(x) r##x,
 #include "rules.h"
 };
 
 extern const char* ruleNames[];
-
-inline void print(rule rl) {
-	print(ruleNames[(int)rl]);
-}
 
 // The SZS ontologies for automated reasoning software, or at least, the subset thereof that is used here
 enum class szs {

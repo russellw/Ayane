@@ -208,7 +208,7 @@ struct doing {
 		for (size_t i = 0; i != c.second.size(); ++i) pos.push_back(replace(m, c.second[i], 0));
 
 		// Make new clause
-		qclause(rule::er, vec<clause>{c}, neg, pos);
+		qclause(r_er, vec<clause>{c}, neg, pos);
 	}
 
 	// For each negative equation
@@ -249,7 +249,7 @@ struct doing {
 			if (i != di) pos.push_back(replace(m, c.second[i], 0));
 
 		// Make new clause
-		qclause(rule::ef, vec<clause>{c}, neg, pos);
+		qclause(r_ef, vec<clause>{c}, neg, pos);
 	}
 
 	// For each positive equation (both directions) again
@@ -336,7 +336,7 @@ struct doing {
 		v.push_back(equate(d0c1, d1));
 
 		// Make new clause
-		qclause(rule::sp, vec<clause>{c, d}, neg, pos);
+		qclause(r_sp, vec<clause>{c, d}, neg, pos);
 	}
 
 	// Descend into subterms
@@ -389,7 +389,7 @@ struct doing {
 			}
 
 		// The passive queue starts off with all the input clauses
-		for (auto& c: cs) qclause(rule::cnf, vec<clause>(), c.first, c.second);
+		for (auto& c: cs) qclause(r_cnf, vec<clause>(), c.first, c.second);
 
 		// The active set starts off empty
 		set<clause> active;

@@ -1071,7 +1071,7 @@ void tptpProof(const vec<uint32_t>& proofv) {
 			// If a clause was not inferred from other clauses, then it must have been converted from a formula. In general, CNF
 			// conversion produces a clause set that is not exactly equivalent to the original formula (because new symbols may be
 			// introduced), but is equisatisfiable.
-			printf(", inference(%s,[status(%s)],[", ruleNames[(int)f->rl], f->rl == rule::cnf ? "esa" : "thm");
+			printf(", inference(%s,[status(%s)],[", ruleNames[(int)f->rl], f->rl == r_cnf ? "esa" : "thm");
 
 			// It is possible to implement more complex inference rules that infer a clause from several source clauses, but at the
 			// moment, the largest number of source clauses is 2

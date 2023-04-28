@@ -98,7 +98,7 @@ size_t Problem::walk(const ProofCnf& proofCnf, const Proof& proof, const clause&
 	size_t from1 = 0;
 	if (proofCnf.get(c, a)) {
 		// The clause was CNF-converted from a formula
-		rl = rule::cnf;
+		rl = r_cnf;
 		from = walk(a);
 	} else {
 		// Otherwise, it must have been inferred from other clauses
