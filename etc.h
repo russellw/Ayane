@@ -8,27 +8,28 @@ extern const char* szsNames[];
 
 // SORT
 Eqn eqn(Term* a);
-vec<Term*> flatten(int tag, Term* a);
+void flatten(int tag, Term* a, std::vector<Term*>& r);
 void freeVars(Term* a, vec<Term*> boundv, vec<Term*>& freev);
 Term* imp(Term* a, Term* b);
 bool occurs(Term* a, Term* b);
 Term* quantify(Term* a);
 ///
 
-template <class T> void cartProduct(const vec<vec<T>>& vs, size_t i, vec<size_t>& js, vec<vec<T>>& rs) {
+template <class T>
+void cartProduct(const std::vector<std::vector<T>>& vs, size_t i, vec<size_t>& js, std::vector<std::vector<T>>& rs) {
 	if (i == js.size()) {
-		vec<T> r;
-		for (size_t i = 0; i != vs.size(); ++i) r.add(vs[i][js[i]]);
-		rs.add(r);
+		std::vector<T> r;
+		for (size_t i = 0; i != vs.size(); ++i) r.push_back(vs[i][js[i]]);
+		rs.push_back(r);
 		return;
 	}
 	for (js[i] = 0; js[i] != vs[i].size(); ++js[i]) cartProduct(vs, i + 1, js, rs);
 }
 
-template <class T> vec<vec<T>> cartProduct(const vec<vec<T>>& vs) {
+template <class T> std::vector<std::vector<T>> cartProduct(const std::vector<std::vector<T>>& vs) {
 	vec<size_t> js;
 	for (auto& v: vs) js.add(0);
-	vec<vec<T>> rs;
+	std::vector<std::vector<T>> rs;
 	cartProduct(vs, 0, js, rs);
 	return rs;
 }

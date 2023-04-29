@@ -11,18 +11,12 @@ Eqn eqn(Term* a) {
 	return make_pair(a, atoms + True);
 }
 
-static void flatten(int tag, Term* a, vec<Term*>& r) {
-	if (a->tag == t) {
-		for (size_t i = 1; i < a->n; ++i) flatten(t, at(a, i), r);
+void flatten(int tag, Term* a, std::vector<Term*>& r) {
+	if (a->tag == tag) {
+		for (size_t i = 1; i < a->n; ++i) flatten(tag, at(a, i), r);
 		return;
 	}
-	r.add(a);
-}
-
-vec<Term*> flatten(int tag, Term* a) {
-	vec<Term*> r;
-	flatten(t, a, r);
-	return r;
+	r.push_back(a);
 }
 
 void freeVars(Term* a, vec<Term*> boundv, vec<Term*>& freev) {
@@ -51,8 +45,8 @@ Term* imp(Term* a, Term* b) {
 
 bool occurs(Term* a, Term* b) {
 	if (a == b) return 1;
-	for (size_t i = 1; i != b.size(); ++i)
-		if (occurs(a, b[i])) return 1;
+	for (size_t i = 1; i < b->n; ++i)
+		if (occurs(a, at(b, i))) return 1;
 	return 0;
 }
 

@@ -44,7 +44,7 @@ struct Compound {
 	Term* v[];
 };
 
-// TODO: naming convention?
+// TODO: test using a bump allocator
 Term* term(int tag);
 Term* term(int tag, Term* a);
 Term* term(int tag, Term* a, Term* b);
@@ -53,6 +53,7 @@ Term* term(Term* a, Term* b, Term* c);
 Term* term(Term* a, Term* b, Term* c, Term* d);
 Term* term(Term* a, Term* b, Term* c, Term* d, Term* e);
 Term* term(const vec<Term*>& v);
+Term* term(const std::vector<Term*>& v);
 type getType(Term* a);
 
 inline Term* at(Term* a, size_t i) {

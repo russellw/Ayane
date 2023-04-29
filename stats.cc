@@ -9,7 +9,6 @@
 #endif
 
 #include <map>
-#include <vector>
 
 namespace {
 void printItem(size_t n, const char* caption) {

@@ -57,6 +57,8 @@ struct parser1: parser {
 
 	// Top level
 	void add(const vec<Term*>& literals) {
+		// TODO: provide a way to build input-only terms that bypasses interning?
+		// Maybe it should also bypass the a[0] as symbol
 		cnf(new Formula(file, 0, term(literals)));
 	}
 

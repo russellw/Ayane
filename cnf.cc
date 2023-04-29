@@ -278,35 +278,37 @@ Term* nnf(bool pol, Term* a, vec<pair<Term*, Term*>>& m) {
 // Distribute OR down into AND, completing the layering of the operators for CNF. This is the second place where exponential
 // expansion would occur, had selected formulas not already been renamed.
 Term* distribute(Term* a) {
-	vec<Term*> v(1, term(And));
+	vec<Term*> r(1, term(And));
 	switch (a->tag) {
 	case And:
-		for (size_t i = 1; i < a->n; ++i) v.add(distribute(at(a, i)));
+		for (size_t i = 1; i < a->n; ++i) r.add(distribute(at(a, i)));
 		break;
 	case Or:
 	{
 		// Arguments can be taken without loss of generality as ANDs
-		vec<vec<Term*>> ands;
+		std::vector<std::vector<Term*>> ands;
 		for (size_t i = 1; i < a->n; ++i) {
 			// Recur
 			auto b = distribute(at(a, i));
 
 			// And make a flat layer of ANDs
-			ands.add(flatten(And, b));
+			std::vector<Term*> v;
+			flatten(And, b, v);
+			ands.push_back(v);
 		}
 
 		// OR distributes over AND by Cartesian product
 		// TODO: can this be done by reference?
-		for (auto u: cartProduct(ands)) {
-			u.insert(u.begin(), term(Or));
-			v.add(term(u));
+		for (auto v: cartProduct(ands)) {
+			v.insert(v.begin(), term(Or));
+			r.add(term(v));
 		}
 		break;
 	}
 	default:
 		return a;
 	}
-	return term(v);
+	return term(r);
 }
 
 // Convert a suitably rearranged term into actual clauses
