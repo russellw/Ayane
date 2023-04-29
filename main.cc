@@ -1,7 +1,5 @@
 #include "main.h"
 
-#include <new>
-
 #ifdef _WIN32
 #include <windows.h>
 
@@ -13,7 +11,7 @@ LONG WINAPI handler(struct _EXCEPTION_POINTERS* ExceptionInfo) {
 		fprintf(stderr, "Exception code %lx\n", ExceptionInfo->ExceptionRecord->ExceptionCode);
 		stackTrace();
 	}
-	ExitProcess(1);
+	ExitProcess(ExceptionInfo->ExceptionRecord->ExceptionCode);
 }
 
 VOID CALLBACK timeout(PVOID a, BOOLEAN b) {
@@ -222,10 +220,6 @@ int inputLang(const char* file) {
 } // namespace
 
 int main(int argc, const char** argv) {
-	std::set_new_handler([]() {
-		perror("new");
-		exit(1);
-	});
 #ifdef _WIN32
 	AddVectoredExceptionHandler(0, handler);
 #endif

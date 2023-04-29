@@ -140,7 +140,7 @@ string* intern(const char* s, size_t n) {
 	}
 
 	// Make a new string
-	auto r = (string*)xmalloc(offsetof(string, v) + n + 1);
+	auto r = (string*)malloc(offsetof(string, v) + n + 1);
 	memset(r, 0, offsetof(string, v));
 	memcpy(r->v, s, n);
 	r->v[n] = 0;

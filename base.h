@@ -10,9 +10,6 @@
 const char* basename(const char* file);
 [[noreturn]] void err(const char* msg);
 size_t fnv(const void* p, size_t bytes);
-void* xcalloc(size_t n, size_t size);
-void* xmalloc(size_t bytes);
-void* xrealloc(void* p, size_t n);
 ///
 
 // For debugging purposes, define print functions for all the data types being used

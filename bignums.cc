@@ -28,7 +28,7 @@ static size_t slot(Atom** entries, size_t cap, mpz_t a) {
 void expand() {
 	assert(isPow2(cap));
 	auto cap1 = cap * 2;
-	auto entries1 = (Atom**)xcalloc(cap1, sizeof *entries);
+	auto entries1 = (Atom**)calloc(cap1, sizeof *entries);
 	// TODO: check generated code
 	for (auto i = entries, e = entries + cap; i != e; ++i) {
 		auto a = *i;
@@ -42,7 +42,7 @@ void expand() {
 struct init {
 	init() {
 		assert(isPow2(cap));
-		entries = (Atom**)xcalloc(cap, sizeof *entries);
+		entries = (Atom**)calloc(cap, sizeof *entries);
 	}
 } _;
 } // namespace mpzs
@@ -65,7 +65,7 @@ Atom* intern(mpz_t a) {
 	}
 
 	// Make a new object
-	auto r = (Atom*)xmalloc(offsetof(Atom, mpz) + sizeof(mpz_t));
+	auto r = (Atom*)malloc(offsetof(Atom, mpz) + sizeof(mpz_t));
 	r->tag = Integer;
 	memcpy(r->mpz, a, sizeof r->mpz);
 
@@ -110,7 +110,7 @@ static size_t slot(Atom** entries, size_t cap, mpq_t a) {
 void expand() {
 	assert(isPow2(cap));
 	auto cap1 = cap * 2;
-	auto entries1 = (Atom**)xcalloc(cap1, sizeof *entries);
+	auto entries1 = (Atom**)calloc(cap1, sizeof *entries);
 	// TODO: check generated code
 	for (auto i = entries, e = entries + cap; i != e; ++i) {
 		auto a = *i;
@@ -124,7 +124,7 @@ void expand() {
 struct init {
 	init() {
 		assert(isPow2(cap));
-		entries = (Atom**)xcalloc(cap, sizeof *entries);
+		entries = (Atom**)calloc(cap, sizeof *entries);
 	}
 } _;
 } // namespace mpqs
@@ -147,7 +147,7 @@ Atom* intern(mpq_t a) {
 	}
 
 	// Make a new object
-	auto r = (Atom*)xmalloc(offsetof(Atom, mpq) + sizeof(mpq_t));
+	auto r = (Atom*)malloc(offsetof(Atom, mpq) + sizeof(mpq_t));
 	r->tag = Rational;
 	memcpy(r->mpq, a, sizeof r->mpq);
 

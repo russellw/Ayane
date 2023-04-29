@@ -28,7 +28,7 @@ private:
 
 	void expand() {
 		size_t cap1 = cap ? cap * 2 : 4;
-		auto entries1 = (entry*)xcalloc(cap1, sizeof(entry));
+		auto entries1 = (entry*)calloc(cap1, sizeof(entry));
 		copy(entries, cap, entries1, cap1);
 		free(entries);
 		cap = cap1;
@@ -93,7 +93,7 @@ public:
 	map(const map& b) {
 		cap = b.cap;
 		qty = b.qty;
-		entries = (entry*)xcalloc(cap, sizeof(entry));
+		entries = (entry*)calloc(cap, sizeof(entry));
 		// TODO: straight memcpy could be used here
 		copy(b.entries, b.cap, entries, cap);
 	}
@@ -114,7 +114,7 @@ public:
 		if (cap < b.cap) {
 			free(entries);
 			cap = b.cap;
-			entries = (entry*)xcalloc(cap, sizeof(entry));
+			entries = (entry*)calloc(cap, sizeof(entry));
 		}
 		copy(b.entries, b.cap, entries, cap);
 		return *this;

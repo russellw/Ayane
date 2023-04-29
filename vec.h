@@ -35,7 +35,7 @@ template <class T> struct vec {
 		// TODO: if o == 0, default to some more predictive capacity?
 		cap = o;
 		n = o;
-		data = (T*)xmalloc(cap * sizeof(T));
+		data = (T*)malloc(cap * sizeof(T));
 	}
 
 	// Turn some elements back into uninitialized memory
@@ -96,7 +96,7 @@ template <class T> struct vec {
 		// realloc to be inefficient here because, knowing nothing about the semantics of vectors, it must (if actual reallocation
 		// is needed) memcpy up to capacity, not just size. But in practice, almost all reallocations will be caused by an element
 		// being added at the end, so size will be equal to capacity anyway.
-		data = xrealloc(data, cap * sizeof(T), cap1 * sizeof(T));
+		data = realloc(data, cap * sizeof(T), cap1 * sizeof(T));
 
 		// Update capacity. Size is unchanged; that's for the caller to figure out.
 		cap = cap1;
