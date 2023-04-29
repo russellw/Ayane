@@ -8,7 +8,7 @@ const char* szsNames[] = {
 // SORT
 Eqn eqn(Term* a) {
 	if (a->tag == Eq) return make_pair(at(a, 1), at(a, 2));
-	return make_pair(a, True);
+	return make_pair(a, atoms + True);
 }
 
 static void flatten(int tag, Term* a, vec<Term*>& r) {

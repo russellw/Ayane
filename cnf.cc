@@ -310,7 +310,7 @@ Term* distribute(Term* a) {
 }
 
 // Convert a suitably rearranged term into actual clauses
-void clauseTerm(Term* a, vec<Term*>& neg, vec<Term*>& pos) {
+void literalsTerm(Term* a, vec<Term*>& neg, vec<Term*>& pos) {
 	switch (a->tag) {
 	case All:
 	case And:
@@ -321,42 +321,31 @@ void clauseTerm(Term* a, vec<Term*>& neg, vec<Term*>& pos) {
 		neg.add(at(a, 1));
 		return;
 	case Or:
-		for (size_t i = 1; i < a->n; ++i) clauseTerm(at(a, i), neg, pos);
+		for (size_t i = 1; i < a->n; ++i) literalsTerm(at(a, i), neg, pos);
 		return;
 	}
 	pos.add(a);
 }
 
-clause clauseTerm(Term* a) {
-	vec<Term*> neg, pos;
-	clauseTerm(a, neg, pos);
-	auto c = make_pair(neg, pos);
-	c = simplify(map<Term*, Term*>(), c);
-	return c;
-}
-
-// And record the clauses
-void csTerm(Term* from, Term* a) {
-	for (auto& b: flatten(And, a)) {
-		auto c = clauseTerm(b);
-		if (c == truec) continue;
-		proofCnf.add(c, from);
-		cs.add(c);
+void clausesTerm(Term* a, int rule, Formula* from) {
+	if (a->tag == And) {
+		for (size_t i = 1; i < a->n; ++i) clausesTerm(at(a, i), rule, from);
+		return;
 	}
+	vec<Term*> neg, pos;
+	literalsTerm(a, neg, pos);
+	clause(neg, pos, rule, from);
 }
 } // namespace
 
-void cnf(Formula* formula) {
-	// First run each input formula through the full process: Rename subformulas where necessary to avoid exponential expansion,
-	// then convert to negation normal form, distribute OR into AND, and convert to clauses
-	for (auto a: initialFormulas) {
-		auto from = a;
-		a = maybeRename(1, a);
-		vars = 0;
-		a = nnf(map<Term*, Term*>(), 1, a);
-		a = distribute(a);
-		csTerm(from, a);
-	}
+void cnf(Formula* from) {
+	// First run the input formula through the full process: Rename subformulas where necessary to avoid exponential expansion, then
+	// convert to negation normal form, distribute OR into AND, and convert to clauses
+	auto a = maybeRename(1, from->tm);
+	vars = 0;
+	a = nnf(1, a, vec<pair<Term*, Term*>>());
+	a = distribute(a);
+	clausesTerm(a, r_cnf, from);
 
 	// Then convert all the definitions created by the renaming process. That process works by bottom-up recursion, which means each
 	// renamed subformula is simple, so there is no need to put the definitions through the renaming process again; they just need
@@ -364,8 +353,8 @@ void cnf(Formula* formula) {
 	for (auto a: defs) {
 		auto from = a;
 		vars = 0;
-		a = nnf(map<Term*, Term*>(), 1, a);
+		a = nnf(1, a, vec<pair<Term*, Term*>>());
 		a = distribute(a);
-		csTerm(from, a);
+		clausesTerm(a, r_def, 0);
 	}
 }

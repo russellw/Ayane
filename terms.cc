@@ -1,8 +1,7 @@
 #include "main.h"
 
 // Atoms
-Atom atoms[999];
-// TODO: fix count
+Atom atoms[ntags];
 
 namespace {
 struct init {

@@ -6,8 +6,6 @@ enum {
 };
 
 struct parser1: parser {
-	Problem& problem;
-
 	// Tokenizer
 	void lex() {
 	loop:
@@ -51,18 +49,18 @@ struct parser1: parser {
 	}
 
 	// A variable in propositional logic is a constant in first-order logic
-	term var() {
+	Atom* var() {
 		auto a = term(str, kind::Bool);
 		lex();
 		return a;
 	}
 
 	// Top level
-	void add(const vec<term>& literals) {
-		problem.axiom(term(literals), file);
+	void add(const vec<Term*>& literals) {
+		cnf(new Formula(file, 0, term(literals)));
 	}
 
-	parser1(const char* file, Problem& problem): parser(file), problem(problem) {
+	parser1(const char* file): parser(file) {
 		lex();
 		if (tok == 'p') {
 			while (isSpace(*src)) ++src;
@@ -77,25 +75,23 @@ struct parser1: parser {
 			if (tok != k_id) err("Expected count");
 			lex();
 		}
-		vec<term> literals(1, term(Or));
+		vec<Term*> literals(1, term(Or));
 		for (;;) switch (tok) {
 			case '-':
 				lex();
 				literals.add(term(Not, var()));
 				break;
 			case 0:
-				if (literals.size()) add(literals);
+				if (literals.n > 1) add(literals);
 				return;
 			case k_id:
 				literals.add(var());
 				break;
 			case k_zero:
-			{
 				lex();
 				add(literals);
-				literals.resize(1);
+				literals.n = 1;
 				break;
-			}
 			default:
 				err("Syntax error");
 			}
@@ -103,6 +99,6 @@ struct parser1: parser {
 };
 } // namespace
 
-void parseDimacs(const char* file, Problem& problem) {
-	parser1 _(file, problem);
+void parseDimacs(const char* file) {
+	parser1 _(file);
 }

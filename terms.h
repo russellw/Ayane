@@ -1,7 +1,7 @@
 enum {
 #define _(x) x,
 #include "tags.h"
-	end
+	ntags
 };
 
 struct Term {
@@ -22,21 +22,22 @@ struct Atom: Term {
 
 extern Atom atoms[];
 
-Term* term(mpz_t val);
-Term* term(mpq_t val);
+// TODO: rename to 'atom'?
+Atom* term(mpz_t val);
+Atom* term(mpq_t val);
 
 // Wrapping a symbol in a term is a common operation. Specifying the type at the same time is less so, but still common enough for
 // this function to be useful.
-Term* term(string* s, type ty);
+Atom* term(string* s, type ty);
 
-inline Term* tbool(bool b) {
+inline Atom* tbool(bool b) {
 	return atoms + (b ? True : False);
 }
 
-Term* var(size_t i, type ty);
+Atom* var(size_t i, type ty);
 
-Term* gensym(type ty);
-Term* distinctObj(string* s);
+Atom* gensym(type ty);
+Atom* distinctObj(string* s);
 
 // Compound terms contain other terms, but maintain value semantics. Like atoms, they are interned.
 struct Compound {

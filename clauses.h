@@ -16,9 +16,14 @@ struct IFormula {
 // procedures, and since this kind of input is rarely used nowadays, there is no good reason to provide a special code path for it.
 // So input clauses are just treated as formulas.
 struct Formula: IFormula {
-	char* file;
-	char* name;
+	const char* file;
+	const char* name;
 	Term* tm;
+
+	Formula(const char* file, const char* name, Term* tm): file(file), name(name), tm(tm) {
+		rule = r_file;
+		*from = 0;
+	}
 };
 
 // Most of the logic doesn't care whether the problem contained a conjecture, but it needs to be remembered for e.g. the specifics
@@ -45,3 +50,4 @@ struct CompareClauses {
 };
 
 extern std::priority_queue<Clause*, vec<Clause*>, CompareClauses> passive;
+void clause(vec<Term*>& neg, vec<Term*>& pos, int rule, IFormula* from, IFormula* from1 = 0);
