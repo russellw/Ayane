@@ -127,11 +127,6 @@ struct doing {
 	Proof& proof;
 	///
 
-	// If a complete saturation proof procedure finds no more possible derivations, then the problem is satisfiable. In practice,
-	// this almost never happens for nontrivial problems, but serves as a good way to test the completeness of the prover on some
-	// trivial problems. However, if completeness was lost for any reason, then we will need to report failure instead.
-	szs result = z_Satisfiable;
-
 	void qclause(rule rl, const vec<clause>& from, const vec<term>& neg, const vec<term>& pos) {
 		incStat("qclause");
 		auto c = make_pair(neg, pos);
@@ -144,13 +139,6 @@ struct doing {
 		// Filter tautologies
 		if (c == truec) {
 			incStat("qclause filter tautology");
-			return;
-		}
-
-		// We need to keep track of the proof anyway for output later, so it might as well do double duty as a record of which
-		// clauses we have already seen, for filtering duplicates
-		if (proof.count(c)) {
-			incStat("qclause filter dup");
 			return;
 		}
 
@@ -391,7 +379,12 @@ struct doing {
 };
 } // namespace
 
-szs superposn(const set<clause>& cs, Proof& proof) {
+// If a complete saturation proof procedure finds no more possible derivations, then the problem is satisfiable. In practice, this
+// almost never happens for nontrivial problems, but serves as a good way to test the completeness of the prover on some trivial
+// problems. However, if completeness was lost for any reason, then we will need to report failure instead.
+int result = z_Satisfiable;
+
+Clause* superposn() {
 	doing _(cs, proof);
 	return _.result;
 }
