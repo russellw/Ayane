@@ -25,70 +25,32 @@ VOID CALLBACK timeout(PVOID a, BOOLEAN b) {
 #define version "3"
 
 enum {
-	dimacs = 1,
-	tptp,
+	l_dimacs = 1,
+	l_tptp,
 };
 
-namespace {
-const char* ext(const char* file) {
+static const char* ext(const char* file) {
 	auto s = strrchr(file, '.');
 	return s ? s + 1 : "";
 }
-
-const char* optArg(int argc, const char** argv, int& i, const char* oa) {
-	if (*oa) return oa;
-	if (i + 1 == argc) {
-		fprintf(stderr, "%s: Expected arg\n", argv[i]);
-		exit(1);
-	}
-	return argv[++i];
-}
-
-double optDouble(int argc, const char** argv, int& i, const char* oa) {
-	oa = optArg(argc, argv, i, oa);
-	errno = 0;
-	auto r = strtod(oa, 0);
-	if (errno) {
-		perror(oa);
-		exit(1);
-	}
-	return r;
-}
-
-int inputLang(const char* file) {
-	if (inputLanguage) return inputLanguage;
-	switch (keyword(intern(ext(file)))) {
-	case s_ax:
-	case s_p:
-		return tptp;
-	case s_cnf:
-		return dimacs;
-	}
-	fprintf(stderr, "%s: Unknown file type\n", file);
-	exit(1);
-}
-} // namespace
 
 int main(int argc, char** argv) {
 #ifdef _WIN32
 	AddVectoredExceptionHandler(0, handler);
 #endif
 
-	// SORT
-	const char* file = 0;
-	int inputLanguage;
-	int outputLanguage;
-	///
-
 	// Command line
+	char* file = 0;
+	int language = 0;
 	for (int i = 1; i < argc; ++i) {
 		auto s = argv[i];
 		if (*s == '-') {
 			do ++s;
 			while (*s == '-');
+
 			switch (*s) {
 			case 'd':
-				inputLanguage = dimacs;
+				language = l_dimacs;
 				continue;
 			case 'h':
 				printf("-h Show help\n"
@@ -101,6 +63,7 @@ int main(int argc, char** argv) {
 			{
 				do ++s;
 				while (isAlpha(*s));
+
 				switch (*s) {
 				case ':':
 				case '=':
@@ -113,13 +76,16 @@ int main(int argc, char** argv) {
 						return 1;
 					}
 					s = argv[i];
+					break;
 				}
+
 				errno = 0;
 				auto seconds = strtod(s, 0);
 				if (errno) {
 					perror(argv[i]);
-					exit(1);
+					return 1;
 				}
+
 #ifdef _WIN32
 				HANDLE timer = 0;
 				CreateTimerQueueTimer(&timer, 0, timeout, 0, (DWORD)(seconds * 1000), 0, WT_EXECUTEINTIMERTHREAD);
@@ -151,25 +117,28 @@ int main(int argc, char** argv) {
 		}
 		file = s;
 	}
-
-	// Attempt problems
-	auto bname = basename(file);
+	if (!file) file = "stdin";
+	if (!language) switch (keyword(intern(ext(file)))) {
+		case s_cnf:
+			language = l_dimacs;
+			break;
+		}
 
 	// Parse
-	switch (inputLang(file)) {
-	case dimacs:
+	switch (language) {
+	case l_dimacs:
 		parseDimacs(file);
 		break;
-	case tptp:
+	case l_tptp:
 		parseTptp(file);
 		break;
 	}
 
 	// Solve
-	auto r = superposn(cs, proof);
+	auto proof = superposn();
 
 	// The SZS ontology uses different result values depending on whether the problem contains a conjecture
-	if (problem.hasConjecture) switch (r) {
+	if (conjecture) switch (r) {
 		case z_Satisfiable:
 			r = z_CounterSatisfiable;
 			break;
@@ -179,17 +148,12 @@ int main(int argc, char** argv) {
 		}
 
 	// Print result, and proof if we have one
-	printf("%% SZS status %s for %s\n", szsNames[(int)r], bname);
-	switch (r) {
-	case z_Theorem:
-	case z_Unsatisfiable:
-		if (proof.count(falsec)) {
-			problem.setProof(proofCnf, proof);
-			printf("%% SZS output start CNFRefutation for %s\n", bname);
-			tptpProof(problem.proofv);
-			printf("%% SZS output end CNFRefutation for %s\n", bname);
-		}
-		break;
+	auto name = basename(file);
+	printf("%% SZS status %s for %s\n", szsNames[r], name);
+	if (proof) {
+		printf("%% SZS output start CNFRefutation for %s\n", name);
+		tptpProof(proof);
+		printf("%% SZS output end CNFRefutation for %s\n", name);
 	}
 
 	// Print stats
