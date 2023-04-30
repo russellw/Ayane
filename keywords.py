@@ -1,5 +1,4 @@
 words = [
-    "?",
     "T",
     "V",
     "ax",
@@ -73,13 +72,7 @@ def end(i):
 
 
 def san(s):
-    r = []
-    for c in s:
-        if c == "?":
-            r.append("question")
-            continue
-        r.append(c)
-    return "".join(r)
+    return s
 
 
 xs = open("strings.h").readlines()

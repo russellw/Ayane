@@ -29,7 +29,7 @@ for arg in args.files:
         for root, dirs, files in os.walk(arg):
             for file in files:
                 ext = os.path.splitext(file)[1]
-                if ext == ".p" and "^" not in file and "_" not in file:
+                if ext == ".p" and "^" not in file:
                     problems.append(os.path.join(root, file))
         continue
     if arg.endswith(".lst"):
@@ -69,11 +69,7 @@ def read_tptp(filename, select=True):
     tok = ""
 
     def err(msg):
-        line = 1
-        for i in range(ti):
-            if text[i] == "\n":
-                line += 1
-        raise ValueError(f"{filename}:{line}: {repr(tok)}: {msg}")
+        raise Inappropriate()
 
     def lex():
         nonlocal ti
@@ -392,16 +388,14 @@ def read_tptp(filename, select=True):
 
 
 for file in problems:
-    print(file)
+    # print(file)
 
     try:
         read_tptp(file)
     except Inappropriate as e:
-        print(f"% SZS status {e} for {fname}")
-        r = str(e)
-    except RecursionError:
-        print(f"% SZS status ResourceOut for {fname}")
-        r = "ResourceOut"
+        print(file, e)
+    except RecursionError as e:
+        print(file, e)
 
 
 print(ncalls)

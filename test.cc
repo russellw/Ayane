@@ -1,5 +1,6 @@
 #include "main.h"
 
+// TODO: move to a separate program
 #ifdef DEBUG
 namespace {
 clause mkClause(vec<term>& neg, vec<term>& pos) {

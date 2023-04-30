@@ -66,6 +66,3 @@ using std::swap;
 #include "subsume.h"
 #include "superposn.h"
 #include "unify.h"
-
-// Unit tests
-#include "test.h"

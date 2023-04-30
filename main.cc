@@ -128,7 +128,6 @@ void parse(int argc, const char** argv) {
 			continue;
 		case s_h:
 		case s_help:
-		case s_question:
 			printf(
 				// SORT
 				"-dimacs      Set DIMACS as input and output format\n"
@@ -186,10 +185,6 @@ int main(int argc, const char** argv) {
 #ifdef _WIN32
 	AddVectoredExceptionHandler(0, handler);
 #endif
-
-	// Run unit tests, if this is a debug build
-	// TODO: move to a separate program
-	test();
 
 	// Command line arguments
 	parse(argc - 1, argv + 1);
