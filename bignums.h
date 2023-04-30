@@ -15,7 +15,7 @@ Term* real(mpq_t q);
 Term* real(int n, unsigned d);
 
 // Per TPTP syntax, decimal/exponent string parses to a real number literal
-Term* real(const char* s);
+Term* real(char* s);
 
 // Arithmetic is polymorphic on integers and rationals
 Atom* neg(Atom* a);

@@ -67,13 +67,15 @@ def is_sentence_end(s):
 
 
 def capitalize(s):
-    for c in s:
-        if c.isupper():
-            return s
     if len(s) == 1:
         return s
     if not s[1].isalpha():
         return s
+    if "_" in s:
+        return s
+    for c in s:
+        if c.isupper():
+            return s
     return s.capitalize()
 
 

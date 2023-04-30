@@ -183,7 +183,7 @@ Term* real(int n, unsigned d) {
 	return real(r);
 }
 
-Term* real(const char* s) {
+Term* real(char* s) {
 	// GMP string to integer or rational doesn't handle leading +, so for consistency, this function doesn't either
 	assert(*s != '+');
 
@@ -207,8 +207,14 @@ Term* real(const char* s) {
 	if (isDigit(*t)) {
 		do ++t;
 		while (isDigit(*t));
-		bufCopy(s, t);
-		if (mpz_set_str(integerPart, buf, 10)) err("Invalid integer part");
+
+		// mpz_set_str doesn't like trailing junk, so give it a cleanly null-terminated string
+		auto c = *t;
+		*t = 0;
+		if (mpz_set_str(integerPart, s, 10)) err("Invalid integer part");
+
+		// The following byte might be important, so put it back
+		*t = c;
 		s = t;
 	}
 
@@ -220,8 +226,10 @@ Term* real(const char* s) {
 		if (isDigit(*t)) {
 			do ++t;
 			while (isDigit(*t));
-			bufCopy(s, t);
-			if (mpz_set_str(mantissa, buf, 10)) err("Invalid decimal part");
+			auto c = *t;
+			*t = 0;
+			if (mpz_set_str(mantissa, s, 10)) err("Invalid decimal part");
+			*t = c;
 			scale = t - s;
 			s = t;
 		}
