@@ -5,10 +5,14 @@
 const char* basename(const char* file) {
 	auto i = strlen(file);
 	while (i) {
-		if (file[i - 1] == '/') return file + i;
+		switch(file[i - 1]){
+			case'/':
 #ifdef _WIN32
-		if (file[i - 1] == '\\') return file + i;
+case'\\':
+case':':
 #endif
+		 return file + i;
+		}
 		--i;
 	}
 	return file;
