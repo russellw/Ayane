@@ -3,16 +3,13 @@ Atom* intern(mpq_t a);
 
 // Functions for making arbitrary precision numbers for convenience, accept integer or string input and will intern the result so
 // equality tests can simply compare pointers
-Atom* integer(int n);
 Atom* integer(const char* s);
 
-Atom* rational(int n, unsigned d);
 Atom* rational(const char* s);
 
 // Real number literals are represented as rational number literals wrapped in ToReal. It's a function call that is not actually
 // evaluated, since there is no representation of real number literals as such.
 Term* real(mpq_t q);
-Term* real(int n, unsigned d);
 
 // Per TPTP syntax, decimal/exponent string parses to a real number literal
 Term* real(char* s);

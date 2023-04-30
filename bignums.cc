@@ -73,13 +73,6 @@ Atom* intern(mpz_t a) {
 	return mpzs::entries[i] = r;
 }
 
-Atom* integer(int n) {
-	// TODO: name
-	mpz_t r;
-	mpz_init_set_si(r, n);
-	return intern(r);
-}
-
 Atom* integer(const char* s) {
 	mpz_t r;
 	if (mpz_init_set_str(r, s, 10)) err("Invalid integer");
@@ -155,14 +148,6 @@ Atom* intern(mpq_t a) {
 	return mpqs::entries[i] = r;
 }
 
-Atom* rational(int n, unsigned d) {
-	mpq_t r;
-	mpq_init(r);
-	mpq_set_si(r, n, d);
-	mpq_canonicalize(r);
-	return intern(r);
-}
-
 Atom* rational(const char* s) {
 	mpq_t r;
 	mpq_init(r);
@@ -173,14 +158,6 @@ Atom* rational(const char* s) {
 
 Term* real(mpq_t q) {
 	return term(ToReal, intern(q));
-}
-
-Term* real(int n, unsigned d) {
-	mpq_t r;
-	mpq_init(r);
-	mpq_set_si(r, n, d);
-	mpq_canonicalize(r);
-	return real(r);
 }
 
 Term* real(char* s) {
