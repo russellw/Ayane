@@ -40,7 +40,6 @@ using std::swap;
 
 // General
 #include "base.h"
-#include "buf.h"
 #include "stats.h"
 #include "strings.h"
 #include "vec.h"

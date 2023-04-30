@@ -2,7 +2,6 @@
 
 string keywords[] = {
 	// clang-format off
-	{0, 0, 0, "?"},
 	{0, 0, 0, "T"},
 	{0, 0, 0, "V"},
 	{0, 0, 0, "ax"},

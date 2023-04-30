@@ -55,118 +55,6 @@ double optDouble(int argc, const char** argv, int& i, const char* oa) {
 	return r;
 }
 
-// SORT
-const char* file;
-int inputLanguage;
-int outputLanguage;
-///
-
-void parse(int argc, const char** argv) {
-	for (int i = 0; i != argc; ++i) {
-		auto s = argv[i];
-
-		// File
-		if (*s != '-') {
-			files.add(s);
-			continue;
-		}
-
-		// Option
-		bufi = 0;
-		auto oa = "";
-		for (;;) {
-			if (isAlpha(*s) && isDigit(s[1])) {
-				bufAdd(*s);
-				oa = s + 1;
-				break;
-			}
-			switch (*s) {
-			case ':':
-			case '=':
-				oa = s + 1;
-				break;
-			case 0:
-				break;
-			default:
-				bufAdd(*s);
-				[[fallthrough]];
-			case '-':
-				++s;
-				continue;
-			}
-			break;
-		}
-
-		// An unadorned '-' means read from standard input, but that's the default anyway if no files are specified, so quietly
-		// accept it
-		if (!bufi) continue;
-
-		// Option
-		switch (keyword(intern(buf, bufi))) {
-		case s_cpulimit:
-		case s_T:
-		case s_t:
-		{
-			auto seconds = optDouble(argc, argv, i, oa);
-#ifdef _WIN32
-			HANDLE timer = 0;
-			CreateTimerQueueTimer(&timer, 0, timeout, 0, (DWORD)(seconds * 1000), 0, WT_EXECUTEINTIMERTHREAD);
-#else
-			alarm(seconds);
-#endif
-			continue;
-		}
-		case s_dimacs:
-			inputLanguage = dimacs;
-			outputLanguage = dimacs;
-			continue;
-		case s_dimacsin:
-			inputLanguage = dimacs;
-			continue;
-		case s_dimacsout:
-			outputLanguage = dimacs;
-			continue;
-		case s_h:
-		case s_help:
-			printf(
-				// SORT
-				"-dimacs      Set DIMACS as input and output format\n"
-				"-dimacs-in   Set DIMACS as input format\n"
-				"-dimacs-out  Set DIMACS as output format\n"
-				"-h           Show help\n"
-				"-t seconds   Time limit\n"
-				"-tptp        Set TPTP as input and output format\n"
-				"-tptp-in     Set TPTP as input format\n"
-				"-tptp-out    Set TPTP as output format\n"
-				"-V           Show version\n"
-				///
-			);
-			exit(0);
-		case s_tptp:
-			inputLanguage = tptp;
-			outputLanguage = tptp;
-			continue;
-		case s_tptpin:
-			inputLanguage = tptp;
-			continue;
-		case s_tptpout:
-			outputLanguage = tptp;
-			continue;
-		case s_V:
-		case s_version:
-			printf("Ayane " version);
-			if (sizeof(void*) == 4) printf(", 32 bits");
-#ifdef DEBUG
-			printf(", debug build");
-#endif
-			putchar('\n');
-			exit(0);
-		}
-		fprintf(stderr, "%s: Unknown option\n", argv[i]);
-		exit(1);
-	}
-}
-
 int inputLang(const char* file) {
 	if (inputLanguage) return inputLanguage;
 	switch (keyword(intern(ext(file)))) {
@@ -181,13 +69,91 @@ int inputLang(const char* file) {
 }
 } // namespace
 
-int main(int argc, const char** argv) {
+int main(int argc, char** argv) {
 #ifdef _WIN32
 	AddVectoredExceptionHandler(0, handler);
 #endif
 
-	// Command line arguments
-	parse(argc - 1, argv + 1);
+	// SORT
+	const char* file = 0;
+	int inputLanguage;
+	int outputLanguage;
+	///
+
+	// Command line
+	for (int i = 1; i < argc; ++i) {
+		auto s = argv[i];
+
+		// File
+		if (*s != '-') {
+			if (file) {
+				fprintf(stderr, "%s: Input file already specified\n", s);
+				return 1;
+			}
+			file = s;
+			continue;
+		}
+
+		// Option
+		switch (*s) {
+		case 'd':
+			inputLanguage = dimacs;
+			continue;
+		case 'h':
+			printf("-h Show help\n"
+				   "-V Show version\n"
+				   "-d DIMACS input format\n"
+				   "-t seconds\n"
+				   "   Time limit\n");
+			return 0;
+		case 't':
+		{
+			do ++s;
+			while (isAlpha(*s));
+			switch (*s) {
+			case ':':
+			case '=':
+				++s;
+				break;
+			case 0:
+				++i;
+				if (i == argc) {
+					fprintf(stderr, "%s: Expected arg\n", argv[i]);
+					return 1;
+				}
+				s = argv[i];
+			}
+			errno = 0;
+			auto seconds = strtod(s, 0);
+			if (errno) {
+				perror(argv[i]);
+				exit(1);
+			}
+#ifdef _WIN32
+			HANDLE timer = 0;
+			CreateTimerQueueTimer(&timer, 0, timeout, 0, (DWORD)(seconds * 1000), 0, WT_EXECUTEINTIMERTHREAD);
+#else
+			alarm(seconds);
+#endif
+			continue;
+		}
+		case 'V':
+		case 'v':
+			printf("Ayane " version);
+			if (sizeof(void*) == 4) printf(", 32 bits");
+#ifdef DEBUG
+			printf(", debug build");
+#endif
+			putchar('\n');
+			return 0;
+		case 0:
+			// An unadorned '-' means read from standard input, but that's the default anyway if no files are specified, so quietly
+			// accept it
+			continue;
+		}
+		fprintf(stderr, "%s: Unknown option\n", argv[i]);
+		return 1;
+	}
 	if (files.empty()) files.add("stdin");
 
 	// If no input file was specified, we default to reading standard input, but that still requires input language to be specified,

@@ -15,7 +15,6 @@ struct string {
 
 // Keywords are strings that are known to be important
 enum {
-	s_question,
 	s_T,
 	s_V,
 	s_ax,
