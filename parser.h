@@ -43,40 +43,22 @@ enum {
 
 struct parser {
 	// Current file
-	static const char* file;
+	const char* file;
 
 	// Source text
-	static char* srco;
+	char* src0;
 
 	// Current position in source text
 	char* src;
 
 	// Current token in source text
-	static char* srck;
+	char* srck;
 
 	// Current token keyword or identifier
 	string* str;
 
 	// Current token, as direct char for single-char tokens, or language-specific enum otherwise
 	int tok;
-
-	// If we only needed to consider the happy path, all location variables, that keep track of which file we are parsing and where
-	// we are in it, would just be instance variables. However we also need to consider errors, which may be detected in many
-	// different functions that are not members of a parser class and have no access to its instance variables; those functions call
-	// err() which therefore likewise has no access to parser instance variables. But err() needs to report file name and line
-	// number, where applicable. Therefore, the location variables it needs, have been (above) declared static.
-
-	// If we were only going to parse one file, that would be almost the end of the story. However, languages like TPTP allow a file
-	// to include other files, which means we need to deal with a stack of locations. Instance variables handle that automatically,
-	// but static variables do not. The solution is for the parser instance to store, for those particular location variables, not
-	// the current values but the old values (presumably belonging to the file that included the current one) so they can be
-	// restored by the destructor at end of file.
-
-	// The special case where we are not in a file and err() does not need to report location, is covered automatically; at the end
-	// of the top level file, the current file will be restored to its original value, which is null
-	const char* old_file;
-	uint32_t old_srco;
-	char* old_srck;
 
 	parser(const char* file);
 	~parser();
@@ -92,4 +74,7 @@ struct parser {
 	void digits();
 	void exp();
 	void num();
+
+	// Report an error with line number, and exit
+	[[noreturn]] void err(const char* msg);
 };

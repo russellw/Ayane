@@ -8,7 +8,6 @@
 
 // SORT
 const char* basename(const char* file);
-[[noreturn]] void err(const char* msg);
 size_t fnv(const void* p, size_t bytes);
 ///
 

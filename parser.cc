@@ -178,3 +178,11 @@ void parser::num() {
 	// No, it was just an integer after all
 	tok = k_integer;
 }
+
+void parser::err(const char* msg) {
+	size_t line = 1;
+	for (auto s = src0; s < srck; ++s)
+		if (*s == '\n') ++line;
+	fprintf(stderr, "%s:%zu: %s\n", file, line, msg);
+	exit(1);
+}
