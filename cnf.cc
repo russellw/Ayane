@@ -97,9 +97,9 @@ size_t vars = 0;
 // Rename formulas to avoid exponential expansion. It's tricky to do this while in the middle of doing other things, easier to be
 // sure of the logic if it's done as a separate pass first.
 Term* rename(int pol, Term* a) {
-	vec<Term*> freev;
-	freeVars(a, vec<Term*>(), freev);
-	auto b = skolem(getType(a), freev);
+	vec<Term*> vars;
+	freeVars(a, vec<Term*>(), vars);
+	auto b = skolem(getType(a), vars);
 	// NO_SORT
 	switch (pol) {
 	case 1:

@@ -97,7 +97,7 @@ void parse(int argc, const char** argv) {
 			if (!strcmp(ext(s), "lst")) {
 				vec<const char*> v;
 				listParser p(s, v);
-				parse(v.size(), v.data());
+				parse(v.size(), v.data);
 				continue;
 			}
 			files.add(s);
@@ -247,33 +247,16 @@ int main(int argc, const char** argv) {
 		clearStrings();
 
 		// Parse
-		Problem problem;
 		switch (inputLang(file)) {
 		case dimacs:
-			parseDimacs(file, problem);
+			parseDimacs(file);
 			break;
 		case tptp:
-			parseTptp(file, problem);
+			parseTptp(file);
 			break;
-		}
-
-		// Gather up the input formulas. The parser places them in a map that also indicates sources, but we need to collect them
-		// into a simple set of formulas for the next step.
-		set<term> initialFormulas;
-		for (auto& p: problem.initialFormulas) initialFormulas.add(p.first);
-
-		// Convert to CNF
-		ProofCnf proofCnf;
-		set<clause> cs;
-		cnf(initialFormulas, proofCnf, cs);
-		if (cnfOnly) {
-			size_t id = 0;
-			for (auto& c: cs) tptpClause(c, ++id);
-			return 0;
 		}
 
 		// Solve
-		Proof proof;
 		auto r = superposn(cs, proof);
 
 		// The SZS ontology uses different result values depending on whether the problem contains a conjecture

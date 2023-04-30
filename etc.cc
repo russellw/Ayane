@@ -51,7 +51,8 @@ bool occurs(Term* a, Term* b) {
 }
 
 Term* quantify(Term* a) {
-	auto vars = freeVars(a);
+	vec<Term*> vars;
+	freeVars(a, vec<Term*>(), vars);
 	if (vars.empty()) return a;
 	vec<Term*> v(1, term(All));
 	v.add(a);
