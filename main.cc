@@ -35,32 +35,6 @@ const char* ext(const char* file) {
 	return s ? s + 1 : "";
 }
 
-struct listParser: parser {
-	listParser(const char* file, vec<const char*>& v): parser(file) {
-		for (;;) {
-			// Find start of next line, skipping blanks
-			while (isSpace(*src)) ++src;
-
-			// Null terminator indicates end of file
-			if (!*src) break;
-
-			// Find end of line
-			auto s = src;
-			while (isPrint(*s)) ++s;
-
-			// Store a copy of the line
-			auto n = s - src;
-			auto r = new char[n + 1];
-			memcpy(r, src, n);
-			r[n] = 0;
-			v.add(r);
-
-			// Continue
-			src = s;
-		}
-	}
-};
-
 const char* optArg(int argc, const char** argv, int& i, const char* oa) {
 	if (*oa) return oa;
 	if (i + 1 == argc) {
@@ -82,8 +56,7 @@ double optDouble(int argc, const char** argv, int& i, const char* oa) {
 }
 
 // SORT
-bool cnfOnly;
-vec<const char*> files;
+const char* file;
 int inputLanguage;
 int outputLanguage;
 ///
@@ -94,12 +67,6 @@ void parse(int argc, const char** argv) {
 
 		// File
 		if (*s != '-') {
-			if (!strcmp(ext(s), "lst")) {
-				vec<const char*> v;
-				listParser p(s, v);
-				parse(v.size(), v.data);
-				continue;
-			}
 			files.add(s);
 			continue;
 		}
@@ -136,9 +103,6 @@ void parse(int argc, const char** argv) {
 
 		// Option
 		switch (keyword(intern(buf, bufi))) {
-		case s_cnf:
-			cnfOnly = 1;
-			continue;
 		case s_cpulimit:
 		case s_T:
 		case s_t:
@@ -167,16 +131,15 @@ void parse(int argc, const char** argv) {
 		case s_question:
 			printf(
 				// SORT
-				"-cnf          Convert problem to clause normal form\n"
-				"-dimacs       Set DIMACS as input and output format\n"
-				"-dimacs-in    Set DIMACS as input format\n"
-				"-dimacs-out   Set DIMACS as output format\n"
-				"-h            Show help\n"
-				"-t seconds    Time limit\n"
-				"-tptp         Set TPTP as input and output format\n"
-				"-tptp-in      Set TPTP as input format\n"
-				"-tptp-out     Set TPTP as output format\n"
-				"-V            Show version\n"
+				"-dimacs      Set DIMACS as input and output format\n"
+				"-dimacs-in   Set DIMACS as input format\n"
+				"-dimacs-out  Set DIMACS as output format\n"
+				"-h           Show help\n"
+				"-t seconds   Time limit\n"
+				"-tptp        Set TPTP as input and output format\n"
+				"-tptp-in     Set TPTP as input format\n"
+				"-tptp-out    Set TPTP as output format\n"
+				"-V           Show version\n"
 				///
 			);
 			exit(0);
@@ -225,6 +188,7 @@ int main(int argc, const char** argv) {
 #endif
 
 	// Run unit tests, if this is a debug build
+	// TODO: move to a separate program
 	test();
 
 	// Command line arguments
@@ -239,53 +203,47 @@ int main(int argc, const char** argv) {
 	}
 
 	// Attempt problems
-	for (size_t i = 0; i != files.size(); ++i) {
-		auto file = files[i];
-		auto bname = basename(file);
+	auto file = files[i];
+	auto bname = basename(file);
 
-		// Initialize
-		clearStrings();
-
-		// Parse
-		switch (inputLang(file)) {
-		case dimacs:
-			parseDimacs(file);
-			break;
-		case tptp:
-			parseTptp(file);
-			break;
-		}
-
-		// Solve
-		auto r = superposn(cs, proof);
-
-		// The SZS ontology uses different result values depending on whether the problem contains a conjecture
-		if (problem.hasConjecture) switch (r) {
-			case z_Satisfiable:
-				r = z_CounterSatisfiable;
-				break;
-			case z_Unsatisfiable:
-				r = z_Theorem;
-				break;
-			}
-
-		// Print result, and proof if we have one
-		printf("%% SZS status %s for %s\n", szsNames[(int)r], bname);
-		switch (r) {
-		case z_Theorem:
-		case z_Unsatisfiable:
-			if (proof.count(falsec)) {
-				problem.setProof(proofCnf, proof);
-				printf("%% SZS output start CNFRefutation for %s\n", bname);
-				tptpProof(problem.proofv);
-				printf("%% SZS output end CNFRefutation for %s\n", bname);
-			}
-			break;
-		}
-
-		// Print stats
-		printStats();
-		if (files.size() > 1) putchar('\n');
+	// Parse
+	switch (inputLang(file)) {
+	case dimacs:
+		parseDimacs(file);
+		break;
+	case tptp:
+		parseTptp(file);
+		break;
 	}
+
+	// Solve
+	auto r = superposn(cs, proof);
+
+	// The SZS ontology uses different result values depending on whether the problem contains a conjecture
+	if (problem.hasConjecture) switch (r) {
+		case z_Satisfiable:
+			r = z_CounterSatisfiable;
+			break;
+		case z_Unsatisfiable:
+			r = z_Theorem;
+			break;
+		}
+
+	// Print result, and proof if we have one
+	printf("%% SZS status %s for %s\n", szsNames[(int)r], bname);
+	switch (r) {
+	case z_Theorem:
+	case z_Unsatisfiable:
+		if (proof.count(falsec)) {
+			problem.setProof(proofCnf, proof);
+			printf("%% SZS output start CNFRefutation for %s\n", bname);
+			tptpProof(problem.proofv);
+			printf("%% SZS output end CNFRefutation for %s\n", bname);
+		}
+		break;
+	}
+
+	// Print stats
+	printStats();
 	return 0;
 }

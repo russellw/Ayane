@@ -84,11 +84,6 @@ inline size_t keyword(const string* s) {
 	return i / sizeof(string);
 }
 
-// Clear term fields of every existing string. If reading multiple problems, call this before each. Type fields are not cleared,
-// because the set of known types itself is not cleared between problems, because types are typically few enough to make this
-// unnecessary.
-void clearStrings();
-
 string* intern(const char* s, size_t n);
 inline string* intern(const char* s) {
 	return intern(s, strlen(s));

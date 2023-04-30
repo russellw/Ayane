@@ -116,16 +116,6 @@ void expand() {
 }
 } // namespace
 
-void clearStrings() {
-	// TODO: needed?
-	for (size_t i = 0; i != cap; ++i) {
-		auto s = entries[i];
-		if (!s) continue;
-		s->dobj = 0;
-		s->sym = 0;
-	}
-}
-
 string* intern(const char* s, size_t n) {
 	auto i = slot(entries, cap, s, n);
 
