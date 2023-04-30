@@ -83,88 +83,76 @@ int main(int argc, char** argv) {
 	// Command line
 	for (int i = 1; i < argc; ++i) {
 		auto s = argv[i];
-
-		// File
-		if (*s != '-') {
-			if (file) {
-				fprintf(stderr, "%s: Input file already specified\n", s);
-				return 1;
-			}
-			file = s;
-			continue;
-		}
-
-		// Option
-		switch (*s) {
-		case 'd':
-			inputLanguage = dimacs;
-			continue;
-		case 'h':
-			printf("-h Show help\n"
-				   "-V Show version\n"
-				   "-d DIMACS input format\n"
-				   "-t seconds\n"
-				   "   Time limit\n");
-			return 0;
-		case 't':
-		{
+		if (*s == '-') {
 			do ++s;
-			while (isAlpha(*s));
+			while (*s == '-');
 			switch (*s) {
-			case ':':
-			case '=':
-				++s;
-				break;
-			case 0:
-				++i;
-				if (i == argc) {
-					fprintf(stderr, "%s: Expected arg\n", argv[i]);
-					return 1;
+			case 'd':
+				inputLanguage = dimacs;
+				continue;
+			case 'h':
+				printf("-h Show help\n"
+					   "-V Show version\n"
+					   "-d DIMACS input format\n"
+					   "-t seconds\n"
+					   "   Time limit\n");
+				return 0;
+			case 't':
+			{
+				do ++s;
+				while (isAlpha(*s));
+				switch (*s) {
+				case ':':
+				case '=':
+					++s;
+					break;
+				case 0:
+					++i;
+					if (i == argc) {
+						fprintf(stderr, "%s: Expected arg\n", argv[i]);
+						return 1;
+					}
+					s = argv[i];
 				}
-				s = argv[i];
-			}
-			errno = 0;
-			auto seconds = strtod(s, 0);
-			if (errno) {
-				perror(argv[i]);
-				exit(1);
-			}
+				errno = 0;
+				auto seconds = strtod(s, 0);
+				if (errno) {
+					perror(argv[i]);
+					exit(1);
+				}
 #ifdef _WIN32
-			HANDLE timer = 0;
-			CreateTimerQueueTimer(&timer, 0, timeout, 0, (DWORD)(seconds * 1000), 0, WT_EXECUTEINTIMERTHREAD);
+				HANDLE timer = 0;
+				CreateTimerQueueTimer(&timer, 0, timeout, 0, (DWORD)(seconds * 1000), 0, WT_EXECUTEINTIMERTHREAD);
 #else
-			alarm(seconds);
+				alarm(seconds);
 #endif
-			continue;
-		}
-		case 'V':
-		case 'v':
-			printf("Ayane " version);
-			if (sizeof(void*) == 4) printf(", 32 bits");
+				continue;
+			}
+			case 'V':
+			case 'v':
+				printf("Ayane " version);
+				if (sizeof(void*) == 4) printf(", 32 bits");
 #ifdef DEBUG
-			printf(", debug build");
+				printf(", debug build");
 #endif
-			putchar('\n');
-			return 0;
-		case 0:
-			// An unadorned '-' means read from standard input, but that's the default anyway if no files are specified, so quietly
-			// accept it
-			continue;
+				putchar('\n');
+				return 0;
+			case 0:
+				// An unadorned '-' means read from standard input, but that's the default anyway if no file is specified, so
+				// quietly accept it
+				continue;
+			}
+			fprintf(stderr, "%s: Unknown option\n", argv[i]);
+			return 1;
 		}
-		fprintf(stderr, "%s: Unknown option\n", argv[i]);
-		return 1;
-	}
-	if (files.empty()) files.add("stdin");
-
-	// If no input file was specified, we default to reading standard input, but that still requires input language to be specified,
-	// so with no arguments, just print a usage message
-	if (argc <= 1) {
-		fprintf(stderr, "Usage: ayane [options] files\n");
-		return 1;
+		if (file) {
+			fprintf(stderr, "%s: Input file already specified\n", s);
+			return 1;
+		}
+		file = s;
 	}
 
 	// Attempt problems
-	auto file = files[i];
 	auto bname = basename(file);
 
 	// Parse
