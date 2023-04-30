@@ -675,7 +675,7 @@ struct parser1: parser {
 };
 } // namespace
 
-void parseTptp(const char* file, Problem& problem) {
+void tptp(const char* file, Problem& problem) {
 	parser1 _(file, selection(1), problem);
 }
 

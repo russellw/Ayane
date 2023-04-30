@@ -127,10 +127,10 @@ int main(int argc, char** argv) {
 	// Parse
 	switch (language) {
 	case l_dimacs:
-		parseDimacs(file);
+		dimacs(file);
 		break;
 	case l_tptp:
-		parseTptp(file);
+		tptp(file);
 		break;
 	}
 

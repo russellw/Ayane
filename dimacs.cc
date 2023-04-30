@@ -101,6 +101,6 @@ struct parser1: parser {
 };
 } // namespace
 
-void parseDimacs(const char* file) {
+void dimacs(const char* file) {
 	parser1 _(file);
 }

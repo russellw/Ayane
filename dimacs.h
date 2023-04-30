@@ -1,1 +1,1 @@
-void parseDimacs(const char* file);
+void dimacs(const char* file);
