@@ -1,3 +1,4 @@
+// TODO: rename
 #ifdef DEBUG
 
 // Trace function entry and exit
