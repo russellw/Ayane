@@ -34,9 +34,9 @@ using std::swap;
 
 #include <gmp.h>
 
-// The debug header needs to be included first, to make the assert macro available everywhere else, because assert is used all over
-// the place, including in some inline functions defined in headers
-#include "debug.h"
+// The debugging header needs to be included first, to make the assert macro available everywhere else, because assert is used all
+// over the place, including in some inline functions defined in headers
+#include "dbg.h"
 
 // General
 #include "base.h"
