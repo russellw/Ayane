@@ -4,6 +4,8 @@ enum {
 	ntags
 };
 
+// TODO: rename to expr?
+// TODO: refactor source file organization?
 struct Term {
 	int tag;
 	uint32_t n;

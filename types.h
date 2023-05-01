@@ -10,6 +10,7 @@ const size_t unboxedTypes = (size_t)kind::Fn;
 // other information into a word.
 const int typeBits = 17;
 
+// TODO: replace with Expr?
 struct Type {
 	kind k;
 	uint32_t n;
