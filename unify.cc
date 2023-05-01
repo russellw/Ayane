@@ -8,6 +8,7 @@
 // In particular, we cannot directly compare terms for equality (which in the normal course of events would indicate that two terms
 // trivially unify) because two syntactically identical terms could be, or contain, the same variable names but with different
 // associated subscripts
+// TODO: update terminology in comments
 static bool eq(ex a, bool ax, ex b, bool bx) {
 	// If the terms are not syntactically equal then we definitely do not have logical equality
 	if (a != b) return 0;
@@ -50,7 +51,6 @@ bool match(map<ex, ex>& m, ex a, ex b) {
 	}
 
 	// Mismatched tags
-	// TODO: this step is not necessary?
 	if (a->tag != b->tag) return 0;
 
 	// If nonvariable atoms could match, they would already have tested equal
@@ -59,8 +59,7 @@ bool match(map<ex, ex>& m, ex a, ex b) {
 
 	// Recur
 	if (b.size() != n) return 0;
-	if (a[0] != b[0]) return 0;
-	for (size_t i = 1; i != n; ++i)
+	for (size_t i = 0; i != n; ++i)
 		if (!match(m, at(a, i), b[i])) return 0;
 	return 1;
 }
@@ -74,7 +73,7 @@ bool occurs(const map<termx, termx>& m, ex a, bool ax, ex b, bool bx) {
 		termx mb;
 		if (m.get(b1, mb)) return occurs(m, a, ax, mb.first, mb.second);
 	}
-	for (size_t i = 1; i != b.size(); ++i)
+	for (size_t i = 0; i != b.size(); ++i)
 		if (occurs(m, a, ax, b[i], bx)) return 1;
 	return 0;
 }
@@ -121,8 +120,7 @@ bool unify(map<termx, termx>& m, ex a, bool ax, ex b, bool bx) {
 
 	// Recur
 	if (b.size() != n) return 0;
-	if (a[0] != b[0]) return 0;
-	for (size_t i = 1; i != n; ++i)
+	for (size_t i = 0; i != n; ++i)
 		if (!unify(m, at(a, i), ax, b[i], bx)) return 0;
 	return 1;
 }
@@ -137,7 +135,7 @@ ex replace(const map<termx, termx>& m, ex a, bool ax) {
 	}
 
 	auto n = a.size();
-	vec<ex> v(1, a[0]);
-	for (size_t i = 1; i != n; ++i) v.add(replace(m, at(a, i), ax));
-	return ex(v);
+	vec<ex> v;
+	for (size_t i = 0; i != n; ++i) v.add(replace(m, at(a, i), ax));
+	return ex(a->tag, v);
 }

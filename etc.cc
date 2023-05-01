@@ -13,7 +13,7 @@ Eqn eqn(Ex* a) {
 
 void flatten(int tag, Ex* a, std::vector<Ex*>& r) {
 	if (a->tag == tag) {
-		for (size_t i = 1; i < a->n; ++i) flatten(tag, at(a, i), r);
+		for (size_t i = 0; i < a->n; ++i) flatten(tag, at(a, i), r);
 		return;
 	}
 	r.push_back(a);
@@ -27,7 +27,7 @@ void freeVars(Ex* a, vec<Ex*> boundv, vec<Ex*>& freev) {
 	{
 		auto o = boundv.n;
 		// TODO: batch add
-		for (size_t i = 2; i < a->n; ++i) boundv.add(at(a, i));
+		for (size_t i = 1; i < a->n; ++i) boundv.add(at(a, i));
 		freeVars(at(a, 1), boundv, freev);
 		boundv.n = o;
 		return;
@@ -36,7 +36,7 @@ void freeVars(Ex* a, vec<Ex*> boundv, vec<Ex*>& freev) {
 		if (!boundv.has(a) && !freev.has(a)) freev.add(a);
 		return;
 	}
-	for (size_t i = 1; i < a->n; ++i) freeVars(at(a, i), boundv, freev);
+	for (size_t i = 0; i < a->n; ++i) freeVars(at(a, i), boundv, freev);
 }
 
 Ex* imp(Ex* a, Ex* b) {
@@ -45,7 +45,7 @@ Ex* imp(Ex* a, Ex* b) {
 
 bool occurs(Ex* a, Ex* b) {
 	if (a == b) return 1;
-	for (size_t i = 1; i < b->n; ++i)
+	for (size_t i = 0; i < b->n; ++i)
 		if (occurs(a, at(b, i))) return 1;
 	return 0;
 }

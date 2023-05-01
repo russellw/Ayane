@@ -13,7 +13,7 @@ bool isNumeric(ex a) {
 
 bool hasNumeric(ex a) {
 	if (isNumeric(a)) return 1;
-	for (size_t i = 1; i < a->n; ++i)
+	for (size_t i = 0; i < a->n; ++i)
 		if (hasNumeric(at(a, i))) return 1;
 	return 0;
 }
@@ -59,6 +59,7 @@ ex equate(ex a, ex b) {
 // Equality tends to generate a large number of clauses. Superposition calculus is designed to moderate the profusion of clauses
 // using an ordering on terms, that tries to apply equations in one direction only; the difficulty, of course, is doing this without
 // breaking completeness.
+// TODO: fixup to take into account 0 vs 1 arg start
 // TODO: compare with KBO
 class lexicographicPathOrder {
 	// The greater-than test is supposed to be called on complete terms, which can include constant symbols (zero arity), or calls
@@ -93,11 +94,11 @@ public:
 		if (b->tag == Var) return occurs(b, a);
 
 		// Sufficient condition: Exists ai >= b
-		for (size_t i = 1; i < a.size(); i++)
+		for (size_t i = 0; i < a.size(); i++)
 			if (ge(at(a, i), b)) return 1;
 
 		// Necessary condition: a > all bi
-		for (size_t i = 1; i < b.size(); i++)
+		for (size_t i = 0; i < b.size(); i++)
 			if (!gt(a, b[i])) return 0;
 
 		// Different operators. Comparison by atom offset has the required property that True is considered smaller than any other
@@ -111,7 +112,7 @@ public:
 		assert(a[0] == b[0]);
 
 		// Lexicographic extension
-		for (size_t i = 1; i < a.size(); i++) {
+		for (size_t i = 0; i < a.size(); i++) {
 			if (gt(at(a, i), b[i])) return 1;
 			if (at(a, i) != b[i]) return 0;
 		}
@@ -300,7 +301,7 @@ struct doing {
 	// Descend into subterms
 	void descend(Clause* c, Clause* d, size_t ci, ex c0, ex c1, size_t di, ex d0, ex d1, const vec<size_t>& posn, ex a) {
 		superposn(c, d, ci, c0, c1, di, d0, d1, posn, a);
-		for (size_t i = 1; i < a.size(); ++i) {
+		for (size_t i = 0; i < a.size(); ++i) {
 			auto p(posn);
 			p.add(i);
 			descend(c, d, ci, c0, c1, di, d0, d1, p, at(a, i));

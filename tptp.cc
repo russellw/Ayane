@@ -381,7 +381,7 @@ struct parser1: parser {
 			// First-order logic does not allow functions to take Boolean arguments, so the arguments can default to individual. But
 			// we cannot yet make any assumption about the function return type. For all we know here, it could still be Boolean.
 			// Leave it to the caller, which will know from context whether that is the case.
-			for (size_t i = 1; i != v.size(); ++i) defaultType(v[i], kind::Individual);
+			for (size_t i = 0; i != v.size(); ++i) defaultType(v[i], kind::Individual);
 
 			return ex(v);
 		}
@@ -777,7 +777,7 @@ void pr(ex a, ex parent = False);
 void dfunctor(const char* op, ex a) {
 	print(op);
 	putchar('(');
-	for (size_t i = 1; i < a->n; ++i) {
+	for (size_t i = 0; i < a->n; ++i) {
 		if (i > 1) putchar(',');
 		pr(at(a, i));
 	}
@@ -1023,7 +1023,7 @@ void tptpProof(const vec<uint32_t>& proofv) {
 	}
 
 	// Assign identity numbers to all formulas that don't already have names
-	size_t i = 1;
+	size_t i = 0;
 	map<uint32_t, uint32_t> ids;
 	for (auto o: proofv) {
 		auto f = (AbstractFormula*)heap->ptr(o);

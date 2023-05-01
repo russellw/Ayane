@@ -10,7 +10,7 @@ size_t ncs(bool pol, Ex* a);
 
 size_t ncsMul(bool pol, Ex* a) {
 	size_t n = 1;
-	for (size_t i = 1; i < a->n; ++i) {
+	for (size_t i = 0; i < a->n; ++i) {
 		n *= ncs(pol, at(a, i));
 		if (n >= many) return many;
 	}
@@ -19,7 +19,7 @@ size_t ncsMul(bool pol, Ex* a) {
 
 size_t ncsAdd(bool pol, Ex* a) {
 	size_t n = 0;
-	for (size_t i = 1; i < a->n; ++i) {
+	for (size_t i = 0; i < a->n; ++i) {
 		n += ncs(pol, at(a, i));
 		if (n >= many) return many;
 	}
@@ -129,7 +129,7 @@ void maybeRename(int pol, vec<Ex*>& v) {
 	// probably what we want.
 	sort(v.begin() + 1, v.end(), [=](Ex* a, Ex* b) { return ncsApprox(pol, a) < ncsApprox(pol, b); });
 	size_t n = 1;
-	for (size_t i = 1; i != v.size(); ++i) {
+	for (size_t i = 0; i != v.size(); ++i) {
 		auto m = ncsApprox(pol, v[i]);
 		if (n * m < many) n *= m;
 		else
@@ -156,7 +156,7 @@ Ex* maybeRename(int pol, Ex* a) {
 		return ex(Not, maybeRename(-pol, at(a, 1)));
 
 	case Or:
-		for (size_t i = 1; i < a->n; ++i) v.add(maybeRename(pol, at(a, i)));
+		for (size_t i = 0; i < a->n; ++i) v.add(maybeRename(pol, at(a, i)));
 
 		// If this formula will be used with positive polarity (including the case where it will be used both ways), we are looking
 		// at OR over possible ANDs, which would produce exponential expansion at the distribution stage, so may need to rename some
@@ -164,7 +164,7 @@ Ex* maybeRename(int pol, Ex* a) {
 		if (pol >= 0) maybeRename(pol, v);
 		break;
 	case And:
-		for (size_t i = 1; i < a->n; ++i) v.add(maybeRename(pol, at(a, i)));
+		for (size_t i = 0; i < a->n; ++i) v.add(maybeRename(pol, at(a, i)));
 
 		// NOT-AND yields OR, so mirror the OR case
 		if (pol <= 0) maybeRename(pol, v);
@@ -243,11 +243,11 @@ Ex* nnf(bool pol, Ex* a, vec<pair<Ex*, Ex*>>& m) {
 
 	case Or:
 		if (!pol) tag = And;
-		for (size_t i = 1; i < a->n; ++i) v.add(nnf(pol, at(a, i), m));
+		for (size_t i = 0; i < a->n; ++i) v.add(nnf(pol, at(a, i), m));
 		return ex(tag, v);
 	case And:
 		if (!pol) tag = Or;
-		for (size_t i = 1; i < a->n; ++i) v.add(nnf(pol, at(a, i), m));
+		for (size_t i = 0; i < a->n; ++i) v.add(nnf(pol, at(a, i), m));
 		return ex(tag, v);
 
 	case Var:
@@ -271,7 +271,7 @@ Ex* nnf(bool pol, Ex* a, vec<pair<Ex*, Ex*>>& m) {
 		return pol ? ex(And, ex(Or, x0, y1), ex(Or, x1, y0)) : ex(And, ex(Or, x0, y0), ex(Or, x1, y1));
 	}
 	}
-	for (size_t i = 1; i < a->n; ++i) v.add(nnf(1, at(a, i), m));
+	for (size_t i = 0; i < a->n; ++i) v.add(nnf(1, at(a, i), m));
 	a = ex(tag, v);
 	return pol ? a : ex(Not, a);
 }
@@ -282,13 +282,13 @@ Ex* distribute(Ex* a) {
 	vec<Ex*> r;
 	switch (a->tag) {
 	case And:
-		for (size_t i = 1; i < a->n; ++i) r.add(distribute(at(a, i)));
+		for (size_t i = 0; i < a->n; ++i) r.add(distribute(at(a, i)));
 		break;
 	case Or:
 	{
 		// Arguments can be taken without loss of generality as ANDs
 		std::vector<std::vector<Ex*>> ands;
-		for (size_t i = 1; i < a->n; ++i) {
+		for (size_t i = 0; i < a->n; ++i) {
 			// Recur
 			auto b = distribute(at(a, i));
 
@@ -321,7 +321,7 @@ void literalsTerm(Ex* a, vec<Ex*>& neg, vec<Ex*>& pos) {
 		neg.add(at(a, 1));
 		return;
 	case Or:
-		for (size_t i = 1; i < a->n; ++i) literalsTerm(at(a, i), neg, pos);
+		for (size_t i = 0; i < a->n; ++i) literalsTerm(at(a, i), neg, pos);
 		return;
 	}
 	pos.add(a);
@@ -329,7 +329,7 @@ void literalsTerm(Ex* a, vec<Ex*>& neg, vec<Ex*>& pos) {
 
 void clausesTerm(Ex* a, int rule, Formula* from) {
 	if (a->tag == And) {
-		for (size_t i = 1; i < a->n; ++i) clausesTerm(at(a, i), rule, from);
+		for (size_t i = 0; i < a->n; ++i) clausesTerm(at(a, i), rule, from);
 		return;
 	}
 	vec<Ex*> neg, pos;

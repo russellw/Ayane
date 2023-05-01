@@ -103,7 +103,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 			return a;
 		}
 		vec<Ex*> v(1, a[0]);
-		for (size_t i = 1; i < a->n; ++i) v.add(simplify(m, at(a, i)));
+		for (size_t i = 0; i < a->n; ++i) v.add(simplify(m, at(a, i)));
 		return ex(v);
 	}
 	case IsInteger:
