@@ -28,7 +28,7 @@ Ex* ex(mpq_t val);
 
 // Wrapping a symbol in a term is a common operation. Specifying the type at the same time is less so, but still common enough for
 // this function to be useful.
-Ex* ex(string* s, type ty);
+Ex* ex(string* s, Ex* ty);
 
 inline Ex* tbool(bool b) {
 	return atoms + (b ? True : False);
@@ -53,7 +53,7 @@ type getType(Ex* a);
 
 inline Ex* at(Ex* a, size_t i) {
 	assert(i < a->n);
-	return ((Compound*)a)->v[i];
+	return a->v[i];
 }
 
 type ftype(type rty, const Ex* first, const Ex* last);
