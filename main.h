@@ -41,7 +41,7 @@ using std::swap;
 // General
 #include "base.h"
 #include "stats.h"
-#include "strings.h"
+#include "str.h"
 #include "vec.h"
 
 // Logic
