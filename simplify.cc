@@ -28,7 +28,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	case Add:
 	{
 		auto x = simplify(m, at(a, 0));
-		auto y = simplify(m, at(a, 2));
+		auto y = simplify(m, at(a, 1));
 		if (constant(x) && constant(y)) return x + y;
 		if (realConstant(x) && realConstant(y)) return ex(ToReal, x[1] + y[1]);
 		return ex(t, x, y);
@@ -49,7 +49,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	case Div:
 	{
 		auto x = simplify(m, at(a, 0));
-		auto y = simplify(m, at(a, 2));
+		auto y = simplify(m, at(a, 1));
 		if (constant(x) && constant(y)) return x / y;
 		if (realConstant(x) && realConstant(y)) return ex(ToReal, x[1] / y[1]);
 		return ex(t, x, y);
@@ -57,7 +57,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	case DivE:
 	{
 		auto x = simplify(m, at(a, 0));
-		auto y = simplify(m, at(a, 2));
+		auto y = simplify(m, at(a, 1));
 		if (constant(x) && constant(y)) return divE(x, y);
 		if (realConstant(x) && realConstant(y)) return ex(ToReal, divE(x[1], y[1]));
 		return ex(t, x, y);
@@ -65,7 +65,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	case DivF:
 	{
 		auto x = simplify(m, at(a, 0));
-		auto y = simplify(m, at(a, 2));
+		auto y = simplify(m, at(a, 1));
 		if (constant(x) && constant(y)) return divF(x, y);
 		if (realConstant(x) && realConstant(y)) return ex(ToReal, divF(x[1], y[1]));
 		return ex(t, x, y);
@@ -73,7 +73,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	case DivT:
 	{
 		auto x = simplify(m, at(a, 0));
-		auto y = simplify(m, at(a, 2));
+		auto y = simplify(m, at(a, 1));
 		if (constant(x) && constant(y)) return divT(x, y);
 		if (realConstant(x) && realConstant(y)) return ex(ToReal, divT(x[1], y[1]));
 		return ex(t, x, y);
@@ -81,7 +81,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	case Eq:
 	{
 		auto x = simplify(m, at(a, 0));
-		auto y = simplify(m, at(a, 2));
+		auto y = simplify(m, at(a, 1));
 		if (x == y) return True;
 		// TODO: optimize?
 		if (constant(x) && constant(y)) return False;
@@ -128,7 +128,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	case Le:
 	{
 		auto x = simplify(m, at(a, 0));
-		auto y = simplify(m, at(a, 2));
+		auto y = simplify(m, at(a, 1));
 		if (constant(x) && constant(y)) return tbool(x <= y);
 		if (realConstant(x) && realConstant(y)) return tbool(x[1] <= y[1]);
 		return ex(t, x, y);
@@ -136,7 +136,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	case Lt:
 	{
 		auto x = simplify(m, at(a, 0));
-		auto y = simplify(m, at(a, 2));
+		auto y = simplify(m, at(a, 1));
 		if (constant(x) && constant(y)) return tbool(x < y);
 		if (realConstant(x) && realConstant(y)) return tbool(x[1] < y[1]);
 		return ex(t, x, y);
@@ -144,7 +144,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	case Mul:
 	{
 		auto x = simplify(m, at(a, 0));
-		auto y = simplify(m, at(a, 2));
+		auto y = simplify(m, at(a, 1));
 		if (constant(x) && constant(y)) return x * y;
 		if (realConstant(x) && realConstant(y)) return ex(ToReal, x[1] * y[1]);
 		return ex(t, x, y);
@@ -159,7 +159,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	case RemE:
 	{
 		auto x = simplify(m, at(a, 0));
-		auto y = simplify(m, at(a, 2));
+		auto y = simplify(m, at(a, 1));
 		if (constant(x) && constant(y)) return remE(x, y);
 		if (realConstant(x) && realConstant(y)) return ex(ToReal, remE(x[1], y[1]));
 		return ex(t, x, y);
@@ -167,7 +167,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	case RemF:
 	{
 		auto x = simplify(m, at(a, 0));
-		auto y = simplify(m, at(a, 2));
+		auto y = simplify(m, at(a, 1));
 		if (constant(x) && constant(y)) return remF(x, y);
 		if (realConstant(x) && realConstant(y)) return ex(ToReal, remF(x[1], y[1]));
 		return ex(t, x, y);
@@ -175,7 +175,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	case RemT:
 	{
 		auto x = simplify(m, at(a, 0));
-		auto y = simplify(m, at(a, 2));
+		auto y = simplify(m, at(a, 1));
 		if (constant(x) && constant(y)) return remT(x, y);
 		if (realConstant(x) && realConstant(y)) return ex(ToReal, remT(x[1], y[1]));
 		return ex(t, x, y);
@@ -190,7 +190,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	case Sub:
 	{
 		auto x = simplify(m, at(a, 0));
-		auto y = simplify(m, at(a, 2));
+		auto y = simplify(m, at(a, 1));
 		if (constant(x) && constant(y)) return x - y;
 		if (realConstant(x) && realConstant(y)) return ex(ToReal, x[1] - y[1]);
 		return ex(t, x, y);

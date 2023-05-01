@@ -867,7 +867,7 @@ void pr(ex a, ex parent) {
 	case Eq:
 		pr(at(a, 0));
 		putchar('=');
-		pr(at(a, 2));
+		pr(at(a, 1));
 		return;
 	case Eqv:
 		infixConnective(" <=> ", a, parent);
@@ -990,7 +990,7 @@ void prliterals(Clause* c) {
 		if (a->tag == Eq) {
 			pr(at(a, 0));
 			print("!=");
-			pr(at(a, 2));
+			pr(at(a, 1));
 			continue;
 		}
 		putchar('~');

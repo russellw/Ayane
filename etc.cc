@@ -7,7 +7,7 @@ const char* szsNames[] = {
 
 // SORT
 Eqn eqn(Ex* a) {
-	if (a->tag == Eq) return make_pair(at(a, 0), at(a, 2));
+	if (a->tag == Eq) return make_pair(at(a, 0), at(a, 1));
 	return make_pair(a, atoms + True);
 }
 

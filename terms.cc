@@ -457,7 +457,7 @@ void check(ex a, type ty) {
 			err("Invalid type for equality");
 		}
 		check(at(a, 0), ty);
-		check(at(a, 2), ty);
+		check(at(a, 1), ty);
 		return;
 	case Le:
 	case Lt:
@@ -472,7 +472,7 @@ void check(ex a, type ty) {
 			err("Invalid type for comparison");
 		}
 		check(at(a, 0), ty);
-		check(at(a, 2), ty);
+		check(at(a, 1), ty);
 		return;
 	case Var:
 		// A function would also be an invalid type for a variable, but we already checked for that
