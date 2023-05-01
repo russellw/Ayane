@@ -4,7 +4,7 @@ enum {
 	ntags
 };
 
-// TODO: rename to Ex, Leaf, ...?
+// TODO: rename to Ex, Leaf, Comp?
 // TODO: refactor source file organization?
 struct Term {
 	int tag;

@@ -59,6 +59,7 @@ term equate(term a, term b) {
 // Equality tends to generate a large number of clauses. Superposition calculus is designed to moderate the profusion of clauses
 // using an ordering on terms, that tries to apply equations in one direction only; the difficulty, of course, is doing this without
 // breaking completeness.
+// TODO: compare with KBO
 class lexicographicPathOrder {
 	// The greater-than test is supposed to be called on complete terms, which can include constant symbols (zero arity), or calls
 	// of function symbols (positive arity) with arguments. Make sure it's not being called on an isolated function symbol.

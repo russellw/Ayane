@@ -4,6 +4,7 @@
 // the same hash codes
 
 // TODO: divide this functionality between terms and simplify?
+// TODO: write test problems for integer division
 // Integers
 namespace mpzs {
 size_t cap = 4;
