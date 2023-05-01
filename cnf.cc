@@ -86,7 +86,7 @@ Ex* skolem(type rty, const vec<Ex*>& args) {
 	vec<Ex*> v(1, gensym(ftype(rty, args)));
 	// TODO: single call instead of loop?
 	for (auto b: args) v.add(b);
-	return ex(v);
+	return ex(Call, v);
 }
 
 // SORT
@@ -143,7 +143,7 @@ void maybeRename(int pol, vec<Ex*>& v) {
 // rename on a global basis, but in practice, nontrivial subformulas are rarely duplicated (e.g. less than 1% of the nontrivial
 // formulas in the TPTP), so this is probably not worth doing.
 Ex* maybeRename(int pol, Ex* a) {
-	vec<Ex*> v(1, at(a, 0));
+	vec<Ex*> v;
 	// NO_SORT
 	switch (a->tag) {
 	case All:
@@ -182,7 +182,7 @@ Ex* maybeRename(int pol, Ex* a) {
 	default:
 		return a;
 	}
-	return ex(v);
+	return ex(a->tag, v);
 }
 
 Ex* nnf(bool pol, Ex* a, vec<pair<Ex*, Ex*>>& m);
@@ -228,9 +228,10 @@ Ex* exists(int pol, Ex* a, vec<pair<Ex*, Ex*>>& m) {
 // Negation normal form consists of several transformations that are as easy to do at the same time: Move NOTs inward to the literal
 // layer, flipping things around on the way, while simultaneously resolving quantifiers
 Ex* nnf(bool pol, Ex* a, vec<pair<Ex*, Ex*>>& m) {
-	vec<Ex*> v(1, at(a, 0));
+	vec<Ex*> v;
+	auto tag = a->tag;
 	// NO_SORT
-	switch (a->tag) {
+	switch (tag) {
 	case False:
 		// Boolean constants and operators can be inverted by downward-sinking NOTs
 		return tbool(!pol);
@@ -241,13 +242,13 @@ Ex* nnf(bool pol, Ex* a, vec<pair<Ex*, Ex*>>& m) {
 		return nnf(!pol, at(a, 1), m);
 
 	case Or:
-		if (!pol) v[0] = ex(And);
+		if (!pol) tag = And;
 		for (size_t i = 1; i < a->n; ++i) v.add(nnf(pol, at(a, i), m));
-		return ex(v);
+		return ex(tag, v);
 	case And:
-		if (!pol) v[0] = ex(Or);
+		if (!pol) tag = Or;
 		for (size_t i = 1; i < a->n; ++i) v.add(nnf(pol, at(a, i), m));
-		return ex(v);
+		return ex(tag, v);
 
 	case Var:
 		// Variables are mapped to new variables or Skolem functions
@@ -271,14 +272,14 @@ Ex* nnf(bool pol, Ex* a, vec<pair<Ex*, Ex*>>& m) {
 	}
 	}
 	for (size_t i = 1; i < a->n; ++i) v.add(nnf(1, at(a, i), m));
-	a = ex(v);
+	a = ex(tag, v);
 	return pol ? a : ex(Not, a);
 }
 
 // Distribute OR down into AND, completing the layering of the operators for CNF. This is the second place where exponential
 // expansion would occur, had selected formulas not already been renamed.
 Ex* distribute(Ex* a) {
-	vec<Ex*> r(1, ex(And));
+	vec<Ex*> r;
 	switch (a->tag) {
 	case And:
 		for (size_t i = 1; i < a->n; ++i) r.add(distribute(at(a, i)));
@@ -299,16 +300,13 @@ Ex* distribute(Ex* a) {
 
 		// OR distributes over AND by Cartesian product
 		// TODO: can this be done by reference?
-		for (auto v: cartProduct(ands)) {
-			v.insert(v.begin(), ex(Or));
-			r.add(ex(v));
-		}
+		for (auto v: cartProduct(ands)) r.add(ex(Or, v));
 		break;
 	}
 	default:
 		return a;
 	}
-	return ex(r);
+	return ex(And, r);
 }
 
 // Convert a suitably rearranged term into actual clauses

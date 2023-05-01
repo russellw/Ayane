@@ -2,6 +2,7 @@
 _(Add)
 _(All)
 _(And)
+_(Call)
 _(Ceil)
 _(DistinctObj)
 _(Div)

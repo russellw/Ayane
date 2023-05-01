@@ -54,9 +54,9 @@ Ex* quantify(Ex* a) {
 	vec<Ex*> vars;
 	freeVars(a, vec<Ex*>(), vars);
 	if (vars.empty()) return a;
-	vec<Ex*> v(1, ex(All));
-	v.add(a);
+	vec<Ex*> v(1, a);
+	// TODO: add all at once
 	for (auto x: vars) v.add(x);
-	return ex(v);
+	return ex(All, v);
 }
 ///

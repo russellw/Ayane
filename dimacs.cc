@@ -58,8 +58,7 @@ struct parser1: parser {
 	// Top level
 	void add(const vec<Ex*>& literals) {
 		// TODO: provide a way to build input-only terms that bypasses interning?
-		// Maybe it should also bypass the a[0] as symbol
-		cnf(new Formula(file, 0, ex(literals)));
+		cnf(new Formula(file, 0, ex(Or, literals)));
 	}
 
 	parser1(const char* file): parser(file) {
@@ -77,14 +76,14 @@ struct parser1: parser {
 			if (tok != k_id) err("Expected count");
 			lex();
 		}
-		vec<Ex*> literals(1, ex(Or));
+		vec<Ex*> literals;
 		for (;;) switch (tok) {
 			case '-':
 				lex();
 				literals.add(ex(Not, var()));
 				break;
 			case 0:
-				if (literals.n > 1) add(literals);
+				if (literals.n) add(literals);
 				return;
 			case k_id:
 				literals.add(var());
@@ -92,7 +91,7 @@ struct parser1: parser {
 			case k_zero:
 				lex();
 				add(literals);
-				literals.n = 1;
+				literals.n = 0;
 				break;
 			default:
 				err("Syntax error");
