@@ -196,7 +196,7 @@ Ex* all(int pol, Ex* a, vec<pair<Ex*, Ex*>>& m) {
 	for (size_t i = 2; i < a->n; ++i) {
 		auto x = at(a, i);
 		assert(x->tag == Var);
-		auto y = var(vars++, ((Atom*)x)->ty);
+		auto y = var(vars++, ((Ex*)x)->ty);
 		m.add(make_pair(x, y));
 	}
 	a = nnf(pol, at(a, 0), m);
@@ -217,7 +217,7 @@ Ex* exists(int pol, Ex* a, vec<pair<Ex*, Ex*>>& m) {
 	for (size_t i = 2; i < a->n; ++i) {
 		auto x = at(a, i);
 		assert(x->tag == Var);
-		auto y = skolem(((Atom*)x)->ty, args);
+		auto y = skolem(((Ex*)x)->ty, args);
 		m.add(make_pair(x, y));
 	}
 	a = nnf(pol, at(a, 0), m);

@@ -23,21 +23,21 @@ struct Ex {
 };
 
 // TODO: rename to 'atom'?
-Atom* ex(mpz_t val);
-Atom* ex(mpq_t val);
+Ex* ex(mpz_t val);
+Ex* ex(mpq_t val);
 
 // Wrapping a symbol in a term is a common operation. Specifying the type at the same time is less so, but still common enough for
 // this function to be useful.
-Atom* ex(string* s, type ty);
+Ex* ex(string* s, type ty);
 
-inline Atom* tbool(bool b) {
+inline Ex* tbool(bool b) {
 	return atoms + (b ? True : False);
 }
 
-Atom* var(size_t i, type ty);
+Ex* var(size_t i, type ty);
 
-Atom* gensym(type ty);
-Atom* distinctObj(string* s);
+Ex* gensym(type ty);
+Ex* distinctObj(string* s);
 
 // TODO: test using a bump allocator
 Ex* ex(int tag);

@@ -49,7 +49,7 @@ struct parser1: parser {
 	}
 
 	// A variable in propositional logic is a constant in first-order logic
-	Atom* var() {
+	Ex* var() {
 		auto a = ex(str, kind::Bool);
 		lex();
 		return a;

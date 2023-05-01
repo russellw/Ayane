@@ -1,14 +1,14 @@
 #include "main.h"
 
 // Atoms
-Atom atoms[ntags];
+Ex atoms[ntags];
 
 namespace {
 struct init {
 	init() {
 		auto n = (int)end;
 		for (int i = 0; i < n; ++i) {
-			auto p = (Atom*)atoms->ptr(tatoms + i * offsetof(atom, s) / 8);
+			auto p = (Ex*)atoms->ptr(tatoms + i * offsetof(atom, s) / 8);
 			p->t = (tag)i;
 		}
 	}
@@ -27,7 +27,7 @@ ex var(size_t i, type ty) {
 	auto& v = boxedVars.gadd(ty);
 	while (v.size() <= i - unboxed) {
 		auto o = atoms->alloc(offsetof(atom, idx) + 4);
-		auto p = (Atom*)atoms->ptr(o);
+		auto p = (Ex*)atoms->ptr(o);
 		p->t = Var;
 		p->ty = ty;
 		p->idx = unboxed + v.size();
@@ -45,7 +45,7 @@ ex distinctObj(string* s) {
 		return a;
 	}
 	auto o = atoms->alloc(offsetof(atom, s) + sizeof s);
-	auto p = (Atom*)atoms->ptr(o);
+	auto p = (Ex*)atoms->ptr(o);
 	p->t = DistinctObj;
 	p->s = s->v;
 	a.raw = s->dobj = o;
@@ -54,13 +54,13 @@ ex distinctObj(string* s) {
 
 Ex* ex(string* s, type ty) {
 	if (s->sym) {
-		auto p = (Atom*)atoms->ptr(s->sym);
+		auto p = (Ex*)atoms->ptr(s->sym);
 		assert(p->t == Fn);
 		assert(p->s == s->v);
 		assign(p->ty, ty);
 	} else {
 		s->sym = atoms->alloc(offsetof(atom, s) + sizeof s);
-		auto p = (Atom*)atoms->ptr(s->sym);
+		auto p = (Ex*)atoms->ptr(s->sym);
 		p->t = Fn;
 		p->s = s->v;
 		p->ty = ty;
@@ -70,7 +70,7 @@ Ex* ex(string* s, type ty) {
 
 ex gensym(type ty) {
 	auto o = atoms->alloc(offsetof(atom, s) + sizeof(char*));
-	auto p = (Atom*)atoms->ptr(o);
+	auto p = (Ex*)atoms->ptr(o);
 	p->t = Fn;
 	p->s = 0;
 	p->ty = ty;
