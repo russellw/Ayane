@@ -45,8 +45,6 @@ using std::swap;
 #include "vec.h"
 
 // Logic
-#include "types.h"
-
 #include "terms.h"
 
 #include "bignums.h"

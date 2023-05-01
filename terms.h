@@ -4,25 +4,23 @@ enum {
 	ntags
 };
 
-// TODO: rename to Ex, Leaf, Comp?
 // TODO: refactor source file organization?
 struct Ex {
 	int tag;
 	uint32_t n;
-};
-
-// Atoms
-struct Atom: Ex {
-	type ty;
 	union {
-		const char* s;
-		size_t idx;
-		mpz_t mpz;
-		mpq_t mpq;
+		Ex* v[9];
+		struct {
+			Ex* ty;
+			union {
+				char s[9];
+				size_t idx;
+				mpz_t mpz;
+				mpq_t mpq;
+			};
+		};
 	};
 };
-
-extern Atom atoms[];
 
 // TODO: rename to 'atom'?
 Atom* ex(mpz_t val);
@@ -40,11 +38,6 @@ Atom* var(size_t i, type ty);
 
 Atom* gensym(type ty);
 Atom* distinctObj(string* s);
-
-// Compound terms contain other terms, but maintain value semantics. Like atoms, they are interned.
-struct Compound {
-	Ex* v[];
-};
 
 // TODO: test using a bump allocator
 Ex* ex(int tag);
