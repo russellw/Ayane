@@ -22,6 +22,8 @@ struct Ex {
 	};
 };
 
+extern Ex bools[2];
+
 // TODO: rename to 'atom'?
 Ex* ex(mpz_t val);
 Ex* ex(mpq_t val);
@@ -30,13 +32,9 @@ Ex* ex(mpq_t val);
 // this function to be useful.
 Ex* ex(string* s, Ex* ty);
 
-inline Ex* tbool(bool b) {
-	return atoms + (b ? True : False);
-}
+Ex* var(size_t i, Ex* ty);
 
-Ex* var(size_t i, type ty);
-
-Ex* gensym(type ty);
+Ex* gensym(Ex* ty);
 Ex* distinctObj(string* s);
 
 // TODO: test using a bump allocator
@@ -49,16 +47,16 @@ Ex* ex(Ex* a, Ex* b, Ex* c, Ex* d);
 Ex* ex(Ex* a, Ex* b, Ex* c, Ex* d, Ex* e);
 Ex* ex(int tag, const vec<Ex*>& v);
 Ex* ex(int tag, const std::vector<Ex*>& v);
-type getType(Ex* a);
+Ex* type(Ex* a);
 
 inline Ex* at(Ex* a, size_t i) {
 	assert(i < a->n);
 	return a->v[i];
 }
 
-type ftype(type rty, const Ex* first, const Ex* last);
-type ftype(type rty, const vec<Ex*>& args);
-void check(Ex* a, type ty);
+Ex* ftype(Ex* rty, const Ex* first, const Ex* last);
+Ex* ftype(Ex* rty, const vec<Ex*>& args);
+void check(Ex* a, Ex* ty);
 
 void print(Ex* a);
 
