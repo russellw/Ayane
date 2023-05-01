@@ -16,7 +16,7 @@ bool constant(Ex* a) {
 }
 
 bool realConstant(Ex* a) {
-	return a->tag == ToReal && tag(at(a, 1)) == Rational;
+	return a->tag == ToReal && tag(at(a, 0)) == Rational;
 }
 } // namespace
 
@@ -27,7 +27,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	switch (t) {
 	case Add:
 	{
-		auto x = simplify(m, at(a, 1));
+		auto x = simplify(m, at(a, 0));
 		auto y = simplify(m, at(a, 2));
 		if (constant(x) && constant(y)) return x + y;
 		if (realConstant(x) && realConstant(y)) return ex(ToReal, x[1] + y[1]);
@@ -35,7 +35,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	}
 	case Ceil:
 	{
-		auto x = simplify(m, at(a, 1));
+		auto x = simplify(m, at(a, 0));
 		if (realConstant(x)) return ex(ToReal, ceil(x[1]));
 		if (constant(x)) return ceil(x);
 		return ex(t, x);
@@ -48,7 +48,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 		return a;
 	case Div:
 	{
-		auto x = simplify(m, at(a, 1));
+		auto x = simplify(m, at(a, 0));
 		auto y = simplify(m, at(a, 2));
 		if (constant(x) && constant(y)) return x / y;
 		if (realConstant(x) && realConstant(y)) return ex(ToReal, x[1] / y[1]);
@@ -56,7 +56,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	}
 	case DivE:
 	{
-		auto x = simplify(m, at(a, 1));
+		auto x = simplify(m, at(a, 0));
 		auto y = simplify(m, at(a, 2));
 		if (constant(x) && constant(y)) return divE(x, y);
 		if (realConstant(x) && realConstant(y)) return ex(ToReal, divE(x[1], y[1]));
@@ -64,7 +64,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	}
 	case DivF:
 	{
-		auto x = simplify(m, at(a, 1));
+		auto x = simplify(m, at(a, 0));
 		auto y = simplify(m, at(a, 2));
 		if (constant(x) && constant(y)) return divF(x, y);
 		if (realConstant(x) && realConstant(y)) return ex(ToReal, divF(x[1], y[1]));
@@ -72,7 +72,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	}
 	case DivT:
 	{
-		auto x = simplify(m, at(a, 1));
+		auto x = simplify(m, at(a, 0));
 		auto y = simplify(m, at(a, 2));
 		if (constant(x) && constant(y)) return divT(x, y);
 		if (realConstant(x) && realConstant(y)) return ex(ToReal, divT(x[1], y[1]));
@@ -80,7 +80,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	}
 	case Eq:
 	{
-		auto x = simplify(m, at(a, 1));
+		auto x = simplify(m, at(a, 0));
 		auto y = simplify(m, at(a, 2));
 		if (x == y) return True;
 		// TODO: optimize?
@@ -90,7 +90,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	}
 	case Floor:
 	{
-		auto x = simplify(m, at(a, 1));
+		auto x = simplify(m, at(a, 0));
 		if (realConstant(x)) return ex(ToReal, floor(x[1]));
 		if (constant(x)) return floor(x);
 		return ex(t, x);
@@ -108,7 +108,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	}
 	case IsInteger:
 	{
-		auto x = simplify(m, at(a, 1));
+		auto x = simplify(m, at(a, 0));
 		if (realConstant(x)) return tbool(isInteger(x[1]));
 		if (constant(x)) return tbool(isInteger(x));
 		if (type(x) == kind::Integer) return True;
@@ -116,7 +116,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	}
 	case IsRational:
 	{
-		auto x = simplify(m, at(a, 1));
+		auto x = simplify(m, at(a, 0));
 		if (realConstant(x) || constant(x)) return True;
 		switch (kind(type(x))) {
 		case kind::Integer:
@@ -127,7 +127,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	}
 	case Le:
 	{
-		auto x = simplify(m, at(a, 1));
+		auto x = simplify(m, at(a, 0));
 		auto y = simplify(m, at(a, 2));
 		if (constant(x) && constant(y)) return tbool(x <= y);
 		if (realConstant(x) && realConstant(y)) return tbool(x[1] <= y[1]);
@@ -135,7 +135,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	}
 	case Lt:
 	{
-		auto x = simplify(m, at(a, 1));
+		auto x = simplify(m, at(a, 0));
 		auto y = simplify(m, at(a, 2));
 		if (constant(x) && constant(y)) return tbool(x < y);
 		if (realConstant(x) && realConstant(y)) return tbool(x[1] < y[1]);
@@ -143,7 +143,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	}
 	case Mul:
 	{
-		auto x = simplify(m, at(a, 1));
+		auto x = simplify(m, at(a, 0));
 		auto y = simplify(m, at(a, 2));
 		if (constant(x) && constant(y)) return x * y;
 		if (realConstant(x) && realConstant(y)) return ex(ToReal, x[1] * y[1]);
@@ -151,14 +151,14 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	}
 	case Neg:
 	{
-		auto x = simplify(m, at(a, 1));
+		auto x = simplify(m, at(a, 0));
 		if (realConstant(x)) return ex(ToReal, -x[1]);
 		if (constant(x)) return -x;
 		return ex(t, x);
 	}
 	case RemE:
 	{
-		auto x = simplify(m, at(a, 1));
+		auto x = simplify(m, at(a, 0));
 		auto y = simplify(m, at(a, 2));
 		if (constant(x) && constant(y)) return remE(x, y);
 		if (realConstant(x) && realConstant(y)) return ex(ToReal, remE(x[1], y[1]));
@@ -166,7 +166,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	}
 	case RemF:
 	{
-		auto x = simplify(m, at(a, 1));
+		auto x = simplify(m, at(a, 0));
 		auto y = simplify(m, at(a, 2));
 		if (constant(x) && constant(y)) return remF(x, y);
 		if (realConstant(x) && realConstant(y)) return ex(ToReal, remF(x[1], y[1]));
@@ -174,7 +174,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	}
 	case RemT:
 	{
-		auto x = simplify(m, at(a, 1));
+		auto x = simplify(m, at(a, 0));
 		auto y = simplify(m, at(a, 2));
 		if (constant(x) && constant(y)) return remT(x, y);
 		if (realConstant(x) && realConstant(y)) return ex(ToReal, remT(x[1], y[1]));
@@ -182,14 +182,14 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	}
 	case Round:
 	{
-		auto x = simplify(m, at(a, 1));
+		auto x = simplify(m, at(a, 0));
 		if (realConstant(x)) return ex(ToReal, round(x[1]));
 		if (constant(x)) return round(x);
 		return ex(t, x);
 	}
 	case Sub:
 	{
-		auto x = simplify(m, at(a, 1));
+		auto x = simplify(m, at(a, 0));
 		auto y = simplify(m, at(a, 2));
 		if (constant(x) && constant(y)) return x - y;
 		if (realConstant(x) && realConstant(y)) return ex(ToReal, x[1] - y[1]);
@@ -197,7 +197,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	}
 	case ToInteger:
 	{
-		auto x = simplify(m, at(a, 1));
+		auto x = simplify(m, at(a, 0));
 		if (realConstant(x)) return toInteger(x[1]);
 		if (constant(x)) return toInteger(x);
 		if (type(x) == kind::Integer) return x;
@@ -205,7 +205,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	}
 	case ToRational:
 	{
-		auto x = simplify(m, at(a, 1));
+		auto x = simplify(m, at(a, 0));
 		if (realConstant(x)) return x[1];
 		if (constant(x)) return toRational(x);
 		if (type(x) == kind::Rational) return x;
@@ -213,7 +213,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	}
 	case ToReal:
 	{
-		auto x = simplify(m, at(a, 1));
+		auto x = simplify(m, at(a, 0));
 		if (realConstant(x)) return x;
 		if (constant(x)) return ex(ToReal, toRational(x));
 		if (type(x) == kind::Real) return x;
@@ -221,7 +221,7 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	}
 	case Trunc:
 	{
-		auto x = simplify(m, at(a, 1));
+		auto x = simplify(m, at(a, 0));
 		if (realConstant(x)) return ex(ToReal, trunc(x[1]));
 		if (constant(x)) return trunc(x);
 		return ex(t, x);

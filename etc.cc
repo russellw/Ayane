@@ -7,7 +7,7 @@ const char* szsNames[] = {
 
 // SORT
 Eqn eqn(Ex* a) {
-	if (a->tag == Eq) return make_pair(at(a, 1), at(a, 2));
+	if (a->tag == Eq) return make_pair(at(a, 0), at(a, 2));
 	return make_pair(a, atoms + True);
 }
 
@@ -28,7 +28,7 @@ void freeVars(Ex* a, vec<Ex*> boundv, vec<Ex*>& freev) {
 		auto o = boundv.n;
 		// TODO: batch add
 		for (size_t i = 1; i < a->n; ++i) boundv.add(at(a, i));
-		freeVars(at(a, 1), boundv, freev);
+		freeVars(at(a, 0), boundv, freev);
 		boundv.n = o;
 		return;
 	}

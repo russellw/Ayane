@@ -387,7 +387,7 @@ void check(ex a, type ty) {
 	case RemT:
 	case Sub:
 		check(a, 2);
-		ty = type(at(a, 1));
+		ty = type(at(a, 0));
 		switch (kind(ty)) {
 		case kind::Integer:
 		case kind::Rational:
@@ -400,7 +400,7 @@ void check(ex a, type ty) {
 		return;
 	case All:
 	case Exists:
-		check(at(a, 1), kind::Bool);
+		check(at(a, 0), kind::Bool);
 		return;
 	case And:
 	case Eqv:
@@ -419,7 +419,7 @@ void check(ex a, type ty) {
 	case ToReal:
 	case Trunc:
 		check(a, 1);
-		ty = type(at(a, 1));
+		ty = type(at(a, 0));
 		switch (kind(ty)) {
 		case kind::Integer:
 		case kind::Rational:
@@ -439,7 +439,7 @@ void check(ex a, type ty) {
 		return;
 	case Div:
 		check(a, 2);
-		ty = type(at(a, 1));
+		ty = type(at(a, 0));
 		switch (kind(ty)) {
 		case kind::Rational:
 		case kind::Real:
@@ -450,19 +450,19 @@ void check(ex a, type ty) {
 		for (size_t i = 0; i < a->n; ++i) check(at(a, i), ty);
 		return;
 	case Eq:
-		ty = type(at(a, 1));
+		ty = type(at(a, 0));
 		switch (kind(ty)) {
 		case kind::Bool:
 		case kind::Fn:
 			err("Invalid type for equality");
 		}
-		check(at(a, 1), ty);
+		check(at(a, 0), ty);
 		check(at(a, 2), ty);
 		return;
 	case Le:
 	case Lt:
 		check(a, 2);
-		ty = type(at(a, 1));
+		ty = type(at(a, 0));
 		switch (kind(ty)) {
 		case kind::Integer:
 		case kind::Rational:
@@ -471,7 +471,7 @@ void check(ex a, type ty) {
 		default:
 			err("Invalid type for comparison");
 		}
-		check(at(a, 1), ty);
+		check(at(a, 0), ty);
 		check(at(a, 2), ty);
 		return;
 	case Var:

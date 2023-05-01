@@ -799,7 +799,7 @@ void quant(char op, ex a) {
 		}
 	}
 	print("]:");
-	pr(at(a, 1), a);
+	pr(at(a, 0), a);
 }
 
 // Infix connectives may need to be surrounded by parentheses to disambiguate, depending on what the parent term was
@@ -865,7 +865,7 @@ void pr(ex a, ex parent) {
 		dfunctor("$quotient_t", a);
 		return;
 	case Eq:
-		pr(at(a, 1));
+		pr(at(a, 0));
 		putchar('=');
 		pr(at(a, 2));
 		return;
@@ -929,7 +929,7 @@ void pr(ex a, ex parent) {
 		return;
 	case Not:
 		putchar('~');
-		pr(at(a, 1), a);
+		pr(at(a, 0), a);
 		return;
 	case Or:
 		infixConnective(" | ", a, parent);
@@ -988,7 +988,7 @@ void prliterals(Clause* c) {
 	for (auto a: c.first) {
 		join(" | ");
 		if (a->tag == Eq) {
-			pr(at(a, 1));
+			pr(at(a, 0));
 			print("!=");
 			pr(at(a, 2));
 			continue;

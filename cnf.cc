@@ -32,10 +32,10 @@ size_t ncs(bool pol, Ex* a) {
 	switch (a->tag) {
 	case All:
 	case Exists:
-		return ncs(pol, at(a, 1));
+		return ncs(pol, at(a, 0));
 
 	case Not:
-		return ncs(!pol, at(a, 1));
+		return ncs(!pol, at(a, 0));
 
 	case Or:
 		return pol ? ncsMul(pol, a) : ncsAdd(pol, a);
@@ -44,7 +44,7 @@ size_t ncs(bool pol, Ex* a) {
 
 	case Eqv:
 	{
-		auto x = at(a, 1);
+		auto x = at(a, 0);
 		auto y = at(a, 2);
 
 		// Recur twice into each argument. This would cause a problem of exponential blowup in the time taken to calculate the
@@ -148,12 +148,12 @@ Ex* maybeRename(int pol, Ex* a) {
 	switch (a->tag) {
 	case All:
 	case Exists:
-		v.add(maybeRename(pol, at(a, 1)));
+		v.add(maybeRename(pol, at(a, 0)));
 		for (size_t i = 2; i < a->n; ++i) v.add(at(a, i));
 		break;
 
 	case Not:
-		return ex(Not, maybeRename(-pol, at(a, 1)));
+		return ex(Not, maybeRename(-pol, at(a, 0)));
 
 	case Or:
 		for (size_t i = 0; i < a->n; ++i) v.add(maybeRename(pol, at(a, i)));
@@ -172,7 +172,7 @@ Ex* maybeRename(int pol, Ex* a) {
 
 	case Eqv:
 	{
-		auto x = maybeRename(0, at(a, 1));
+		auto x = maybeRename(0, at(a, 0));
 		auto y = maybeRename(0, at(a, 2));
 		if (ncsApprox(0, x) >= many) x = rename(0, x);
 		if (ncsApprox(0, y) >= many) y = rename(0, y);
@@ -199,7 +199,7 @@ Ex* all(int pol, Ex* a, vec<pair<Ex*, Ex*>>& m) {
 		auto y = var(vars++, ((Atom*)x)->ty);
 		m.add(make_pair(x, y));
 	}
-	a = nnf(pol, at(a, 1), m);
+	a = nnf(pol, at(a, 0), m);
 	m.n = o;
 	return a;
 }
@@ -220,7 +220,7 @@ Ex* exists(int pol, Ex* a, vec<pair<Ex*, Ex*>>& m) {
 		auto y = skolem(((Atom*)x)->ty, args);
 		m.add(make_pair(x, y));
 	}
-	a = nnf(pol, at(a, 1), m);
+	a = nnf(pol, at(a, 0), m);
 	m.n = o;
 	return a;
 }
@@ -239,7 +239,7 @@ Ex* nnf(bool pol, Ex* a, vec<pair<Ex*, Ex*>>& m) {
 		return tbool(pol);
 
 	case Not:
-		return nnf(!pol, at(a, 1), m);
+		return nnf(!pol, at(a, 0), m);
 
 	case Or:
 		if (!pol) tag = And;
@@ -262,7 +262,7 @@ Ex* nnf(bool pol, Ex* a, vec<pair<Ex*, Ex*>>& m) {
 	case Eqv:
 	{
 		// Equivalence is the most difficult operator to deal with
-		auto x = at(a, 1);
+		auto x = at(a, 0);
 		auto y = at(a, 2);
 		auto x0 = nnf(0, x, m);
 		auto x1 = nnf(1, x, m);
@@ -318,7 +318,7 @@ void literalsTerm(Ex* a, vec<Ex*>& neg, vec<Ex*>& pos) {
 	case Exists:
 		unreachable;
 	case Not:
-		neg.add(at(a, 1));
+		neg.add(at(a, 0));
 		return;
 	case Or:
 		for (size_t i = 0; i < a->n; ++i) literalsTerm(at(a, i), neg, pos);
