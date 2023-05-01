@@ -1,4 +1,4 @@
-#ifdef DEBUG
+#ifdef DBG
 void incStat(const char* k, uint64_t n = 1);
 void incStat(size_t k, uint64_t n = 1);
 void incTrace();

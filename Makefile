@@ -1,5 +1,5 @@
 ayane: *.cc *.h
-	g++ -DDEBUG -Og -fmax-errors=1 -fno-exceptions -g -oayane -pipe -std=c++17 *.cc -lgmp
+	g++ -DDBG -Og -fmax-errors=1 -fno-exceptions -g -oayane -pipe -std=c++17 *.cc -lgmp
 
 prof:
 	g++ -fno-exceptions -oayane -pg -pipe -std=c++17 *.cc -lgmp

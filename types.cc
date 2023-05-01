@@ -21,7 +21,7 @@ size_t alloc(size_t n) {
 
 	// Bump allocation
 	auto o = top;
-#ifdef DEBUG
+#ifdef DBG
 	memset(typePtr(o), 0xcc, n);
 #endif
 	top += n / 8;

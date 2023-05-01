@@ -98,7 +98,7 @@ int main(int argc, char** argv) {
 			case 'v':
 				printf("Ayane " version);
 				if (sizeof(void*) == 4) printf(", 32 bits");
-#ifdef DEBUG
+#ifdef DBG
 				printf(", debug build");
 #endif
 				putchar('\n');

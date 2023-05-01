@@ -1,5 +1,4 @@
-// TODO: rename
-#ifdef DEBUG
+#ifdef DBG
 
 // Trace function entry and exit
 struct Tracer {

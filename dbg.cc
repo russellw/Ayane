@@ -1,6 +1,6 @@
 #include "main.h"
 
-#ifdef DEBUG
+#ifdef DBG
 #ifdef _WIN32
 #include <windows.h>
 // Windows.h must be first.
