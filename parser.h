@@ -55,8 +55,7 @@ struct parser {
 	char* srck;
 
 	// Current token keyword or identifier
-	// TODO: rename
-	string* str;
+	Str* str;
 
 	// Current token, as direct char for single-char tokens, or language-specific enum otherwise
 	int tok;

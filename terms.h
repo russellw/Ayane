@@ -30,12 +30,12 @@ Ex* ex(mpq_t val);
 
 // Wrapping a symbol in a term is a common operation. Specifying the type at the same time is less so, but still common enough for
 // this function to be useful.
-Ex* ex(string* s, Ex* ty);
+Ex* ex(Str* s, Ex* ty);
 
 Ex* var(size_t i, Ex* ty);
 
 Ex* gensym(Ex* ty);
-Ex* distinctObj(string* s);
+Ex* distinctObj(Str* s);
 
 // TODO: test using a bump allocator
 Ex* ex(int tag);

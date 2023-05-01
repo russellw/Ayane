@@ -1,7 +1,5 @@
-// Strings are interned for fast comparison, and fast access to associated types and symbols. The latter are stored as raw offsets
-// rather than in their typed wrappers, to make it possible to statically initialize the array of keywords.
-// TODO: rename
-struct string {
+// Strings are interned for fast comparison, and fast access to associated types and expressions
+struct Str {
 	// TODO: move some of these to map objects? Types may need to be looked up many times during parsing of expressions that bind variables, but distinct objects are very rarely used
 	// TODO: rename
 	uint32_t dobj;
@@ -63,20 +61,20 @@ enum {
 };
 
 // And statically allocated for fast lookup
-extern string keywords[];
+extern Str keywords[];
 
-inline size_t keyword(const string* s) {
+inline size_t keyword(const Str* s) {
 	// Assign the difference to an unsigned variable and perform the division explicitly, because ptrdiff_t is a signed type, but
 	// unsigned division is slightly faster
 	size_t i = (char*)s - (char*)keywords;
-	return i / sizeof(string);
+	return i / sizeof(Str);
 }
 
-string* intern(const char* s, size_t n);
-inline string* intern(const char* s) {
+Str* intern(const char* s, size_t n);
+inline Str* intern(const char* s) {
 	return intern(s, strlen(s));
 }
 
-inline void print(const string* s) {
+inline void print(const Str* s) {
 	print(s->v);
 }
