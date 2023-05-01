@@ -8,7 +8,7 @@
 // In particular, we cannot directly compare terms for equality (which in the normal course of events would indicate that two terms
 // trivially unify) because two syntactically identical terms could be, or contain, the same variable names but with different
 // associated subscripts
-static bool eq(term a, bool ax, term b, bool bx) {
+static bool eq(ex a, bool ax, ex b, bool bx) {
 	// If the terms are not syntactically equal then we definitely do not have logical equality
 	if (a != b) return 0;
 
@@ -28,7 +28,7 @@ static bool eq(term a, bool ax, term b, bool bx) {
 	return 1;
 }
 
-bool match(map<term, term>& m, term a, term b) {
+bool match(map<ex, ex>& m, ex a, ex b) {
 	// Equals
 	if (eq(a, 0, b, 1)) return 1;
 
@@ -66,7 +66,7 @@ bool match(map<term, term>& m, term a, term b) {
 }
 
 namespace {
-bool occurs(const map<termx, termx>& m, term a, bool ax, term b, bool bx) {
+bool occurs(const map<termx, termx>& m, ex a, bool ax, ex b, bool bx) {
 	assert(a->tag == Var);
 	if (b->tag == Var) {
 		if (eq(a, ax, b, bx)) return 1;
@@ -79,7 +79,7 @@ bool occurs(const map<termx, termx>& m, term a, bool ax, term b, bool bx) {
 	return 0;
 }
 
-bool unifyVar(map<termx, termx>& m, term a, bool ax, term b, bool bx) {
+bool unifyVar(map<termx, termx>& m, ex a, bool ax, ex b, bool bx) {
 	assert(a->tag == Var);
 	assert(type(a) == type(b));
 
@@ -101,7 +101,7 @@ bool unifyVar(map<termx, termx>& m, term a, bool ax, term b, bool bx) {
 }
 } // namespace
 
-bool unify(map<termx, termx>& m, term a, bool ax, term b, bool bx) {
+bool unify(map<termx, termx>& m, ex a, bool ax, ex b, bool bx) {
 	// Equals
 	if (eq(a, ax, b, bx)) return 1;
 
@@ -127,7 +127,7 @@ bool unify(map<termx, termx>& m, term a, bool ax, term b, bool bx) {
 	return 1;
 }
 
-term replace(const map<termx, termx>& m, term a, bool ax) {
+ex replace(const map<termx, termx>& m, ex a, bool ax) {
 	auto a1 = make_pair(a, ax);
 	termx ma;
 	// TODO: check only if it is a variable
@@ -137,7 +137,7 @@ term replace(const map<termx, termx>& m, term a, bool ax) {
 	}
 
 	auto n = a.size();
-	vec<term> v(1, a[0]);
+	vec<ex> v(1, a[0]);
 	for (size_t i = 1; i != n; ++i) v.add(replace(m, at(a, i), ax));
-	return term(v);
+	return ex(v);
 }

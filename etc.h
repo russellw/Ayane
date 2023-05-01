@@ -7,12 +7,12 @@ enum {
 extern const char* szsNames[];
 
 // SORT
-Eqn eqn(Term* a);
-void flatten(int tag, Term* a, std::vector<Term*>& r);
-void freeVars(Term* a, vec<Term*> boundv, vec<Term*>& freev);
-Term* imp(Term* a, Term* b);
-bool occurs(Term* a, Term* b);
-Term* quantify(Term* a);
+Eqn eqn(Ex* a);
+void flatten(int tag, Ex* a, std::vector<Ex*>& r);
+void freeVars(Ex* a, vec<Ex*> boundv, vec<Ex*>& freev);
+Ex* imp(Ex* a, Ex* b);
+bool occurs(Ex* a, Ex* b);
+Ex* quantify(Ex* a);
 ///
 
 template <class T>

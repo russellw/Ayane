@@ -18,9 +18,9 @@ struct IFormula {
 struct Formula: IFormula {
 	const char* file;
 	const char* name;
-	Term* tm;
+	Ex* tm;
 
-	Formula(const char* file, const char* name, Term* tm): file(file), name(name), tm(tm) {
+	Formula(const char* file, const char* name, Ex* tm): file(file), name(name), tm(tm) {
 		rule = r_file;
 		*from = 0;
 	}
@@ -37,7 +37,7 @@ extern Formula* conjecture;
 // So we represent them as bags (or lists, ignoring the order) and let the algorithms that prefer sets, discard duplicate literals
 struct Clause: IFormula {
 	uint32_t neg, n;
-	Term* atoms[];
+	Ex* atoms[];
 };
 
 // Passive clauses are stored in a priority queue with smaller clauses first
@@ -50,4 +50,4 @@ struct CompareClauses {
 };
 
 extern std::priority_queue<Clause*, vec<Clause*>, CompareClauses> passive;
-void clause(vec<Term*>& neg, vec<Term*>& pos, int rule, IFormula* from, IFormula* from1 = 0);
+void clause(vec<Ex*>& neg, vec<Ex*>& pos, int rule, IFormula* from, IFormula* from1 = 0);

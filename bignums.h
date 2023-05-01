@@ -9,10 +9,10 @@ Atom* rational(const char* s);
 
 // Real number literals are represented as rational number literals wrapped in ToReal. It's a function call that is not actually
 // evaluated, since there is no representation of real number literals as such.
-Term* real(mpq_t q);
+Ex* real(mpq_t q);
 
 // Per TPTP syntax, decimal/exponent string parses to a real number literal
-Term* real(char* s);
+Ex* real(char* s);
 
 // Arithmetic is polymorphic on integers and rationals
 Atom* neg(Atom* a);
@@ -38,4 +38,4 @@ bool isInteger(Atom* a);
 
 Atom* toInteger(Atom* a);
 Atom* toRational(Atom* a);
-Term* toReal(Atom* a);
+Ex* toReal(Atom* a);

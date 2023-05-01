@@ -6,12 +6,12 @@ const char* szsNames[] = {
 };
 
 // SORT
-Eqn eqn(Term* a) {
+Eqn eqn(Ex* a) {
 	if (a->tag == Eq) return make_pair(at(a, 1), at(a, 2));
 	return make_pair(a, atoms + True);
 }
 
-void flatten(int tag, Term* a, std::vector<Term*>& r) {
+void flatten(int tag, Ex* a, std::vector<Ex*>& r) {
 	if (a->tag == tag) {
 		for (size_t i = 1; i < a->n; ++i) flatten(tag, at(a, i), r);
 		return;
@@ -19,7 +19,7 @@ void flatten(int tag, Term* a, std::vector<Term*>& r) {
 	r.push_back(a);
 }
 
-void freeVars(Term* a, vec<Term*> boundv, vec<Term*>& freev) {
+void freeVars(Ex* a, vec<Ex*> boundv, vec<Ex*>& freev) {
 	// TODO: boundv static?
 	switch (a->tag) {
 	case All:
@@ -39,24 +39,24 @@ void freeVars(Term* a, vec<Term*> boundv, vec<Term*>& freev) {
 	for (size_t i = 1; i < a->n; ++i) freeVars(at(a, i), boundv, freev);
 }
 
-Term* imp(Term* a, Term* b) {
-	return term(Or, term(Not, a), b);
+Ex* imp(Ex* a, Ex* b) {
+	return ex(Or, ex(Not, a), b);
 }
 
-bool occurs(Term* a, Term* b) {
+bool occurs(Ex* a, Ex* b) {
 	if (a == b) return 1;
 	for (size_t i = 1; i < b->n; ++i)
 		if (occurs(a, at(b, i))) return 1;
 	return 0;
 }
 
-Term* quantify(Term* a) {
-	vec<Term*> vars;
-	freeVars(a, vec<Term*>(), vars);
+Ex* quantify(Ex* a) {
+	vec<Ex*> vars;
+	freeVars(a, vec<Ex*>(), vars);
 	if (vars.empty()) return a;
-	vec<Term*> v(1, term(All));
+	vec<Ex*> v(1, ex(All));
 	v.add(a);
 	for (auto x: vars) v.add(x);
-	return term(v);
+	return ex(v);
 }
 ///

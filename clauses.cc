@@ -7,7 +7,7 @@ const char* ruleNames[] = {
 
 Formula* conjecture;
 
-static size_t cost(Term* a) {
+static size_t cost(Ex* a) {
 	size_t n = 1;
 	for (size_t i = 1; i < a->n; ++i) n += cost(at(a, i));
 	return n;

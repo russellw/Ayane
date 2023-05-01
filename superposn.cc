@@ -1,7 +1,7 @@
 #include "main.h"
 
 namespace {
-bool isNumeric(term a) {
+bool isNumeric(ex a) {
 	switch (kind(type(a))) {
 	case kind::Integer:
 	case kind::Rational:
@@ -11,7 +11,7 @@ bool isNumeric(term a) {
 	return 0;
 }
 
-bool hasNumeric(term a) {
+bool hasNumeric(ex a) {
 	if (isNumeric(a)) return 1;
 	for (size_t i = 1; i < a->n; ++i)
 		if (hasNumeric(at(a, i))) return 1;
@@ -26,34 +26,34 @@ bool hasNumeric(clause c) {
 	return 0;
 }
 
-term splice(term a, const vec<size_t>& posn, size_t i, term b) {
+ex splice(ex a, const vec<size_t>& posn, size_t i, ex b) {
 	if (i == posn.size()) return b;
 
 	auto n = a.size();
-	vec<term> v(n);
+	vec<ex> v(n);
 	for (size_t j = 0; j != n; ++j) {
 		v[j] = a[j];
 		if (j == posn[i]) v[j] = splice(v[j], posn, i + 1, b);
 	}
-	return term(v);
+	return ex(v);
 }
 
 // First-order logic usually takes the view that equality is a special case, but superposition calculus takes the view that equality
 // is the general case. Non-equality predicates are considered to be equations 'p=true'; this is a special exemption from the usual
 // rule that equality is not allowed on Boolean terms.
-bool equatable(term a, term b) {
+bool equatable(ex a, ex b) {
 	if (type(a) != type(b)) return 0;
 	if (type(a) == kind::Bool) return a == True || b == True;
 	return 1;
 }
 
-term equate(term a, term b) {
+ex equate(ex a, ex b) {
 	assert(equatable(a, b));
 	if (a == True) return b;
 	if (b == True) return a;
 	assert(type(a) != kind::Bool);
 	assert(type(b) != kind::Bool);
-	return term(Eq, a, b);
+	return ex(Eq, a, b);
 }
 
 // Equality tends to generate a large number of clauses. Superposition calculus is designed to moderate the profusion of clauses
@@ -63,11 +63,11 @@ term equate(term a, term b) {
 class lexicographicPathOrder {
 	// The greater-than test is supposed to be called on complete terms, which can include constant symbols (zero arity), or calls
 	// of function symbols (positive arity) with arguments. Make sure it's not being called on an isolated function symbol.
-	void check(term a) {
+	void check(ex a) {
 		assert(kind(type(a)) != kind::Fn);
 	}
 
-	bool ge(term a, term b) {
+	bool ge(ex a, ex b) {
 		return a == b || gt(a, b);
 	}
 
@@ -80,7 +80,7 @@ public:
 	// Check whether one term is unambiguously greater than another. This is much more delicate than comparison for e.g. sorting,
 	// where arbitrary choices can be made; to avoid breaking completeness of the calculus, the criteria are much stricter, and when
 	// in doubt, we return false.
-	bool gt(term a, term b) {
+	bool gt(ex a, ex b) {
 		check(a);
 		check(b);
 
@@ -128,14 +128,14 @@ struct doing {
 	Proof& proof;
 	///
 
-	void qclause(rule rl, const vec<clause>& from, const vec<term>& neg, const vec<term>& pos) {
+	void qclause(rule rl, const vec<clause>& from, const vec<ex>& neg, const vec<ex>& pos) {
 		incStat("qclause");
 		auto c = make_pair(neg, pos);
 
 		// Immediately simplifying clauses is efficient, and seems like it should not break completeness, though it would be nice to
 		// see an actual proof of this:
 		// https://stackoverflow.com/questions/65162921/is-superposition-complete-with-immediate-simplify
-		c = simplify(map<term, term>(), c);
+		c = simplify(map<ex, ex>(), c);
 
 		// Filter tautologies
 		if (c == truec) {
@@ -161,18 +161,18 @@ struct doing {
 	*/
 
 	// Check, substitute and make new clause
-	void resolve(Clause* c, size_t ci, term c0, term c1) {
+	void resolve(Clause* c, size_t ci, ex c0, ex c1) {
 		// Unify
 		map<termx, termx> m;
 		if (!unify(m, c0, 0, c1, 0)) return;
 
 		// Negative literals
-		vec<term> neg;
+		vec<ex> neg;
 		for (size_t i = 0; i != c.first.size(); ++i)
 			if (i != ci) neg.add(replace(m, c.first[i], 0));
 
 		// Positive literals
-		vec<term> pos;
+		vec<ex> pos;
 		for (size_t i = 0; i != c.second.size(); ++i) pos.add(replace(m, c.second[i], 0));
 
 		// Make new clause
@@ -197,7 +197,7 @@ struct doing {
 	*/
 
 	// Check, substitute and make new clause
-	void factor(Clause* c, size_t ci, term c0, term c1, size_t di, term d0, term d1) {
+	void factor(Clause* c, size_t ci, ex c0, ex c1, size_t di, ex d0, ex d1) {
 		// If these two terms are not equatable (for which the types must match, and predicates can only be equated with True),
 		// substituting terms for variables would not make them become so
 		if (!equatable(c1, d1)) return;
@@ -207,12 +207,12 @@ struct doing {
 		if (!unify(m, c0, 0, d0, 0)) return;
 
 		// Negative literals
-		vec<term> neg;
+		vec<ex> neg;
 		for (size_t i = 0; i != c.first.size(); ++i) neg.add(replace(m, c.first[i], 0));
 		neg.add(equate(replace(m, c1, 0), replace(m, d1, 0)));
 
 		// Positive literals
-		vec<term> pos;
+		vec<ex> pos;
 		for (size_t i = 0; i != c.second.size(); ++i)
 			if (i != di) pos.add(replace(m, c.second[i], 0));
 
@@ -221,7 +221,7 @@ struct doing {
 	}
 
 	// For each positive equation (both directions) again
-	void factor(Clause* c, size_t ci, term c0, term c1) {
+	void factor(Clause* c, size_t ci, ex c0, ex c1) {
 		for (size_t di = 0; di != c.second.size(); ++di) {
 			if (di == ci) continue;
 			auto e = eqn(c.second[di]);
@@ -254,8 +254,7 @@ struct doing {
 	// nontrivial and almost identical code, we specify here a single inference rule controlled by the mode flag
 
 	// Check, substitute and make new clause
-	void
-	superposn(Clause* c, Clause* d, size_t ci, term c0, term c1, size_t di, term d0, term d1, const vec<size_t>& posn, term a) {
+	void superposn(Clause* c, Clause* d, size_t ci, ex c0, ex c1, size_t di, ex d0, ex d1, const vec<size_t>& posn, ex a) {
 		// It is never necessary to paramodulate into variables
 		if (a->tag == Var) return;
 
@@ -264,7 +263,7 @@ struct doing {
 		if (!unify(m, c0, 0, a, 1)) return;
 
 		// Negative literals
-		vec<term> neg;
+		vec<ex> neg;
 		for (size_t i = 0; i != c.first.size(); ++i) neg.add(replace(m, c.first[i], 0));
 		for (size_t i = 0; i != d.first.size(); ++i) {
 			if (!mode && i == di) continue;
@@ -272,7 +271,7 @@ struct doing {
 		}
 
 		// Positive literals
-		vec<term> pos;
+		vec<ex> pos;
 		for (size_t i = 0; i != c.second.size(); ++i)
 			if (i != ci) pos.add(replace(m, c.second[i], 0));
 		for (size_t i = 0; i != d.second.size(); ++i) {
@@ -299,7 +298,7 @@ struct doing {
 	}
 
 	// Descend into subterms
-	void descend(Clause* c, Clause* d, size_t ci, term c0, term c1, size_t di, term d0, term d1, const vec<size_t>& posn, term a) {
+	void descend(Clause* c, Clause* d, size_t ci, ex c0, ex c1, size_t di, ex d0, ex d1, const vec<size_t>& posn, ex a) {
 		superposn(c, d, ci, c0, c1, di, d0, d1, posn, a);
 		for (size_t i = 1; i < a.size(); ++i) {
 			auto p(posn);
@@ -309,7 +308,7 @@ struct doing {
 	}
 
 	// For each (mode)ve equation in d (both directions)
-	void superposn(Clause* c, Clause* d, size_t ci, term c0, term c1) {
+	void superposn(Clause* c, Clause* d, size_t ci, ex c0, ex c1) {
 		auto& dmode = mode ? d.second : d.first;
 		for (size_t di = 0; di != dmode.size(); ++di) {
 			auto e = eqn(dmode[di]);
@@ -332,7 +331,7 @@ struct doing {
 		// simplification, which includes evaluation of ground terms) contains terms of numeric type, we mark the proof search
 		// incomplete, so that failure to derive a contradiction, means the result is inconclusive rather than satisfiable.
 		for (auto c: cs)
-			if (hasNumeric(simplify(map<term, term>(), c))) {
+			if (hasNumeric(simplify(map<ex, ex>(), c))) {
 				result = z_GaveUp;
 				break;
 			}

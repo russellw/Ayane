@@ -50,16 +50,16 @@ struct parser1: parser {
 
 	// A variable in propositional logic is a constant in first-order logic
 	Atom* var() {
-		auto a = term(str, kind::Bool);
+		auto a = ex(str, kind::Bool);
 		lex();
 		return a;
 	}
 
 	// Top level
-	void add(const vec<Term*>& literals) {
+	void add(const vec<Ex*>& literals) {
 		// TODO: provide a way to build input-only terms that bypasses interning?
 		// Maybe it should also bypass the a[0] as symbol
-		cnf(new Formula(file, 0, term(literals)));
+		cnf(new Formula(file, 0, ex(literals)));
 	}
 
 	parser1(const char* file): parser(file) {
@@ -77,11 +77,11 @@ struct parser1: parser {
 			if (tok != k_id) err("Expected count");
 			lex();
 		}
-		vec<Term*> literals(1, term(Or));
+		vec<Ex*> literals(1, ex(Or));
 		for (;;) switch (tok) {
 			case '-':
 				lex();
-				literals.add(term(Not, var()));
+				literals.add(ex(Not, var()));
 				break;
 			case 0:
 				if (literals.n > 1) add(literals);

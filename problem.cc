@@ -5,7 +5,7 @@ template <class T> T* alloc(uint32_t& o) {
 	return (T*)heap->ptr(o);
 }
 
-void Problem::axiom(term a, const char* file, const char* name) {
+void Problem::axiom(ex a, const char* file, const char* name) {
 	// Check where to put a formula object corresponding to this term
 	auto& o = initialFormulas.gadd(a);
 
@@ -20,7 +20,7 @@ void Problem::axiom(term a, const char* file, const char* name) {
 	new (f) InputFormula(FormulaClass::Axiom, a, file, name);
 }
 
-void Problem::conjecture(term a, const char* file, const char* name) {
+void Problem::conjecture(ex a, const char* file, const char* name) {
 	// If multiple conjectures occur in a problem, there are two possible interpretations (conjunction or disjunction), and no
 	// consensus on which is correct, so rather than risk silently giving a wrong answer, reject the problem as ambiguous and
 	// require it to be restated with the conjectures folded into one, using explicit conjunction or disjunction
@@ -28,7 +28,7 @@ void Problem::conjecture(term a, const char* file, const char* name) {
 	hasConjecture = 1;
 
 	// The formula actually added to the set whose satisfiability is to be tested, is the negated conjecture
-	auto b = term(Not, a);
+	auto b = ex(Not, a);
 
 	// Check where to put a formula object corresponding to this term
 	auto& o = initialFormulas.gadd(b);
@@ -47,7 +47,7 @@ void Problem::conjecture(term a, const char* file, const char* name) {
 	new (f) NegatedFormula(b, conp);
 }
 
-size_t Problem::walk(term a) {
+size_t Problem::walk(ex a) {
 	auto& o = visitedFormulas.gadd(a);
 	if (o) return o;
 
@@ -93,7 +93,7 @@ size_t Problem::walk(const ProofCnf& proofCnf, const Proof& proof, Clause* c) {
 
 	// Now we need to check where it came from
 	rule rl;
-	term a;
+	ex a;
 	size_t from;
 	size_t from1 = 0;
 	if (proofCnf.get(c, a)) {

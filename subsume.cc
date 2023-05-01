@@ -10,12 +10,12 @@
 // TODO: implement deterministic matching
 // TODO: implement some form of indexing; can we do indexing on active clauses only?
 namespace {
-bool match(map<term, term>& m, vec<term> c, vec<term> d, vec<term> c2, vec<term> d2) {
+bool match(map<ex, ex>& m, vec<ex> c, vec<ex> d, vec<ex> c2, vec<ex> d2) {
 	// Empty list means we have matched everything in one polarity. Note the asymmetry: For c to subsume d, we need to match every c
 	// literal, but it's okay to have leftover d literals.
 	if (c.empty()) {
 		// Try the other polarity
-		if (c2.size()) return match(m, c2, d2, vec<term>(), vec<term>());
+		if (c2.size()) return match(m, c2, d2, vec<ex>(), vec<ex>());
 
 		// Nothing left to match in the other polarity
 		return 1;
@@ -94,7 +94,7 @@ bool subsumes(Clause* c, Clause* d) {
 	}
 
 	// Search for matched literals
-	map<term, term> m;
+	map<ex, ex> m;
 	return match(m, c1, d1, c2, d2);
 }
 

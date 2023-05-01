@@ -14,14 +14,14 @@ struct init {
 	}
 } _;
 
-map<type, vec<term>> boxedVars;
+map<type, vec<ex>> boxedVars;
 } // namespace
 
-term var(size_t i, type ty) {
-	auto unboxed = 1 << term::idxBits;
+ex var(size_t i, type ty) {
+	auto unboxed = 1 << ex::idxBits;
 	if (i < unboxed) {
-		term a;
-		a.raw = term::t_var | i << typeBits | ty.offset;
+		ex a;
+		a.raw = ex::t_var | i << typeBits | ty.offset;
 		return a;
 	}
 	auto& v = boxedVars.gadd(ty);
@@ -31,15 +31,15 @@ term var(size_t i, type ty) {
 		p->t = Var;
 		p->ty = ty;
 		p->idx = unboxed + v.size();
-		term a;
-		a.raw = term::t_var | term::t_boxed | o;
+		ex a;
+		a.raw = ex::t_var | ex::t_boxed | o;
 		v.add(a);
 	}
 	return v[i - unboxed];
 }
 
-term distinctObj(string* s) {
-	term a;
+ex distinctObj(string* s) {
+	ex a;
 	if (s->dobj) {
 		a.raw = s->dobj;
 		return a;
@@ -52,7 +52,7 @@ term distinctObj(string* s) {
 	return a;
 }
 
-Term* term(string* s, type ty) {
+Ex* ex(string* s, type ty) {
 	if (s->sym) {
 		auto p = (Atom*)atoms->ptr(s->sym);
 		assert(p->t == Fn);
@@ -68,13 +68,13 @@ Term* term(string* s, type ty) {
 	raw = s->sym;
 }
 
-term gensym(type ty) {
+ex gensym(type ty) {
 	auto o = atoms->alloc(offsetof(atom, s) + sizeof(char*));
 	auto p = (Atom*)atoms->ptr(o);
 	p->t = Fn;
 	p->s = 0;
 	p->ty = ty;
-	term a;
+	ex a;
 	a.raw = o;
 	return a;
 }
@@ -83,12 +83,12 @@ term gensym(type ty) {
 Heap<>* compounds;
 
 namespace comps {
-bool eq(const Term* s, size_t n, const compound* z) {
+bool eq(const Ex* s, size_t n, const compound* z) {
 	if (n != z->n) return 0;
 	return !memcmp(s, z->v, n * sizeof *s);
 }
 
-size_t slot(uint32_t* entries, size_t cap, const Term* s, size_t n) {
+size_t slot(uint32_t* entries, size_t cap, const Ex* s, size_t n) {
 	size_t mask = cap - 1;
 	auto i = fnv(s, n * sizeof *s) & mask;
 	while (entries[i] && !eq(s, n, (compound*)compounds->ptr(entries[i]))) i = (i + 1) & mask;
@@ -121,8 +121,8 @@ void expand() {
 	entries = entries1;
 }
 
-size_t intern(const Term* s, size_t n) {
-	incStat("term");
+size_t intern(const Ex* s, size_t n) {
+	incStat("ex");
 	auto i = slot(entries, cap, s, n);
 
 	// If we have seen this before, return the existing object
@@ -136,10 +136,10 @@ size_t intern(const Term* s, size_t n) {
 	}
 
 	// Make a new object
-	incStat("term alloc");
-	incStat("term alloc bytes", offsetof(compound, v) + n * sizeof *s);
+	incStat("ex alloc");
+	incStat("ex alloc bytes", offsetof(compound, v) + n * sizeof *s);
 	auto o = compounds->alloc(offsetof(compound, v) + n * sizeof *s);
-	if (o & term::t_compound) err("compound term: Out of memory");
+	if (o & ex::t_compound) err("compound ex: Out of memory");
 	auto p = (compound*)compounds->ptr(o);
 	p->n = n;
 	memcpy(p->v, s, n * sizeof *s);
@@ -149,26 +149,26 @@ size_t intern(const Term* s, size_t n) {
 }
 } // namespace comps
 
-Term* term(term a, term b) {
+Ex* ex(ex a, ex b) {
 	const int n = 2;
-	term v[n];
+	ex v[n];
 	v[0] = a;
 	v[1] = b;
 	raw = t_compound | comps::intern(v, n);
 }
 
-Term* term(term a, term b, term c) {
+Ex* ex(ex a, ex b, ex c) {
 	const int n = 3;
-	term v[n];
+	ex v[n];
 	v[0] = a;
 	v[1] = b;
 	v[2] = c;
 	raw = t_compound | comps::intern(v, n);
 }
 
-Term* term(term a, term b, term c, term d) {
+Ex* ex(ex a, ex b, ex c, ex d) {
 	const int n = 4;
-	term v[n];
+	ex v[n];
 	v[0] = a;
 	v[1] = b;
 	v[2] = c;
@@ -176,9 +176,9 @@ Term* term(term a, term b, term c, term d) {
 	raw = t_compound | comps::intern(v, n);
 }
 
-Term* term(term a, term b, term c, term d, term e) {
+Ex* ex(ex a, ex b, ex c, ex d, ex e) {
 	const int n = 5;
-	term v[n];
+	ex v[n];
 	v[0] = a;
 	v[1] = b;
 	v[2] = c;
@@ -187,14 +187,14 @@ Term* term(term a, term b, term c, term d, term e) {
 	raw = t_compound | comps::intern(v, n);
 }
 
-Term* term(const vec<term>& v) {
+Ex* ex(const vec<ex>& v) {
 	assert(v.size());
 	if (v.size() == 1) *this = v[0];
 	else
 		raw = t_compound | comps::intern(v.data(), v.size());
 }
 
-term::operator type() const {
+ex::operator type() const {
 	switch (tag(*this)) {
 	case Add:
 	case Ceil:
@@ -250,14 +250,14 @@ term::operator type() const {
 	unreachable;
 }
 
-type ftype(type rty, const Term* first, const Term* last) {
+type ftype(type rty, const Ex* first, const Ex* last) {
 	if (first == last) return rty;
 	vec<type> v(1, rty);
 	for (auto i = first; i != last; ++i) v.add(type(*i));
 	return type(kind::Fn, v);
 }
 
-type ftype(type rty, const vec<term>& args) {
+type ftype(type rty, const vec<ex>& args) {
 	if (args.size()) return rty;
 	vec<type> v(1, rty);
 	for (auto a: args) v.add(type(a));
@@ -265,7 +265,7 @@ type ftype(type rty, const vec<term>& args) {
 }
 
 // TODO: eliminate this?
-int cmp(term a, term b) {
+int cmp(ex a, ex b) {
 	// Fast test for equality
 	if (a == b) return 0;
 
@@ -304,7 +304,7 @@ void print(int tag) {
 	print(tagNames[(int)t]);
 }
 
-void print(term a) {
+void print(ex a) {
 	switch (a->tag) {
 	case Fn:
 	{
@@ -338,13 +338,13 @@ void print(term a) {
 	putchar(')');
 }
 
-static void check(term a, size_t arity) {
+static void check(ex a, size_t arity) {
 	if (a.size() - 1 == arity) return;
 	sprintf(buf, "Expected %zu args, received %zu", arity, a.size() - 1);
 	err(buf);
 }
 
-void check(term a, type ty) {
+void check(ex a, type ty) {
 	// In first-order logic, a function cannot return a function, nor can a variable store one. (That would be higher-order logic.)
 	// The code should be written so that neither the top-level callers nor the recursive calls, can ever ask for a function to be
 	// returned.

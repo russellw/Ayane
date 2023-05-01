@@ -157,11 +157,11 @@ Atom* rational(const char* s) {
 	return intern(r);
 }
 
-Term* real(mpq_t q) {
-	return term(ToReal, intern(q));
+Ex* real(mpq_t q) {
+	return ex(ToReal, intern(q));
 }
 
-Term* real(char* s) {
+Ex* real(char* s) {
 	// GMP string to integer or rational doesn't handle leading +, so for consistency, this function doesn't either
 	assert(*s != '+');
 
@@ -713,7 +713,7 @@ Atom* toRational(Atom* a) {
 	unreachable;
 }
 
-Term* toReal(Atom* a) {
+Ex* toReal(Atom* a) {
 	switch (a->tag) {
 	case Integer:
 	{
@@ -723,7 +723,7 @@ Term* toReal(Atom* a) {
 		return real(r);
 	}
 	case Rational:
-		return term(ToReal, a);
+		return ex(ToReal, a);
 	}
 	unreachable;
 }

@@ -15,7 +15,7 @@ enum {
 };
 
 // If a term does not already have a type, assign it a specified one
-void defaultType(term a, type rty) {
+void defaultType(ex a, type rty) {
 	// A statement about the return type of a function call, can directly imply the type of the function. This generally does not
 	// apply to basic operators; in most cases, they already have a definite type. That is not entirely true of the arithmetic
 	// operators, but we don't try to do global type inference to figure those out.
@@ -43,7 +43,7 @@ struct parser1: parser {
 	bool cnfMode;
 	Problem& problem;
 	const selection& sel;
-	vec<pair<string*, term>> vars;
+	vec<pair<string*, ex>> vars;
 	///
 
 	// Tokenizer
@@ -274,20 +274,20 @@ struct parser1: parser {
 	}
 
 	// Terms
-	void args(vec<term>& v) {
+	void args(vec<ex>& v) {
 		expect('(');
 		do v.add(atomicTerm());
 		while (eat(','));
 		expect(')');
 	}
 
-	term definedFunctor(int tag) {
-		vec<term> v(1, t);
+	ex definedFunctor(int tag) {
+		vec<ex> v(1, t);
 		args(v);
-		return term(v);
+		return ex(v);
 	}
 
-	term atomicTerm() {
+	ex atomicTerm() {
 		auto k = tok;
 		auto s = str;
 		auto sk = srck;
@@ -298,7 +298,7 @@ struct parser1: parser {
 			return distinctObj(s);
 		case k_dollarWord:
 		{
-			vec<term> v;
+			vec<ex> v;
 			switch (keyword(s)) {
 			case s_ceiling:
 				return definedFunctor(Ceil);
@@ -308,10 +308,10 @@ struct parser1: parser {
 			{
 				args(v);
 				for (auto& a: v) defaultType(a, kind::Individual);
-				vec<term> inequalities(1, And);
+				vec<ex> inequalities(1, And);
 				for (auto i = v.begin(), e = v.end(); i != e; ++i)
-					for (auto j = v.begin(); j != i; ++j) inequalities.add(term(Not, term(Eq, *i, *j)));
-				return term(inequalities);
+					for (auto j = v.begin(); j != i; ++j) inequalities.add(ex(Not, ex(Eq, *i, *j)));
+				return ex(inequalities);
 			}
 			case s_false:
 				return False;
@@ -319,10 +319,10 @@ struct parser1: parser {
 				return definedFunctor(Floor);
 			case s_greater:
 				args(v);
-				return term(Lt, v[1], v[0]);
+				return ex(Lt, v[1], v[0]);
 			case s_greatereq:
 				args(v);
-				return term(Le, v[1], v[0]);
+				return ex(Le, v[1], v[0]);
 			case s_is_int:
 				return definedFunctor(IsInteger);
 			case s_is_rat:
@@ -368,13 +368,13 @@ struct parser1: parser {
 		}
 		case k_id:
 		{
-			term a(s, kind::Unknown);
+			ex a(s, kind::Unknown);
 
 			// Not a function call
 			if (tok != '(') return a;
 
 			// Function is being called, so gather the function and arguments
-			vec<term> v(1, a);
+			vec<ex> v(1, a);
 			args(v);
 
 			// By the TPTP specification, symbols can be assumed Boolean or individual, if not previously specified otherwise.
@@ -383,7 +383,7 @@ struct parser1: parser {
 			// Leave it to the caller, which will know from context whether that is the case.
 			for (size_t i = 1; i != v.size(); ++i) defaultType(v[i], kind::Individual);
 
-			return term(v);
+			return ex(v);
 		}
 		case k_integer:
 		{
@@ -423,10 +423,10 @@ struct parser1: parser {
 			return x;
 		}
 		}
-		err("Expected term");
+		err("Expected ex");
 	}
 
-	term infixUnary() {
+	ex infixUnary() {
 		auto a = atomicTerm();
 		switch (tok) {
 		case '=':
@@ -435,7 +435,7 @@ struct parser1: parser {
 			auto b = atomicTerm();
 			defaultType(a, kind::Individual);
 			defaultType(b, kind::Individual);
-			return term(Eq, a, b);
+			return ex(Eq, a, b);
 		}
 		case k_ne:
 		{
@@ -443,19 +443,19 @@ struct parser1: parser {
 			auto b = atomicTerm();
 			defaultType(a, kind::Individual);
 			defaultType(b, kind::Individual);
-			return term(Not, term(Eq, a, b));
+			return ex(Not, ex(Eq, a, b));
 		}
 		}
 		defaultType(a, kind::Bool);
 		return a;
 	}
 
-	term quant(int tag) {
+	ex quant(int tag) {
 		lex();
 		expect('[');
 		auto old = vars.size();
 		// TODO: check generated code
-		vec<term> v{t, False};
+		vec<ex> v{t, False};
 		do {
 			if (tok != k_var) err("Expected variable");
 			auto s = str;
@@ -470,10 +470,10 @@ struct parser1: parser {
 		expect(':');
 		v[1] = unary();
 		vars.resize(old);
-		return term(v);
+		return ex(v);
 	}
 
-	term unary() {
+	ex unary() {
 		switch (tok) {
 		case '!':
 			return quant(All);
@@ -488,19 +488,19 @@ struct parser1: parser {
 			return quant(Exists);
 		case '~':
 			lex();
-			return term(Not, unary());
+			return ex(Not, unary());
 		}
 		return infixUnary();
 	}
 
-	term associativeLogicFormula(int tag, term a) {
-		vec<term> v{t, a};
+	ex associativeLogicFormula(int tag, ex a) {
+		vec<ex> v{t, a};
 		auto k = tok;
 		while (eat(k)) v.add(unary());
-		return term(v);
+		return ex(v);
 	}
 
-	term logicFormula() {
+	ex logicFormula() {
 		auto a = unary();
 		switch (tok) {
 		case '&':
@@ -509,7 +509,7 @@ struct parser1: parser {
 			return associativeLogicFormula(Or, a);
 		case k_eqv:
 			lex();
-			return term(Eqv, a, unary());
+			return ex(Eqv, a, unary());
 		case k_imp:
 			lex();
 			return imp(a, unary());
@@ -518,13 +518,13 @@ struct parser1: parser {
 			return imp(unary(), a);
 		case k_nand:
 			lex();
-			return term(Not, term(And, a, unary()));
+			return ex(Not, ex(And, a, unary()));
 		case k_nor:
 			lex();
-			return term(Not, term(Or, a, unary()));
+			return ex(Not, ex(Or, a, unary()));
 		case k_xor:
 			lex();
-			return term(Not, term(Eqv, a, unary()));
+			return ex(Not, ex(Eqv, a, unary()));
 		}
 		return a;
 	}
@@ -610,7 +610,7 @@ struct parser1: parser {
 					} else {
 						// The symbol is the name of a function with the specified type. Call the term constructor that allows a
 						// type to be specified, which will check for consistency.
-						term _(s, topLevelType());
+						ex _(s, topLevelType());
 					}
 
 					while (parens--) expect(')');
@@ -772,9 +772,9 @@ void pr(type ty) {
 	unreachable;
 }
 
-void pr(term a, term parent = False);
+void pr(ex a, ex parent = False);
 
-void dfunctor(const char* op, term a) {
+void dfunctor(const char* op, ex a) {
 	print(op);
 	putchar('(');
 	for (size_t i = 1; i < a->n; ++i) {
@@ -784,7 +784,7 @@ void dfunctor(const char* op, term a) {
 	putchar(')');
 }
 
-void quant(char op, term a) {
+void quant(char op, ex a) {
 	putchar(op);
 	putchar('[');
 	joining;
@@ -803,7 +803,7 @@ void quant(char op, term a) {
 }
 
 // Infix connectives may need to be surrounded by parentheses to disambiguate, depending on what the parent term was
-bool needParens(term a, term parent) {
+bool needParens(ex a, ex parent) {
 	// CNF conversion may sometimes generate conjunctions or disjunctions with only one operand. In that case, the operator will not
 	// actually occur in the printed form, so the requirement for parentheses cannot arise.
 	if (a.size() == 1) return 0;
@@ -821,7 +821,7 @@ bool needParens(term a, term parent) {
 	return 0;
 }
 
-void infixConnective(const char* op, term a, term parent) {
+void infixConnective(const char* op, ex a, ex parent) {
 	assert(a.size());
 	auto p = needParens(a, parent);
 	if (p) putchar('(');
@@ -835,7 +835,7 @@ void infixConnective(const char* op, term a, term parent) {
 
 size_t sknames;
 
-void pr(term a, term parent) {
+void pr(ex a, ex parent) {
 	switch (a->tag) {
 	case Add:
 		dfunctor("$sum", a);
