@@ -2,7 +2,7 @@
 // rather than in their typed wrappers, to make it possible to statically initialize the array of keywords.
 // TODO: rename
 struct string {
-	// TODO: move some of these to map objects?
+	// TODO: move some of these to map objects? Types may need to be looked up many times during parsing of expressions that bind variables, but distinct objects are very rarely used
 	// TODO: rename
 	uint32_t dobj;
 	uint32_t sym;
