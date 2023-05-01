@@ -60,7 +60,7 @@ uint32_t entries[cap];
 struct init {
 	init() {
 		assert(isPow2(cap));
-		for (size_t i = 1; i != unboxedTypes; ++i) typePtr(i * offsetof(Type, v) / 8)->k = (kind)i;
+		for (size_t i = 1; i < unboxedTypes; ++i) typePtr(i * offsetof(Type, v) / 8)->k = (kind)i;
 	}
 } _;
 
@@ -129,7 +129,7 @@ void print(type ty) {
 	if (!ty.size()) return;
 	putchar('(');
 	joining;
-	for (size_t i = 0; i != ty.size(); ++i) {
+	for (size_t i = 0; i < ty.size(); ++i) {
 		join(", ");
 		print(ty[i]);
 	}

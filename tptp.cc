@@ -309,7 +309,7 @@ struct parser1: parser {
 				args(v);
 				for (auto& a: v) defaultType(a, kind::Individual);
 				vec<ex> inequalities(1, And);
-				for (auto i = v.begin(), e = v.end(); i != e; ++i)
+				for (auto i = v.begin(), e = v.end(); i < e; ++i)
 					for (auto j = v.begin(); j != i; ++j) inequalities.add(ex(Not, ex(Eq, *i, *j)));
 				return ex(inequalities);
 			}
@@ -381,7 +381,7 @@ struct parser1: parser {
 			// First-order logic does not allow functions to take Boolean arguments, so the arguments can default to individual. But
 			// we cannot yet make any assumption about the function return type. For all we know here, it could still be Boolean.
 			// Leave it to the caller, which will know from context whether that is the case.
-			for (size_t i = 0; i != v.size(); ++i) defaultType(v[i], kind::Individual);
+			for (size_t i = 0; i < v.size(); ++i) defaultType(v[i], kind::Individual);
 
 			return ex(v);
 		}
@@ -415,7 +415,7 @@ struct parser1: parser {
 		}
 		case k_var:
 		{
-			for (auto i = vars.rbegin(), e = vars.rend(); i != e; ++i)
+			for (auto i = vars.rbegin(), e = vars.rend(); i < e; ++i)
 				if (i->first == s) return i->second;
 			if (!cnfMode) err("Unknown variable");
 			auto x = var(vars.size(), kind::Individual);

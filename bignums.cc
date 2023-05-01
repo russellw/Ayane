@@ -31,7 +31,7 @@ void expand() {
 	auto cap1 = cap * 2;
 	auto entries1 = (Atom**)calloc(cap1, sizeof *entries);
 	// TODO: check generated code
-	for (auto i = entries, e = entries + cap; i != e; ++i) {
+	for (auto i = entries, e = entries + cap; i < e; ++i) {
 		auto a = *i;
 		if (a) entries1[slot(entries1, cap1, a->mpz)] = a;
 	}
@@ -106,7 +106,7 @@ void expand() {
 	auto cap1 = cap * 2;
 	auto entries1 = (Atom**)calloc(cap1, sizeof *entries);
 	// TODO: check generated code
-	for (auto i = entries, e = entries + cap; i != e; ++i) {
+	for (auto i = entries, e = entries + cap; i < e; ++i) {
 		auto a = *i;
 		if (a) entries1[slot(entries1, cap1, a->mpq)] = a;
 	}

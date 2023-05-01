@@ -22,7 +22,7 @@ bool match(map<ex, ex>& m, vec<ex> c, vec<ex> d, vec<ex> c2, vec<ex> d2) {
 	}
 
 	// Try matching literals
-	for (size_t ci = 0; ci != c.size(); ++ci) {
+	for (size_t ci = 0; ci < c.size(); ++ci) {
 		// Make an equation out of each literal, because an equation can be matched either way around
 		auto ce = eqn(c[ci]);
 
@@ -30,7 +30,7 @@ bool match(map<ex, ex>& m, vec<ex> c, vec<ex> d, vec<ex> c2, vec<ex> d2) {
 		// make a copy of this list of literals, minus the candidate lateral we are trying to match.
 		auto c1 = c;
 		c1.erase(c1.begin() + ci);
-		for (size_t di = 0; di != d.size(); ++di) {
+		for (size_t di = 0; di < d.size(); ++di) {
 			// Same thing with the literals on the other side
 			auto de = eqn(d[di]);
 			auto d1 = d;

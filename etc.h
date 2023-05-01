@@ -19,7 +19,7 @@ template <class T>
 void cartProduct(const std::vector<std::vector<T>>& vs, size_t i, vec<size_t>& js, std::vector<std::vector<T>>& rs) {
 	if (i == js.size()) {
 		std::vector<T> r;
-		for (size_t i = 0; i != vs.size(); ++i) r.push_back(vs[i][js[i]]);
+		for (size_t i = 0; i < vs.size(); ++i) r.push_back(vs[i][js[i]]);
 		rs.push_back(r);
 		return;
 	}

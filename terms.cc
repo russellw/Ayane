@@ -7,7 +7,7 @@ namespace {
 struct init {
 	init() {
 		auto n = (int)end;
-		for (int i = 0; i != n; ++i) {
+		for (int i = 0; i < n; ++i) {
 			auto p = (Atom*)atoms->ptr(tatoms + i * offsetof(atom, s) / 8);
 			p->t = (tag)i;
 		}
@@ -110,7 +110,7 @@ struct init {
 void expand() {
 	auto cap1 = cap * 2;
 	auto entries1 = (uint32_t*)compounds->ptr(compounds->calloc(cap1 * 4));
-	for (size_t i = 0; i != cap; ++i) {
+	for (size_t i = 0; i < cap; ++i) {
 		auto o = entries[i];
 		if (!o) continue;
 		auto s = (compound*)compounds->ptr(o);
@@ -253,7 +253,7 @@ ex::operator type() const {
 type ftype(type rty, const Ex* first, const Ex* last) {
 	if (first == last) return rty;
 	vec<type> v(1, rty);
-	for (auto i = first; i != last; ++i) v.add(type(*i));
+	for (auto i = first; i < last; ++i) v.add(type(*i));
 	return type(kind::Fn, v);
 }
 
@@ -284,7 +284,7 @@ int cmp(ex a, ex b) {
 	auto an = a.size();
 	auto bn = b.size();
 	auto n = min(an, bn);
-	for (size_t i = 0; i != n; ++i) {
+	for (size_t i = 0; i < n; ++i) {
 		auto c = cmp(at(a, i), b[i]);
 		if (c) return c;
 	}

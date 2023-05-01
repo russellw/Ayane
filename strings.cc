@@ -72,7 +72,7 @@ struct init {
 		assert(isPow2(cap));
 		assert(qty <= cap * 3 / 4);
 		entries = (string**)calloc(cap, sizeof(string*));
-		for (int i = 0; i != sizeof keywords / sizeof *keywords; ++i) {
+		for (int i = 0; i < sizeof keywords / sizeof *keywords; ++i) {
 			auto s = keywords + i;
 			auto n = strlen(s->v);
 
@@ -92,7 +92,7 @@ struct init {
 void expand() {
 	auto cap1 = cap * 2;
 	auto entries1 = (string**)calloc(cap1, sizeof(string*));
-	for (size_t i = 0; i != cap; ++i) {
+	for (size_t i = 0; i < cap; ++i) {
 		auto s = entries[i];
 		if (s) entries1[slot(entries1, cap1, s->v, strlen(s->v))] = s;
 	}

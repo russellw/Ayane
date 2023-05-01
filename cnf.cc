@@ -129,7 +129,7 @@ void maybeRename(int pol, vec<Ex*>& v) {
 	// probably what we want.
 	sort(v.begin() + 1, v.end(), [=](Ex* a, Ex* b) { return ncsApprox(pol, a) < ncsApprox(pol, b); });
 	size_t n = 1;
-	for (size_t i = 0; i != v.size(); ++i) {
+	for (size_t i = 0; i < v.size(); ++i) {
 		auto m = ncsApprox(pol, v[i]);
 		if (n * m < many) n *= m;
 		else

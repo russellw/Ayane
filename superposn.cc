@@ -169,12 +169,12 @@ struct doing {
 
 		// Negative literals
 		vec<ex> neg;
-		for (size_t i = 0; i != c.first.size(); ++i)
-			if (i != ci) neg.add(replace(m, c.first[i], 0));
+		for (size_t i = 0; i < c.first.size(); ++i)
+			if (i < ci) neg.add(replace(m, c.first[i], 0));
 
 		// Positive literals
 		vec<ex> pos;
-		for (size_t i = 0; i != c.second.size(); ++i) pos.add(replace(m, c.second[i], 0));
+		for (size_t i = 0; i < c.second.size(); ++i) pos.add(replace(m, c.second[i], 0));
 
 		// Make new clause
 		qclause(r_er, vec<clause>{c}, neg, pos);
@@ -182,7 +182,7 @@ struct doing {
 
 	// For each negative equation
 	void resolve(Clause* c) {
-		for (size_t ci = 0; ci != c.first.size(); ++ci) {
+		for (size_t ci = 0; ci < c.first.size(); ++ci) {
 			auto e = eqn(c.first[ci]);
 			resolve(c, ci, e.first, e.second);
 		}
@@ -209,13 +209,13 @@ struct doing {
 
 		// Negative literals
 		vec<ex> neg;
-		for (size_t i = 0; i != c.first.size(); ++i) neg.add(replace(m, c.first[i], 0));
+		for (size_t i = 0; i < c.first.size(); ++i) neg.add(replace(m, c.first[i], 0));
 		neg.add(equate(replace(m, c1, 0), replace(m, d1, 0)));
 
 		// Positive literals
 		vec<ex> pos;
-		for (size_t i = 0; i != c.second.size(); ++i)
-			if (i != di) pos.add(replace(m, c.second[i], 0));
+		for (size_t i = 0; i < c.second.size(); ++i)
+			if (i < di) pos.add(replace(m, c.second[i], 0));
 
 		// Make new clause
 		qclause(r_ef, vec<clause>{c}, neg, pos);
@@ -223,7 +223,7 @@ struct doing {
 
 	// For each positive equation (both directions) again
 	void factor(Clause* c, size_t ci, ex c0, ex c1) {
-		for (size_t di = 0; di != c.second.size(); ++di) {
+		for (size_t di = 0; di < c.second.size(); ++di) {
 			if (di == ci) continue;
 			auto e = eqn(c.second[di]);
 			factor(c, ci, c0, c1, di, e.first, e.second);
@@ -233,7 +233,7 @@ struct doing {
 
 	// For each positive equation (both directions)
 	void factor(Clause* c) {
-		for (size_t ci = 0; ci != c.second.size(); ++ci) {
+		for (size_t ci = 0; ci < c.second.size(); ++ci) {
 			auto e = eqn(c.second[ci]);
 			factor(c, ci, e.first, e.second);
 			factor(c, ci, e.second, e.first);
@@ -265,17 +265,17 @@ struct doing {
 
 		// Negative literals
 		vec<ex> neg;
-		for (size_t i = 0; i != c.first.size(); ++i) neg.add(replace(m, c.first[i], 0));
-		for (size_t i = 0; i != d.first.size(); ++i) {
+		for (size_t i = 0; i < c.first.size(); ++i) neg.add(replace(m, c.first[i], 0));
+		for (size_t i = 0; i < d.first.size(); ++i) {
 			if (!mode && i == di) continue;
 			neg.add(replace(m, d.first[i], 1));
 		}
 
 		// Positive literals
 		vec<ex> pos;
-		for (size_t i = 0; i != c.second.size(); ++i)
-			if (i != ci) pos.add(replace(m, c.second[i], 0));
-		for (size_t i = 0; i != d.second.size(); ++i) {
+		for (size_t i = 0; i < c.second.size(); ++i)
+			if (i < ci) pos.add(replace(m, c.second[i], 0));
+		for (size_t i = 0; i < d.second.size(); ++i) {
 			if (mode && i == di) continue;
 			pos.add(replace(m, d.second[i], 1));
 		}
@@ -311,7 +311,7 @@ struct doing {
 	// For each (mode)ve equation in d (both directions)
 	void superposn(Clause* c, Clause* d, size_t ci, ex c0, ex c1) {
 		auto& dmode = mode ? d.second : d.first;
-		for (size_t di = 0; di != dmode.size(); ++di) {
+		for (size_t di = 0; di < dmode.size(); ++di) {
 			auto e = eqn(dmode[di]);
 			descend(c, d, ci, c0, c1, di, e.first, e.second, vec<size_t>(), e.first);
 			descend(c, d, ci, c0, c1, di, e.second, e.first, vec<size_t>(), e.second);
@@ -320,7 +320,7 @@ struct doing {
 
 	// For each positive equation in c (both directions)
 	void superposn(Clause* c, Clause* d) {
-		for (size_t ci = 0; ci != c.second.size(); ++ci) {
+		for (size_t ci = 0; ci < c.second.size(); ++ci) {
 			auto e = eqn(c.second[ci]);
 			superposn(c, d, ci, e.first, e.second);
 			superposn(c, d, ci, e.second, e.first);

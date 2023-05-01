@@ -41,19 +41,19 @@ template <class T> struct vec {
 	// Turn some elements back into uninitialized memory
 	void del(T* i, T* j) {
 		// TODO: more efficient to free in reverse order?
-		while (i != j) i++->~T();
+		while (i < j) i++->~T();
 	}
 
 	// Constructors use placement new to initialize elements where necessary with copies of source elements
 	// TODO: constructor that takes estimated initial capacity
 	explicit vec(size_t o = 0) {
 		init(o);
-		for (auto i = begin(), e = end(); i != e; ++i) new (i) T;
+		for (auto i = begin(), e = end(); i < e; ++i) new (i) T;
 	}
 
 	explicit vec(size_t o, const T& b) {
 		init(o);
-		for (auto i = begin(), e = end(); i != e; ++i) new (i) T(b);
+		for (auto i = begin(), e = end(); i < e; ++i) new (i) T(b);
 	}
 
 	explicit vec(T* first, T* last) {
@@ -280,7 +280,7 @@ template <class T> size_t hash(const vec<T>& a) {
 template <class T> bool operator==(const vec<T>& a, const vec<T>& b) {
 	auto o = a.size();
 	if (o != b.size()) return 0;
-	for (size_t i = 0; i != o; ++i)
+	for (size_t i = 0; i < o; ++i)
 		if (at(a, i) != b[i]) return 0;
 	return 1;
 }

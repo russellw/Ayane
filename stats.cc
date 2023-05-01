@@ -64,7 +64,7 @@ void incTrace() {
 
 	// Trace
 	std::vector<const char*> v;
-	for (int i = 0; i != nframes; ++i) {
+	for (int i = 0; i < nframes; ++i) {
 		auto addr = (DWORD64)(stack[i]);
 		SymFromAddr(process, addr, 0, si);
 		DWORD displacement;
