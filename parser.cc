@@ -88,10 +88,15 @@ parser::parser(const char* file) {
 }
 
 parser::~parser() {
-	free(srco);
-	file = old_file;
-	srco = old_srco;
-	srck = old_srck;
+	free(src0);
+}
+
+void parser::err(const char* msg) {
+	size_t line = 1;
+	for (auto s = src0; s < srck; ++s)
+		if (*s == '\n') ++line;
+	fprintf(stderr, "%s:%zu: %s\n", file, line, msg);
+	exit(1);
 }
 
 void parser::word() {
@@ -179,10 +184,101 @@ void parser::num() {
 	tok = k_integer;
 }
 
-void parser::err(const char* msg) {
-	size_t line = 1;
-	for (auto s = src0; s < srck; ++s)
-		if (*s == '\n') ++line;
-	fprintf(stderr, "%s:%zu: %s\n", file, line, msg);
-	exit(1);
+void parser::num() {
+	// If we knew this was just an integer, we could let mpz_set_str handle a minus sign for us, but there might be a decimal point,
+	// in which case sign is more complicated and best handled separately
+	bool sign = 0;
+	switch (*src) {
+	case '-':
+		sign = 1;
+		[[fallthrough]];
+	case '+':
+		++src;
+		break;
+	}
+
+	// Result = scaled mantissa
+	mpq_t r;
+	mpq_init(r);
+	auto mantissa = mpq_numref(r);
+	auto powScale = mpq_denref(r);
+
+	// Integer part. Even if it is followed by a decimal point, both TPTP and SMT-LIB require a nonempty integer part, which makes
+	// parsing slightly easier. It is expected that parsers will only call this function if at least one digit has been detected.
+	assert(isDigit(*src));
+	mpz_t integerPart;
+	mpz_init(integerPart);
+	auto t = s;
+	if (isDigit(*t)) {
+		do ++t;
+		while (isDigit(*t));
+
+		// mpz_set_str doesn't like trailing junk, so give it a cleanly null-terminated string
+		auto c = *t;
+		*t = 0;
+		if (mpz_set_str(integerPart, s, 10)) err("Invalid integer part");
+
+		// The following byte might be important, so put it back
+		*t = c;
+		s = t;
+	}
+
+	// Decimal part
+	size_t scale = 0;
+	if (*s == '.') {
+		++s;
+		t = s;
+		if (isDigit(*t)) {
+			do ++t;
+			while (isDigit(*t));
+			auto c = *t;
+			*t = 0;
+			if (mpz_set_str(mantissa, s, 10)) err("Invalid decimal part");
+			*t = c;
+			scale = t - s;
+			s = t;
+		}
+	}
+	mpz_ui_pow_ui(powScale, 10, scale);
+
+	// Mantissa += integerPart * 10^scale
+	mpz_addmul(mantissa, integerPart, powScale);
+
+	// Sign
+	if (sign) mpz_neg(mantissa, mantissa);
+
+	// Exponent
+	bool exponentSign = 0;
+	auto exponent = 0UL;
+	if (*s == 'e' || *s == 'E') {
+		++s;
+		switch (*s) {
+		case '-':
+			exponentSign = 1;
+			[[fallthrough]];
+		case '+':
+			++s;
+			break;
+		}
+		errno = 0;
+		exponent = strtoul(s, 0, 10);
+		if (errno) err(strerror(errno));
+	}
+	mpz_t powExponent;
+	mpz_init(powExponent);
+	mpz_ui_pow_ui(powExponent, 10, exponent);
+	if (exponentSign) mpz_mul(powScale, powScale, powExponent);
+	else
+		mpz_mul(mantissa, mantissa, powExponent);
+
+	// Reduce result to lowest terms
+	mpq_canonicalize(r);
+
+	// Cleanup
+	// TODO: free in reverse order?
+	mpz_clear(powExponent);
+	mpz_clear(integerPart);
+
+	// Wrap result in term designating it as a real number
+	return real(r);
 }

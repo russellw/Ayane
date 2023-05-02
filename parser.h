@@ -34,10 +34,8 @@ inline bool isWord(int c) {
 }
 
 enum {
-	k_id = 0x100,
-	k_integer,
-	k_rational,
-	k_real,
+	k_const = 0x100,
+	k_id,
 	parser_k
 };
 
@@ -63,10 +61,14 @@ struct parser {
 	parser(const char* file);
 	~parser();
 
-	// Lex an unquoted word, set symbol and set tok = k_id
+	// Report an error with line number, and exit
+	[[noreturn]] void err(const char* msg);
+
+	// Lex an unquoted word, set str, and set tok = k_id
 	void word();
 
-	// Lex a quoted string, set symbol and leave tok unset
+	// Lex a quoted string, set str, and leave tok unset, because different kinds of quotes can mean different things depending on
+	// language
 	void quote();
 
 	// Lex numbers; these functions just identify the end of a number token and set tok accordingly
@@ -74,7 +76,4 @@ struct parser {
 	void digits();
 	void exp();
 	void num();
-
-	// Report an error with line number, and exit
-	[[noreturn]] void err(const char* msg);
 };
