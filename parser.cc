@@ -134,9 +134,27 @@ bool parser::sign() {
 
 void parser::digits() {
 	auto s = src;
-	do ++s;
-	while (isDigit(*s));
+	while (isDigit(*s)) ++s;
 	src = s;
+}
+
+void parser::integer(mpz_t z) {
+	// mpz_init_set_str doesn't like leading '+', so eat it before proceeding
+	if (*src == '+') ++src;
+
+	auto s = src;
+	if (*src == '-') ++src;
+	digits();
+
+	// mpz_init_set_str doesn't like trailing junk, so give it a cleanly null-terminated string
+	auto c = *src;
+	*src = 0;
+
+	// At least one digit is required
+	if (mpz_init_set_str(z, s, 10)) err("Expected number");
+
+	// The following byte might be important, so put it back
+	*src = c;
 }
 
 void parser::exp() {
@@ -152,58 +170,34 @@ void parser::exp() {
 }
 
 void parser::num() {
-	// mpz_init_set_str doesn't like leading '+', so eat it before proceeding
-	if (*src == '+') {
-		++src;
-		srck = src;
-	}
-
 	mpq_t q;
 	tok = k_const;
 
-	// Integer. Even if it is followed by a decimal point, both TPTP and SMT-LIB require a nonempty integer part, which makes
-	// parsing slightly easier. Parsers must only call this function if they detect at least one digit.
-	assert(isDigit(*src) || *src == '-' && isDigit(src[1]));
-	mpz_t z;
-	auto s = src;
-	do ++s;
-	while (isDigit(*s));
-
-	// mpz_init_set_str doesn't like trailing junk, so give it a cleanly null-terminated string
-	auto c = *s;
-	*s = 0;
-	auto r = mpz_init_set_str(z, src, 10);
-
-	// We have made sure to give mpz_init_set_str a correct number no matter what the input, so a parsing error at this point should
-	// be impossible. If one happens anyway, that's an error in program logic.
-	assert(!r);
-
-	// The following byte might be important, so put it back
-	*s = c;
-	src = s;
+	// Both TPTP and SMT-LIB require nonempty digit sequences before and after '.', which makes parsing slightly easier. Parsers
+	// should only call this function if they detect at least one digit.
+	auto z = mpq_numref(q);
+	integer(z);
 
 	// After parsing the integer, we find out if this is actually a rational or decimal
-	switch (c) {
+	switch (*src) {
 	case '.':
-		// Result = scaled mantissa
+		mpq_init(q);
 		auto mantissa = mpq_numref(q);
 		auto powScale = mpq_denref(q);
 
 		// Decimal part
 		size_t scale = 0;
-		if (*src == '.') {
-			++src;
-			s = src;
-			if (isDigit(*s)) {
-				do ++s;
-				while (isDigit(*s));
-				auto c = *s;
-				*s = 0;
-				if (mpz_set_str(mantissa, src, 10)) err("Invalid decimal part");
-				*s = c;
-				scale = s - src;
-				src = s;
-			}
+		++src;
+		s = src;
+		if (isDigit(*s)) {
+			do ++s;
+			while (isDigit(*s));
+			auto c = *s;
+			*s = 0;
+			if (mpz_set_str(mantissa, src, 10)) err("Invalid decimal part");
+			*s = c;
+			scale = s - src;
+			src = s;
 		}
 		mpz_ui_pow_ui(powScale, 10, scale);
 
@@ -237,29 +231,13 @@ void parser::num() {
 		else
 			mpz_mul(mantissa, mantissa, powExponent);
 
-		// Reduce result to lowest terms
-		mpq_canonicalize(q);
-
 		// Cleanup
 		mpz_clear(powExponent);
 		mpz_clear(z);
 		break;
 	case '/':
-		// It would be slightly faster to keep the integer we just parsed, but this case is so rare that it makes more sense to
-		// optimize for simplicity and just let mpq_set_str do the whole job
-		mpz_clear(z);
-
-		// Skip the '/' as well as the following digits
-		digits();
-
-		c = *src;
-		*src = 0;
-
-		mpq_init(q);
-		if (mpq_set_str(q, srck, 10)) err("Invalid rational");
-		mpq_canonicalize(q);
-
-		*src = c;
+		++src;
+		integer(mpq_denref(q));
 		break;
 	case 'E':
 	case 'e':
@@ -268,5 +246,6 @@ void parser::num() {
 		constant = ex(z);
 		return;
 	}
+	mpq_canonicalize(q);
 	constant = ex(q);
 }

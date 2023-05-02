@@ -76,9 +76,8 @@ struct parser {
 
 	// Helper functions
 	bool sign();
-
-	// Skip an optional nondigit character followed by digit sequence
 	void digits();
+	void integer(mpz_t z);
 	void exp();
 
 	void num();
