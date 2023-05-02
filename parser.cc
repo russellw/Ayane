@@ -161,10 +161,6 @@ void parser::num() {
 	mpq_t q;
 	tok = k_const;
 
-	// Result = scaled mantissa
-	auto mantissa = mpq_numref(q);
-	auto powScale = mpq_denref(q);
-
 	// Integer. Even if it is followed by a decimal point, both TPTP and SMT-LIB require a nonempty integer part, which makes
 	// parsing slightly easier. Parsers must only call this function if they detect at least one digit.
 	assert(isDigit(*src) || *src == '-' && isDigit(src[1]));
@@ -189,11 +185,69 @@ void parser::num() {
 	// After parsing the integer, we find out if this is actually a rational or decimal
 	switch (c) {
 	case '.':
+		// Result = scaled mantissa
+		auto mantissa = mpq_numref(q);
+		auto powScale = mpq_denref(q);
+
+		// Decimal part
+		size_t scale = 0;
+		if (*src == '.') {
+			++src;
+			s = src;
+			if (isDigit(*s)) {
+				do ++s;
+				while (isDigit(*s));
+				auto c = *s;
+				*s = 0;
+				if (mpz_set_str(mantissa, src, 10)) err("Invalid decimal part");
+				*s = c;
+				scale = s - src;
+				src = s;
+			}
+		}
+		mpz_ui_pow_ui(powScale, 10, scale);
+
+		// Mantissa += z * 10^scale
+		mpz_addmul(mantissa, z, powScale);
+
+		// Sign
+		if (sign) mpz_neg(mantissa, mantissa);
+
+		// Exponent
+		bool exponentSign = 0;
+		auto exponent = 0UL;
+		if (*src == 'e' || *src == 'E') {
+			++src;
+			switch (*src) {
+			case '-':
+				exponentSign = 1;
+				[[fallthrough]];
+			case '+':
+				++src;
+				break;
+			}
+			errno = 0;
+			exponent = strtoul(src, 0, 10);
+			if (errno) err(strerror(errno));
+		}
+		mpz_t powExponent;
+		mpz_init(powExponent);
+		mpz_ui_pow_ui(powExponent, 10, exponent);
+		if (exponentSign) mpz_mul(powScale, powScale, powExponent);
+		else
+			mpz_mul(mantissa, mantissa, powExponent);
+
+		// Reduce result to lowest terms
+		mpq_canonicalize(q);
+
+		// Cleanup
+		mpz_clear(powExponent);
+		mpz_clear(z);
 		break;
 	case '/':
 		// It would be slightly faster to keep the integer we just parsed, but this case is so rare that it makes more sense to
 		// optimize for simplicity and just let mpq_set_str do the whole job
-		mpz_free(z);
+		mpz_clear(z);
 
 		// Skip the '/' as well as the following digits
 		digits();
@@ -215,63 +269,4 @@ void parser::num() {
 		return;
 	}
 	constant = ex(q);
-
-	// Decimal part
-	size_t scale = 0;
-	if (*src == '.') {
-		++src;
-		s = src;
-		if (isDigit(*s)) {
-			do ++s;
-			while (isDigit(*s));
-			auto c = *s;
-			*s = 0;
-			if (mpz_set_str(mantissa, src, 10)) err("Invalid decimal part");
-			*s = c;
-			scale = s - src;
-			src = s;
-		}
-	}
-	mpz_ui_pow_ui(powScale, 10, scale);
-
-	// Mantissa += z * 10^scale
-	mpz_addmul(mantissa, z, powScale);
-
-	// Sign
-	if (sign) mpz_neg(mantissa, mantissa);
-
-	// Exponent
-	bool exponentSign = 0;
-	auto exponent = 0UL;
-	if (*src == 'e' || *src == 'E') {
-		++src;
-		switch (*src) {
-		case '-':
-			exponentSign = 1;
-			[[fallthrough]];
-		case '+':
-			++src;
-			break;
-		}
-		errno = 0;
-		exponent = strtoul(src, 0, 10);
-		if (errno) err(strerror(errno));
-	}
-	mpz_t powExponent;
-	mpz_init(powExponent);
-	mpz_ui_pow_ui(powExponent, 10, exponent);
-	if (exponentSign) mpz_mul(powScale, powScale, powExponent);
-	else
-		mpz_mul(mantissa, mantissa, powExponent);
-
-	// Reduce result to lowest terms
-	mpq_canonicalize(q);
-
-	// Cleanup
-	// TODO: free in reverse order?
-	mpz_clear(powExponent);
-	mpz_clear(z);
-
-	// Wrap result in term designating it as a real number
-	return real(q);
 }
