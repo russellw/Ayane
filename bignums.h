@@ -1,12 +1,6 @@
 Ex* intern(mpz_t a);
 Ex* intern(mpq_t a);
 
-// Functions for making arbitrary precision numbers for convenience, accept integer or string input and will intern the result so
-// equality tests can simply compare pointers
-Ex* integer(const char* s);
-
-Ex* rational(const char* s);
-
 // Real number literals are represented as rational number literals wrapped in ToReal. It's a function call that is not actually
 // evaluated, since there is no representation of real number literals as such.
 Ex* real(mpq_t q);

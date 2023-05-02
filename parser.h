@@ -74,8 +74,10 @@ struct parser {
 	// language
 	void quote();
 
-	// Lex numbers; these functions just identify the end of a number token and set tok accordingly
+	// Helper functions
 	bool sign();
+
+	// Skip an optional nondigit character followed by digit sequence
 	void digits();
 	void exp();
 

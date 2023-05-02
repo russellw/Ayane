@@ -134,7 +134,8 @@ bool parser::sign() {
 
 void parser::digits() {
 	auto s = src;
-	while (isDigit(*s)) ++s;
+	do ++s;
+	while (isDigit(*s));
 	src = s;
 }
 
@@ -151,14 +152,16 @@ void parser::exp() {
 }
 
 void parser::num() {
-	// mpz_set_str doesn't like leading '+', so eat it before proceeding
-	if (*src == '+') ++src;
+	// mpz_init_set_str doesn't like leading '+', so eat it before proceeding
+	if (*src == '+') {
+		++src;
+		srck = src;
+	}
 
-	tok = k_const;
 	mpq_t q;
+	tok = k_const;
 
 	// Result = scaled mantissa
-	mpq_init(q);
 	auto mantissa = mpq_numref(q);
 	auto powScale = mpq_denref(q);
 
@@ -170,20 +173,39 @@ void parser::num() {
 	do ++s;
 	while (isDigit(*s));
 
-	// mpz_set_str doesn't like trailing junk, so give it a cleanly null-terminated string
+	// mpz_init_set_str doesn't like trailing junk, so give it a cleanly null-terminated string
 	auto c = *s;
 	*s = 0;
-	if (mpz_init_set_str(z, src, 10)) err("Invalid integer part");
+	auto r = mpz_init_set_str(z, src, 10);
+
+	// We have made sure to give mpz_init_set_str a correct number no matter what the input, so a parsing error at this point should
+	// be impossible. If one happens anyway, that's an error in program logic.
+	assert(!r);
 
 	// The following byte might be important, so put it back
 	*s = c;
 	src = s;
 
 	// After parsing the integer, we find out if this is actually a rational or decimal
-	switch (*s) {
+	switch (c) {
 	case '.':
 		break;
 	case '/':
+		// It would be slightly faster to keep the integer we just parsed, but this case is so rare that it makes more sense to
+		// optimize for simplicity and just let mpq_set_str do the whole job
+		mpz_free(z);
+
+		// Skip the '/' as well as the following digits
+		digits();
+
+		c = *src;
+		*src = 0;
+
+		mpq_init(q);
+		if (mpq_set_str(q, srck, 10)) err("Invalid rational");
+		mpq_canonicalize(q);
+
+		*src = c;
 		break;
 	case 'E':
 	case 'e':
@@ -192,6 +214,7 @@ void parser::num() {
 		constant = ex(z);
 		return;
 	}
+	constant = ex(q);
 
 	// Decimal part
 	size_t scale = 0;

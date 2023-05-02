@@ -74,12 +74,6 @@ Ex* intern(mpz_t a) {
 	return mpzs::entries[i] = r;
 }
 
-Ex* integer(const char* s) {
-	mpz_t r;
-	if (mpz_init_set_str(r, s, 10)) err("Invalid integer");
-	return intern(r);
-}
-
 // Rationals
 namespace mpqs {
 size_t cap = 4;
@@ -147,14 +141,6 @@ Ex* intern(mpq_t a) {
 
 	// Add to hash table
 	return mpqs::entries[i] = r;
-}
-
-Ex* rational(const char* s) {
-	mpq_t r;
-	mpq_init(r);
-	if (mpq_set_str(r, s, 10)) err("Invalid rational");
-	mpq_canonicalize(r);
-	return intern(r);
 }
 
 Ex* real(mpq_t q) {
