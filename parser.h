@@ -58,6 +58,9 @@ struct parser {
 	// Current token, as direct char for single-char tokens, or language-specific enum otherwise
 	int tok;
 
+	// If tok == k_const, this is the value of the constant
+	Ex* constant;
+
 	parser(const char* file);
 	~parser();
 

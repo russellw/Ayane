@@ -151,40 +151,36 @@ void parser::exp() {
 }
 
 void parser::num() {
-	tok = k_const;
+	// mpz_set_str doesn't like leading '+', so eat it before proceeding
+	if (*src == '+') ++src;
 
-	// If we knew this was just an integer, we could let mpz_set_str handle a minus sign for us, but there might be a decimal point,
-	// in which case sign is more complicated and best handled separately
-	auto sgn = sign();
+	tok = k_const;
+	mpq_t q;
 
 	// Result = scaled mantissa
-	mpq_t q;
 	mpq_init(q);
 	auto mantissa = mpq_numref(q);
 	auto powScale = mpq_denref(q);
 
-	// Integer part. Even if it is followed by a decimal point, both TPTP and SMT-LIB require a nonempty integer part, which makes
-	// parsing slightly easier. It is expected that parsers will only call this function if at least one digit has been detected.
-	assert(isDigit(*src));
-	mpz_t integerPart;
-	mpz_init(integerPart);
+	// Integer. Even if it is followed by a decimal point, both TPTP and SMT-LIB require a nonempty integer part, which makes
+	// parsing slightly easier. Parsers must only call this function if they detect at least one digit.
+	assert(isDigit(*src) || *src == '-' && isDigit(src[1]));
+	mpz_t z;
 	auto s = src;
-	if (isDigit(*s)) {
-		do ++s;
-		while (isDigit(*s));
+	do ++s;
+	while (isDigit(*s));
 
-		// mpz_set_str doesn't like trailing junk, so give it a cleanly null-terminated string
-		auto c = *s;
-		*s = 0;
-		if (mpz_set_str(integerPart, src, 10)) err("Invalid integer part");
+	// mpz_set_str doesn't like trailing junk, so give it a cleanly null-terminated string
+	auto c = *s;
+	*s = 0;
+	if (mpz_init_set_str(z, src, 10)) err("Invalid integer part");
 
-		// The following byte might be important, so put it back
-		*s = c;
-		src = s;
-	}
+	// The following byte might be important, so put it back
+	*s = c;
+	src = s;
 
-	// Followed by various possibilities for fractional part or exponent
-	switch (*src) {
+	// After parsing the integer, we find out if this is actually a rational or decimal
+	switch (*s) {
 	case '.':
 		break;
 	case '/':
@@ -192,6 +188,9 @@ void parser::num() {
 	case 'E':
 	case 'e':
 		break;
+	default:
+		constant = ex(z);
+		return;
 	}
 
 	// Decimal part
@@ -212,8 +211,8 @@ void parser::num() {
 	}
 	mpz_ui_pow_ui(powScale, 10, scale);
 
-	// Mantissa += integerPart * 10^scale
-	mpz_addmul(mantissa, integerPart, powScale);
+	// Mantissa += z * 10^scale
+	mpz_addmul(mantissa, z, powScale);
 
 	// Sign
 	if (sign) mpz_neg(mantissa, mantissa);
@@ -248,7 +247,7 @@ void parser::num() {
 	// Cleanup
 	// TODO: free in reverse order?
 	mpz_clear(powExponent);
-	mpz_clear(integerPart);
+	mpz_clear(z);
 
 	// Wrap result in term designating it as a real number
 	return real(q);
