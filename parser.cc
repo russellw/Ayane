@@ -170,6 +170,7 @@ void parser::exp() {
 }
 
 void parser::num() {
+	auto sign = *src == '-';
 	mpq_t q;
 	tok = k_const;
 
@@ -181,31 +182,29 @@ void parser::num() {
 	// After parsing the integer, we find out if this is actually a rational or decimal
 	switch (*src) {
 	case '.':
-		mpq_init(q);
-		auto mantissa = mpq_numref(q);
-		auto powScale = mpq_denref(q);
-
-		// Decimal part
-		size_t scale = 0;
+	{
 		++src;
-		s = src;
-		if (isDigit(*s)) {
-			do ++s;
-			while (isDigit(*s));
-			auto c = *s;
-			*s = 0;
-			if (mpz_set_str(mantissa, src, 10)) err("Invalid decimal part");
-			*s = c;
-			scale = s - src;
-			src = s;
-		}
+
+		// Need to parse the decimal part, but also track exactly how many digits it was written as; 1.23 != 1.023.
+		auto s = src;
+
+		// The integer parsing function would otherwise accept a sign here, but that would not make sense
+		if (!isDigit(*s)) err("Expected digit");
+
+		mpz_t decimal;
+		integer(decimal);
+
+		// Given 1.23, first convert to 100/100, to make room, so to speak, to add in the decimal part.
+		auto scale = src - s;
+		auto powScale = mpq_denref(q);
+		mpz_init(powScale);
 		mpz_ui_pow_ui(powScale, 10, scale);
+		mpz_mul(z, z, powScale);
 
-		// Mantissa += z * 10^scale
-		mpz_addmul(mantissa, z, powScale);
-
-		// Sign
-		if (sign) mpz_neg(mantissa, mantissa);
+		// Now convert to 123/100
+		if (sign) mpz_sub(z, z, decimal);
+		else
+			mpz_add(z, z, decimal);
 
 		// Exponent
 		bool exponentSign = 0;
@@ -235,6 +234,7 @@ void parser::num() {
 		mpz_clear(powExponent);
 		mpz_clear(z);
 		break;
+	}
 	case '/':
 		++src;
 		integer(mpq_denref(q));
