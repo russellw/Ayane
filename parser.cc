@@ -120,13 +120,16 @@ void parser::quote() {
 	src = s + 1;
 }
 
-void parser::sign() {
+bool parser::sign() {
 	switch (*src) {
 	case '+':
-	case '-':
 		++src;
 		break;
+	case '-':
+		++src;
+		return 1;
 	}
+	return 0;
 }
 
 void parser::digits() {
@@ -148,67 +151,24 @@ void parser::exp() {
 }
 
 void parser::num() {
-	sign();
+	tok = k_const;
 
-	// GMP doesn't handle unary +, so need to omit it from token
-	if (*srck == '+') ++srck;
-
-	// Make sure the call wasn't triggered by a sign or decimal point that fails to be actually followed by a number
-	if (!isDigit(*src) && !(*src == '.' && isDigit(src[1]))) err("Expected digit");
-
-	// Integer part
-	digits();
-
-	// Followed by various possibilities for fractional part or exponent
-	switch (*src) {
-	case '.':
-		tok = k_real;
-		++src;
-		digits();
-		exp();
-		return;
-	case '/':
-		tok = k_rational;
-		++src;
-		if (!isDigit(*src)) err("Expected digit");
-		digits();
-		return;
-	case 'E':
-	case 'e':
-		tok = k_real;
-		exp();
-		return;
-	}
-
-	// No, it was just an integer after all
-	tok = k_integer;
-}
-
-void parser::num() {
 	// If we knew this was just an integer, we could let mpz_set_str handle a minus sign for us, but there might be a decimal point,
 	// in which case sign is more complicated and best handled separately
-	bool sign = 0;
-	switch (*src) {
-	case '-':
-		sign = 1;
-		[[fallthrough]];
-	case '+':
-		++src;
-		break;
-	}
+	auto sgn = sign();
 
 	// Result = scaled mantissa
-	mpq_t r;
-	mpq_init(r);
-	auto mantissa = mpq_numref(r);
-	auto powScale = mpq_denref(r);
+	mpq_t q;
+	mpq_init(q);
+	auto mantissa = mpq_numref(q);
+	auto powScale = mpq_denref(q);
 
 	// Integer part. Even if it is followed by a decimal point, both TPTP and SMT-LIB require a nonempty integer part, which makes
 	// parsing slightly easier. It is expected that parsers will only call this function if at least one digit has been detected.
 	assert(isDigit(*src));
 	mpz_t integerPart;
 	mpz_init(integerPart);
-	auto t = s;
+	auto t = src;
 	if (isDigit(*t)) {
 		do ++t;
 		while (isDigit(*t));
@@ -216,27 +176,38 @@ void parser::num() {
 		// mpz_set_str doesn't like trailing junk, so give it a cleanly null-terminated string
 		auto c = *t;
 		*t = 0;
-		if (mpz_set_str(integerPart, s, 10)) err("Invalid integer part");
+		if (mpz_set_str(integerPart, src, 10)) err("Invalid integer part");
 
 		// The following byte might be important, so put it back
 		*t = c;
-		s = t;
+		src = t;
+	}
+
+	// Followed by various possibilities for fractional part or exponent
+	switch (*src) {
+	case '.':
+		break;
+	case '/':
+		break;
+	case 'E':
+	case 'e':
+		break;
 	}
 
 	// Decimal part
 	size_t scale = 0;
-	if (*s == '.') {
-		++s;
-		t = s;
+	if (*src == '.') {
+		++src;
+		t = src;
 		if (isDigit(*t)) {
 			do ++t;
 			while (isDigit(*t));
 			auto c = *t;
 			*t = 0;
-			if (mpz_set_str(mantissa, s, 10)) err("Invalid decimal part");
+			if (mpz_set_str(mantissa, src, 10)) err("Invalid decimal part");
 			*t = c;
-			scale = t - s;
-			s = t;
+			scale = t - src;
+			src = t;
 		}
 	}
 	mpz_ui_pow_ui(powScale, 10, scale);
@@ -250,18 +221,18 @@ void parser::num() {
 	// Exponent
 	bool exponentSign = 0;
 	auto exponent = 0UL;
-	if (*s == 'e' || *s == 'E') {
-		++s;
-		switch (*s) {
+	if (*src == 'e' || *src == 'E') {
+		++src;
+		switch (*src) {
 		case '-':
 			exponentSign = 1;
 			[[fallthrough]];
 		case '+':
-			++s;
+			++src;
 			break;
 		}
 		errno = 0;
-		exponent = strtoul(s, 0, 10);
+		exponent = strtoul(src, 0, 10);
 		if (errno) err(strerror(errno));
 	}
 	mpz_t powExponent;
@@ -272,7 +243,7 @@ void parser::num() {
 		mpz_mul(mantissa, mantissa, powExponent);
 
 	// Reduce result to lowest terms
-	mpq_canonicalize(r);
+	mpq_canonicalize(q);
 
 	// Cleanup
 	// TODO: free in reverse order?
@@ -280,5 +251,5 @@ void parser::num() {
 	mpz_clear(integerPart);
 
 	// Wrap result in term designating it as a real number
-	return real(r);
+	return real(q);
 }
