@@ -168,19 +168,19 @@ void parser::num() {
 	assert(isDigit(*src));
 	mpz_t integerPart;
 	mpz_init(integerPart);
-	auto t = src;
-	if (isDigit(*t)) {
-		do ++t;
-		while (isDigit(*t));
+	auto s = src;
+	if (isDigit(*s)) {
+		do ++s;
+		while (isDigit(*s));
 
 		// mpz_set_str doesn't like trailing junk, so give it a cleanly null-terminated string
-		auto c = *t;
-		*t = 0;
+		auto c = *s;
+		*s = 0;
 		if (mpz_set_str(integerPart, src, 10)) err("Invalid integer part");
 
 		// The following byte might be important, so put it back
-		*t = c;
-		src = t;
+		*s = c;
+		src = s;
 	}
 
 	// Followed by various possibilities for fractional part or exponent
@@ -198,16 +198,16 @@ void parser::num() {
 	size_t scale = 0;
 	if (*src == '.') {
 		++src;
-		t = src;
-		if (isDigit(*t)) {
-			do ++t;
-			while (isDigit(*t));
-			auto c = *t;
-			*t = 0;
+		s = src;
+		if (isDigit(*s)) {
+			do ++s;
+			while (isDigit(*s));
+			auto c = *s;
+			*s = 0;
 			if (mpz_set_str(mantissa, src, 10)) err("Invalid decimal part");
-			*t = c;
-			scale = t - src;
-			src = t;
+			*s = c;
+			scale = s - src;
+			src = s;
 		}
 	}
 	mpz_ui_pow_ui(powScale, 10, scale);
