@@ -35,7 +35,8 @@ struct parser1: parser {
 		case '7':
 		case '8':
 		case '9':
-			word();
+			digits();
+			tok = k_id;
 			return;
 		case 'c':
 			src = strchr(s, '\n');
@@ -50,7 +51,7 @@ struct parser1: parser {
 
 	// A variable in propositional logic is a constant in first-order logic
 	Ex* var() {
-		auto a = ex(str, kind::Bool);
+		auto a = ex(str, Bool);
 		lex();
 		return a;
 	}

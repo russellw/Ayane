@@ -82,7 +82,7 @@ size_t ncsApprox(int pol, Ex* a) {
 }
 
 // Skolem functions replace existentially quantified variables, also formulas that are renamed to avoid exponential expansion
-Ex* skolem(type rty, const vec<Ex*>& args) {
+Ex* skolem(Ex* rty, const vec<Ex*>& args) {
 	vec<Ex*> v(1, gensym(ftype(rty, args)));
 	// TODO: single call instead of loop?
 	for (auto b: args) v.add(b);
@@ -99,7 +99,7 @@ size_t vars = 0;
 Ex* rename(int pol, Ex* a) {
 	vec<Ex*> vars;
 	freeVars(a, vec<Ex*>(), vars);
-	auto b = skolem(getType(a), vars);
+	auto b = skolem(type(a), vars);
 	// NO_SORT
 	switch (pol) {
 	case 1:
@@ -234,9 +234,9 @@ Ex* nnf(bool pol, Ex* a, vec<pair<Ex*, Ex*>>& m) {
 	switch (tag) {
 	case False:
 		// Boolean constants and operators can be inverted by downward-sinking NOTs
-		return tbool(!pol);
+		return bools + !pol;
 	case True:
-		return tbool(pol);
+		return bools + pol;
 
 	case Not:
 		return nnf(!pol, at(a, 0), m);
