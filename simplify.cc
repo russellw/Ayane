@@ -29,14 +29,14 @@ Ex* simplify(Ex* a) {
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return x + y;
-		if (realConstant(x) && realConstant(y)) return ex(ToReal, x[1] + y[1]);
+		if (constant(x) && constant(y)) return add(x, y);
+		if (realConstant(x) && realConstant(y)) return ex(ToReal, add(at(x, 0), at(y, 0)));
 		return ex(t, x, y);
 	}
 	case Ceil:
 	{
 		auto x = simplify(at(a, 0));
-		if (realConstant(x)) return ex(ToReal, ceil(x[1]));
+		if (realConstant(x)) return ex(ToReal, ceil(at(x, 0)));
 		if (constant(x)) return ceil(x);
 		return ex(t, x);
 	}
@@ -50,8 +50,8 @@ Ex* simplify(Ex* a) {
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return x / y;
-		if (realConstant(x) && realConstant(y)) return ex(ToReal, x[1] / y[1]);
+		if (constant(x) && constant(y)) return div(x, y);
+		if (realConstant(x) && realConstant(y)) return ex(ToReal, div(at(x, 0), at(y, 0)));
 		return ex(t, x, y);
 	}
 	case DivE:
@@ -59,7 +59,7 @@ Ex* simplify(Ex* a) {
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
 		if (constant(x) && constant(y)) return divE(x, y);
-		if (realConstant(x) && realConstant(y)) return ex(ToReal, divE(x[1], y[1]));
+		if (realConstant(x) && realConstant(y)) return ex(ToReal, divE(at(x, 0), at(y, 0)));
 		return ex(t, x, y);
 	}
 	case DivF:
@@ -67,7 +67,7 @@ Ex* simplify(Ex* a) {
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
 		if (constant(x) && constant(y)) return divF(x, y);
-		if (realConstant(x) && realConstant(y)) return ex(ToReal, divF(x[1], y[1]));
+		if (realConstant(x) && realConstant(y)) return ex(ToReal, divF(at(x, 0), at(y, 0)));
 		return ex(t, x, y);
 	}
 	case DivT:
@@ -75,23 +75,23 @@ Ex* simplify(Ex* a) {
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
 		if (constant(x) && constant(y)) return divT(x, y);
-		if (realConstant(x) && realConstant(y)) return ex(ToReal, divT(x[1], y[1]));
+		if (realConstant(x) && realConstant(y)) return ex(ToReal, divT(at(x, 0), at(y, 0)));
 		return ex(t, x, y);
 	}
 	case Eq:
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
-		if (x == y) return True;
+		if (x == y) return bools + 1;
 		// TODO: optimize?
-		if (constant(x) && constant(y)) return False;
-		if (realConstant(x) && realConstant(y)) return False;
+		if (constant(x) && constant(y)) return bools;
+		if (realConstant(x) && realConstant(y)) return bools;
 		return ex(t, x, y);
 	}
 	case Floor:
 	{
 		auto x = simplify(at(a, 0));
-		if (realConstant(x)) return ex(ToReal, floor(x[1]));
+		if (realConstant(x)) return ex(ToReal, floor(at(x, 0)));
 		if (constant(x)) return floor(x);
 		return ex(t, x);
 	}
@@ -109,19 +109,19 @@ Ex* simplify(Ex* a) {
 	case IsInteger:
 	{
 		auto x = simplify(at(a, 0));
-		if (realConstant(x)) return bools + isInteger(x[1]);
+		if (realConstant(x)) return bools + isInteger(at(x, 0));
 		if (constant(x)) return bools + isInteger(x);
-		if (type(x) == kind::Integer) return True;
+		if (type(x) == kind::Integer) return bools + 1;
 		return ex(t, x);
 	}
 	case IsRational:
 	{
 		auto x = simplify(at(a, 0));
-		if (realConstant(x) || constant(x)) return True;
+		if (realConstant(x) || constant(x)) return bools + 1;
 		switch (kind(type(x))) {
 		case kind::Integer:
 		case kind::Rational:
-			return True;
+			return bools + 1;
 		}
 		return ex(t, x);
 	}
@@ -129,31 +129,31 @@ Ex* simplify(Ex* a) {
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return bools + (x <= y);
-		if (realConstant(x) && realConstant(y)) return bools + (x[1] <= y[1]);
+		if (constant(x) && constant(y)) return bools + (cmp(x, y) <= 0);
+		if (realConstant(x) && realConstant(y)) return bools + (cmp(at(x, 0), at(y, 0)) <= 0);
 		return ex(t, x, y);
 	}
 	case Lt:
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return bools + (x < y);
-		if (realConstant(x) && realConstant(y)) return bools + (x[1] < y[1]);
+		if (constant(x) && constant(y)) return bools + (cmp(x, y) < 0);
+		if (realConstant(x) && realConstant(y)) return bools + (cmp(at(x, 0), at(y, 0)) < 0);
 		return ex(t, x, y);
 	}
 	case Mul:
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return x * y;
-		if (realConstant(x) && realConstant(y)) return ex(ToReal, x[1] * y[1]);
+		if (constant(x) && constant(y)) return mul(x, y);
+		if (realConstant(x) && realConstant(y)) return ex(ToReal, mul(at(x, 0), at(y, 0)));
 		return ex(t, x, y);
 	}
 	case Neg:
 	{
 		auto x = simplify(at(a, 0));
-		if (realConstant(x)) return ex(ToReal, -x[1]);
-		if (constant(x)) return -x;
+		if (realConstant(x)) return ex(ToReal, neg(at(x, 0)));
+		if (constant(x)) return neg(x);
 		return ex(t, x);
 	}
 	case RemE:
@@ -161,7 +161,7 @@ Ex* simplify(Ex* a) {
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
 		if (constant(x) && constant(y)) return remE(x, y);
-		if (realConstant(x) && realConstant(y)) return ex(ToReal, remE(x[1], y[1]));
+		if (realConstant(x) && realConstant(y)) return ex(ToReal, remE(at(x, 0), at(y, 0)));
 		return ex(t, x, y);
 	}
 	case RemF:
@@ -169,7 +169,7 @@ Ex* simplify(Ex* a) {
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
 		if (constant(x) && constant(y)) return remF(x, y);
-		if (realConstant(x) && realConstant(y)) return ex(ToReal, remF(x[1], y[1]));
+		if (realConstant(x) && realConstant(y)) return ex(ToReal, remF(at(x, 0), at(y, 0)));
 		return ex(t, x, y);
 	}
 	case RemT:
@@ -177,13 +177,13 @@ Ex* simplify(Ex* a) {
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
 		if (constant(x) && constant(y)) return remT(x, y);
-		if (realConstant(x) && realConstant(y)) return ex(ToReal, remT(x[1], y[1]));
+		if (realConstant(x) && realConstant(y)) return ex(ToReal, remT(at(x, 0), at(y, 0)));
 		return ex(t, x, y);
 	}
 	case Round:
 	{
 		auto x = simplify(at(a, 0));
-		if (realConstant(x)) return ex(ToReal, round(x[1]));
+		if (realConstant(x)) return ex(ToReal, round(at(x, 0)));
 		if (constant(x)) return round(x);
 		return ex(t, x);
 	}
@@ -191,14 +191,14 @@ Ex* simplify(Ex* a) {
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return x - y;
-		if (realConstant(x) && realConstant(y)) return ex(ToReal, x[1] - y[1]);
+		if (constant(x) && constant(y)) return sub(x, y);
+		if (realConstant(x) && realConstant(y)) return ex(ToReal, sub(at(x, 0), at(y, 0)));
 		return ex(t, x, y);
 	}
 	case ToInteger:
 	{
 		auto x = simplify(at(a, 0));
-		if (realConstant(x)) return toInteger(x[1]);
+		if (realConstant(x)) return toInteger(at(x, 0));
 		if (constant(x)) return toInteger(x);
 		if (type(x) == kind::Integer) return x;
 		return ex(t, x);
@@ -206,7 +206,7 @@ Ex* simplify(Ex* a) {
 	case ToRational:
 	{
 		auto x = simplify(at(a, 0));
-		if (realConstant(x)) return x[1];
+		if (realConstant(x)) return at(x, 0);
 		if (constant(x)) return toRational(x);
 		if (type(x) == kind::Rational) return x;
 		return ex(t, x);
@@ -222,7 +222,7 @@ Ex* simplify(Ex* a) {
 	case Trunc:
 	{
 		auto x = simplify(at(a, 0));
-		if (realConstant(x)) return ex(ToReal, trunc(x[1]));
+		if (realConstant(x)) return ex(ToReal, trunc(at(x, 0)));
 		if (constant(x)) return trunc(x);
 		return ex(t, x);
 	}
