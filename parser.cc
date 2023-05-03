@@ -120,18 +120,6 @@ void parser::quote() {
 	src = s + 1;
 }
 
-bool parser::sign() {
-	switch (*src) {
-	case '+':
-		++src;
-		break;
-	case '-':
-		++src;
-		return 1;
-	}
-	return 0;
-}
-
 void parser::digits() {
 	auto s = src;
 	while (isDigit(*s)) ++s;
@@ -157,20 +145,29 @@ void parser::integer(mpz_t z) {
 	*src = c;
 }
 
-void parser::exp() {
-	switch (*src) {
-	case 'E':
-	case 'e':
-		++src;
-		sign();
-		if (!isDigit(*src)) err("Expected digit");
-		digits();
-		break;
+void parser::exponent(mpq_t q) {
+	assert(*src == 'e' || *src == 'E');
+	++src;
+
+	errno = 0;
+	auto e = strtoll(src, &src, 10);
+	if (errno) err(strerror(errno));
+
+	mpz_t powExponent;
+	mpz_init(powExponent);
+
+	if (e >= 0) {
+		mpz_ui_pow_ui(powExponent, 10, e);
+		mpz_mul(mpq_numref(q), mpq_numref(q), powExponent);
+	} else {
+		mpz_ui_pow_ui(powExponent, 10, -e);
+		mpz_mul(mpq_denref(q), mpq_denref(q), powExponent);
 	}
+
+	mpz_clear(powExponent);
 }
 
 void parser::num() {
-	auto sign = *src == '-';
 	mpq_t q;
 	tok = k_const;
 
@@ -200,39 +197,15 @@ void parser::num() {
 		mpz_init(powScale);
 		mpz_ui_pow_ui(powScale, 10, scale);
 		mpz_mul(z, z, powScale);
+		mpz_clear(powScale);
 
 		// Now convert to 123/100
-		if (sign) mpz_sub(z, z, decimal);
+		if (*srck == '-') mpz_sub(z, z, decimal);
 		else
 			mpz_add(z, z, decimal);
 
 		// Exponent
-		bool exponentSign = 0;
-		auto exponent = 0UL;
-		if (*src == 'e' || *src == 'E') {
-			++src;
-			switch (*src) {
-			case '-':
-				exponentSign = 1;
-				[[fallthrough]];
-			case '+':
-				++src;
-				break;
-			}
-			errno = 0;
-			exponent = strtoul(src, 0, 10);
-			if (errno) err(strerror(errno));
-		}
-		mpz_t powExponent;
-		mpz_init(powExponent);
-		mpz_ui_pow_ui(powExponent, 10, exponent);
-		if (exponentSign) mpz_mul(powScale, powScale, powExponent);
-		else
-			mpz_mul(mantissa, mantissa, powExponent);
-
-		// Cleanup
-		mpz_clear(powExponent);
-		mpz_clear(z);
+		if (*src == 'e' || *src == 'E') exponent(q);
 		break;
 	}
 	case '/':
@@ -241,6 +214,8 @@ void parser::num() {
 		break;
 	case 'E':
 	case 'e':
+		mpz_init_set_ui(mpq_denref(q), 1);
+		exponent(q);
 		break;
 	default:
 		constant = ex(z);

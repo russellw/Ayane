@@ -75,10 +75,10 @@ struct parser {
 	void quote();
 
 	// Helper functions
-	bool sign();
 	void digits();
 	void integer(mpz_t z);
-	void exp();
+	void exponent(mpq_t q);
 
+	// Lex a number, set constant, and set tok = k_const
 	void num();
 };
