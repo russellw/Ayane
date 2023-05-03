@@ -16,7 +16,7 @@ bool constant(Ex* a) {
 }
 
 bool realConstant(Ex* a) {
-	return a->tag == ToReal && tag(at(a, 0)) == Rational;
+	return a->tag == ToReal && at(a, 0)->tag == Rational;
 }
 } // namespace
 
