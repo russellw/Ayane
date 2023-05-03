@@ -22,6 +22,9 @@ struct Ex {
 	};
 };
 
+// TODO: initialize with either static or dynamic initializer
+extern Ex tbool;
+
 extern Ex bools[2];
 
 // TODO: rename to 'atom'?

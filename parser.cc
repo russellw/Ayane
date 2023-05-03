@@ -9,40 +9,29 @@
 #define O_BINARY 0
 #endif
 
-const char* parser::file;
-char* parser::srco;
-char* parser::srck;
-
-parser::parser(const char* file) {
-	// Save the old location variables, so they can be restored when this file is done
-	old_file = this->file;
-	old_srco = srco;
-	old_srck = srck;
-
-	// And start assigning the new ones
-	this->file = file;
-
+parser::parser(const char* file): file(file) {
 	// Read all the input in one go before beginning parsing, to make the parsers simpler and faster. Testing indicates
 	// memory-mapped files are not really faster for this case, so the input data is read-write so parsers can scribble over it if
 	// that makes their job easier. The only thing parsers are not allowed change is the number of linefeed characters up to the
 	// start of current token, because err() counts those linefeed characters to report line number.
 	size_t n;
-	size_t o;
-	if (strcmp(file, "stdin")) {
+	if (strcmp(file, "stdin") == 0) {
 #ifdef _WIN32
 		_setmode(0, O_BINARY);
 #endif
-		n = 0;
-		o = 0;
+		// Reading from standard input, we don't know the total size up front, so read in blocks of fixed size until we have
+		// everything, increasing the buffer capacity by a factor of 2 when necessary, to avoid spending too much time reallocating
 		const size_t block = 1 << 20;
+		n = 0;
 		size_t cap = 0;
+		src = 0;
 		for (;;) {
 			if (n + block + 2 > cap) {
 				auto cap1 = max(n + block + 2, cap * 2);
-				o = heap->realloc(o, cap, cap1);
+				src = (char*)realloc(src, cap1);
 				cap = cap1;
 			}
-			auto r = read(0, (char*)heap->ptr(o) + n, block);
+			auto r = read(0, src + n, block);
 			if (r < 0) {
 				perror(file);
 				exit(1);
@@ -50,8 +39,8 @@ parser::parser(const char* file) {
 			n += r;
 			if (r != block) break;
 		}
-		srcBytes = cap;
 	} else {
+		// Reading from a file, we can find out the total size up front
 		auto f = open(file, O_BINARY | O_RDONLY);
 		struct stat st;
 		if (f < 0 || fstat(f, &st)) {
@@ -59,32 +48,18 @@ parser::parser(const char* file) {
 			exit(1);
 		}
 		n = st.st_size;
-		o = heap->alloc(n + 2);
-		if (read(f, heap->ptr(o), n) != n) {
+		src = (char*)malloc(n + 2);
+		if (read(f, src, n) != n) {
 			perror(file);
 			exit(1);
 		}
 		close(f);
-		srcBytes = n + 2;
 	}
-	srco = o;
+	src0 = src;
 
-	// Make sure input is null terminated
-	auto s = (char*)heap->ptr(o);
-	s[n] = 0;
-
-	// And ends in a newline, to simplify parser code
-	if (!(n && s[n - 1] == '\n')) {
-		s[n] = '\n';
-		s[n + 1] = 0;
-	}
-
-	// Start at the beginning of the input
-	src = s;
-
-	// And set the current token likewise. Normally this won't matter, being overwritten as soon as the first token is lexed, but
-	// some parser might have an edge case where it reports an error before doing so.
-	srck = s;
+	// Make sure input is null terminated and ends in a newline, to simplify parser code
+	src[n] = '\n';
+	src[n + 1] = 0;
 }
 
 parser::~parser() {

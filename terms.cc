@@ -85,7 +85,7 @@ Heap<>* compounds;
 namespace comps {
 bool eq(const Ex* s, size_t n, const compound* z) {
 	if (n != z->n) return 0;
-	return !memcmp(s, z->v, n * sizeof *s);
+	return memcmp(s, z->v, n * sizeof *s) == 0;
 }
 
 size_t slot(uint32_t* entries, size_t cap, const Ex* s, size_t n) {

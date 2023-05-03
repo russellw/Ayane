@@ -109,8 +109,8 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	case IsInteger:
 	{
 		auto x = simplify(m, at(a, 0));
-		if (realConstant(x)) return tbool(isInteger(x[1]));
-		if (constant(x)) return tbool(isInteger(x));
+		if (realConstant(x)) return bools + isInteger(x[1]);
+		if (constant(x)) return bools + isInteger(x);
 		if (type(x) == kind::Integer) return True;
 		return ex(t, x);
 	}
@@ -129,16 +129,16 @@ Ex* simplify(const map<Ex*, Ex*>& m, Ex* a) {
 	{
 		auto x = simplify(m, at(a, 0));
 		auto y = simplify(m, at(a, 1));
-		if (constant(x) && constant(y)) return tbool(x <= y);
-		if (realConstant(x) && realConstant(y)) return tbool(x[1] <= y[1]);
+		if (constant(x) && constant(y)) return bools + (x <= y);
+		if (realConstant(x) && realConstant(y)) return bools + (x[1] <= y[1]);
 		return ex(t, x, y);
 	}
 	case Lt:
 	{
 		auto x = simplify(m, at(a, 0));
 		auto y = simplify(m, at(a, 1));
-		if (constant(x) && constant(y)) return tbool(x < y);
-		if (realConstant(x) && realConstant(y)) return tbool(x[1] < y[1]);
+		if (constant(x) && constant(y)) return bools + (x < y);
+		if (realConstant(x) && realConstant(y)) return bools + (x[1] < y[1]);
 		return ex(t, x, y);
 	}
 	case Mul:
