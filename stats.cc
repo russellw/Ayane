@@ -12,6 +12,7 @@
 
 namespace {
 void printItem(size_t n, const char* caption) {
+	char buf[32];
 	auto s = buf + sizeof buf - 1;
 	*s = 0;
 	size_t i = 0;

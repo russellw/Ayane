@@ -94,16 +94,16 @@ Ex* simplify(Ex* a) {
 		auto x = simplify(at(a, 0));
 		if (realConstant(x)) return bools + isInteger(at(x, 0));
 		if (constant(x)) return bools + isInteger(x);
-		if (type(x) == kind::Integer) return bools + 1;
+		if (type(x) == &tinteger) return bools + 1;
 		return ex(t, x);
 	}
 	case IsRational:
 	{
 		auto x = simplify(at(a, 0));
 		if (realConstant(x) || constant(x)) return bools + 1;
-		switch (kind(type(x))) {
-		case kind::Integer:
-		case kind::Rational:
+		switch (type(x)->tag) {
+		case Integer:
+		case Rational:
 			return bools + 1;
 		}
 		return ex(t, x);
@@ -183,7 +183,7 @@ Ex* simplify(Ex* a) {
 		auto x = simplify(at(a, 0));
 		if (realConstant(x)) return toInteger(at(x, 0));
 		if (constant(x)) return toInteger(x);
-		if (type(x) == kind::Integer) return x;
+		if (type(x) == &tinteger) return x;
 		return ex(t, x);
 	}
 	case ToRational:
@@ -191,7 +191,7 @@ Ex* simplify(Ex* a) {
 		auto x = simplify(at(a, 0));
 		if (realConstant(x)) return at(x, 0);
 		if (constant(x)) return toRational(x);
-		if (type(x) == kind::Rational) return x;
+		if (type(x) == &trational) return x;
 		return ex(t, x);
 	}
 	case ToReal:
@@ -199,7 +199,7 @@ Ex* simplify(Ex* a) {
 		auto x = simplify(at(a, 0));
 		if (realConstant(x)) return x;
 		if (constant(x)) return ex(ToReal, toRational(x));
-		if (type(x) == kind::Real) return x;
+		if (type(x) == &treal) return x;
 		return ex(t, x);
 	}
 	case Trunc:

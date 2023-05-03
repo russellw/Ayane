@@ -24,10 +24,12 @@ struct Ex {
 
 // TODO: initialize with either static or dynamic initializer
 extern Ex tbool;
+extern Ex tinteger;
+extern Ex trational;
+extern Ex treal;
 
 extern Ex bools[2];
 
-// TODO: rename to 'atom'?
 Ex* ex(mpz_t val);
 Ex* ex(mpq_t val);
 
@@ -56,6 +58,8 @@ inline Ex* at(Ex* a, size_t i) {
 	assert(i < a->n);
 	return a->v[i];
 }
+
+int cmp(Ex* a, Ex* b);
 
 Ex* ftype(Ex* rty, const Ex* first, const Ex* last);
 Ex* ftype(Ex* rty, const vec<Ex*>& args);
