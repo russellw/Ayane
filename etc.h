@@ -1,3 +1,5 @@
+extern char buf[5000];
+
 // The SZS ontologies for automated reasoning software, or at least, the subset thereof that is used here
 enum {
 #define _(x) z_##x,

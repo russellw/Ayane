@@ -32,6 +32,7 @@ void printItem(size_t n, const char* caption) {
 
 std::unordered_map<const char*, uint64_t> strStats;
 std::unordered_map<size_t, uint64_t> numStats;
+// TODO: does this map need to be ordered?
 std::map<std::vector<const char*>, uint64_t> traces;
 } // namespace
 
@@ -50,14 +51,15 @@ void incTrace() {
 	SymInitialize(process, 0, 1);
 
 	// Stack frames
-	const int maxFrames = 64;
+	const int maxFrames = 100;
 	static void* stack[maxFrames];
 	auto nframes = CaptureStackBackTrace(1, maxFrames, stack, 0);
 
 	// Symbol
-	auto si = (SYMBOL_INFO*)buf;
-	si->MaxNameLen = 0x100;
+	char si0[sizeof(SYMBOL_INFO) + MAX_SYM_NAME - 1];
+	auto si = (SYMBOL_INFO*)si0;
 	si->SizeOfStruct = sizeof(SYMBOL_INFO);
+	si->MaxNameLen = MAX_SYM_NAME;
 
 	// Location
 	IMAGEHLP_LINE64 loc;
@@ -69,21 +71,19 @@ void incTrace() {
 		auto addr = (DWORD64)(stack[i]);
 		SymFromAddr(process, addr, 0, si);
 		DWORD displacement;
-		*buf = 0;
-		if (SymGetLineFromAddr64(process, addr, &displacement, &loc)) sprintf(buf, "%s:%d: ", loc.FileName, (int)loc.LineNumber);
-		strcat(buf, si->Name);
-		v.add(intern(buf)->v);
+		char* s;
+		if (SymGetLineFromAddr64(process, addr, &displacement, &loc)) {
+			snprintf(buf, sizeof buf, "%s:%u: %s", loc.FileName, loc.LineNumber, si->Name);
+			s = buf;
+		} else
+			s = si->Name;
+		v.push_back(intern(s)->v);
 	}
 	++traces[v];
 #endif
 }
 
 void printStats() {
-	putchar('\n');
-
-	printItem(atoms->size(), "bytes atoms");
-	printItem(compounds->size(), "bytes compounds");
-	printItem(heap->size(), "bytes heap");
 	putchar('\n');
 
 	if (strStats.size()) {

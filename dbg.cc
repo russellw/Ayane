@@ -34,8 +34,7 @@ void stackTrace() {
 	auto nframes = CaptureStackBackTrace(1, maxFrames, stack, 0);
 
 	// Symbol
-	char si0[sizeof(SYMBOL_INFO) + MAX_SYM_NAME - 1];
-	auto si = (SYMBOL_INFO*)si0;
+	auto si = (SYMBOL_INFO*)buf;
 	si->SizeOfStruct = sizeof(SYMBOL_INFO);
 	si->MaxNameLen = MAX_SYM_NAME;
 

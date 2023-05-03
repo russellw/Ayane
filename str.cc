@@ -1,6 +1,6 @@
 #include "main.h"
 
-string keywords[] = {
+Str keywords[] = {
 	// clang-format off
 	{0, 0, 0, "ax"},
 	{0, 0, 0, "bool"},
@@ -55,7 +55,7 @@ bool eq(const char* s, size_t n, const char* z) {
 	return !*z;
 }
 
-size_t slot(string** entries, size_t cap, const char* s, size_t n) {
+size_t slot(Str** entries, size_t cap, const char* s, size_t n) {
 	size_t mask = cap - 1;
 	auto i = fnv(s, n) & mask;
 	while (entries[i] && !eq(s, n, entries[i]->v)) i = (i + 1) & mask;
@@ -64,14 +64,14 @@ size_t slot(string** entries, size_t cap, const char* s, size_t n) {
 
 size_t cap = 0x100;
 size_t qty = end_s;
-string** entries;
+Str** entries;
 
 struct init {
 	init() {
-		static_assert(isPow2(sizeof(string)));
+		static_assert(isPow2(sizeof(Str)));
 		assert(isPow2(cap));
 		assert(qty <= cap * 3 / 4);
-		entries = (string**)calloc(cap, sizeof(string*));
+		entries = (Str**)calloc(cap, sizeof(Str*));
 		for (int i = 0; i < sizeof keywords / sizeof *keywords; ++i) {
 			auto s = keywords + i;
 			auto n = strlen(s->v);
@@ -91,7 +91,7 @@ struct init {
 
 void expand() {
 	auto cap1 = cap * 2;
-	auto entries1 = (string**)calloc(cap1, sizeof(string*));
+	auto entries1 = (Str**)calloc(cap1, sizeof(Str*));
 	for (size_t i = 0; i < cap; ++i) {
 		auto s = entries[i];
 		if (s) entries1[slot(entries1, cap1, s->v, strlen(s->v))] = s;
@@ -102,7 +102,7 @@ void expand() {
 }
 } // namespace
 
-string* intern(const char* s, size_t n) {
+Str* intern(const char* s, size_t n) {
 	auto i = slot(entries, cap, s, n);
 
 	// If we have seen this string before, return the existing string
@@ -116,8 +116,8 @@ string* intern(const char* s, size_t n) {
 	}
 
 	// Make a new string
-	auto r = (string*)malloc(offsetof(string, v) + n + 1);
-	memset(r, 0, offsetof(string, v));
+	auto r = (Str*)malloc(offsetof(Str, v) + n + 1);
+	memset(r, 0, offsetof(Str, v));
 	memcpy(r->v, s, n);
 	r->v[n] = 0;
 
