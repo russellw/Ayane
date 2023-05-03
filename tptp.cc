@@ -628,6 +628,11 @@ struct parser1: parser {
 
 				// Conjecture
 				if (role == s_conjecture) {
+					// If multiple conjectures occur in a problem, there are two possible interpretations (conjunction or
+					// disjunction), and no consensus on which is correct, so rather than risk silently giving a wrong answer,
+					// reject the problem as ambiguous and require it to be restated with the conjectures folded into one, using
+					// explicit conjunction or disjunction
+					if (conjecture) err("Multiple conjectures not supported");
 					problem.conjecture(a, file, name);
 					break;
 				}
