@@ -40,12 +40,6 @@ Ex* simplify(Ex* a) {
 		if (constant(x)) return ceil(x);
 		return ex(t, x);
 	}
-	case DistinctObj:
-	case False:
-	case Integer:
-	case Rational:
-	case True:
-		return a;
 	case Div:
 	{
 		auto x = simplify(at(a, 0));
@@ -94,17 +88,6 @@ Ex* simplify(Ex* a) {
 		if (realConstant(x)) return ex(ToReal, floor(at(x, 0)));
 		if (constant(x)) return floor(x);
 		return ex(t, x);
-	}
-	case Fn:
-	{
-		if (a.size() == 1) {
-			// TODO: optimize
-			if (m.count(a)) return m.at(a);
-			return a;
-		}
-		vec<Ex*> v(1, a[0]);
-		for (size_t i = 0; i < a->n; ++i) v.add(simplify(at(a, i)));
-		return ex(v);
 	}
 	case IsInteger:
 	{
@@ -226,9 +209,9 @@ Ex* simplify(Ex* a) {
 		if (constant(x)) return trunc(x);
 		return ex(t, x);
 	}
-	case Var:
-		if (m.count(a)) return m.at(a);
-		return a;
 	}
-	unreachable;
+	if (!a->n) return a;
+	vec<Ex*> v;
+	for (size_t i = 0; i < a->n; ++i) v.add(simplify(at(a, i)));
+	return ex(a->tag, v);
 }
