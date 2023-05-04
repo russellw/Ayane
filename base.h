@@ -1,3 +1,38 @@
+// TODO: separate file?
+struct range: pair<size_t, size_t> {
+	struct iterator {
+		size_t i;
+
+		iterator(size_t i): i(i) {
+		}
+
+		size_t operator*() {
+			return i;
+		}
+
+		iterator& operator++() {
+			++i;
+			return *this;
+		}
+
+		bool operator!=(iterator x) {
+			return i != x.i;
+		}
+	};
+
+	range() {
+	}
+	range(size_t first, size_t second): pair(first, second) {
+	}
+
+	iterator begin() {
+		return first;
+	}
+	iterator end() {
+		return second;
+	}
+};
+
 // Printing things that need to be joined with separators
 #define joining bool joining1 = 0
 #define join(s) \

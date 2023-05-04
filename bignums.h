@@ -3,6 +3,7 @@ Ex* intern(mpq_t a);
 
 // Real number literals are represented as rational number literals wrapped in ToReal. It's a function call that is not actually
 // evaluated, since there is no representation of real number literals as such.
+// TODO: reevaluate this; we have room for a Real tag anyway
 Ex* real(mpq_t q);
 
 // Per TPTP syntax, decimal/exponent string parses to a real number literal

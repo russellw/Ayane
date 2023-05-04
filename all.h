@@ -48,7 +48,7 @@ using std::swap;
 #include "terms.h"
 
 #include "bignums.h"
-#include "clauses.h"
+#include "clause.h"
 
 // I/O
 #include "parser.h"
