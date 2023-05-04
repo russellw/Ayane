@@ -257,6 +257,7 @@ def sort_single():
             if lines[i + 1].endswith("{"):
                 continue
             j = i + 1
+            # TODO: should this require the extra /?
             while not re.match(r"\s*///$", lines[j]):
                 j += 1
             lines[i + 1 : j] = sorted(lines[i + 1 : j], key=var_key)
