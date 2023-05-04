@@ -1,4 +1,4 @@
-#include "main.h"
+#include "all.h"
 
 // Atoms
 Ex atoms[ntags];

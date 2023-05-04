@@ -1,4 +1,4 @@
-#include "main.h"
+#include "all.h"
 
 // One clause subsumes another, if there exists a variable substitution that makes the first clause a sub-multiset of the second.
 // Multiset not set, because otherwise a clause could subsume its own factors, which would break completeness of the superposition

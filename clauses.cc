@@ -1,4 +1,4 @@
-#include "main.h"
+#include "all.h"
 
 const char* ruleNames[] = {
 #define _(x) #x,

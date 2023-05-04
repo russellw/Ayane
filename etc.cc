@@ -1,4 +1,4 @@
-#include "main.h"
+#include "all.h"
 
 const char* szsNames[] = {
 #define _(x) #x,

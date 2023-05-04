@@ -1,4 +1,4 @@
-#include "main.h"
+#include "all.h"
 
 char typeMem[(1 << typeBits) * 8];
 

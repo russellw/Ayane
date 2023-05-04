@@ -1,4 +1,4 @@
-#include "main.h"
+#include "all.h"
 
 Str keywords[] = {
 	// clang-format off

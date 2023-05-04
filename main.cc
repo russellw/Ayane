@@ -1,4 +1,4 @@
-#include "main.h"
+#include "all.h"
 
 #ifdef _WIN32
 #include <windows.h>
