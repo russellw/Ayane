@@ -67,6 +67,11 @@ class lexicographicPathOrder {
 		assert(a->n);
 	}
 
+	size_t fn(Ex* a) {
+		if (a->tag == Call) return (size_t)at(a, 0);
+		return a->tag;
+	}
+
 	bool ge(Ex* a, Ex* b) {
 		return a == b || gt(a, b);
 	}
@@ -99,18 +104,19 @@ public:
 		for (size_t i = 0; i < b->n; ++i)
 			if (!gt(a, at(b, i))) return 0;
 
-		// Different operators. Comparison by tag has the required property that true is considered smaller than any other term
-		// (except false, which does not occur during superposition proof search).
-		auto c = (int)a->tag - (int)b->tag;
-		if (c) return c > 0;
+		// Different functions. Comparison has the required property that true is considered smaller than any other term (except
+		// false, which does not occur during superposition proof search).
+		auto af = fn(a);
+		auto bf = fn(b);
+		if (af != bf) return af > bf;
 
-		// Same operators should mean similar terms
+		// Same functions should mean similar terms
 		assert(a->tag == b->tag);
-		assert(a.size() == b.size());
-		assert(a[0] == b[0]);
+		assert(a->n == b->n);
+		assert(at(a, 0) == at(b, 0));
 
 		// Lexicographic extension
-		for (size_t i = 0; i < a.size(); ++i) {
+		for (size_t i = 0; i < a->n; ++i) {
 			if (gt(at(a, i), at(b, i))) return 1;
 			if (at(a, i) != at(b, i)) return 0;
 		}
@@ -123,7 +129,6 @@ public:
 // SORT
 int mode;
 lexicographicPathOrder order;
-Proof& proof;
 ///
 
 void qclause(rule rl, const vec<clause>& from, const vec<Ex*>& neg, const vec<Ex*>& pos) {
