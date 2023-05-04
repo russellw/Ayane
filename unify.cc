@@ -29,41 +29,6 @@ bool eq(ex a, bool ax, ex b, bool bx) {
 	return 1;
 }
 
-bool match(map<ex, ex>& m, ex a, ex b) {
-	// Equals
-	if (eq(a, 0, b, 1)) return 1;
-
-	// Type mismatch
-	if (type(a) != type(b)) return 0;
-
-	// Variable
-	// TODO: check variables more efficiently
-	if (a->tag == Var) {
-		auto& ma = m.gadd(a);
-
-		// Existing mapping. First-order variables cannot be Boolean, which has the useful corollary that the default value of a
-		// term (false) is distinguishable from any term to which a variable could be validly mapped.
-		if (ma.raw) return ma == b;
-
-		// New mapping
-		ma = b;
-		return 1;
-	}
-
-	// Mismatched tags
-	if (a->tag != b->tag) return 0;
-
-	// If nonvariable atoms could match, they would already have tested equal
-	auto n = a.size();
-	if (!n) return 0;
-
-	// Recur
-	if (b.size() != n) return 0;
-	for (size_t i = 0; i < n; ++i)
-		if (!match(m, at(a, i), b[i])) return 0;
-	return 1;
-}
-
 namespace {
 vec<pair<termx, termx>> m;
 

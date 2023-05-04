@@ -1,51 +1,53 @@
 #include "all.h"
 
 namespace {
-vec<pair<Ex*, Ex*>> unified;
+vec<pair<Ex*, Ex*>> m;
 
-bool subunify_var(Ex* a, Ex* b) {
-	assert(a->tag == t_var);
-	assert(a->ty() == b->ty());
+bool match(ex a, ex b) {
+	// Equals
+	if (eq(a, 0, b, 1)) return 1;
 
-	for (auto p: unified)
-		if (p.first == a) return eq(p.second, b);
+	// Type mismatch
+	if (type(a) != type(b)) return 0;
 
-	unified.push_back(make_pair(a, b));
-	return true;
+	// Variable
+	// TODO: check variables more efficiently
+	if (a->tag == Var) {
+		auto& ma = m.gadd(a);
+
+		// Existing mapping. First-order variables cannot be Boolean, which has the useful corollary that the default value of a
+		// term (false) is distinguishable from any term to which a variable could be validly mapped.
+		if (ma.raw) return ma == b;
+
+		// New mapping
+		ma = b;
+		return 1;
+	}
+
+	// Mismatched tags
+	if (a->tag != b->tag) return 0;
+
+	// If nonvariable atoms could match, they would already have tested equal
+	auto n = a.size();
+	if (!n) return 0;
+
+	// Recur
+	if (b.size() != n) return 0;
+	for (size_t i = 0; i < n; ++i)
+		if (!match(m, at(a, i), b[i])) return 0;
+	return 1;
 }
 
-bool subunify(Ex* a, Ex* b) {
-	assert(a->ty() == b->ty());
+bool match(eqn a, eqn b) {
+	auto o = m.size();
 
-	// Same Ex
-	if (a == b) return true;
+	if (match(a.first, b.first) && match(a.second, b.second)) return 1;
+	m.resize(o);
 
-	// Variables
-	if (a->tag == t_var) return subunify_var(a, b);
-	if (a->tag != b->tag) return false;
+	if (match(a.first, b.second) && match(a.second, b.first)) return 1;
+	m.resize(o);
 
-	// Atoms
-	if (!a->n) return eq(a, b);
-
-	// Compound terms
-	if (a->n != b->n) return false;
-	for (auto i: a)
-		if (!subunify(at(a, i), at(b, i))) return false;
-	return true;
-}
-
-bool subunify(eqn a, eqn b) {
-	if (a.first->ty() != b.first->ty()) return false;
-
-	auto n = unified.size();
-
-	if (subunify(a.first, b.first) && subunify(a.second, b.second)) return true;
-	unified.resize(n);
-
-	if (subunify(a.first, b.second) && subunify(a.second, b.first)) return true;
-	unified.resize(n);
-
-	return false;
+	return 0;
 }
 
 Clause* c;
@@ -58,41 +60,41 @@ range ds;
 vec<bool> used;
 
 bool subsume(int ci) {
-	if (ci == cs.second) return true;
+	if (ci == cs.second) return 1;
 	auto a = at(c, ci++);
 	for (auto di: ds) {
 		if (used[di]) continue;
 
 		auto b = at(d, di);
-		if (!subunify(a, b)) continue;
+		if (!match(a, b)) continue;
 
-		auto n = unified.size();
-		used[di] = true;
-		if (subsume(ci)) return true;
-		used[di] = false;
-		unified.resize(n);
+		auto o = m.size();
+		used[di] = 1;
+		if (subsume(ci)) return 1;
+		used[di] = 0;
+		m.resize(o);
 	}
-	return false;
+	return 0;
 }
 } // namespace
 
 bool subsumes(Clause* c0, Clause* d0) {
-	if (c0->n > d0->n) return false;
+	if (c0->n > d0->n) return 0;
 
 	c = c0;
 	d = d0;
-	unified.clear();
+	m.clear();
 
 	used.resize(d->n);
 	memset(used.data(), 0, used.size());
 
 	cs = c->neg();
 	ds = d->neg();
-	if (!subsume(cs.first)) return false;
+	if (!subsume(cs.first)) return 0;
 
 	cs = c->pos();
 	ds = d->pos();
-	if (!subsume(cs.first)) return false;
+	if (!subsume(cs.first)) return 0;
 
-	return true;
+	return 1;
 }
