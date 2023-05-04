@@ -13,14 +13,9 @@ bool match(Ex* a, Ex* b) {
 	// Variable
 	// TODO: check variables more efficiently
 	if (a->tag == Var) {
-		auto& ma = m.gadd(a);
-
-		// Existing mapping. First-order variables cannot be Boolean, which has the useful corollary that the default value of a
-		// term (false) is distinguishable from any term to which a variable could be validly mapped.
-		if (ma.raw) return ma == b;
-
-		// New mapping
-		ma = b;
+		// TODO: check generated code
+		if (get(a, a, m)) return a == b;
+		m.add(make_pair(a, b));
 		return 1;
 	}
 
@@ -28,13 +23,14 @@ bool match(Ex* a, Ex* b) {
 	if (a->tag != b->tag) return 0;
 
 	// If nonvariable atoms could match, they would already have tested equal
-	auto n = a.size();
+	// TODO: check generated code
+	auto n = a->n;
 	if (!n) return 0;
 
 	// Recur
-	if (b.size() != n) return 0;
+	if (b->n != n) return 0;
 	for (size_t i = 0; i < n; ++i)
-		if (!match(m, at(a, i), b[i])) return 0;
+		if (!match(at(a, i), at(b, i))) return 0;
 	return 1;
 }
 

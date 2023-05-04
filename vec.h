@@ -265,10 +265,13 @@ template <class T> struct vec {
 	}
 };
 
-template <class T> T get(T x, const vec<pair<T, T>>& m) {
+template <class T> bool get(T x, T& y, const vec<pair<T, T>>& m) {
 	for (auto xy: m)
-		if (xy.first == x) return xy.second;
-	unreachable;
+		if (xy.first == x) {
+			y = xy.second;
+			return 1;
+		}
+	return 0;
 }
 
 template <class T> size_t hash(const vec<T>& a) {

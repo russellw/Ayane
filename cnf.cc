@@ -251,8 +251,13 @@ Ex* nnf(bool pol, Ex* a, vec<pair<Ex*, Ex*>>& m) {
 		return ex(tag, v);
 
 	case Var:
+	{
 		// Variables are mapped to new variables or Skolem functions
-		return get(a, m);
+		// TODO: does assert need to work like that?
+		auto r = get(a, a, m);
+		assert(r);
+		return a;
+	}
 
 	case All:
 		return pol ? all(pol, a, m) : exists(pol, a, m);
