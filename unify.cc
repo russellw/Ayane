@@ -9,7 +9,7 @@
 // trivially unify) because two syntactically identical terms could be, or contain, the same variable names but with different
 // associated subscripts
 // TODO: update terminology in comments
-static bool eq(ex a, bool ax, ex b, bool bx) {
+bool eq(ex a, bool ax, ex b, bool bx) {
 	// If the terms are not syntactically equal then we definitely do not have logical equality
 	if (a != b) return 0;
 
@@ -65,42 +65,43 @@ bool match(map<ex, ex>& m, ex a, ex b) {
 }
 
 namespace {
-bool occurs(const map<termx, termx>& m, ex a, bool ax, ex b, bool bx) {
+vec<pair<termx, termx>> m;
+
+bool occurs(ex a, bool ax, ex b, bool bx) {
 	assert(a->tag == Var);
 	if (b->tag == Var) {
 		if (eq(a, ax, b, bx)) return 1;
 		auto b1 = make_pair(b, bx);
 		termx mb;
-		if (m.get(b1, mb)) return occurs(m, a, ax, mb.first, mb.second);
+		if (m.get(b1, mb)) return occurs(a, ax, mb.first, mb.second);
 	}
 	for (size_t i = 0; i < b.size(); ++i)
-		if (occurs(m, a, ax, b[i], bx)) return 1;
+		if (occurs(a, ax, b[i], bx)) return 1;
 	return 0;
 }
 
-bool unifyVar(map<termx, termx>& m, ex a, bool ax, ex b, bool bx) {
+bool unifyVar(ex a, bool ax, ex b, bool bx) {
 	assert(a->tag == Var);
 	assert(type(a) == type(b));
 
 	// Existing mappings
 	auto a1 = make_pair(a, ax);
 	termx ma;
-	if (m.get(a1, ma)) return unify(m, ma.first, ma.second, b, bx);
+	if (m.get(a1, ma)) return unify1(ma.first, ma.second, b, bx);
 
 	auto b1 = make_pair(b, bx);
 	termx mb;
-	if (m.get(b1, mb)) return unify(m, a, ax, mb.first, mb.second);
+	if (m.get(b1, mb)) return unify1(a, ax, mb.first, mb.second);
 
 	// Occurs check
-	if (occurs(m, a, ax, b, bx)) return 0;
+	if (occurs(a, ax, b, bx)) return 0;
 
 	// New mapping
 	m.add(a1, b1);
 	return 1;
 }
-} // namespace
 
-bool unify(map<termx, termx>& m, ex a, bool ax, ex b, bool bx) {
+bool unify1(ex a, bool ax, ex b, bool bx) {
 	// Equals
 	if (eq(a, ax, b, bx)) return 1;
 
@@ -108,8 +109,8 @@ bool unify(map<termx, termx>& m, ex a, bool ax, ex b, bool bx) {
 	if (type(a) != type(b)) return 0;
 
 	// Variable
-	if (a->tag == Var) return unifyVar(m, a, ax, b, bx);
-	if (b->tag == Var) return unifyVar(m, b, bx, a, ax);
+	if (a->tag == Var) return unifyVar(a, ax, b, bx);
+	if (b->tag == Var) return unifyVar(b, bx, a, ax);
 
 	// Mismatched tags
 	if (a->tag != b->tag) return 0;
@@ -121,21 +122,27 @@ bool unify(map<termx, termx>& m, ex a, bool ax, ex b, bool bx) {
 	// Recur
 	if (b.size() != n) return 0;
 	for (size_t i = 0; i < n; ++i)
-		if (!unify(m, at(a, i), ax, b[i], bx)) return 0;
+		if (!unify1(at(a, i), ax, b[i], bx)) return 0;
 	return 1;
 }
+} // namespace
 
-ex replace(const map<termx, termx>& m, ex a, bool ax) {
+bool unify(ex a, bool ax, ex b, bool bx) {
+	m.n = 0;
+	return unify1(a, ax, b, bx);
+}
+
+ex replace(ex a, bool ax) {
 	auto a1 = make_pair(a, ax);
 	termx ma;
 	// TODO: check only if it is a variable
 	if (m.get(a1, ma)) {
 		assert(a->tag == Var);
-		return replace(m, ma.first, ma.second);
+		return replace(ma.first, ma.second);
 	}
 
 	auto n = a.size();
 	vec<ex> v;
-	for (size_t i = 0; i < n; ++i) v.add(replace(m, at(a, i), ax));
+	for (size_t i = 0; i < n; ++i) v.add(replace(at(a, i), ax));
 	return ex(a->tag, v);
 }
