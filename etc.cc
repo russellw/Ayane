@@ -6,9 +6,15 @@ const char* szsNames[] = {
 };
 
 // SORT
-Eqn eqn(Ex* a) {
-	if (a->tag == Eq) return make_pair(at(a, 0), at(a, 1));
-	return make_pair(a, bools + 1);
+eqn::eqn(Ex* a) {
+	// TODO: move to same module as the definition of the structure
+	if (a->tag == Eq) {
+		first = at(a, 0);
+		second = at(a, 1);
+		return;
+	}
+	first = a;
+	second = bools + 1;
 }
 
 void flatten(int tag, Ex* a, std::vector<Ex*>& r) {

@@ -1,3 +1,38 @@
+// TODO: separate file?
+struct range: pair<size_t, size_t> {
+	struct iterator {
+		size_t i;
+
+		iterator(size_t i): i(i) {
+		}
+
+		size_t operator*() {
+			return i;
+		}
+
+		iterator& operator++() {
+			i++;
+			return *this;
+		}
+
+		bool operator!=(iterator x) {
+			return i != x.i;
+		}
+	};
+
+	range() {
+	}
+	range(size_t first, size_t second): pair(first, second) {
+	}
+
+	iterator begin() {
+		return first;
+	}
+	iterator end() {
+		return second;
+	}
+};
+
 extern char buf[5000];
 
 // The SZS ontologies for automated reasoning software, or at least, the subset thereof that is used here
@@ -9,7 +44,6 @@ enum {
 extern const char* szsNames[];
 
 // SORT
-Eqn eqn(Ex* a);
 void flatten(int tag, Ex* a, std::vector<Ex*>& r);
 void freeVars(Ex* a, vec<Ex*> boundv, vec<Ex*>& freev);
 Ex* imp(Ex* a, Ex* b);

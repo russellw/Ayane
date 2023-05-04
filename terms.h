@@ -76,5 +76,6 @@ using termx = pair<Ex*, bool>;
 // Equality can be represented in term form like any other binary operator, but there are also algorithms that need to pay
 // particular attention to equations, e.g. in order to apply them in both directions, enough that it is worth having a specific type
 // for them in such contexts.
-// TODO: this is not just a pair of arbitrary terms; it has special rules. Should it be a separate type?
-using Eqn = pair<Ex*, Ex*>;
+struct eqn: pair<Ex*, Ex*> {
+	eqn(Ex* a);
+};
