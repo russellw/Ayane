@@ -59,77 +59,83 @@ Ex* equate(Ex* a, Ex* b) {
 // breaking completeness.
 // TODO: fixup to take into account 0 vs 1 arg start
 // TODO: compare with KBO
-class lexicographicPathOrder {
-	// The greater-than test is supposed to be called on complete terms, which can include constant symbols (zero arity), or calls
-	// of function symbols (positive arity) with arguments. Make sure it's not being called on an isolated function symbol.
-	void check(Ex* a) {
-		// TODO: is this still valid?
-		assert(a->n);
+
+// The greater-than test is supposed to be called on complete terms, which can include constant symbols (zero arity), or calls of
+// function symbols (positive arity) with arguments. Make sure it's not being called on an isolated function symbol.
+void check(Ex* a) {
+	// TODO: is this still valid?
+	assert(a->n);
+}
+
+size_t fn(Ex* a) {
+	if (a->tag == Call) return (size_t)at(a, 0);
+	return a->tag;
+}
+
+bool gt(Ex* a, Ex* b);
+
+bool ge(Ex* a, Ex* b) {
+	return a == b || gt(a, b);
+}
+
+// TODO: some analysis on the operators used in the clauses, to figure out what order is
+// Likely to be best. For now, just use an arbitrary order.
+
+// Check whether one term is unambiguously greater than another. This is much more delicate than comparison for e.g. sorting, where
+// arbitrary choices can be made; to avoid breaking completeness of the calculus, the criteria are much stricter, and when in doubt,
+// we return false.
+bool gt(Ex* a, Ex* b) {
+	check(a);
+	check(b);
+
+	// Fast equality test
+	if (a == b) return 0;
+
+	// Variables are unordered unless contained in other term
+	// TODO: check how that relates to variable identity between clauses
+	if (a->tag == Var) return 0;
+	if (b->tag == Var) return occurs(b, a);
+
+	// Sufficient condition: Exists ai >= b
+	// TODO: check generated code
+	for (size_t i = 0; i < a->n; ++i)
+		if (ge(at(a, i), b)) return 1;
+
+	// Necessary condition: a > all bi
+	for (size_t i = 0; i < b->n; ++i)
+		if (!gt(a, at(b, i))) return 0;
+
+	// Different functions. Comparison has the required property that true is considered smaller than any other term (except false,
+	// which does not occur during superposition proof search).
+	auto af = fn(a);
+	auto bf = fn(b);
+	if (af != bf) return af > bf;
+
+	// Same functions should mean similar terms
+	assert(a->tag == b->tag);
+	assert(a->n == b->n);
+	assert(at(a, 0) == at(b, 0));
+
+	// Lexicographic extension
+	for (size_t i = 0; i < a->n; ++i) {
+		if (gt(at(a, i), at(b, i))) return 1;
+		if (at(a, i) != at(b, i)) return 0;
 	}
 
-	size_t fn(Ex* a) {
-		if (a->tag == Call) return (size_t)at(a, 0);
-		return a->tag;
-	}
+	// Having found no differences, the terms must be equal, but we already checked for that first thing, so something is wrong
+	unreachable;
+}
 
-	bool ge(Ex* a, Ex* b) {
-		return a == b || gt(a, b);
-	}
+// Inputs
+Clause* c;
+size_t ci;
+Ex* c0;
+Ex* c1;
 
-public:
-	// TODO: some analysis on the operators used in the clauses, to figure out what order is
-	// Likely to be best. For now, just use an arbitrary order.
-
-	// Check whether one term is unambiguously greater than another. This is much more delicate than comparison for e.g. sorting,
-	// where arbitrary choices can be made; to avoid breaking completeness of the calculus, the criteria are much stricter, and when
-	// in doubt, we return false.
-	bool gt(Ex* a, Ex* b) {
-		check(a);
-		check(b);
-
-		// Fast equality test
-		if (a == b) return 0;
-
-		// Variables are unordered unless contained in other term
-		// TODO: check how that relates to variable identity between clauses
-		if (a->tag == Var) return 0;
-		if (b->tag == Var) return occurs(b, a);
-
-		// Sufficient condition: Exists ai >= b
-		// TODO: check generated code
-		for (size_t i = 0; i < a->n; ++i)
-			if (ge(at(a, i), b)) return 1;
-
-		// Necessary condition: a > all bi
-		for (size_t i = 0; i < b->n; ++i)
-			if (!gt(a, at(b, i))) return 0;
-
-		// Different functions. Comparison has the required property that true is considered smaller than any other term (except
-		// false, which does not occur during superposition proof search).
-		auto af = fn(a);
-		auto bf = fn(b);
-		if (af != bf) return af > bf;
-
-		// Same functions should mean similar terms
-		assert(a->tag == b->tag);
-		assert(a->n == b->n);
-		assert(at(a, 0) == at(b, 0));
-
-		// Lexicographic extension
-		for (size_t i = 0; i < a->n; ++i) {
-			if (gt(at(a, i), at(b, i))) return 1;
-			if (at(a, i) != at(b, i)) return 0;
-		}
-
-		// Having found no differences, the terms must be equal, but we already checked for that first thing, so something is wrong
-		unreachable;
-	}
-};
-
-// SORT
-int mode;
-lexicographicPathOrder order;
-///
+Clause* d;
+size_t di;
+Ex* d0;
+Ex* d1;
 
 /*
 equality resolution
@@ -141,12 +147,9 @@ where
 */
 
 // Check, substitute and make new clause
-void resolve(Clause* c, size_t ci, Ex* c0, Ex* c1) {
+void resolve1() {
 	assert(!neg.n);
 	assert(!pos.n);
-
-	// Unify
-	if (!unify(c0, 0, c1, 0)) return;
 
 	// Negative literals
 	for (auto i: c->neg())
@@ -160,10 +163,13 @@ void resolve(Clause* c, size_t ci, Ex* c0, Ex* c1) {
 }
 
 // For each negative equation
-void resolve(Clause* c) {
-	for (auto ci: c->neg()) {
+void resolve() {
+	for (auto i: c->neg()) {
 		auto e = eqn(at(c, ci));
-		resolve(c, ci, e.first, e.second);
+		if (unify(e.first, 0, e.second, 0)) {
+			ci = i;
+			resolve1();
+		}
 	}
 }
 
@@ -178,26 +184,26 @@ where
 
 // Check, substitute and make new clause
 void factor(Clause* c, size_t ci, Ex* c0, Ex* c1, size_t di, Ex* d0, Ex* d1) {
+	assert(!neg.n);
+	assert(!pos.n);
+
 	// If these two terms are not equatable (for which the types must match, and predicates can only be equated with true),
 	// substituting terms for variables would not make them become so
 	if (!equatable(c1, d1)) return;
 
 	// Unify
-	map<termx, termx> m;
-	if (!unify(m, c0, 0, d0, 0)) return;
+	if (!unify(c0, 0, d0, 0)) return;
 
 	// Negative literals
-	vec<Ex*> neg;
 	for (size_t i = 0; i < c.first.size(); ++i) neg.add(replace(m, c.first[i], 0));
-	neg.add(equate(replace(m, c1, 0), replace(m, d1, 0)));
+	neg.add(equate(replace(c1, 0), replace(d1, 0)));
 
 	// Positive literals
-	vec<Ex*> pos;
 	for (size_t i = 0; i < c.second.size(); ++i)
-		if (i != di) pos.add(replace(m, c.second[i], 0));
+		if (i != di) pos.add(replace(c.second[i], 0));
 
 	// Make new clause
-	qclause(r_ef, vec<clause>{c}, neg, pos);
+	qclause(r_ef, c);
 }
 
 // For each positive equation (both directions) again
@@ -350,8 +356,8 @@ Clause* superposn() {
 		active.add(g);
 
 		// Infer
-		resolve(g);
-		factor(g);
+		resolve();
+		factor();
 		for (auto c: active)
 			for (mode = 0; mode != 2; ++mode) {
 				superposn(c, g);

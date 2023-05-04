@@ -200,7 +200,7 @@ void mpz_round(mpz_t q, mpz_t n, mpz_t d) {
 }
 } // namespace
 
-Ex* neg(Ex* a) {
+Ex* minus(Ex* a) {
 	switch (a->tag) {
 	case Integer:
 	{

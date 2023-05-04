@@ -135,8 +135,8 @@ Ex* simplify(Ex* a) {
 	case Neg:
 	{
 		auto x = simplify(at(a, 0));
-		if (realConstant(x)) return ex(ToReal, neg(at(x, 0)));
-		if (constant(x)) return neg(x);
+		if (realConstant(x)) return ex(ToReal, minus(at(x, 0)));
+		if (constant(x)) return minus(x);
 		return ex(t, x);
 	}
 	case RemE:

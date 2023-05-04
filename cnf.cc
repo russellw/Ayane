@@ -315,7 +315,7 @@ Ex* distribute(Ex* a) {
 }
 
 // Convert a suitably rearranged term into actual clauses
-void literalsTerm(Ex* a, vec<Ex*>& neg, vec<Ex*>& pos) {
+void literalsTerm(Ex* a) {
 	switch (a->tag) {
 	case All:
 	case And:
@@ -326,7 +326,7 @@ void literalsTerm(Ex* a, vec<Ex*>& neg, vec<Ex*>& pos) {
 		neg.add(at(a, 0));
 		return;
 	case Or:
-		for (size_t i = 0; i < a->n; ++i) literalsTerm(at(a, i), neg, pos);
+		for (size_t i = 0; i < a->n; ++i) literalsTerm(at(a, i));
 		return;
 	}
 	pos.add(a);
@@ -337,9 +337,10 @@ void clausesTerm(Ex* a, int rule, Formula* from) {
 		for (size_t i = 0; i < a->n; ++i) clausesTerm(at(a, i), rule, from);
 		return;
 	}
-	vec<Ex*> neg, pos;
-	literalsTerm(a, neg, pos);
-	clause(neg, pos, rule, from);
+	assert(!neg.n);
+	assert(!pos.n);
+	literalsTerm(a);
+	clause(rule, from);
 }
 } // namespace
 

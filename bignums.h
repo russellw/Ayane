@@ -10,7 +10,7 @@ Ex* real(mpq_t q);
 Ex* real(char* s);
 
 // Arithmetic is polymorphic on integers and rationals
-Ex* neg(Ex* a);
+Ex* minus(Ex* a);
 Ex* add(Ex* a, Ex* b);
 Ex* sub(Ex* a, Ex* b);
 Ex* mul(Ex* a, Ex* b);
