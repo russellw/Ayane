@@ -3,7 +3,7 @@
 namespace {
 vec<pair<Ex*, Ex*>> m;
 
-bool match(ex a, ex b) {
+bool match(Ex* a, Ex* b) {
 	// Equals
 	if (eq(a, 0, b, 1)) return 1;
 
