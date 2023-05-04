@@ -1,3 +1,6 @@
+_(False)
+_(True)
+
 // SORT
 _(Add)
 _(All)
@@ -13,7 +16,6 @@ _(DivT)
 _(Eq)
 _(Eqv)
 _(Exists)
-_(False)
 _(Floor)
 _(Fn)
 _(Integer)
@@ -35,7 +37,6 @@ _(Sub)
 _(ToInteger)
 _(ToRational)
 _(ToReal)
-_(True)
 _(Trunc)
 _(Var)
 ///

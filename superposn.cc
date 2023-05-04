@@ -63,7 +63,7 @@ class lexicographicPathOrder {
 	// The greater-than test is supposed to be called on complete terms, which can include constant symbols (zero arity), or calls
 	// of function symbols (positive arity) with arguments. Make sure it's not being called on an isolated function symbol.
 	void check(Ex* a) {
-		// Todo
+		// TODO: is this still valid?
 		assert(a->n);
 	}
 
@@ -111,8 +111,8 @@ public:
 
 		// Lexicographic extension
 		for (size_t i = 0; i < a.size(); ++i) {
-			if (gt(at(a, i), b[i])) return 1;
-			if (at(a, i) != b[i]) return 0;
+			if (gt(at(a, i), at(b, i))) return 1;
+			if (at(a, i) != at(b, i)) return 0;
 		}
 
 		// Having found no differences, the terms must be equal, but we already checked for that first thing, so something is wrong
