@@ -40,6 +40,18 @@ struct Clause: IFormula {
 	Ex* atoms[];
 };
 
+range neg() const {
+	return range(0, neg_n);
+}
+range pos() const {
+	return range(neg_n, size());
+}
+
+inline Ex* at(Clause* c, size_t i) {
+	assert(i < c->n);
+	return c->atoms[i];
+}
+
 // Passive clauses are stored in a priority queue with smaller clauses first
 size_t cost(Clause* c);
 
