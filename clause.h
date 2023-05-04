@@ -45,7 +45,14 @@ struct Clause: IFormula {
 	range pos() const {
 		return range(nn, n);
 	}
+
+	range all() const {
+		// TODO: is this also worth doing for Ex?
+		return range(0, n);
+	}
 };
+
+extern vec<Ex*> neg, pos;
 
 inline Ex* at(Clause* c, size_t i) {
 	assert(i < c->n);
@@ -62,4 +69,4 @@ struct CompareClauses {
 };
 
 extern std::priority_queue<Clause*, vec<Clause*>, CompareClauses> passive;
-void clause(vec<Ex*>& neg, vec<Ex*>& pos, int rule, IFormula* from, IFormula* from1 = 0);
+void clause(int rule, IFormula* from, IFormula* from1 = 0);

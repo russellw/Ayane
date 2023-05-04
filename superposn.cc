@@ -19,7 +19,7 @@ bool hasNumeric(Ex* a) {
 }
 
 bool hasNumeric(Clause* c) {
-	for (size_t i = 0; i < c->n; ++i)
+	for (auto i: c->all())
 		if (hasNumeric(at(c, i))) return 1;
 	return 0;
 }
@@ -131,73 +131,50 @@ int mode;
 lexicographicPathOrder order;
 ///
 
-void qclause(rule rl, const vec<clause>& from, const vec<Ex*>& neg, const vec<Ex*>& pos) {
-	incStat("qclause");
-	auto c = make_pair(neg, pos);
-
-	// Immediately simplifying clauses is efficient, and seems like it should not break completeness, though it would be nice to see
-	// an actual proof of this:
-	// https://stackoverflow.com/questions/65162921/is-superposition-complete-with-immediate-simplify
-	c = simplify(map<ex, ex>(), c);
-
-	// Filter tautologies
-	if (c == truec) {
-		incStat("qclause filter tautology");
-		return;
-	}
-
-	// Record proof step
-	proof.add(c, make_pair(rl, from));
-
-	// Add to the passive queue
-	incStat("qclause add");
-	passive.push(c);
-}
-
 /*
-	equality resolution
-		c | c0 != c1
-	->
-		c/s
-	where
-		s = unify(c0, c1)
-	*/
+equality resolution
+	c | c0 != c1
+->
+	c/m
+where
+	m = unify(c0, c1)
+*/
 
 // Check, substitute and make new clause
 void resolve(Clause* c, size_t ci, Ex* c0, Ex* c1) {
+	assert(!neg.n);
+	assert(!pos.n);
+
 	// Unify
-	map<termx, termx> m;
-	if (!unify(m, c0, 0, c1, 0)) return;
+	if (!unify(c0, 0, c1, 0)) return;
 
 	// Negative literals
-	vec<Ex*> neg;
-	for (size_t i = 0; i < c.first.size(); ++i)
-		if (i < ci) neg.add(replace(m, c.first[i], 0));
+	for (auto i: c->neg())
+		if (i != ci) neg.add(replace(at(c, i), 0));
 
 	// Positive literals
-	vec<Ex*> pos;
-	for (size_t i = 0; i < c.second.size(); ++i) pos.add(replace(m, c.second[i], 0));
+	for (auto i: c->pos()) pos.add(replace(at(c, i), 0));
 
 	// Make new clause
-	qclause(r_er, vec<clause>{c}, neg, pos);
+	clause(r_er, c);
 }
 
 // For each negative equation
 void resolve(Clause* c) {
-	for (size_t ci = 0; ci < c.first.size(); ++ci) {
-		auto e = eqn(c.first[ci]);
+	for (auto ci: c->neg()) {
+		auto e = eqn(at(c, ci));
 		resolve(c, ci, e.first, e.second);
 	}
 }
 
 /*
-	equality factoring
-		c | c0 = c1 | d0 = d1
-	->
-		(c | c0 = c1 | c1 != d1)/s
-	where
-		s = unify(c0, d0)
-	*/
+equality factoring
+	c | c0 = c1 | d0 = d1
+->
+	(c | c0 = c1 | c1 != d1)/m
+where
+	m = unify(c0, d0)
+*/
 
 // Check, substitute and make new clause
 void factor(Clause* c, size_t ci, Ex* c0, Ex* c1, size_t di, Ex* d0, Ex* d1) {
@@ -217,7 +194,7 @@ void factor(Clause* c, size_t ci, Ex* c0, Ex* c1, size_t di, Ex* d0, Ex* d1) {
 	// Positive literals
 	vec<Ex*> pos;
 	for (size_t i = 0; i < c.second.size(); ++i)
-		if (i < di) pos.add(replace(m, c.second[i], 0));
+		if (i != di) pos.add(replace(m, c.second[i], 0));
 
 	// Make new clause
 	qclause(r_ef, vec<clause>{c}, neg, pos);
@@ -243,14 +220,14 @@ void factor(Clause* c) {
 }
 
 /*
-	superposition
-		c | c0 = c1, d | d0(a) ?= d1
-	->
-		(c | d | d0(c1) ?= d1)/s
-	where
-		s = unify(c0, a)
-		a is not a variable
-	*/
+superposition
+	c | c0 = c1, d | d0(a) ?= d1
+->
+	(c | d | d0(c1) ?= d1)/m
+where
+	m = unify(c0, a)
+	a is not a variable
+*/
 
 // The literature describes negative and positive superposition as separate inference rules; the only difference between them is
 // whether they consider negative or positive equations in the second clause, so to avoid copy-pasting a significant chunk of
@@ -276,7 +253,7 @@ void superposn(Clause* c, Clause* d, size_t ci, Ex* c0, Ex* c1, size_t di, Ex* d
 	// Positive literals
 	vec<Ex*> pos;
 	for (size_t i = 0; i < c.second.size(); ++i)
-		if (i < ci) pos.add(replace(m, c.second[i], 0));
+		if (i != ci) pos.add(replace(m, c.second[i], 0));
 	for (size_t i = 0; i < d.second.size(); ++i) {
 		if (mode && i == di) continue;
 		pos.add(replace(m, d.second[i], 1));
