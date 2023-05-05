@@ -146,7 +146,7 @@ where
 	m = unify(c0, c1)
 */
 
-// Check, substitute and make new clause
+// Substitute and make new clause
 void resolve1() {
 	assert(!neg.n);
 	assert(!pos.n);
@@ -165,7 +165,7 @@ void resolve1() {
 // For each negative equation
 void resolve() {
 	for (auto i: c->neg()) {
-		auto e = eqn(at(c, ci));
+		auto e = eqn(at(c, i));
 		if (unify(e.first, 0, e.second, 0)) {
 			ci = i;
 			resolve1();
@@ -182,8 +182,8 @@ where
 	m = unify(c0, d0)
 */
 
-// Check, substitute and make new clause
-void factor(Clause* c, size_t ci, Ex* c0, Ex* c1, size_t di, Ex* d0, Ex* d1) {
+// Substitute and make new clause
+void factorc() {
 	assert(!neg.n);
 	assert(!pos.n);
 
@@ -191,37 +191,50 @@ void factor(Clause* c, size_t ci, Ex* c0, Ex* c1, size_t di, Ex* d0, Ex* d1) {
 	// substituting terms for variables would not make them become so
 	if (!equatable(c1, d1)) return;
 
-	// Unify
+	// The first expression of the second equation is called 'd0' because in the superposition rule, below, it will be an equation
+	// in the second clause. Here, however, it is still a second equation in the first clause, hence unification is done with the
+	// same variable subscript on both sides.
 	if (!unify(c0, 0, d0, 0)) return;
 
-	// Negative literals
-	for (size_t i = 0; i < c.first.size(); ++i) neg.add(replace(m, c.first[i], 0));
+	for (auto i: c->neg()) neg.add(replace(at(c, i), 0));
 	neg.add(equate(replace(c1, 0), replace(d1, 0)));
 
-	// Positive literals
-	for (size_t i = 0; i < c.second.size(); ++i)
-		if (i != di) pos.add(replace(c.second[i], 0));
+	for (auto i: c->pos())
+		if (i != di) pos.add(replace(at(c, i), 0));
 
-	// Make new clause
-	qclause(r_ef, c);
+	clause(r_ef, c);
 }
 
 // For each positive equation (both directions) again
-void factor(Clause* c, size_t ci, Ex* c0, Ex* c1) {
-	for (size_t di = 0; di < c.second.size(); ++di) {
-		if (di == ci) continue;
-		auto e = eqn(c.second[di]);
-		factor(c, ci, c0, c1, di, e.first, e.second);
-		factor(c, ci, c0, c1, di, e.second, e.first);
+void factor1() {
+	for (auto i: c->pos()) {
+		if (i == ci) continue;
+		di = i;
+		auto e = eqn(at(c, i));
+
+		d0 = e.first;
+		d1 = e.second;
+		factorc();
+
+		d0 = e.second;
+		d1 = e.first;
+		factorc();
 	}
 }
 
 // For each positive equation (both directions)
-void factor(Clause* c) {
-	for (size_t ci = 0; ci < c.second.size(); ++ci) {
-		auto e = eqn(c.second[ci]);
-		factor(c, ci, e.first, e.second);
-		factor(c, ci, e.second, e.first);
+void factor() {
+	for (auto i: c->pos()) {
+		auto e = eqn(at(c, i));
+		ci = i;
+
+		c0 = e.first;
+		c1 = e.second;
+		factor1();
+
+		c0 = e.second;
+		c1 = e.first;
+		factor1();
 	}
 }
 
