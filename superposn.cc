@@ -192,8 +192,8 @@ void factorc() {
 	if (!equatable(c1, d1)) return;
 
 	// The first expression of the second equation is called 'd0' because in the superposition rule, below, it will be an equation
-	// in the second clause. Here, however, it is still a second equation in the first clause, hence unification is done with the
-	// same variable subscript on both sides.
+	// in the second clause. Here, however, it is still a second equation in the first clause, so unification is done with the same
+	// variable subscript on both sides.
 	if (!unify(c0, 0, d0, 0)) return;
 
 	for (auto i: c->neg()) neg.add(replace(at(c, i), 0));
