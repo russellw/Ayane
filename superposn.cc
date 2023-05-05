@@ -24,17 +24,6 @@ bool hasNumeric(Clause* c) {
 	return 0;
 }
 
-Ex* splice(Ex* a, const vec<size_t>& posn, size_t i, Ex* b) {
-	if (i == posn.size()) return b;
-
-	vec<Ex*> v(a->n);
-	for (size_t j = 0; j < a->n; ++j) {
-		v[j] = at(a, j);
-		if (j == posn[i]) v[j] = splice(v[j], posn, i + 1, b);
-	}
-	return ex(a->tag, v);
-}
-
 // First-order logic usually takes the view that equality is a special case, but superposition calculus takes the view that equality
 // is the general case. Non-equality predicates are considered to be equations 'p=true'; this is a special exemption from the usual
 // rule that equality is not allowed on Boolean terms.
@@ -146,7 +135,7 @@ where
 	m = unify(c0, c1)
 */
 
-// Substitute and make new clause
+// Make new clause
 void resolve1() {
 	assert(!neg.n);
 	assert(!pos.n);
@@ -182,13 +171,13 @@ where
 	m = unify(c0, d0)
 */
 
-// Substitute and make new clause
+// Make new clause
 void factorc() {
 	assert(!neg.n);
 	assert(!pos.n);
 
 	// If these two terms are not equatable (for which the types must match, and predicates can only be equated with true),
-	// substituting terms for variables would not make them become so
+	// replacing variables with expressions would not make them become so
 	if (!equatable(c1, d1)) return;
 
 	// The first expression of the second equation is called 'd0' because in the superposition rule, below, it will be an equation
@@ -250,64 +239,69 @@ where
 
 // The literature describes negative and positive superposition as separate inference rules; the only difference between them is
 // whether they consider negative or positive equations in the second clause, so to avoid copy-pasting a significant chunk of
-// nontrivial and almost identical code, we specify here a single inference rule controlled by the mode flag
+// nontrivial and almost identical code, we specify here a single inference rule
 
-// Check, substitute and make new clause
-void superposn(Clause* c, Clause* d, size_t ci, Ex* c0, Ex* c1, size_t di, Ex* d0, Ex* d1, const vec<size_t>& posn, Ex* a) {
-	// It is never necessary to paramodulate into variables
-	if (a->tag == Var) return;
+vec<size_t> posn;
 
-	// Unify
-	map<termx, termx> m;
-	if (!unify(m, c0, 0, a, 1)) return;
+Ex* splice(Ex* a, size_t i, Ex* b) {
+	if (i == posn.size()) return b;
 
-	// Negative literals
-	vec<Ex*> neg;
-	for (size_t i = 0; i < c.first.size(); ++i) neg.add(replace(m, c.first[i], 0));
-	for (size_t i = 0; i < d.first.size(); ++i) {
-		if (!mode && i == di) continue;
-		neg.add(replace(m, d.first[i], 1));
+	assert(a->n);
+	vec<Ex*> v(a->n);
+	for (size_t j = 0; j < a->n; ++j) {
+		v[j] = at(a, j);
+		if (j == posn[i]) v[j] = splice(v[j], i + 1, b);
 	}
+	return ex(a->tag, v);
+}
 
-	// Positive literals
-	vec<Ex*> pos;
-	for (size_t i = 0; i < c.second.size(); ++i)
-		if (i != ci) pos.add(replace(m, c.second[i], 0));
-	for (size_t i = 0; i < d.second.size(); ++i) {
-		if (mode && i == di) continue;
-		pos.add(replace(m, d.second[i], 1));
-	}
+// Make new clause
+void superposnc() {
+	assert(!neg.n);
+	assert(!pos.n);
 
 	// To calculate d0(c1), we first perform the replacement of variables with substitute values, on the component terms, then
 	// splice them together. This is necessary because the component terms are from different clauses, therefore have different
 	// logical variable names. The composition would not be valid if we were replacing arbitrary terms, but is valid because we are
 	// only replacing variables.
-	d0 = replace(m, d0, 1);
-	c1 = replace(m, c1, 0);
-	auto d0c1 = splice(d0, posn, 0, c1);
-	d1 = replace(m, d1, 1);
+	auto d0c1 = splice(replace(d0, 1), 0, replace(c1, 0));
+	auto d1_ = replace(d1, 1);
+	if (!equatable(d0c1, d1_)) return;
 
-	// Make equation
-	if (!equatable(d0c1, d1)) return;
-	auto& v = mode ? pos : neg;
-	v.add(equate(d0c1, d1));
+	for (auto i: c->neg()) neg.add(replace(at(c, i), 0));
+	for (auto i: d->neg())
+		if (i != di) neg.add(replace(at(d, i), 1));
 
-	// Make new clause
-	qclause(r_sp, vec<clause>{c, d}, neg, pos);
+	for (auto i: c->pos())
+		if (i != ci) pos.add(replace(at(c, i), 0));
+	for (auto i: d->pos())
+		if (i != di) pos.add(replace(at(d, i), 1));
+
+	auto& v = di < d->nn ? neg : pos;
+	v.add(equate(d0c1, d1_));
+
+	clause(r_sp, c, d);
 }
 
 // Descend into subterms
-void descend(Clause* c, Clause* d, size_t ci, Ex* c0, Ex* c1, size_t di, Ex* d0, Ex* d1, const vec<size_t>& posn, Ex* a) {
-	superposn(c, d, ci, c0, c1, di, d0, d1, posn, a);
-	for (size_t i = 0; i < a.size(); ++i) {
-		auto p(posn);
-		p.add(i);
-		descend(c, d, ci, c0, c1, di, d0, d1, p, at(a, i));
+void descend(Ex* a) {
+	// It is never necessary to paramodulate into variables
+	if (a->tag == Var) return;
+
+	// a is a subexpression of d, so its variables are subscripted 1
+	if (unify(c0, 0, a, 1)) superposnc();
+
+	// TODO: Call -> start at 1
+	// c0 could unify with a, some subexpression of a, or both
+	for (size_t i = 0; i < a->n; ++i) {
+		posn.add(i);
+		descend(at(a, i));
+		--posn.n;
 	}
 }
 
 // For each (mode)ve equation in d (both directions)
-void superposn(Clause* c, Clause* d, size_t ci, Ex* c0, Ex* c1) {
+void superposn1() {
 	auto& dmode = mode ? d.second : d.first;
 	for (size_t di = 0; di < dmode.size(); ++di) {
 		auto e = eqn(dmode[di]);
