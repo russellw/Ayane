@@ -332,6 +332,29 @@ void literalsTerm(Ex* a) {
 	pos.add(a);
 }
 
+bool isNumeric(Ex* a) {
+	switch (type(a)->tag) {
+	case Integer:
+	case Rational:
+	case Real:
+		return 1;
+	}
+	return 0;
+}
+
+bool hasNumeric(Ex* a) {
+	if (isNumeric(a)) return 1;
+	for (size_t i = 0; i < a->n; ++i)
+		if (hasNumeric(at(a, i))) return 1;
+	return 0;
+}
+
+bool hasNumeric(const vec<Ex*>& v) {
+	for (auto a: v)
+		if (hasNumeric(a)) return 1;
+	return 0;
+}
+
 void clausesTerm(Ex* a, int rule, Formula* from) {
 	if (a->tag == And) {
 		for (size_t i = 0; i < a->n; ++i) clausesTerm(at(a, i), rule, from);
@@ -339,7 +362,14 @@ void clausesTerm(Ex* a, int rule, Formula* from) {
 	}
 	assert(!neg.n);
 	assert(!pos.n);
+
 	literalsTerm(a);
+
+	// First-order logic is not complete on arithmetic. The conservative approach to this is that if any clause contains terms of
+	// numeric type, we mark the proof search incomplete, so that failure to derive a contradiction, means the result is
+	// inconclusive rather than satisfiable.
+	if (result == z_Satisfiable && (hasNumeric(neg) || hasNumeric(pos))) result = z_GaveUp;
+
 	clause(rule, from);
 }
 } // namespace

@@ -1,29 +1,6 @@
 #include "all.h"
 
 namespace {
-bool isNumeric(Ex* a) {
-	switch (type(a)->tag) {
-	case Integer:
-	case Rational:
-	case Real:
-		return 1;
-	}
-	return 0;
-}
-
-bool hasNumeric(Ex* a) {
-	if (isNumeric(a)) return 1;
-	for (size_t i = 0; i < a->n; ++i)
-		if (hasNumeric(at(a, i))) return 1;
-	return 0;
-}
-
-bool hasNumeric(Clause* c) {
-	for (auto i: c)
-		if (hasNumeric(at(c, i))) return 1;
-	return 0;
-}
-
 // First-order logic usually takes the view that equality is a special case, but superposition calculus takes the view that equality
 // is the general case. Non-equality predicates are considered to be equations 'p=true'; this is a special exemption from the usual
 // rule that equality is not allowed on Boolean terms.
@@ -343,15 +320,6 @@ void superposn1(Clause* c, Clause* d) {
 int result = z_Satisfiable;
 
 Clause* superposn() {
-	// First-order logic is not complete on arithmetic. The conservative approach to this is that if any clause (after
-	// simplification, which includes evaluation of ground terms) contains terms of numeric type, we mark the proof search
-	// incomplete, so that failure to derive a contradiction, means the result is inconclusive rather than satisfiable.
-	for (auto c: passive)
-		if (hasNumeric(c)) {
-			result = z_GaveUp;
-			break;
-		}
-
 	// The active set starts off empty
 	vec<Clause*> active;
 
