@@ -45,11 +45,6 @@ struct Clause: IFormula {
 	range pos() const {
 		return range(nn, n);
 	}
-
-	range all() const {
-		// TODO: is this also worth doing for Ex?
-		return range(0, n);
-	}
 };
 
 extern vec<Ex*> neg, pos;
@@ -57,6 +52,13 @@ extern vec<Ex*> neg, pos;
 inline Ex* at(Clause* c, size_t i) {
 	assert(i < c->n);
 	return c->atoms[i];
+}
+
+inline range::iterator begin(const Clause* c) {
+	return 0;
+}
+inline range::iterator end(const Clause* c) {
+	return c->n;
 }
 
 // Passive clauses are stored in a priority queue with smaller clauses first
@@ -68,5 +70,5 @@ struct CompareClauses {
 	}
 };
 
-extern std::priority_queue<Clause*, vec<Clause*>, CompareClauses> passive;
+extern std::priority_queue<Clause*, std::vector<Clause*>, CompareClauses> passive;
 void clause(int rule, IFormula* from, IFormula* from1 = 0);

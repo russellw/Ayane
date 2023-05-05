@@ -19,7 +19,7 @@ bool hasNumeric(Ex* a) {
 }
 
 bool hasNumeric(Clause* c) {
-	for (auto i: c->all())
+	for (auto i: c)
 		if (hasNumeric(at(c, i))) return 1;
 	return 0;
 }
@@ -300,22 +300,39 @@ void descend(Ex* a) {
 	}
 }
 
-// For each (mode)ve equation in d (both directions)
-void superposn1() {
-	auto& dmode = mode ? d.second : d.first;
-	for (size_t di = 0; di < dmode.size(); ++di) {
-		auto e = eqn(dmode[di]);
-		descend(c, d, ci, c0, c1, di, e.first, e.second, vec<size_t>(), e.first);
-		descend(c, d, ci, c0, c1, di, e.second, e.first, vec<size_t>(), e.second);
+// For each equation in d (both directions)
+void superposn2() {
+	// TODO: check this
+	if (c0 == bools + 1) return;
+	for (auto i: d) {
+		auto e = eqn(at(d, i));
+		di = i;
+
+		assert(!posn.n);
+		d0 = e.first;
+		d1 = e.second;
+		descend(d0);
+
+		assert(!posn.n);
+		d0 = e.second;
+		d1 = e.first;
+		descend(d0);
 	}
 }
 
 // For each positive equation in c (both directions)
-void superposn(Clause* c, Clause* d) {
-	for (size_t ci = 0; ci < c.second.size(); ++ci) {
-		auto e = eqn(c.second[ci]);
-		superposn(c, d, ci, e.first, e.second);
-		superposn(c, d, ci, e.second, e.first);
+void superposn1(Clause* c, Clause* d) {
+	for (auto i: c->pos()) {
+		auto e = eqn(at(c, i));
+		ci = i;
+
+		c0 = e.first;
+		c1 = e.second;
+		superposn2();
+
+		c0 = e.second;
+		c1 = e.first;
+		superposn2();
 	}
 }
 } // namespace
