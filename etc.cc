@@ -49,21 +49,13 @@ Ex* imp(Ex* a, Ex* b) {
 	return ex(Or, ex(Not, a), b);
 }
 
-bool occurs(Ex* a, Ex* b) {
-	if (a == b) return 1;
-	for (size_t i = 0; i < b->n; ++i)
-		if (occurs(a, at(b, i))) return 1;
-	return 0;
-}
-
-Ex* quantify(Ex* a) {
-	vec<Ex*> vars;
-	freeVars(a, vec<Ex*>(), vars);
-	if (vars.empty()) return a;
-	vec<Ex*> v(1, a);
-	// TODO: add all at once
-	for (auto x: vars) v.add(x);
-	return ex(All, v);
+void mpz_ediv_q(mpz_t q, const mpz_t n, const mpz_t d) {
+	mpz_t r;
+	mpz_init(r);
+	mpz_ediv_r(r, n, d);
+	mpz_sub(q, n, r);
+	mpz_clear(r);
+	mpz_tdiv_q(q, q, d);
 }
 
 void mpz_ediv_r(mpz_t r, const mpz_t n, const mpz_t d) {
@@ -75,15 +67,6 @@ void mpz_ediv_r(mpz_t r, const mpz_t n, const mpz_t d) {
 		mpz_add(r, r, dabs);
 		mpz_clear(dabs);
 	}
-}
-
-void mpz_ediv_q(mpz_t q, const mpz_t n, const mpz_t d) {
-	mpz_t r;
-	mpz_init(r);
-	mpz_ediv_r(r, n, d);
-	mpz_sub(q, n, r);
-	mpz_clear(r);
-	mpz_tdiv_q(q, q, d);
 }
 
 // Calculate q = n/d, assuming common factors have already been canceled out, and applying bankers rounding
@@ -114,5 +97,22 @@ void mpz_round(mpz_t q, mpz_t n, mpz_t d) {
 	mpz_add(q, n, d2);
 	mpz_clear(d2);
 	mpz_fdiv_q(q, q, d);
+}
+
+bool occurs(Ex* a, Ex* b) {
+	if (a == b) return 1;
+	for (size_t i = 0; i < b->n; ++i)
+		if (occurs(a, at(b, i))) return 1;
+	return 0;
+}
+
+Ex* quantify(Ex* a) {
+	vec<Ex*> vars;
+	freeVars(a, vec<Ex*>(), vars);
+	if (vars.empty()) return a;
+	vec<Ex*> v(1, a);
+	// TODO: add all at once
+	for (auto x: vars) v.add(x);
+	return ex(All, v);
 }
 ///
