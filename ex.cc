@@ -7,14 +7,12 @@ Ex treal = {Real};
 
 Ex bools[2] = {{False}, {True}};
 
-ex gensym(type ty) {
-	auto o = atoms->alloc(offsetof(atom, s) + sizeof(char*));
-	auto p = (Ex*)atoms->ptr(o);
-	p->t = Fn;
-	p->s = 0;
-	p->ty = ty;
-	ex a;
-	a.raw = o;
+// TODO: rename?
+Ex* gensym(Ex* ty) {
+	auto a = (Ex*)malloc(offsetof(Ex, s) + sizeof(char*));
+	a->tag = Fn;
+	a->ty = ty;
+	a->s = 0;
 	return a;
 }
 
@@ -232,49 +230,6 @@ int cmp(ex a, ex b) {
 	// They are different terms with the same tags and no different components, so they must be different atoms; just do a straight
 	// binary comparison
 	return memcmp(&a, &b, sizeof a);
-}
-
-void print(int tag) {
-	// TODO: eliminate
-	static const char* tagNames[] = {
-#define _(x) #x,
-#include "tags.h"
-	};
-	print(tagNames[(int)t]);
-}
-
-void print(ex a) {
-	switch (a->tag) {
-	case Fn:
-	{
-		auto p = a.getAtom();
-		auto s = p->s;
-		if (s) print(s);
-		else
-			printf("_%p", p);
-		break;
-	}
-	case Integer:
-		mpz_out_str(stdout, 10, a.mpz());
-		return;
-	case Rational:
-		mpq_out_str(stdout, 10, a.mpq());
-		return;
-	case Var:
-		printf("%%%zu", a.varIdx());
-		return;
-	default:
-		print(a->tag);
-		break;
-	}
-	if (a.size() == 1) return;
-	putchar('(');
-	joining;
-	for (auto b: a) {
-		join(", ");
-		print(b);
-	}
-	putchar(')');
 }
 
 static void check(ex a, size_t arity) {

@@ -14,7 +14,7 @@ struct Ex {
 		struct {
 			Ex* ty;
 			union {
-				char s[9];
+				char* s;
 				size_t idx;
 				mpz_t mpz;
 				mpq_t mpq;
@@ -59,8 +59,6 @@ int cmp(Ex* a, Ex* b);
 Ex* ftype(Ex* rty, const Ex* first, const Ex* last);
 Ex* ftype(Ex* rty, const vec<Ex*>& args);
 void check(Ex* a, Ex* ty);
-
-void print(Ex* a);
 
 // Matching and unification must in the general case deal with two clauses which are assumed to have logically distinct variable
 // names, but it is inefficient to provide physically distinct variable names for each clause, so we logically extend variable names
