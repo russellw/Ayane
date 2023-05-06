@@ -36,7 +36,8 @@ extern Formula* conjecture;
 // https://stackoverflow.com/questions/29164610/why-are-clauses-multisets
 // So we represent them as bags (or lists, ignoring the order) and let the algorithms that prefer sets, discard duplicate literals
 struct Clause: IFormula {
-	uint32_t nn, n;
+	uint16_t nn, n;
+	bool dead;
 	Ex* atoms[];
 
 	range neg() const {

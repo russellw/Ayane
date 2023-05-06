@@ -298,7 +298,7 @@ void superposn2() {
 }
 
 // For each positive equation in c (both directions)
-void superposn1(Clause* c, Clause* d) {
+void superposn1() {
 	for (auto i: c->pos()) {
 		auto e = eqn(at(c, i));
 		ci = i;
@@ -325,6 +325,7 @@ Clause* superposn() {
 
 	// Saturation proof procedure tries to perform all possible derivations until it derives a contradiction
 	for (;;) {
+	loop:
 		// If there are no more clauses in the queue, the problem is satisfiable, unless completeness was lost
 		if (passive.empty()) return 0;
 		incStat("superposn main loop");
@@ -341,19 +342,32 @@ Clause* superposn() {
 
 		// This is the Discount loop (in which only active clauses participate in subsumption checks); in tests, it performed
 		// slightly better than the alternative Otter loop (in which passive clauses also participate)
-		if (subsumesForward(active, g)) continue;
-		active = subsumeBackward(active, g);
+
+		// Forward subsumption
+		for (auto h: active)
+			if (!h->dead && subsumes(h, g)) goto loop;
+
+		// Backward subsumption
+		for (auto h: active)
+			if (!h->dead && subsumes(g, h)) h->dead = 1;
 
 		// Add g to active clauses before inference, because we will sometimes need to combine g with itself
 		active.add(g);
 
 		// Infer
+		c = g;
 		resolve();
 		factor();
-		for (auto c: active)
-			for (mode = 0; mode != 2; ++mode) {
-				superposn(c, g);
-				superposn(g, c);
-			}
+		for (auto h: active) {
+			if (h->dead) continue;
+
+			c = h;
+			d = g;
+			superposn1();
+
+			c = g;
+			d = h;
+			superposn1();
+		}
 	}
 }
