@@ -292,13 +292,13 @@ Ex* distribute(Ex* a) {
 	case Or:
 	{
 		// Arguments can be taken without loss of generality as ANDs
-		std::vector<std::vector<Ex*>> ands;
+		vector<vector<Ex*>> ands;
 		for (size_t i = 0; i < a->n; ++i) {
 			// Recur
 			auto b = distribute(at(a, i));
 
 			// And make a flat layer of ANDs
-			std::vector<Ex*> v;
+			vector<Ex*> v;
 			flatten(And, b, v);
 			ands.push_back(v);
 		}

@@ -1,6 +1,7 @@
 _(False)
 _(True)
 
+// TODO: use everywhere or nowhere?
 // SORT
 _(Add)
 _(All)

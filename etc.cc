@@ -17,7 +17,7 @@ eqn::eqn(Ex* a) {
 	second = bools + 1;
 }
 
-void flatten(int tag, Ex* a, std::vector<Ex*>& r) {
+void flatten(int tag, Ex* a, vector<Ex*>& r) {
 	if (a->tag == tag) {
 		for (size_t i = 0; i < a->n; ++i) flatten(tag, at(a, i), r);
 		return;

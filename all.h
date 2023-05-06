@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
 #include <algorithm>
 #include <functional>
@@ -18,19 +17,14 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
-// TODO: eliminate
-using std::all_of;
-using std::any_of;
-using std::find;
-using std::function;
 using std::make_pair;
 using std::max;
 using std::min;
-using std::move;
-using std::none_of;
 using std::pair;
+using std::priority_queue;
 using std::sort;
-using std::swap;
+using std::unordered_map;
+using std::vector;
 
 #include <gmp.h>
 

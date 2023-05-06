@@ -9,17 +9,16 @@ enum {
 extern const char* szsNames[];
 
 // SORT
-void flatten(int tag, Ex* a, std::vector<Ex*>& r);
+void flatten(int tag, Ex* a, vector<Ex*>& r);
 void freeVars(Ex* a, vec<Ex*> boundv, vec<Ex*>& freev);
 Ex* imp(Ex* a, Ex* b);
 bool occurs(Ex* a, Ex* b);
 Ex* quantify(Ex* a);
 ///
 
-template <class T>
-void cartProduct(const std::vector<std::vector<T>>& vs, size_t i, vec<size_t>& js, std::vector<std::vector<T>>& rs) {
+template <class T> void cartProduct(const vector<vector<T>>& vs, size_t i, vec<size_t>& js, vector<vector<T>>& rs) {
 	if (i == js.size()) {
-		std::vector<T> r;
+		vector<T> r;
 		for (size_t i = 0; i < vs.size(); ++i) r.push_back(vs[i][js[i]]);
 		rs.push_back(r);
 		return;
@@ -27,10 +26,10 @@ void cartProduct(const std::vector<std::vector<T>>& vs, size_t i, vec<size_t>& j
 	for (js[i] = 0; js[i] != vs[i].size(); ++js[i]) cartProduct(vs, i + 1, js, rs);
 }
 
-template <class T> std::vector<std::vector<T>> cartProduct(const std::vector<std::vector<T>>& vs) {
+template <class T> vector<vector<T>> cartProduct(const vector<vector<T>>& vs) {
 	vec<size_t> js;
 	for (auto& v: vs) js.add(0);
-	std::vector<std::vector<T>> rs;
+	vector<vector<T>> rs;
 	cartProduct(vs, 0, js, rs);
 	return rs;
 }

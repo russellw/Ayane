@@ -79,7 +79,7 @@ template <class K, class T> void print(const pair<K, T>& p) {
 	putchar('>');
 }
 
-template <class T> void print(const std::vector<T>& v) {
+template <class T> void print(const vector<T>& v) {
 	putchar('[');
 	bool more = 0;
 	for (auto& a: v) {

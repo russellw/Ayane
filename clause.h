@@ -71,5 +71,5 @@ struct CompareClauses {
 	}
 };
 
-extern std::priority_queue<Clause*, std::vector<Clause*>, CompareClauses> passive;
+extern priority_queue<Clause*, vector<Clause*>, CompareClauses> passive;
 void clause(int rule, IFormula* from, IFormula* from1 = 0);

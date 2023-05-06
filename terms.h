@@ -51,7 +51,7 @@ Ex* ex(Ex* a, Ex* b, Ex* c);
 Ex* ex(Ex* a, Ex* b, Ex* c, Ex* d);
 Ex* ex(Ex* a, Ex* b, Ex* c, Ex* d, Ex* e);
 Ex* ex(int tag, const vec<Ex*>& v);
-Ex* ex(int tag, const std::vector<Ex*>& v);
+Ex* ex(int tag, const vector<Ex*>& v);
 Ex* type(Ex* a);
 
 inline Ex* at(Ex* a, size_t i) {

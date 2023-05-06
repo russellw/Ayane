@@ -1,6 +1,7 @@
 // Compared to the versions in ctype.h, these functions generate shorter code, and have defined behavior for all input values. They
 // are of course not for use on natural-language text, only for ASCII-based file formats. These versions are branch-heavy, but in
 // one test, were measured at 6 CPU cycles per character, identical to an alternative algorithm with fewer branches.
+// TODO: test speed against current standard library implementations
 inline bool isSpace(int c) {
 	return 0 < c && c <= ' ';
 }

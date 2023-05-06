@@ -30,10 +30,10 @@ void printItem(size_t n, const char* caption) {
 	printf("%16s  %s\n", s, caption);
 }
 
-std::unordered_map<const char*, uint64_t> strStats;
-std::unordered_map<size_t, uint64_t> numStats;
+unordered_map<const char*, uint64_t> strStats;
+unordered_map<size_t, uint64_t> numStats;
 // TODO: does this map need to be ordered?
-std::map<std::vector<const char*>, uint64_t> traces;
+std::map<vector<const char*>, uint64_t> traces;
 } // namespace
 
 void incStat(const char* k, uint64_t n) {
@@ -66,7 +66,7 @@ void incTrace() {
 	loc.SizeOfStruct = sizeof loc;
 
 	// Trace
-	std::vector<const char*> v;
+	vector<const char*> v;
 	for (int i = 0; i < nframes; ++i) {
 		auto addr = (DWORD64)(stack[i]);
 		SymFromAddr(process, addr, 0, si);

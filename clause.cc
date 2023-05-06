@@ -19,4 +19,4 @@ size_t cost(Clause* c) {
 	return n;
 }
 
-std::priority_queue<Clause*, vec<Clause*>, CompareClauses> passive;
+priority_queue<Clause*, vec<Clause*>, CompareClauses> passive;
