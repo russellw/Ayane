@@ -14,6 +14,9 @@ void freeVars(Ex* a, vec<Ex*> boundv, vec<Ex*>& freev);
 Ex* imp(Ex* a, Ex* b);
 bool occurs(Ex* a, Ex* b);
 Ex* quantify(Ex* a);
+void mpz_ediv_r(mpz_t r, const mpz_t n, const mpz_t d) ;
+void mpz_ediv_q(mpz_t q, const mpz_t n, const mpz_t d) ;
+void mpz_round(mpz_t q, mpz_t n, mpz_t d) ;
 ///
 
 template <class T> void cartProduct(const vector<vector<T>>& vs, size_t i, vec<size_t>& js, vector<vector<T>>& rs) {
