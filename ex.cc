@@ -1,42 +1,11 @@
 #include "all.h"
 
-// Atoms
-Ex atoms[ntags];
+Ex tbool = {Bool};
+Ex tinteger = {Integer};
+Ex trational = {Rational};
+Ex treal = {Real};
 
-namespace {
-struct init {
-	init() {
-		auto n = (int)end;
-		for (int i = 0; i < n; ++i) {
-			auto p = (Ex*)atoms->ptr(tatoms + i * offsetof(atom, s) / 8);
-			p->t = (tag)i;
-		}
-	}
-} _;
-
-map<type, vec<ex>> boxedVars;
-} // namespace
-
-ex var(size_t i, type ty) {
-	auto unboxed = 1 << ex::idxBits;
-	if (i < unboxed) {
-		ex a;
-		a.raw = ex::t_var | i << typeBits | ty.offset;
-		return a;
-	}
-	auto& v = boxedVars.gadd(ty);
-	while (v.size() <= i - unboxed) {
-		auto o = atoms->alloc(offsetof(atom, idx) + 4);
-		auto p = (Ex*)atoms->ptr(o);
-		p->t = Var;
-		p->ty = ty;
-		p->idx = unboxed + v.size();
-		ex a;
-		a.raw = ex::t_var | ex::t_boxed | o;
-		v.add(a);
-	}
-	return v[i - unboxed];
-}
+Ex bools[2] = {{False}, {True}};
 
 ex distinctObj(string* s) {
 	ex a;

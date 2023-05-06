@@ -9,6 +9,7 @@ struct Ex {
 	int tag;
 	uint32_t n;
 	union {
+		// TODO: check
 		Ex* v[9];
 		struct {
 			Ex* ty;
@@ -22,7 +23,6 @@ struct Ex {
 	};
 };
 
-// TODO: initialize with either static or dynamic initializer
 extern Ex tbool;
 extern Ex tinteger;
 extern Ex trational;
