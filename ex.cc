@@ -16,10 +16,7 @@ Ex* gensym(Ex* ty) {
 	return a;
 }
 
-// Compounds
-Heap<>* compounds;
-
-namespace comps {
+// Composite expressions
 bool eq(const Ex* s, size_t n, const compound* z) {
 	if (n != z->n) return 0;
 	return memcmp(s, z->v, n * sizeof *s) == 0;
@@ -32,59 +29,9 @@ size_t slot(uint32_t* entries, size_t cap, const Ex* s, size_t n) {
 	return i;
 }
 
-size_t cap = 0x100;
-size_t qty;
-uint32_t* entries;
+struct CompCmp {};
 
-struct init {
-	init() {
-		compounds = Heap<>::make();
-		assert(isPow2(cap));
-		entries = (uint32_t*)compounds->ptr(compounds->calloc(cap * 4));
-	}
-} _;
-
-void expand() {
-	auto cap1 = cap * 2;
-	auto entries1 = (uint32_t*)compounds->ptr(compounds->calloc(cap1 * 4));
-	for (size_t i = 0; i < cap; ++i) {
-		auto o = entries[i];
-		if (!o) continue;
-		auto s = (compound*)compounds->ptr(o);
-		entries1[slot(entries1, cap1, s->v, s->n)] = o;
-	}
-	compounds->free(compounds->offset(entries), cap * 4);
-	cap = cap1;
-	entries = entries1;
-}
-
-size_t intern(const Ex* s, size_t n) {
-	incStat("ex");
-	auto i = slot(entries, cap, s, n);
-
-	// If we have seen this before, return the existing object
-	if (entries[i]) return entries[i];
-
-	// Expand the hash table if necessary
-	if (++qty > cap * 3 / 4) {
-		expand();
-		i = slot(entries, cap, s, n);
-		assert(!entries[i]);
-	}
-
-	// Make a new object
-	incStat("ex alloc");
-	incStat("ex alloc bytes", offsetof(compound, v) + n * sizeof *s);
-	auto o = compounds->alloc(offsetof(compound, v) + n * sizeof *s);
-	if (o & ex::t_compound) err("compound ex: Out of memory");
-	auto p = (compound*)compounds->ptr(o);
-	p->n = n;
-	memcpy(p->v, s, n * sizeof *s);
-
-	// Add to hash table
-	return entries[i] = o;
-}
-} // namespace comps
+static set<Ex*, Ex, CompCmp> comps;
 
 Ex* ex(ex a, ex b) {
 	const int n = 2;
