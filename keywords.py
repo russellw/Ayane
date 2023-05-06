@@ -62,7 +62,7 @@ def san(s):
     return s
 
 
-xs = open("strings.h").readlines()
+xs = open("str.h").readlines()
 i = find("enum") + 1
 j = end(i)
 ys = []
@@ -70,15 +70,15 @@ for y in words:
     ys.append(f"\ts_{san(y)},\n")
 ys.append("\tend_s\n")
 xs[i:j] = ys
-open("strings.h", "w", newline="\n").writelines(xs)
+open("str.h", "w", newline="\n").writelines(xs)
 
-xs = open("strings.cc").readlines()
-i = find("string keywords") + 1
+xs = open("str.cc").readlines()
+i = find("Str keywords") + 1
 j = end(i)
 ys = []
 ys.append("// clang-format off\n")
 for y in words:
-    ys.append('\t{0, 0, 0, "%s"},\n' % y)
+    ys.append('\t{0, 0, "%s"},\n' % y)
 ys.append("// clang-format on\n")
 xs[i:j] = ys
-open("strings.cc", "w", newline="\n").writelines(xs)
+open("str.cc", "w", newline="\n").writelines(xs)
