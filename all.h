@@ -35,11 +35,11 @@ using std::vector;
 // General
 #include "base.h"
 #include "stats.h"
-#include "str.h"
 #include "vec.h"
 
 // Logic
 #include "ex.h"
+#include "str.h"
 
 #include "bignums.h"
 #include "clause.h"

@@ -1,16 +1,13 @@
-// Strings are interned for fast comparison, and fast access to associated types and expressions
+// Strings are interned for fast comparison, and fast access to associated types and values
 struct Str {
-	// TODO: move some of these to map objects? Types may need to be looked up many times during parsing of expressions that bind variables, but distinct objects are very rarely used
-	// TODO: rename
-	uint32_t dobj;
-	uint32_t sym;
-	uint32_t ty;
+	Ex* ty;
+	Ex* val;
 
 	// Although the allocated size of dynamically allocated strings will vary according to the number of characters needed, the
 	// declared size of the character array needs to be positive for the statically allocated array of known strings (keywords). It
 	// needs to be large enough to accommodate the longest keyword plus null terminator. And the size of the whole structure should
 	// be a power of 2 because keyword() needs to divide by that size.
-	char v[32 - 4 - 4 - 4];
+	char v[32 - sizeof(Ex*) * 2];
 };
 
 // Keywords are strings that are known to be important
@@ -78,3 +75,7 @@ inline Str* intern(const char* s) {
 inline void print(const Str* s) {
 	print(s->v);
 }
+
+// Wrapping a symbol in a term is a common operation. Specifying the type at the same time is less so, but still common enough for
+// this function to be useful.
+Ex* ex(Str* s, Ex* ty);

@@ -7,36 +7,6 @@ Ex treal = {Real};
 
 Ex bools[2] = {{False}, {True}};
 
-ex distinctObj(string* s) {
-	ex a;
-	if (s->dobj) {
-		a.raw = s->dobj;
-		return a;
-	}
-	auto o = atoms->alloc(offsetof(atom, s) + sizeof s);
-	auto p = (Ex*)atoms->ptr(o);
-	p->t = DistinctObj;
-	p->s = s->v;
-	a.raw = s->dobj = o;
-	return a;
-}
-
-Ex* ex(string* s, type ty) {
-	if (s->sym) {
-		auto p = (Ex*)atoms->ptr(s->sym);
-		assert(p->t == Fn);
-		assert(p->s == s->v);
-		assign(p->ty, ty);
-	} else {
-		s->sym = atoms->alloc(offsetof(atom, s) + sizeof s);
-		auto p = (Ex*)atoms->ptr(s->sym);
-		p->t = Fn;
-		p->s = s->v;
-		p->ty = ty;
-	}
-	raw = s->sym;
-}
-
 ex gensym(type ty) {
 	auto o = atoms->alloc(offsetof(atom, s) + sizeof(char*));
 	auto p = (Ex*)atoms->ptr(o);

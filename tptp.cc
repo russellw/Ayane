@@ -14,6 +14,20 @@ enum {
 	k_xor,
 };
 
+ex distinctObj(string* s) {
+	ex a;
+	if (s->dobj) {
+		a.raw = s->dobj;
+		return a;
+	}
+	auto o = atoms->alloc(offsetof(atom, s) + sizeof s);
+	auto p = (Ex*)atoms->ptr(o);
+	p->t = DistinctObj;
+	p->s = s->v;
+	a.raw = s->dobj = o;
+	return a;
+}
+
 // If a term does not already have a type, assign it a specified one
 void defaultType(ex a, type rty) {
 	// A statement about the return type of a function call, can directly imply the type of the function. This generally does not
