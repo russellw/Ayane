@@ -1,7 +1,47 @@
 enum {
-#define _(x) x,
-#include "tags.h"
-	ntags
+	False,
+	True,
+
+	// TODO: use everywhere or nowhere?
+	// SORT
+	Add,
+	All,
+	And,
+	Bool,
+	Call,
+	Ceil,
+	DistinctObj,
+	Div,
+	DivE,
+	DivF,
+	DivT,
+	Eq,
+	Eqv,
+	Exists,
+	Floor,
+	Fn,
+	Integer,
+	IsInteger,
+	IsRational,
+	Le,
+	Lt,
+	Mul,
+	Neg,
+	Not,
+	Or,
+	Rational,
+	Real,
+	RemE,
+	RemF,
+	RemT,
+	Round,
+	Sub,
+	ToInteger,
+	ToRational,
+	ToReal,
+	Trunc,
+	Var,
+	///
 };
 
 // TODO: refactor source file organization?
