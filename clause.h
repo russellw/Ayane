@@ -65,11 +65,11 @@ inline range::iterator end(const Clause* c) {
 // Passive clauses are stored in a priority queue with smaller clauses first
 size_t cost(Clause* c);
 
-struct CompareClauses {
+struct ClauseCompare {
 	bool operator()(Clause* c, Clause* d) {
 		return cost(c) > cost(d);
 	}
 };
 
-extern priority_queue<Clause*, vector<Clause*>, CompareClauses> passive;
+extern priority_queue<Clause*, vector<Clause*>, ClauseCompare> passive;
 void clause(int rule, IFormula* from, IFormula* from1 = 0);

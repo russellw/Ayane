@@ -34,6 +34,7 @@ using std::vector;
 
 // General
 #include "base.h"
+#include "set.h"
 #include "stats.h"
 #include "vec.h"
 

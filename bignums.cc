@@ -6,11 +6,6 @@
 // TODO: divide this functionality between terms and simplify?
 // TODO: write test problems for integer division
 // Integers
-namespace mpzs {
-size_t cap = 4;
-size_t qty;
-Ex** entries;
-
 size_t hash(mpz_t a) {
 	return mpz_get_ui(a);
 }
@@ -19,67 +14,11 @@ bool eq(Ex* a, mpz_t b) {
 	return !mpz_cmp(a->mpz, b);
 }
 
-static size_t slot(Ex** entries, size_t cap, mpz_t a) {
-	size_t mask = cap - 1;
-	auto i = hash(a) & mask;
-	while (entries[i] && !eq(entries[i], a)) i = (i + 1) & mask;
-	return i;
-}
+struct IntegerCmp {};
 
-void expand() {
-	assert(isPow2(cap));
-	auto cap1 = cap * 2;
-	auto entries1 = (Ex**)calloc(cap1, sizeof *entries);
-	// TODO: check generated code
-	for (auto i = entries, e = entries + cap; i < e; ++i) {
-		auto a = *i;
-		if (a) entries1[slot(entries1, cap1, a->mpz)] = a;
-	}
-	free(entries);
-	cap = cap1;
-	entries = entries1;
-}
-
-struct init {
-	init() {
-		assert(isPow2(cap));
-		entries = (Ex**)calloc(cap, sizeof *entries);
-	}
-} _;
-} // namespace mpzs
-
-Ex* intern(mpz_t a) {
-	auto i = mpzs::slot(mpzs::entries, mpzs::cap, a);
-
-	// If we have seen this before, return the existing object
-	if (mpzs::entries[i]) {
-		// TODO: cache result in local?
-		mpz_clear(a);
-		return mpzs::entries[i];
-	}
-
-	// Expand the hash table if necessary
-	if (++mpzs::qty > mpzs::cap * 3 / 4) {
-		mpzs::expand();
-		i = mpzs::slot(mpzs::entries, mpzs::cap, a);
-		assert(!mpzs::entries[i]);
-	}
-
-	// Make a new object
-	auto r = (Ex*)malloc(offsetof(Ex, mpz) + sizeof(mpz_t));
-	r->tag = Integer;
-	memcpy(r->mpz, a, sizeof r->mpz);
-
-	// Add to hash table
-	return mpzs::entries[i] = r;
-}
+static set<mpz_t, Ex, IntegerCmp> integers;
 
 // Rationals
-namespace mpqs {
-size_t cap = 4;
-size_t qty;
-Ex** entries;
-
 size_t hash(mpq_t a) {
 	return hashCombine(mpz_get_ui(mpq_numref(a)), mpz_get_ui(mpq_denref(a)));
 }
@@ -88,60 +27,9 @@ bool eq(Ex* a, mpq_t b) {
 	return mpq_equal(a->mpq, b);
 }
 
-static size_t slot(Ex** entries, size_t cap, mpq_t a) {
-	size_t mask = cap - 1;
-	auto i = hash(a) & mask;
-	while (entries[i] && !eq(entries[i], a)) i = (i + 1) & mask;
-	return i;
-}
+struct RationalCmp {};
 
-void expand() {
-	assert(isPow2(cap));
-	auto cap1 = cap * 2;
-	auto entries1 = (Ex**)calloc(cap1, sizeof *entries);
-	// TODO: check generated code
-	for (auto i = entries, e = entries + cap; i < e; ++i) {
-		auto a = *i;
-		if (a) entries1[slot(entries1, cap1, a->mpq)] = a;
-	}
-	free(entries);
-	cap = cap1;
-	entries = entries1;
-}
-
-struct init {
-	init() {
-		assert(isPow2(cap));
-		entries = (Ex**)calloc(cap, sizeof *entries);
-	}
-} _;
-} // namespace mpqs
-
-Ex* intern(mpq_t a) {
-	auto i = mpqs::slot(mpqs::entries, mpqs::cap, a);
-
-	// If we have seen this before, return the existing object
-	if (mpqs::entries[i]) {
-		// TODO: cache result in local?
-		mpq_clear(a);
-		return mpqs::entries[i];
-	}
-
-	// Expand the hash table if necessary
-	if (++mpqs::qty > mpqs::cap * 3 / 4) {
-		mpqs::expand();
-		i = mpqs::slot(mpqs::entries, mpqs::cap, a);
-		assert(!mpqs::entries[i]);
-	}
-
-	// Make a new object
-	auto r = (Ex*)malloc(offsetof(Ex, mpq) + sizeof(mpq_t));
-	r->tag = Rational;
-	memcpy(r->mpq, a, sizeof r->mpq);
-
-	// Add to hash table
-	return mpqs::entries[i] = r;
-}
+static set<mpq_t, Ex, RationalCmp> rationals;
 
 Ex* real(mpq_t q) {
 	return ex(ToReal, intern(q));
@@ -292,7 +180,8 @@ Ex* div(Ex* a, Ex* b) {
 		mpz_init(r);
 
 		// TPTP does not define integer division with unspecified rounding mode, but most programming languages nowadays define it
-		// as truncating. Todo: Does SMT-LIB use this?
+		// as truncating
+		// TODO: Does SMT-LIB use this?
 		mpz_tdiv_q(r, a->mpz, b->mpz);
 		return intern(r);
 	}
