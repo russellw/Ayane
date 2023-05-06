@@ -39,7 +39,7 @@ using std::vector;
 #include "vec.h"
 
 // Logic
-#include "terms.h"
+#include "ex.h"
 
 #include "bignums.h"
 #include "clause.h"
