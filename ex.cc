@@ -18,12 +18,23 @@ Ex* gensym(Ex* ty) {
 }
 
 // Composite expressions
-bool eq(int tag, Ex** a, size_t n, Ex* b) {
-	return tag == b->tag && n == b->n && memcmp(a, b->v, n * sizeof *a) == 0;
+struct CompCmp {
+	static bool eq(int tag, Ex** a, size_t n, Ex* b) {
+		return tag == b->tag && n == b->n && memcmp(a, b->v, n * sizeof *a) == 0;
+	}
+	static bool eq(Ex* a, Ex* b) {
+		return eq(a->tag, a->v, a->n, b);
+	}
+	static size_t hash(int tag, Ex** a, size_t n) {
+		// TODO: hashCombine?
+		return fnv(a, n * sizeof *a);
+	}
+	static size_t hash(Ex* a) {
+		return hash(a->tag, a->v, a->n);
+	}
+};
+static void clear(Ex** a) {
 }
-
-struct CompCmp {};
-
 static set<Ex**, Ex, CompCmp> comps;
 
 Ex* ex(int tag, Ex* a, Ex* b) {

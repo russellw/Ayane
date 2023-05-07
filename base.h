@@ -112,6 +112,7 @@ inline size_t roundUp(size_t n, size_t alignment) {
 // Set and map containers are based on hash tables, so in general we need to be able to hash everything. The standard library uses a
 // more complex protocol based on 'template <> struct hash<...>' classes in namespace std, but since we have homebrew containers,
 // there is no particular requirement to follow the standard library protocol.
+// TODO: eliminate?
 inline size_t hash(const void* p) {
 	return fnv(&p, sizeof p);
 }

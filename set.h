@@ -6,8 +6,8 @@ template <class K, class T, class Cmp> class set {
 
 	static size_t slot(T** entries, size_t cap, int tag, K a, size_t n) {
 		size_t mask = cap - 1;
-		auto i = hash(tag, a, n) & mask;
-		while (entries[i] && !eq(tag, a, n, entries[i])) i = (i + 1) & mask;
+		auto i = Cmp::hash(tag, a, n) & mask;
+		while (entries[i] && !Cmp::eq(tag, a, n, entries[i])) i = (i + 1) & mask;
 		return i;
 	}
 
@@ -34,7 +34,7 @@ template <class K, class T, class Cmp> class set {
 
 public:
 	T* intern(int tag, K a, size_t n) {
-		auto i = slot(entries, cap, tag, a);
+		auto i = slot(entries, cap, tag, a, n);
 
 		// If we have seen this before, return the existing object
 		if (entries[i]) {
@@ -46,7 +46,7 @@ public:
 		// Expand the hash table if necessary
 		if (++qty > cap * 3 / 4) {
 			expand();
-			i = slot(entries, cap, a);
+			i = slot(entries, cap, tag, a, n);
 			assert(!entries[i]);
 		}
 

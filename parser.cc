@@ -201,8 +201,8 @@ void parser::num() {
 }
 
 void parser::check(Ex* a, size_t arity) {
-	if (a.size() - 1 == arity) return;
-	sprintf(buf, "Expected %zu args, received %zu", arity, a.size() - 1);
+	if (a->n == arity) return;
+	sprintf(buf, "Expected %zu args, received %zu", arity, (size_t)a->n);
 	err(buf);
 }
 
