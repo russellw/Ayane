@@ -51,7 +51,7 @@ struct parser1: parser {
 
 	// A variable in propositional logic is a constant in first-order logic
 	Ex* var() {
-		auto a = typing(str, &tbool);
+		auto a = setType(str, &tbool);
 		lex();
 		return a;
 	}

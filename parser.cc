@@ -200,7 +200,7 @@ void parser::num() {
 	constant = ex(q);
 }
 
-void parser::typing(Ex* a, Ex* ty) {
+void parser::setType(Ex* a, Ex* ty) {
 	assert(a->tag == Fn);
 	if (a->ty == ty) return;
 	if (!a->ty) {
@@ -211,12 +211,12 @@ void parser::typing(Ex* a, Ex* ty) {
 	err("Type mismatch");
 }
 
-Ex* parser::typing(Str* s, Ex* ty) {
+Ex* parser::setType(Str* s, Ex* ty) {
 	if (s->fn) {
 		auto a = s->fn;
 		assert(a->tag == Fn);
 		assert(a->s == s->v);
-		typing(a->ty, ty);
+		setType(a->ty, ty);
 		return a;
 	}
 	auto a = (Ex*)malloc(offsetof(Ex, s) + sizeof(char*));

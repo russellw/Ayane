@@ -45,7 +45,8 @@ enum {
 	///
 };
 
-// TODO: refactor source file organization?
+// TODO: refactor source file organization
+// TODO: rename to ex,mk?
 struct Ex {
 	int tag;
 	uint32_t n;

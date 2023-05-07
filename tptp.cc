@@ -26,7 +26,7 @@ Ex* distinctObj(Str* s) {
 }
 
 // If a term does not already have a type, assign it a specified one
-void defaultType(ex a, type rty) {
+void defaultType(Ex* a, Ex* rty) {
 	// A statement about the return type of a function call, can directly imply the type of the function. This generally does not
 	// apply to basic operators; in most cases, they already have a definite type. That is not entirely true of the arithmetic
 	// operators, but we don't try to do global type inference to figure those out.
@@ -38,22 +38,21 @@ void defaultType(ex a, type rty) {
 }
 
 // TODO: Which types should use const?
-struct selection: set<const char*> {
+struct selection: unordered_set<const char*> {
 	bool all;
 
 	explicit selection(bool all): all(all) {
 	}
 
-	size_t count(const char* s) const {
+	bool contains(const char* s) const {
 		if (all) return 1;
-		return set<const char*>::count(s);
+		return unordered_set<const char*>::contains(s);
 	}
 };
 
 struct parser1: parser {
 	// SORT
 	bool cnfMode;
-	Problem& problem;
 	const selection& sel;
 	vec<pair<string*, ex>> vars;
 	///
@@ -593,7 +592,7 @@ struct parser1: parser {
 				auto a = quantify(logicFormula());
 
 				// Select
-				if (!sel.count(name)) break;
+				if (!sel.contains(name)) break;
 
 				// Clause
 				problem.axiom(a, file, name);
@@ -636,7 +635,7 @@ struct parser1: parser {
 				check(a, kind::Bool);
 
 				// Select
-				if (!sel.count(name)) break;
+				if (!sel.contains(name)) break;
 
 				// Conjecture
 				if (role == s_conjecture) {
@@ -669,7 +668,7 @@ struct parser1: parser {
 					selection sel1(0);
 					do {
 						auto selName = wordOrDigits();
-						if (sel.count(selName->v)) sel1.add(selName->v);
+						if (sel.contains(selName->v)) sel1.add(selName->v);
 					} while (eat(','));
 
 					expect(']');
