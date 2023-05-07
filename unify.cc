@@ -30,14 +30,14 @@ bool eq(ex a, bool ax, ex b, bool bx) {
 }
 
 namespace {
-vec<pair<termx, termx>> m;
+vec<pair<exx, exx>> m;
 
 bool occurs(ex a, bool ax, ex b, bool bx) {
 	assert(a->tag == Var);
 	if (b->tag == Var) {
 		if (eq(a, ax, b, bx)) return 1;
 		auto b1 = make_pair(b, bx);
-		termx mb;
+		exx mb;
 		if (m.get(b1, mb)) return occurs(a, ax, mb.first, mb.second);
 	}
 	for (size_t i = 0; i < b.size(); ++i)
@@ -51,11 +51,11 @@ bool unifyVar(ex a, bool ax, ex b, bool bx) {
 
 	// Existing mappings
 	auto a1 = make_pair(a, ax);
-	termx ma;
+	exx ma;
 	if (m.get(a1, ma)) return unify1(ma.first, ma.second, b, bx);
 
 	auto b1 = make_pair(b, bx);
-	termx mb;
+	exx mb;
 	if (m.get(b1, mb)) return unify1(a, ax, mb.first, mb.second);
 
 	// Occurs check
@@ -99,7 +99,7 @@ bool unify(ex a, bool ax, ex b, bool bx) {
 
 ex replace(ex a, bool ax) {
 	auto a1 = make_pair(a, ax);
-	termx ma;
+	exx ma;
 	// TODO: check only if it is a variable
 	if (m.get(a1, ma)) {
 		assert(a->tag == Var);
