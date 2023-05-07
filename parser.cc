@@ -203,6 +203,7 @@ void parser::num() {
 void parser::check(Ex* a, size_t arity) {
 	if (a->n == arity) return;
 	sprintf(buf, "Expected %zu args, received %zu", arity, (size_t)a->n);
+	// TODO: maybe should  return different exit codes depending whether the input file is definitely bad versus just not understood
 	err(buf);
 }
 
