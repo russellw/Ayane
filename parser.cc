@@ -149,7 +149,7 @@ void parser::exponent(mpq_t q) {
 
 void parser::num() {
 	mpq_t q;
-	tok = k_const;
+	tok = k_num;
 
 	// Both TPTP and SMT-LIB require nonempty digit sequences before and after '.', which makes parsing slightly easier.
 	auto z = mpq_numref(q);

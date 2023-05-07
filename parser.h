@@ -35,8 +35,8 @@ inline bool isWord(int c) {
 }
 
 enum {
-	k_const = 0x100,
-	k_id,
+	k_id = 0x100,
+	k_num,
 	parser_k
 };
 
