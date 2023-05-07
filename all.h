@@ -47,7 +47,7 @@ using std::vector;
 #include "bignums.h"
 #include "clause.h"
 
-// I/O
+// Parsers
 #include "parser.h"
 
 #include "dimacs.h"

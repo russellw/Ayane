@@ -44,9 +44,9 @@ struct selection: unordered_set<const char*> {
 	explicit selection(bool all): all(all) {
 	}
 
-	bool contains(const char* s) const {
+	size_t count(const char* s) const {
 		if (all) return 1;
-		return unordered_set<const char*>::contains(s);
+		return unordered_set<const char*>::count(s);
 	}
 };
 
@@ -54,7 +54,7 @@ struct parser1: parser {
 	// SORT
 	bool cnfMode;
 	const selection& sel;
-	vec<pair<string*, ex>> vars;
+	vec<pair<Str*, Ex*>> vars;
 	///
 
 	// Tokenizer
@@ -238,7 +238,7 @@ struct parser1: parser {
 	}
 
 	// Types
-	type atomicType() {
+	Ex* atomicType() {
 		auto k = tok;
 		auto s = str;
 		lex();
@@ -269,9 +269,9 @@ struct parser1: parser {
 		err("Expected type");
 	}
 
-	type topLevelType() {
+	Ex* topLevelType() {
 		if (eat('(')) {
-			vec<type> v(1);
+			vec<Ex*> v(1);
 			do v.add(atomicType());
 			while (eat('*'));
 			expect(')');
@@ -284,21 +284,21 @@ struct parser1: parser {
 		return ty;
 	}
 
-	// Terms
-	void args(vec<ex>& v) {
+	// Expressions
+	void args(vec<Ex*>& v) {
 		expect('(');
 		do v.add(atomicTerm());
 		while (eat(','));
 		expect(')');
 	}
 
-	ex definedFunctor(int tag) {
-		vec<ex> v(1, t);
+	Ex* definedFunctor(int tag) {
+		vec<Ex*> v(1, t);
 		args(v);
 		return ex(v);
 	}
 
-	ex atomicTerm() {
+	Ex* atomicTerm() {
 		auto k = tok;
 		auto s = str;
 		auto sk = srck;
@@ -309,7 +309,7 @@ struct parser1: parser {
 			return distinctObj(s);
 		case k_dollarWord:
 		{
-			vec<ex> v;
+			vec<Ex*> v;
 			switch (keyword(s)) {
 			case s_ceiling:
 				return definedFunctor(Ceil);
@@ -319,7 +319,7 @@ struct parser1: parser {
 			{
 				args(v);
 				for (auto& a: v) defaultType(a, kind::Individual);
-				vec<ex> inequalities(1, And);
+				vec<Ex*> inequalities(1, And);
 				for (auto i = v.begin(), e = v.end(); i < e; ++i)
 					for (auto j = v.begin(); j != i; ++j) inequalities.add(ex(Not, ex(Eq, *i, *j)));
 				return ex(inequalities);
@@ -385,7 +385,7 @@ struct parser1: parser {
 			if (tok != '(') return a;
 
 			// Function is being called, so gather the function and arguments
-			vec<ex> v(1, a);
+			vec<Ex*> v(1, a);
 			args(v);
 
 			// By the TPTP specification, symbols can be assumed Boolean or individual, if not previously specified otherwise.
@@ -434,10 +434,10 @@ struct parser1: parser {
 			return x;
 		}
 		}
-		err("Expected ex");
+		err("Expected expression");
 	}
 
-	ex infixUnary() {
+	Ex* infixUnary() {
 		auto a = atomicTerm();
 		switch (tok) {
 		case '=':
@@ -461,12 +461,12 @@ struct parser1: parser {
 		return a;
 	}
 
-	ex quant(int tag) {
+	Ex* quant(int tag) {
 		lex();
 		expect('[');
 		auto old = vars.size();
 		// TODO: check generated code
-		vec<ex> v{t, False};
+		vec<Ex*> v{t, False};
 		do {
 			if (tok != k_var) err("Expected variable");
 			auto s = str;
@@ -484,7 +484,7 @@ struct parser1: parser {
 		return ex(v);
 	}
 
-	ex unary() {
+	Ex* unary() {
 		switch (tok) {
 		case '!':
 			return quant(All);
@@ -504,14 +504,14 @@ struct parser1: parser {
 		return infixUnary();
 	}
 
-	ex associativeLogicFormula(int tag, ex a) {
-		vec<ex> v{t, a};
+	Ex* associativeLogicFormula(int tag, Ex* a) {
+		vec<Ex*> v{t, a};
 		auto k = tok;
 		while (eat(k)) v.add(unary());
 		return ex(v);
 	}
 
-	ex logicFormula() {
+	Ex* logicFormula() {
 		auto a = unary();
 		switch (tok) {
 		case '&':
@@ -541,7 +541,7 @@ struct parser1: parser {
 	}
 
 	// Top level
-	string* wordOrDigits() {
+	Str* wordOrDigits() {
 		switch (tok) {
 		case k_id:
 		{
@@ -549,7 +549,7 @@ struct parser1: parser {
 			lex();
 			return r;
 		}
-		case k_integer:
+		case k_num:
 		{
 			auto r = intern(srck, src - srck);
 			lex();
@@ -592,7 +592,7 @@ struct parser1: parser {
 				auto a = quantify(logicFormula());
 
 				// Select
-				if (!sel.contains(name)) break;
+				if (!sel.count(name)) break;
 
 				// Clause
 				problem.axiom(a, file, name);
@@ -635,7 +635,7 @@ struct parser1: parser {
 				check(a, kind::Bool);
 
 				// Select
-				if (!sel.contains(name)) break;
+				if (!sel.count(name)) break;
 
 				// Conjecture
 				if (role == s_conjecture) {
@@ -668,7 +668,7 @@ struct parser1: parser {
 					selection sel1(0);
 					do {
 						auto selName = wordOrDigits();
-						if (sel.contains(selName->v)) sel1.add(selName->v);
+						if (sel.count(selName->v)) sel1.add(selName->v);
 					} while (eat(','));
 
 					expect(']');
