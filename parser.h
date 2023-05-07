@@ -82,4 +82,8 @@ struct parser {
 
 	// Lex a number, set constant, and set tok = k_const
 	void num();
+
+	// Check the correctness of expressions, in context where error can report line number
+	void check(Ex* a, size_t arity);
+	void check(Ex* a, Ex* ty);
 };

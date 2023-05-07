@@ -1,7 +1,7 @@
 // Strings are interned for fast comparison, and fast access to associated types and values
 struct Str {
+	Ex* fn;
 	Ex* ty;
-	Ex* val;
 
 	// Although the allocated size of dynamically allocated strings will vary according to the number of characters needed, the
 	// declared size of the character array needs to be positive for the statically allocated array of known strings (keywords). It

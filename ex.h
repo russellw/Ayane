@@ -94,7 +94,6 @@ inline Ex* at(Ex* a, size_t i) {
 int cmp(Ex* a, Ex* b);
 
 Ex* ftype(Ex* rty, Ex** first, Ex** last);
-void check(Ex* a, Ex* ty);
 
 // Matching and unification must in the general case deal with two clauses which are assumed to have logically distinct variable
 // names, but it is inefficient to provide physically distinct variable names for each clause, so we logically extend variable names
