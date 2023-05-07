@@ -4,6 +4,7 @@ Ex tbool = {Bool};
 Ex tinteger = {Integer};
 Ex trational = {Rational};
 Ex treal = {Real};
+Ex tindividual = {Individual};
 
 Ex bools[2] = {{False}, {True}};
 
@@ -37,8 +38,8 @@ Ex* ex(int tag, const vec<Ex*>& v) {
 	return comps.intern(tag, v.data, v.n);
 }
 
-ex::operator type() const {
-	switch (tag(*this)) {
+Ex* type(const Ex* a) {
+	switch (a->tag) {
 	case Add:
 	case Ceil:
 	case Div:
@@ -54,7 +55,7 @@ ex::operator type() const {
 	case Round:
 	case Sub:
 	case Trunc:
-		return type((*this)[1]);
+		return type(at(a, 0));
 	case All:
 	case And:
 	case Eq:
@@ -68,27 +69,25 @@ ex::operator type() const {
 	case Not:
 	case Or:
 	case True:
-		return kind::Bool;
+		return &tbool;
+	case Call:
+		a = at(a, 0);
+		assert(a->tag == Fn);
+		return at(a->ty, 0);
 	case DistinctObj:
-		return kind::Individual;
+		return &tindividual;
 	case Fn:
-	{
-		// TODO: optimize
-		auto ty = getAtom()->ty;
-		if (kind(ty) == kind::Fn) return ty[0];
-		return ty;
-	}
+	case Var:
+		return a->ty;
 	case Integer:
 	case ToInteger:
-		return kind::Integer;
+		return &tinteger;
 	case Rational:
 	case ToRational:
-		return kind::Rational;
+		return &trational;
+	case Real:
 	case ToReal:
-		return kind::Real;
-	case Var:
-		if (raw & t_boxed) return getAtom()->ty;
-		return type(raw & (1 << typeBits) - 1);
+		return &treal;
 	}
 	unreachable;
 }

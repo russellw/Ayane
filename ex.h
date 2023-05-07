@@ -20,6 +20,7 @@ enum {
 	Exists,
 	Floor,
 	Fn,
+	Individual,
 	Integer,
 	IsInteger,
 	IsRational,
@@ -67,6 +68,7 @@ extern Ex tbool;
 extern Ex tinteger;
 extern Ex trational;
 extern Ex treal;
+extern Ex tindividual;
 
 extern Ex bools[2];
 
@@ -84,7 +86,7 @@ Ex* ex(int tag, const vec<Ex*>& v);
 Ex* ex(int tag, const vector<Ex*>& v);
 Ex* type(Ex* a);
 
-inline Ex* at(Ex* a, size_t i) {
+inline Ex* at(const Ex* a, size_t i) {
 	assert(i < a->n);
 	return a->v[i];
 }
