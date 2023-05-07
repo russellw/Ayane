@@ -78,13 +78,8 @@ Ex* var(size_t i, Ex* ty);
 Ex* gensym(Ex* ty);
 
 // TODO: test using a bump allocator
-Ex* ex(int tag);
 Ex* ex(int tag, Ex* a);
 Ex* ex(int tag, Ex* a, Ex* b);
-Ex* ex(Ex* a, Ex* b);
-Ex* ex(Ex* a, Ex* b, Ex* c);
-Ex* ex(Ex* a, Ex* b, Ex* c, Ex* d);
-Ex* ex(Ex* a, Ex* b, Ex* c, Ex* d, Ex* e);
 Ex* ex(int tag, const vec<Ex*>& v);
 Ex* ex(int tag, const vector<Ex*>& v);
 Ex* type(Ex* a);

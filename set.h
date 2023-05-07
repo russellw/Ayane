@@ -1,3 +1,4 @@
+// TODO: document rationale
 template <class K, class T, class Cmp> class set {
 	size_t cap = 4;
 	size_t qty;
@@ -10,6 +11,13 @@ template <class K, class T, class Cmp> class set {
 		return i;
 	}
 
+	static size_t slot(T** entries, size_t cap, T* a) {
+		size_t mask = cap - 1;
+		auto i = Cmp::hash(a) & mask;
+		while (entries[i] && !Cmp::eq(a, entries[i])) i = (i + 1) & mask;
+		return i;
+	}
+
 	void expand() {
 		assert(isPow2(cap));
 		auto cap1 = cap * 2;
@@ -17,7 +25,7 @@ template <class K, class T, class Cmp> class set {
 		// TODO: check generated code
 		for (auto i = entries, e = entries + cap; i < e; ++i) {
 			auto a = *i;
-			if (a) entries1[slot(entries1, cap1, a->tag, body(a))] = a;
+			if (a) entries1[slot(entries1, cap1, a)] = a;
 		}
 		free(entries);
 		cap = cap1;

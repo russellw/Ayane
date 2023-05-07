@@ -23,51 +23,18 @@ bool eq(int tag, const Ex** a, size_t n, const Ex* b) {
 
 struct CompCmp {};
 
-static set<Ex*, Ex, CompCmp> comps;
+static set<Ex**, Ex, CompCmp> comps;
 
-Ex* ex(ex a, ex b) {
-	const int n = 2;
-	ex v[n];
+Ex* ex(int tag, Ex* a, Ex* b) {
+	static Ex* v[2];
 	v[0] = a;
 	v[1] = b;
-	raw = t_compound | comps::intern(v, n);
+	return comps.intern(tag, v, 2);
 }
 
-Ex* ex(ex a, ex b, ex c) {
-	const int n = 3;
-	ex v[n];
-	v[0] = a;
-	v[1] = b;
-	v[2] = c;
-	raw = t_compound | comps::intern(v, n);
-}
-
-Ex* ex(ex a, ex b, ex c, ex d) {
-	const int n = 4;
-	ex v[n];
-	v[0] = a;
-	v[1] = b;
-	v[2] = c;
-	v[3] = d;
-	raw = t_compound | comps::intern(v, n);
-}
-
-Ex* ex(ex a, ex b, ex c, ex d, ex e) {
-	const int n = 5;
-	ex v[n];
-	v[0] = a;
-	v[1] = b;
-	v[2] = c;
-	v[3] = d;
-	v[4] = e;
-	raw = t_compound | comps::intern(v, n);
-}
-
-Ex* ex(const vec<ex>& v) {
+Ex* ex(int tag, const vec<Ex*>& v) {
 	assert(v.size());
-	if (v.size() == 1) *this = v[0];
-	else
-		raw = t_compound | comps::intern(v.data(), v.size());
+	return comps.intern(tag, v.data, v.n);
 }
 
 ex::operator type() const {
