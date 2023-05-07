@@ -50,6 +50,7 @@ public:
 		}
 
 		// Make a new object
+		// TODO: param
 		auto r = (T*)malloc(offsetof(T, mpz) + sizeof(mpz_t));
 		r->tag = tag;
 		memcpy(r->mpz, a, sizeof r->mpz);

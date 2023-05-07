@@ -50,9 +50,10 @@ struct Ex {
 	int tag;
 	uint32_t n;
 	union {
-		// TODO: check
+		// TODO: check size of v
 		Ex* v[9];
 		struct {
+			// TODO: can this be omitted for numbers?
 			Ex* ty;
 			union {
 				char* s;

@@ -75,7 +75,3 @@ inline Str* intern(const char* s) {
 inline void print(const Str* s) {
 	print(s->v);
 }
-
-// Wrapping a symbol in a term is a common operation. Specifying the type at the same time is less so, but still common enough for
-// this function to be useful.
-Ex* ex(Str* s, Ex* ty);

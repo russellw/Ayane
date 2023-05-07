@@ -124,19 +124,3 @@ Str* intern(const char* s, size_t n) {
 	// Add to hash table
 	return entries[i] = r;
 }
-
-Ex* ex(string* s, type ty) {
-	if (s->sym) {
-		auto p = (Ex*)atoms->ptr(s->sym);
-		assert(p->t == Fn);
-		assert(p->s == s->v);
-		assign(p->ty, ty);
-	} else {
-		s->sym = atoms->alloc(offsetof(atom, s) + sizeof s);
-		auto p = (Ex*)atoms->ptr(s->sym);
-		p->t = Fn;
-		p->s = s->v;
-		p->ty = ty;
-	}
-	raw = s->sym;
-}

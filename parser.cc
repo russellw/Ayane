@@ -200,6 +200,32 @@ void parser::num() {
 	constant = ex(q);
 }
 
+void parser::typing(Ex* a, Ex* ty) {
+	assert(a->tag == Fn);
+	if (a->ty == ty) return;
+	if (!a->ty) {
+		a->ty = ty;
+		return;
+	}
+	// TODO: do we also need a case for unknown assigned type?
+	err("Type mismatch");
+}
+
+Ex* parser::typing(Str* s, Ex* ty) {
+	if (s->fn) {
+		auto a = s->fn;
+		assert(a->tag == Fn);
+		assert(a->s == s->v);
+		typing(a->ty, ty);
+		return a;
+	}
+	auto a = (Ex*)malloc(offsetof(Ex, s) + sizeof(char*));
+	a->tag = Fn;
+	a->s = s->v;
+	a->ty = ty;
+	return a;
+}
+
 void parser::check(Ex* a, size_t n) {
 	if (a->n == n) return;
 	if (a->tag == Call) --n;
