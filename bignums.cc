@@ -6,7 +6,7 @@
 // TODO: divide this functionality between terms and simplify?
 // TODO: write test problems for integer division
 // Integers
-bool eq(int tag, mpz_t a, size_t n, const Ex* b) {
+bool eq(int tag, mpz_t a, size_t n, Ex* b) {
 	return mpz_cmp(a, b->mpz) == 0;
 }
 
@@ -19,7 +19,7 @@ struct IntegerCmp {};
 static set<mpz_t, Ex, IntegerCmp> integers;
 
 // Rationals
-bool eq(int tag, mpq_t a, size_t n, const Ex* b) {
+bool eq(int tag, mpq_t a, size_t n, Ex* b) {
 	return mpq_equal(a, b->mpq);
 }
 

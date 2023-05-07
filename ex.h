@@ -86,14 +86,14 @@ Ex* ex(int tag, const vec<Ex*>& v);
 Ex* ex(int tag, const vector<Ex*>& v);
 Ex* type(Ex* a);
 
-inline Ex* at(const Ex* a, size_t i) {
+inline Ex* at(Ex* a, size_t i) {
 	assert(i < a->n);
 	return a->v[i];
 }
 
 int cmp(Ex* a, Ex* b);
 
-Ex* ftype(const Ex* rty, const Ex* const* first, const Ex* const* last);
+Ex* ftype(Ex* rty, Ex** first, Ex** last);
 void check(Ex* a, Ex* ty);
 
 // Matching and unification must in the general case deal with two clauses which are assumed to have logically distinct variable

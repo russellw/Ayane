@@ -18,7 +18,7 @@ Ex* gensym(Ex* ty) {
 }
 
 // Composite expressions
-bool eq(int tag, const Ex** a, size_t n, const Ex* b) {
+bool eq(int tag, Ex** a, size_t n, Ex* b) {
 	return tag == b->tag && n == b->n && memcmp(a, b->v, n * sizeof *a) == 0;
 }
 
@@ -38,7 +38,7 @@ Ex* ex(int tag, const vec<Ex*>& v) {
 	return comps.intern(tag, v.data, v.n);
 }
 
-Ex* type(const Ex* a) {
+Ex* type(Ex* a) {
 	switch (a->tag) {
 	case Add:
 	case Ceil:
@@ -92,7 +92,7 @@ Ex* type(const Ex* a) {
 	unreachable;
 }
 
-Ex* ftype(const Ex* rty, const Ex** first, const Ex** last) {
+Ex* ftype(Ex* rty, Ex** first, Ex** last) {
 	if (first == last) return rty;
 	vec<Ex*> v(1, rty);
 	// TODO: add in one op
