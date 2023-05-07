@@ -3,10 +3,10 @@ template <class K, class T, class Cmp> class set {
 	size_t qty;
 	T** entries = (T**)calloc(cap, sizeof *entries);
 
-	static size_t slot(T** entries, size_t cap, int tag, K a) {
+	static size_t slot(T** entries, size_t cap, int tag, K a, size_t n) {
 		size_t mask = cap - 1;
-		auto i = hash(tag, a) & mask;
-		while (entries[i] && !eq(entries[i], tag, a)) i = (i + 1) & mask;
+		auto i = hash(tag, a, n) & mask;
+		while (entries[i] && !eq(tag, a, n, entries[i])) i = (i + 1) & mask;
 		return i;
 	}
 
@@ -25,7 +25,7 @@ template <class K, class T, class Cmp> class set {
 	}
 
 public:
-	T* intern(int tag, K a) {
+	T* intern(int tag, K a, size_t n) {
 		auto i = slot(entries, cap, tag, a);
 
 		// If we have seen this before, return the existing object

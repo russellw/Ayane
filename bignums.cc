@@ -6,12 +6,12 @@
 // TODO: divide this functionality between terms and simplify?
 // TODO: write test problems for integer division
 // Integers
-size_t hash(mpz_t a) {
-	return mpz_get_ui(a);
+bool eq(int tag, mpz_t a, size_t n, const Ex* b) {
+	return mpz_cmp(a, b->mpz) == 0;
 }
 
-bool eq(Ex* a, mpz_t b) {
-	return !mpz_cmp(a->mpz, b);
+size_t hash(mpz_t a) {
+	return mpz_get_ui(a);
 }
 
 struct IntegerCmp {};
@@ -19,12 +19,12 @@ struct IntegerCmp {};
 static set<mpz_t, Ex, IntegerCmp> integers;
 
 // Rationals
-size_t hash(mpq_t a) {
-	return hashCombine(mpz_get_ui(mpq_numref(a)), mpz_get_ui(mpq_denref(a)));
+bool eq(int tag, mpq_t a, size_t n, const Ex* b) {
+	return mpq_equal(a, b->mpq);
 }
 
-bool eq(Ex* a, mpq_t b) {
-	return mpq_equal(a->mpq, b);
+size_t hash(mpq_t a) {
+	return hashCombine(mpz_get_ui(mpq_numref(a)), mpz_get_ui(mpq_denref(a)));
 }
 
 struct RationalCmp {};
