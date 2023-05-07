@@ -1,4 +1,4 @@
-#include "all.h"
+#include "main.h"
 
 #ifdef DBG
 #ifdef _WIN32

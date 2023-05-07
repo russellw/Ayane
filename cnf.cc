@@ -1,4 +1,4 @@
-#include "all.h"
+#include "main.h"
 
 namespace {
 const size_t many = 50;

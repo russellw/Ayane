@@ -1,4 +1,4 @@
-#include "all.h"
+#include "main.h"
 #include <fcntl.h>
 #include <sys/stat.h>
 

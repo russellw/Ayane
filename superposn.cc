@@ -1,4 +1,4 @@
-#include "all.h"
+#include "main.h"
 
 namespace {
 // First-order logic usually takes the view that equality is a special case, but superposition calculus takes the view that equality

@@ -1,4 +1,4 @@
-#include "all.h"
+#include "main.h"
 
 namespace {
 vec<pair<Ex*, Ex*>> m;

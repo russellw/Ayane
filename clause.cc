@@ -1,4 +1,4 @@
-#include "all.h"
+#include "main.h"
 
 static size_t cost(Ex* a) {
 	size_t n = 1;

@@ -1,4 +1,4 @@
-#include "all.h"
+#include "main.h"
 
 // Matching and unification must in the general case deal with two clauses which are assumed to have logically distinct variable
 // names, but it is inefficient to provide physically distinct variable names for each clause, so we logically extend variable names

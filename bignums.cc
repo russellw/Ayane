@@ -1,4 +1,4 @@
-#include "all.h"
+#include "main.h"
 
 // Numbers need to be interned, to preserve the property that equal terms have pointer equality, and in particular that they have
 // the same hash codes

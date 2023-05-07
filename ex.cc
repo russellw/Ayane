@@ -1,4 +1,4 @@
-#include "all.h"
+#include "main.h"
 
 Ex tbool = {Bool};
 Ex tinteger = {Integer};

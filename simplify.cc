@@ -1,4 +1,4 @@
-#include "all.h"
+#include "main.h"
 
 namespace {
 bool constant(Ex* a) {
