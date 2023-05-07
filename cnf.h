@@ -1,1 +1,1 @@
-void cnf(Formula* from);
+void cnf(Ex* a);

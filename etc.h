@@ -1,13 +1,5 @@
 extern char buf[5000];
 
-// The SZS ontologies for automated reasoning software, or at least, the subset thereof that is used here
-enum {
-#define _(x) z_##x,
-#include "szs.h"
-};
-
-extern const char* szsNames[];
-
 // SORT
 void flatten(int tag, Ex* a, vector<Ex*>& r);
 void freeVars(Ex* a, vec<Ex*> boundv, vec<Ex*>& freev);

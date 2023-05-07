@@ -138,24 +138,9 @@ int main(int argc, char** argv) {
 	// Solve
 	auto proof = superposn();
 
-	// The SZS ontology uses different result values depending on whether the problem contains a conjecture
-	if (conjecture) switch (result) {
-		case z_Satisfiable:
-			result = z_CounterSatisfiable;
-			break;
-		case z_Unsatisfiable:
-			result = z_Theorem;
-			break;
-		}
-
-	// Print result, and proof if we have one
+	// Print result
 	auto name = basename(file);
 	printf("%% SZS status %s for %s\n", szsNames[result], name);
-	if (proof) {
-		printf("%% SZS output start CNFRefutation for %s\n", name);
-		tptpProof(proof);
-		printf("%% SZS output end CNFRefutation for %s\n", name);
-	}
 
 	// Print stats
 	printStats();

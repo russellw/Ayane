@@ -355,7 +355,7 @@ bool hasNumeric(const vec<Ex*>& v) {
 	return 0;
 }
 
-void clausesTerm(Ex* a, int rule, Formula* from) {
+void clausesTerm(Ex* a) {
 	if (a->tag == And) {
 		for (size_t i = 0; i < a->n; ++i) clausesTerm(at(a, i), rule, from);
 		return;
@@ -370,18 +370,18 @@ void clausesTerm(Ex* a, int rule, Formula* from) {
 	// inconclusive rather than satisfiable.
 	if (result == z_Satisfiable && (hasNumeric(neg) || hasNumeric(pos))) result = z_GaveUp;
 
-	clause(rule, from);
+	clause();
 }
 } // namespace
 
-void cnf(Formula* from) {
+void cnf(Ex* a) {
 	// First run the input formula through the full process: Rename subformulas where necessary to avoid exponential expansion, then
 	// convert to negation normal form, distribute OR into AND, and convert to clauses
-	auto a = maybeRename(1, from->tm);
+	a = maybeRename(1, a);
 	vars = 0;
 	a = nnf(1, a, vec<pair<Ex*, Ex*>>());
 	a = distribute(a);
-	clausesTerm(a, r_cnf, from);
+	clausesTerm(a);
 
 	// Then convert all the definitions created by the renaming process. That process works by bottom-up recursion, which means each
 	// renamed subformula is simple, so there is no need to put the definitions through the renaming process again; they just need
@@ -391,6 +391,6 @@ void cnf(Formula* from) {
 		vars = 0;
 		a = nnf(1, a, vec<pair<Ex*, Ex*>>());
 		a = distribute(a);
-		clausesTerm(a, r_def, 0);
+		clausesTerm(a);
 	}
 }
