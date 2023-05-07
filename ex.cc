@@ -100,35 +100,17 @@ Ex* ftype(Ex* rty, Ex** first, Ex** last) {
 	return ex(Call, v);
 }
 
-// TODO: eliminate this?
-int cmp(ex a, ex b) {
-	// Fast test for equality
+int cmp(Ex* a, Ex* b) {
+	assert(a->tag == b->tag);
 	if (a == b) return 0;
-
-	// If the tags differ, just sort in tag order; not meaningful, but it doesn't have to be meaningful, just consistent
-	if (a->tag != b->tag) return (int)a->tag - (int)b->tag;
-
-	// Numbers sort in numerical order
 	switch (a->tag) {
 	case Integer:
-		return mpz_cmp(a.mpz(), b.mpz());
+		return mpz_cmp(a->mpz, b->mpz);
 	case Rational:
-		return mpq_cmp(a.mpq(), b.mpq());
+	case Real:
+		return mpq_cmp(a->mpq, b->mpq);
 	}
-
-	// Compound terms sort in lexicographic order
-	auto an = a.size();
-	auto bn = b.size();
-	auto n = min(an, bn);
-	for (size_t i = 0; i < n; ++i) {
-		auto c = cmp(at(a, i), b[i]);
-		if (c) return c;
-	}
-	if (an - bn) return an - bn;
-
-	// They are different terms with the same tags and no different components, so they must be different atoms; just do a straight
-	// binary comparison
-	return memcmp(&a, &b, sizeof a);
+	unreachable;
 }
 
 static void check(ex a, size_t arity) {
