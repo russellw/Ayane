@@ -111,7 +111,7 @@ Ex* ftype(Ex* rty, Ex** first, Ex** last) {
 	vec<Ex*> v(1, rty);
 	// TODO: add in one op
 	for (auto i = first; i < last; ++i) v.add(type(*i));
-	return ex(Call, v);
+	return ex(Fn, v);
 }
 
 int cmp(Ex* a, Ex* b) {

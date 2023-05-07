@@ -200,37 +200,51 @@ void parser::num() {
 	constant = ex(q);
 }
 
-void parser::check(Ex* a, size_t arity) {
-	if (a->n == arity) return;
-	sprintf(buf, "Expected %zu args, received %zu", arity, (size_t)a->n);
+void parser::check(Ex* a, size_t n) {
+	if (a->n == n) return;
+	if (a->tag == Call) --n;
+	sprintf(buf, "Expected %zu args", n);
 	// TODO: maybe should  return different exit codes depending whether the input file is definitely bad versus just not understood
 	err(buf);
 }
 
 void parser::check(Ex* a, Ex* ty) {
+	// All symbols used in a formula must have specified types by the time this check is run. Otherwise, there would be no way of
+	// knowing whether the types they will be given in the future, would have passed the check.
+	// TODO: can a type still be unspecified by the time we get this far?
+	if (!ty) err("Unspecified type");
+
 	// In first-order logic, a function cannot return a function, nor can a variable store one. (That would be higher-order logic.)
 	// The code should be written so that neither the top-level callers nor the recursive calls, can ever ask for a function to be
 	// returned.
-	assert(kind(ty) != kind::Fn);
+	assert(ty->tag != Fn);
 
-	// All symbols used in a formula must have specified types by the time this check is run. Otherwise, there would be no way of
-	// knowing whether the types they will be given in the future, would have passed the check.
-	if (ty == kind::Unknown) err("Unspecified type");
+	// Need to handle call before checking the type of this term, because the type of a call is only well-defined if the type of the
+	// function is well-defined
+	if (a->tag == Call) {
+		assert(a->n > 1);
+		auto fty = at(a, 0)->ty;
+		if (!fty) err("Unspecified type");
 
-	// Need to handle calls before checking the type of this term, because the type of a call is only well-defined if the type of
-	// the function is well-defined
-	if (a->tag == Fn && a.size() > 1) {
-		auto fty = a.getAtom()->ty;
-		if (kind(fty) != kind::Fn) err("Called a non-function");
-		check(a, fty.size() - 1);
-		if (ty != fty[0]) err("Type mismatch");
-		for (size_t i = 0; i < a->n; ++i) {
-			switch (kind(fty[i])) {
-			case kind::Bool:
-			case kind::Fn:
-				err("Invalid type for function argument");
+		// Check for input like a(b) where a is just a constant
+		if (fty->tag != Fn) err("Called a non-function");
+
+		// Check for input like a(b) followed by a(b, c)
+		check(a, fty->n);
+
+		// The core of the check: Make sure the term is of the required type. At this point, could have rejoined the common logic,
+		// but call is by far the most common composite expression, so might as well keep it going on the fast track.
+		if (at(fty, 0) != ty) err("Type mismatch");
+
+		// And recur, based on the parameter types
+		for (size_t i = 1; i < fty->n; ++i) {
+			// TODO: does this check on parameter types need to be repeated here?
+			switch (at(fty, i)->tag) {
+			case Bool:
+			case Fn:
+				err("Invalid type for function parameter");
 			}
-			check(at(a, i), fty[i]);
+			check(at(a, i), at(fty, i));
 		}
 		return;
 	}
@@ -251,10 +265,10 @@ void parser::check(Ex* a, Ex* ty) {
 	case Sub:
 		check(a, 2);
 		ty = type(at(a, 0));
-		switch (kind(ty)) {
-		case kind::Integer:
-		case kind::Rational:
-		case kind::Real:
+		switch (ty->tag) {
+		case Integer:
+		case Rational:
+		case Real:
 			break;
 		default:
 			err("Invalid type for arithmetic");
@@ -263,13 +277,13 @@ void parser::check(Ex* a, Ex* ty) {
 		return;
 	case All:
 	case Exists:
-		check(at(a, 0), kind::Bool);
+		check(at(a, 0), &tbool);
 		return;
 	case And:
 	case Eqv:
 	case Not:
 	case Or:
-		for (size_t i = 0; i < a->n; ++i) check(at(a, i), kind::Bool);
+		for (size_t i = 0; i < a->n; ++i) check(at(a, i), &tbool);
 		return;
 	case Ceil:
 	case Floor:
@@ -283,10 +297,10 @@ void parser::check(Ex* a, Ex* ty) {
 	case Trunc:
 		check(a, 1);
 		ty = type(at(a, 0));
-		switch (kind(ty)) {
-		case kind::Integer:
-		case kind::Rational:
-		case kind::Real:
+		switch (ty->tag) {
+		case Integer:
+		case Rational:
+		case Real:
 			break;
 		default:
 			err("Invalid type for arithmetic");
@@ -299,13 +313,14 @@ void parser::check(Ex* a, Ex* ty) {
 	case Integer:
 	case Rational:
 	case True:
+		assert(!a->n);
 		return;
 	case Div:
 		check(a, 2);
 		ty = type(at(a, 0));
-		switch (kind(ty)) {
-		case kind::Rational:
-		case kind::Real:
+		switch (ty->tag) {
+		case Rational:
+		case Real:
 			break;
 		default:
 			err("Invalid type for rational division");
@@ -314,9 +329,9 @@ void parser::check(Ex* a, Ex* ty) {
 		return;
 	case Eq:
 		ty = type(at(a, 0));
-		switch (kind(ty)) {
-		case kind::Bool:
-		case kind::Fn:
+		switch (ty->tag) {
+		case Bool:
+		case Fn:
 			err("Invalid type for equality");
 		}
 		check(at(a, 0), ty);
@@ -326,10 +341,10 @@ void parser::check(Ex* a, Ex* ty) {
 	case Lt:
 		check(a, 2);
 		ty = type(at(a, 0));
-		switch (kind(ty)) {
-		case kind::Integer:
-		case kind::Rational:
-		case kind::Real:
+		switch (ty->tag) {
+		case Integer:
+		case Rational:
+		case Real:
 			break;
 		default:
 			err("Invalid type for comparison");
@@ -339,7 +354,8 @@ void parser::check(Ex* a, Ex* ty) {
 		return;
 	case Var:
 		// A function would also be an invalid type for a variable, but we already checked for that
-		if (kind(ty) == kind::Bool) err("Invalid type for variable");
+		// TODO: does this need to be dynamically checked here?
+		if (ty == &tbool) err("Invalid type for variable");
 		return;
 	}
 	unreachable;
