@@ -1,2 +1,2 @@
 extern int result;
-Clause* superposn();
+void superposn();

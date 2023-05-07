@@ -1,10 +1,5 @@
 #include "all.h"
 
-const char* szsNames[] = {
-#define _(x) #x,
-#include "szs.h"
-};
-
 // SORT
 eqn::eqn(Ex* a) {
 	// TODO: move to same module as the definition of the structure

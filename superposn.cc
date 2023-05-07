@@ -117,15 +117,12 @@ void resolve1() {
 	assert(!neg.n);
 	assert(!pos.n);
 
-	// Negative literals
 	for (auto i: c->neg())
 		if (i != ci) neg.add(replace(at(c, i), 0));
 
-	// Positive literals
 	for (auto i: c->pos()) pos.add(replace(at(c, i), 0));
 
-	// Make new clause
-	clause(r_er, c);
+	clause();
 }
 
 // For each negative equation
@@ -168,7 +165,7 @@ void factorc() {
 	for (auto i: c->pos())
 		if (i != di) pos.add(replace(at(c, i), 0));
 
-	clause(r_ef, c);
+	clause();
 }
 
 // For each positive equation (both directions) again
@@ -257,7 +254,7 @@ void superposnc() {
 	auto& v = di < d->nn ? neg : pos;
 	v.add(equate(d0c1, d1_));
 
-	clause(r_sp, c, d);
+	clause();
 }
 
 // Descend into subterms
@@ -317,9 +314,9 @@ void superposn1() {
 // If a complete saturation proof procedure finds no more possible derivations, then the problem is satisfiable. In practice, this
 // almost never happens for nontrivial problems, but serves as a good way to test the completeness of the prover on some trivial
 // problems. However, if completeness was lost for any reason, then we will need to report failure instead.
-int result = z_Satisfiable;
+int result = 1;
 
-Clause* superposn() {
+void superposn() {
 	// The active set starts off empty
 	vec<Clause*> active;
 
@@ -327,7 +324,7 @@ Clause* superposn() {
 	for (;;) {
 	loop:
 		// If there are no more clauses in the queue, the problem is satisfiable, unless completeness was lost
-		if (passive.empty()) return 0;
+		if (passive.empty()) return;
 		incStat("superposn main loop");
 
 		// Given clause
@@ -336,8 +333,8 @@ Clause* superposn() {
 
 		// Derived false
 		if (!g->n) {
-			result = z_Unsatisfiable;
-			return g;
+			result = 0;
+			return;
 		}
 
 		// This is the Discount loop (in which only active clauses participate in subsumption checks); in tests, it performed

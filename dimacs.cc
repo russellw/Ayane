@@ -59,7 +59,7 @@ struct parser1: parser {
 	// Top level
 	void add(const vec<Ex*>& literals) {
 		// TODO: provide a way to build input-only terms that bypasses interning?
-		cnf(new Formula(file, 0, ex(Or, literals)));
+		cnf(ex(Or, literals));
 	}
 
 	parser1(const char* file): parser(file) {

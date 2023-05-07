@@ -357,7 +357,7 @@ bool hasNumeric(const vec<Ex*>& v) {
 
 void clausesTerm(Ex* a) {
 	if (a->tag == And) {
-		for (size_t i = 0; i < a->n; ++i) clausesTerm(at(a, i), rule, from);
+		for (size_t i = 0; i < a->n; ++i) clausesTerm(at(a, i));
 		return;
 	}
 	assert(!neg.n);
@@ -368,7 +368,7 @@ void clausesTerm(Ex* a) {
 	// First-order logic is not complete on arithmetic. The conservative approach to this is that if any clause contains terms of
 	// numeric type, we mark the proof search incomplete, so that failure to derive a contradiction, means the result is
 	// inconclusive rather than satisfiable.
-	if (result == z_Satisfiable && (hasNumeric(neg) || hasNumeric(pos))) result = z_GaveUp;
+	if (result == 1 && (hasNumeric(neg) || hasNumeric(pos))) result = -1;
 
 	clause();
 }
