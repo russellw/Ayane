@@ -14,17 +14,14 @@ enum {
 	k_xor,
 };
 
-ex distinctObj(string* s) {
-	ex a;
-	if (s->dobj) {
-		a.raw = s->dobj;
-		return a;
-	}
-	auto o = atoms->alloc(offsetof(atom, s) + sizeof s);
-	auto p = (Ex*)atoms->ptr(o);
-	p->t = DistinctObj;
-	p->s = s->v;
-	a.raw = s->dobj = o;
+unordered_map<Str*, Ex*> distinctObjs;
+
+Ex* distinctObj(Str* s) {
+	auto& a = distinctObjs[s];
+	if (a) return a;
+	a = (Ex*)malloc(offsetof(Ex, s) + sizeof(char*));
+	a->tag = DistinctObj;
+	a->s = s->v;
 	return a;
 }
 
