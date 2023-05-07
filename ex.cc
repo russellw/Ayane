@@ -92,18 +92,12 @@ Ex* type(const Ex* a) {
 	unreachable;
 }
 
-type ftype(type rty, const Ex* first, const Ex* last) {
+Ex* ftype(const Ex* rty, const Ex** first, const Ex** last) {
 	if (first == last) return rty;
-	vec<type> v(1, rty);
+	vec<Ex*> v(1, rty);
+	// TODO: add in one op
 	for (auto i = first; i < last; ++i) v.add(type(*i));
-	return type(kind::Fn, v);
-}
-
-type ftype(type rty, const vec<ex>& args) {
-	if (args.size()) return rty;
-	vec<type> v(1, rty);
-	for (auto a: args) v.add(type(a));
-	return type(kind::Fn, v);
+	return ex(Call, v);
 }
 
 // TODO: eliminate this?

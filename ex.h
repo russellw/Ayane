@@ -93,8 +93,7 @@ inline Ex* at(const Ex* a, size_t i) {
 
 int cmp(Ex* a, Ex* b);
 
-Ex* ftype(Ex* rty, const Ex* first, const Ex* last);
-Ex* ftype(Ex* rty, const vec<Ex*>& args);
+Ex* ftype(const Ex* rty, const Ex* const* first, const Ex* const* last);
 void check(Ex* a, Ex* ty);
 
 // Matching and unification must in the general case deal with two clauses which are assumed to have logically distinct variable
