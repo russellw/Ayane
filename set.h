@@ -10,7 +10,6 @@ template <class K, class T, class Cmp> class set {
 		while (entries[i] && !Cmp::eq(tag, a, n, entries[i])) i = (i + 1) & mask;
 		return i;
 	}
-
 	static size_t slot(T** entries, size_t cap, T* a) {
 		size_t mask = cap - 1;
 		auto i = Cmp::hash(a) & mask;

@@ -25,6 +25,7 @@ struct CompCmp {
 	static bool eq(Ex* a, Ex* b) {
 		return eq(a->tag, a->v, a->n, b);
 	}
+
 	static size_t hash(int tag, Ex** a, size_t n) {
 		// TODO: hashCombine?
 		return fnv(a, n * sizeof *a);
@@ -33,8 +34,10 @@ struct CompCmp {
 		return hash(a->tag, a->v, a->n);
 	}
 };
+
 static void clear(Ex** a) {
 }
+
 static set<Ex**, Ex, CompCmp> comps;
 
 Ex* ex(int tag, Ex* a, Ex* b) {
