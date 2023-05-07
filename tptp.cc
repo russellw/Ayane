@@ -40,6 +40,7 @@ void defaultType(ex a, type rty) {
 	if (p->ty == kind::Unknown) p->ty = ftype(rty, a.begin(), a.end());
 }
 
+// TODO: Which types should use const?
 struct selection: set<const char*> {
 	bool all;
 
