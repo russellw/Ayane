@@ -136,11 +136,17 @@ int main(int argc, char** argv) {
 	}
 
 	// Solve
-	auto proof = superposn();
+	superposn();
 
 	// Print result
-	auto name = basename(file);
-	printf("%% SZS status %s for %s\n", szsNames[result], name);
+	switch(result){
+		case 0:
+			puts("unsat");
+			break;
+		case 1:
+			puts("sat");
+			break;
+		}
 
 	// Print stats
 	printStats();

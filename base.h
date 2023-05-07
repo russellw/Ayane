@@ -33,16 +33,7 @@ struct range: pair<size_t, size_t> {
 	}
 };
 
-// Printing things that need to be joined with separators
-#define joining bool joining1 = 0
-#define join(s) \
-	do { \
-		if (joining1) print(s); \
-		joining1 = 1; \
-	} while (0)
-
 // SORT
-const char* basename(const char* file);
 size_t fnv(const void* p, size_t bytes);
 ///
 
