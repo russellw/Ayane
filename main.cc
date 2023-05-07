@@ -15,7 +15,7 @@ LONG WINAPI handler(struct _EXCEPTION_POINTERS* ExceptionInfo) {
 }
 
 VOID CALLBACK timeout(PVOID a, BOOLEAN b) {
-	//todo: use the same exit code as on Linux
+	// TODO: use the same exit code as on Linux
 	ExitProcess(7);
 }
 } // namespace
@@ -139,14 +139,14 @@ int main(int argc, char** argv) {
 	superposn();
 
 	// Print result
-	switch(result){
-		case 0:
-			puts("unsat");
-			break;
-		case 1:
-			puts("sat");
-			break;
-		}
+	switch (result) {
+	case 0:
+		puts("unsat");
+		break;
+	case 1:
+		puts("sat");
+		break;
+	}
 
 	// Print stats
 	printStats();
