@@ -15,6 +15,7 @@
 #include <iterator>
 #include <queue>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 using std::make_pair;
@@ -24,6 +25,7 @@ using std::pair;
 using std::priority_queue;
 using std::sort;
 using std::unordered_map;
+using std::unordered_set;
 using std::vector;
 
 #include <gmp.h>

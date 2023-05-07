@@ -102,11 +102,16 @@ void parser::digits() {
 }
 
 void parser::integer(mpz_t z) {
-	// mpz_init_set_str doesn't like leading '+', so eat it before proceeding
-	if (*src == '+') ++src;
-
 	auto s = src;
-	if (*src == '-') ++src;
+	switch (*s) {
+	case '+':
+		// mpz_init_set_str doesn't like leading '+', so eat it before proceeding
+		++s;
+		[[fallthrough]];
+	case '-':
+		++src;
+		break;
+	}
 	digits();
 
 	// mpz_init_set_str doesn't like trailing junk, so give it a cleanly null-terminated string
@@ -146,8 +151,7 @@ void parser::num() {
 	mpq_t q;
 	tok = k_const;
 
-	// Both TPTP and SMT-LIB require nonempty digit sequences before and after '.', which makes parsing slightly easier. Parsers
-	// should only call this function if they detect at least one digit.
+	// Both TPTP and SMT-LIB require nonempty digit sequences before and after '.', which makes parsing slightly easier.
 	auto z = mpq_numref(q);
 	integer(z);
 

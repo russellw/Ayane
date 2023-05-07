@@ -47,6 +47,7 @@ Str keywords[] = {
 	// clang-format on
 };
 
+// TODO: factor to  set
 namespace {
 // Compare a counted string with a null terminated one
 bool eq(const char* s, size_t n, const char* z) {
