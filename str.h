@@ -54,7 +54,7 @@ enum {
 	s_truncate,
 	s_type,
 	s_uminus,
-	end_s
+	nkeywords
 };
 
 // And statically allocated for fast lookup

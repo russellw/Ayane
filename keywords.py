@@ -68,7 +68,7 @@ j = end(i)
 ys = []
 for y in words:
     ys.append(f"\ts_{san(y)},\n")
-ys.append("\tend_s\n")
+ys.append("\tnkeywords\n")
 xs[i:j] = ys
 open("str.h", "w", newline="\n").writelines(xs)
 

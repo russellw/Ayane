@@ -64,7 +64,7 @@ size_t slot(Str** entries, size_t cap, const char* s, size_t n) {
 }
 
 size_t cap = 0x100;
-size_t qty = end_s;
+size_t qty = nkeywords;
 Str** entries;
 
 struct init {
