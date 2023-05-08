@@ -3,14 +3,14 @@
 namespace {
 bool constant(Ex* a) {
 	switch (a->tag) {
-	case DistinctObj:
+	case False:
+		// In the superposition calculus, true only shows up as an argument of equality and false never shows up as an argument
+		unreachable;
+	case Individual:
 	case Integer:
 	case Rational:
 	case True:
 		return 1;
-	case False:
-		// In the superposition calculus, true only shows up as an argument of equality and false never shows up as an argument
-		unreachable;
 	}
 	return 0;
 }

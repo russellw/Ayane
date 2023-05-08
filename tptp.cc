@@ -20,7 +20,7 @@ Ex* distinctObj(Str* s) {
 	auto& a = distinctObjs[s];
 	if (a) return a;
 	a = (Ex*)malloc(offsetof(Ex, s) + sizeof(char*));
-	a->tag = DistinctObj;
+	a->tag = Individual;
 	a->s = s->v;
 	return a;
 }

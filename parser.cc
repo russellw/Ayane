@@ -337,14 +337,6 @@ void parser::check(Ex* a, Ex* ty) {
 		}
 		for (size_t i = 0; i < a->n; ++i) check(at(a, i), ty);
 		return;
-	case DistinctObj:
-	case False:
-	case Fn:
-	case Integer:
-	case Rational:
-	case True:
-		assert(!a->n);
-		return;
 	case Div:
 		check(a, 2);
 		ty = type(at(a, 0));
@@ -366,6 +358,14 @@ void parser::check(Ex* a, Ex* ty) {
 		}
 		check(at(a, 0), ty);
 		check(at(a, 1), ty);
+		return;
+	case False:
+	case Fn:
+	case Individual:
+	case Integer:
+	case Rational:
+	case True:
+		assert(!a->n);
 		return;
 	case Le:
 	case Lt:

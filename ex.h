@@ -10,7 +10,6 @@ enum {
 	Bool,
 	Call,
 	Ceil,
-	DistinctObj,
 	Div,
 	DivE,
 	DivF,

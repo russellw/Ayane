@@ -88,11 +88,11 @@ Ex* type(Ex* a) {
 		a = at(a, 0);
 		assert(a->tag == Fn);
 		return at(a->ty, 0);
-	case DistinctObj:
-		return &tindividual;
 	case Fn:
 	case Var:
 		return a->ty;
+	case Individual:
+		return &tindividual;
 	case Integer:
 	case ToInteger:
 		return &tinteger;
