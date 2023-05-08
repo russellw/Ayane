@@ -72,8 +72,8 @@ inline Str* intern(const char* s) {
 	return intern(s, strlen(s));
 }
 
+Type* type(Str* s);
+
 inline void print(const Str* s) {
 	print(s->v);
 }
-
-Ex* mktype(Str* s);

@@ -44,12 +44,13 @@ using std::vector;
 #include "type.h"
 
 #include "ex.h"
-#include "str.h"
 
 #include "bignums.h"
 #include "clause.h"
 
 // Parsers
+#include "str.h"
+
 #include "parser.h"
 
 #include "dimacs.h"

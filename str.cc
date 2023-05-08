@@ -125,3 +125,12 @@ Str* intern(const char* s, size_t n) {
 	// Add to hash table
 	return entries[i] = r;
 }
+
+Type* type(Str* s) {
+	if (s->ty) return s->ty;
+	auto ty = (TypeName*)malloc(sizeof(TypeName));
+	ty->tag = False;
+	ty->n = 0;
+	ty->s = s->v;
+	return s->ty = ty;
+}

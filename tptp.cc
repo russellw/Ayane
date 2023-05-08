@@ -267,7 +267,7 @@ struct parser1: parser {
 			}
 			break;
 		case k_id:
-			return mktype(s);
+			return type(s);
 		}
 		err("Expected type");
 	}
@@ -297,9 +297,9 @@ struct parser1: parser {
 	}
 
 	Ex* definedFunctor(int tag) {
-		vec<Ex*> v(1, t);
+		vec<Ex*> v;
 		args(v);
-		return ex(v);
+		return ex(tag, v);
 	}
 
 	Ex* atomicTerm() {
@@ -323,13 +323,13 @@ struct parser1: parser {
 			{
 				args(v);
 				for (auto& a: v) defaultType(a, &tindividual);
-				vec<Ex*> inequalities(1, And);
+				vec<Ex*> inequalities;
 				for (auto i = v.begin(), e = v.end(); i < e; ++i)
 					for (auto j = v.begin(); j != i; ++j) inequalities.add(ex(Not, ex(Eq, *i, *j)));
-				return ex(inequalities);
+				return ex(And, inequalities);
 			}
 			case s_false:
-				return False;
+				return bools;
 			case s_floor:
 				return definedFunctor(Floor);
 			case s_greater:
@@ -373,7 +373,7 @@ struct parser1: parser {
 			case s_to_real:
 				return definedFunctor(ToReal);
 			case s_true:
-				return True;
+				return bools + 1;
 			case s_truncate:
 				return definedFunctor(Trunc);
 			case s_uminus:

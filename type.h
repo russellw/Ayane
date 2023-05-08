@@ -71,4 +71,5 @@ inline Type* at(Type* a, size_t i) {
 	return ((CompType*)a)->v[i];
 }
 
+Type* type(Type* a, Type* b);
 Type* type(const vec<Type*>& v);
