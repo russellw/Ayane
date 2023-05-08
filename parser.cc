@@ -270,8 +270,8 @@ void parser::check(Ex* a, Ex* ty) {
 		for (size_t i = 1; i < fty->n; ++i) {
 			// TODO: does this check on parameter types need to be repeated here?
 			switch (at(fty, i)->tag) {
-			case Bool:
 			case Fn:
+			case True:
 				err("Invalid type for function parameter");
 			}
 			check(at(a, i), at(fty, i));
@@ -352,8 +352,8 @@ void parser::check(Ex* a, Ex* ty) {
 	case Eq:
 		ty = type(at(a, 0));
 		switch (ty->tag) {
-		case Bool:
 		case Fn:
+		case True:
 			err("Invalid type for equality");
 		}
 		check(at(a, 0), ty);

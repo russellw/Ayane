@@ -1,6 +1,6 @@
 #include "main.h"
 
-Ex tbool = {Bool};
+Ex tbool = {True};
 Ex tinteger = {Integer};
 Ex trational = {Rational};
 Ex treal = {Real};

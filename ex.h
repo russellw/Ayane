@@ -8,7 +8,6 @@ enum {
 	Add,
 	All,
 	And,
-	Bool,
 	Call,
 	Ceil,
 	Div,
