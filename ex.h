@@ -1,4 +1,5 @@
 enum {
+	// TODO: True needs to be early in the list, but does False need any particular order?
 	False,
 	True,
 
