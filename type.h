@@ -65,3 +65,10 @@ extern Type tindividual;
 extern Type tinteger;
 extern Type trational;
 extern Type treal;
+
+inline Type* at(Type* a, size_t i) {
+	assert(i < a->n);
+	return ((CompType*)a)->v[i];
+}
+
+Type* type(const vec<Type*>& v);

@@ -100,12 +100,12 @@ Type* type(Ex* a) {
 	unreachable;
 }
 
-Ex* ftype(Ex* rty, Ex** first, Ex** last) {
+Type* ftype(Type* rty, Ex** first, Ex** last) {
 	if (first == last) return rty;
-	vec<Ex*> v(1, rty);
+	vec<Type*> v(1, rty);
 	// TODO: add in one op
 	for (auto i = first; i < last; ++i) v.add(type(*i));
-	return ex(Fn, v);
+	return type(v);
 }
 
 int cmp(Ex* a, Ex* b) {

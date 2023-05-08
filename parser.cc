@@ -220,7 +220,7 @@ Ex* parser::setType(Str* s, Type* ty) {
 		auto a = s->fn;
 		assert(a->tag == Fn);
 		assert(a->s == s->v);
-		setType(a->ty, ty);
+		setType(a, ty);
 		return a;
 	}
 	auto a = (Ex*)malloc(offsetof(Ex, s) + sizeof(char*));

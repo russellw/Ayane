@@ -241,7 +241,7 @@ struct parser1: parser {
 	}
 
 	// Types
-	Ex* atomicType() {
+	Type* atomicType() {
 		auto k = tok;
 		auto s = str;
 		lex();
@@ -272,18 +272,19 @@ struct parser1: parser {
 		err("Expected type");
 	}
 
-	Ex* topLevelType() {
+	Type* topLevelType() {
 		if (eat('(')) {
-			vec<Ex*> v(1);
+			// TODO: does vec(n) mean n or cap?
+			vec<Type*> v(1);
 			do v.add(atomicType());
 			while (eat('*'));
 			expect(')');
 			expect('>');
 			v[0] = atomicType();
-			return type(kind::Fn, v);
+			return type(v);
 		}
 		auto ty = atomicType();
-		if (eat('>')) return type(kind::Fn, atomicType(), ty);
+		if (eat('>')) return type(atomicType(), ty);
 		return ty;
 	}
 
