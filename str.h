@@ -75,3 +75,5 @@ inline Str* intern(const char* s) {
 inline void print(const Str* s) {
 	print(s->v);
 }
+
+Ex* mktype(Str* s);

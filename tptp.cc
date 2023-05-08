@@ -26,15 +26,18 @@ Ex* distinctObj(Str* s) {
 }
 
 // If a term does not already have a type, assign it a specified one
-void defaultType(Ex* a, Ex* rty) {
+void defaultType(Ex* a, Ex* ty) {
 	// A statement about the return type of a function call, can directly imply the type of the function. This generally does not
 	// apply to basic operators; in most cases, they already have a definite type. That is not entirely true of the arithmetic
-	// operators, but we don't try to do global type inference to figure those out.
-	if (a->tag != Fn) return;
+	// operators, but we don't try to do type inference to figure those out.
+	if (a->tag == Call) {
+		// TODO: might be some blank types in the arguments; is that okay, or do we need to error?
+		ty = ftype(ty, a->v + 1, a->v + a->n);
+		a = at(a, 0);
+	}
 
 	// This is only a default assignment, only relevant if the function does not already have a type
-	auto p = a.getAtom();
-	if (p->ty == kind::Unknown) p->ty = ftype(rty, a.begin(), a.end());
+	if (a->tag == Fn && !a->ty) a->ty = ty;
 }
 
 // TODO: Which types should use const?
@@ -252,19 +255,19 @@ struct parser1: parser {
 		case k_dollarWord:
 			switch (keyword(s)) {
 			case s_i:
-				return kind::Individual;
+				return &tindividual;
 			case s_int:
-				return kind::Integer;
+				return &tinteger;
 			case s_o:
-				return kind::Bool;
+				return &tbool;
 			case s_rat:
-				return kind::Rational;
+				return &trational;
 			case s_real:
-				return kind::Real;
+				return &treal;
 			}
 			break;
 		case k_id:
-			return type(s);
+			return mktype(s);
 		}
 		err("Expected type");
 	}
@@ -318,7 +321,7 @@ struct parser1: parser {
 			case s_distinct:
 			{
 				args(v);
-				for (auto& a: v) defaultType(a, kind::Individual);
+				for (auto& a: v) defaultType(a, &tindividual);
 				vec<Ex*> inequalities(1, And);
 				for (auto i = v.begin(), e = v.end(); i < e; ++i)
 					for (auto j = v.begin(); j != i; ++j) inequalities.add(ex(Not, ex(Eq, *i, *j)));
@@ -392,7 +395,7 @@ struct parser1: parser {
 			// First-order logic does not allow functions to take Boolean arguments, so the arguments can default to individual. But
 			// we cannot yet make any assumption about the function return type. For all we know here, it could still be Boolean.
 			// Leave it to the caller, which will know from context whether that is the case.
-			for (size_t i = 0; i < v.size(); ++i) defaultType(v[i], kind::Individual);
+			for (size_t i = 0; i < v.size(); ++i) defaultType(v[i], &tindividual);
 
 			return ex(v);
 		}
@@ -429,7 +432,7 @@ struct parser1: parser {
 			for (auto i = vars.rbegin(), e = vars.rend(); i < e; ++i)
 				if (i->first == s) return i->second;
 			if (!cnfMode) err("Unknown variable");
-			auto x = var(vars.size(), kind::Individual);
+			auto x = var(vars.size(), &tindividual);
 			vars.add(make_pair(s, x));
 			return x;
 		}
@@ -444,20 +447,20 @@ struct parser1: parser {
 		{
 			lex();
 			auto b = atomicTerm();
-			defaultType(a, kind::Individual);
-			defaultType(b, kind::Individual);
+			defaultType(a, &tindividual);
+			defaultType(b, &tindividual);
 			return ex(Eq, a, b);
 		}
 		case k_ne:
 		{
 			lex();
 			auto b = atomicTerm();
-			defaultType(a, kind::Individual);
-			defaultType(b, kind::Individual);
+			defaultType(a, &tindividual);
+			defaultType(b, &tindividual);
 			return ex(Not, ex(Eq, a, b));
 		}
 		}
-		defaultType(a, kind::Bool);
+		defaultType(a, &tbool);
 		return a;
 	}
 
@@ -471,7 +474,7 @@ struct parser1: parser {
 			if (tok != k_var) err("Expected variable");
 			auto s = str;
 			lex();
-			type ty = kind::Individual;
+			type ty = &tindividual;
 			if (eat(':')) ty = atomicType();
 			auto x = var(vars.size(), ty);
 			vars.add(make_pair(s, x));
@@ -571,9 +574,10 @@ struct parser1: parser {
 		lex();
 	}
 
-	parser1(const char* file, const selection& sel, Problem& problem): parser(file), sel(sel), problem(problem) {
+	parser1(const char* file, const selection& sel): parser(file), sel(sel) {
 		lex();
 		while (tok) {
+			// TODO: assert(!vars.n)
 			vars.clear();
 			auto kw = keyword(wordOrDigits());
 			expect('(');
@@ -632,7 +636,7 @@ struct parser1: parser {
 				cnfMode = 0;
 				auto a = logicFormula();
 				assert(vars.empty());
-				check(a, kind::Bool);
+				check(a, &tbool);
 
 				// Select
 				if (!sel.count(name)) break;
