@@ -41,6 +41,8 @@ using std::vector;
 #include "vec.h"
 
 // Logic
+#include "type.h"
+
 #include "ex.h"
 #include "str.h"
 

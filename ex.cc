@@ -1,11 +1,5 @@
 #include "main.h"
 
-Ex tbool = {True};
-Ex tinteger = {Integer};
-Ex trational = {Rational};
-Ex treal = {Real};
-Ex tindividual = {Individual};
-
 Ex bools[2] = {{False}, {True}};
 
 // TODO: rename?

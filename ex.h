@@ -1,51 +1,4 @@
-enum {
-	// TODO: True needs to be early in the list, but does False need any particular order?
-	False,
-	True,
-
-	// TODO: use everywhere or nowhere?
-	// SORT
-	Add,
-	All,
-	And,
-	Call,
-	Ceil,
-	Div,
-	DivE,
-	DivF,
-	DivT,
-	Eq,
-	Eqv,
-	Exists,
-	Floor,
-	Fn,
-	Individual,
-	Integer,
-	IsInteger,
-	IsRational,
-	Le,
-	Lt,
-	Mul,
-	Neg,
-	Not,
-	Or,
-	Rational,
-	Real,
-	RemE,
-	RemF,
-	RemT,
-	Round,
-	Sub,
-	ToInteger,
-	ToRational,
-	ToReal,
-	Trunc,
-	Var,
-	///
-};
-
 // TODO: refactor source file organization
-// TODO: rename to ex,mk?
 struct Ex {
 	int tag;
 	uint32_t n;
@@ -54,7 +7,7 @@ struct Ex {
 		Ex* v[9];
 		struct {
 			// TODO: can this be omitted for numbers?
-			Ex* ty;
+			Type* ty;
 			union {
 				char* s;
 				size_t idx;
@@ -64,12 +17,6 @@ struct Ex {
 		};
 	};
 };
-
-extern Ex tbool;
-extern Ex tinteger;
-extern Ex trational;
-extern Ex treal;
-extern Ex tindividual;
 
 extern Ex bools[2];
 
@@ -85,7 +32,7 @@ Ex* ex(int tag, Ex* a);
 Ex* ex(int tag, Ex* a, Ex* b);
 Ex* ex(int tag, const vec<Ex*>& v);
 Ex* ex(int tag, const vector<Ex*>& v);
-Ex* type(Ex* a);
+Type* type(Ex* a);
 
 inline Ex* at(Ex* a, size_t i) {
 	assert(i < a->n);
@@ -94,7 +41,7 @@ inline Ex* at(Ex* a, size_t i) {
 
 int cmp(Ex* a, Ex* b);
 
-Ex* ftype(Ex* rty, Ex** first, Ex** last);
+Type* ftype(Ex* rty, Ex** first, Ex** last);
 
 // Matching and unification must in the general case deal with two clauses which are assumed to have logically distinct variable
 // names, but it is inefficient to provide physically distinct variable names for each clause, so we logically extend variable names
