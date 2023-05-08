@@ -23,9 +23,9 @@ extern Ex bools[2];
 Ex* ex(mpz_t val);
 Ex* ex(mpq_t val);
 
-Ex* var(size_t i, Ex* ty);
+Ex* var(size_t i, Type* ty);
 
-Ex* gensym(Ex* ty);
+Ex* gensym(Type* ty);
 
 // TODO: test using a bump allocator
 Ex* ex(int tag, Ex* a);

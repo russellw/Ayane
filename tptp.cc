@@ -26,7 +26,7 @@ Ex* distinctObj(Str* s) {
 }
 
 // If a term does not already have a type, assign it a specified one
-void defaultType(Ex* a, Ex* ty) {
+void defaultType(Ex* a, Type* ty) {
 	// A statement about the return type of a function call, can directly imply the type of the function. This generally does not
 	// apply to basic operators; in most cases, they already have a definite type. That is not entirely true of the arithmetic
 	// operators, but we don't try to do type inference to figure those out.

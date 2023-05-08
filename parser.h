@@ -84,10 +84,10 @@ struct parser {
 	void num();
 
 	// Type a function, in context where error can report line number
-	void setType(Ex* a, Ex* ty);
-	Ex* setType(Str* s, Ex* ty);
+	void setType(Ex* a, Type* ty);
+	Ex* setType(Str* s, Type* ty);
 
 	// Check the correctness of expressions, in context where error can report line number
 	void check(Ex* a, size_t arity);
-	void check(Ex* a, Ex* ty);
+	void check(Ex* a, Type* ty);
 };

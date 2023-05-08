@@ -3,7 +3,7 @@
 Ex bools[2] = {{False}, {True}};
 
 // TODO: rename?
-Ex* gensym(Ex* ty) {
+Ex* gensym(Type* ty) {
 	auto a = (Ex*)malloc(offsetof(Ex, s) + sizeof(char*));
 	a->tag = Fn;
 	a->ty = ty;
@@ -46,7 +46,7 @@ Ex* ex(int tag, const vec<Ex*>& v) {
 	return comps.intern(tag, v.data, v.n);
 }
 
-Ex* type(Ex* a) {
+Type* type(Ex* a) {
 	switch (a->tag) {
 	case Add:
 	case Ceil:

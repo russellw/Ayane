@@ -204,7 +204,7 @@ void parser::num() {
 	constant = ex(q);
 }
 
-void parser::setType(Ex* a, Ex* ty) {
+void parser::setType(Ex* a, Type* ty) {
 	assert(a->tag == Fn);
 	if (a->ty == ty) return;
 	if (!a->ty) {
@@ -215,7 +215,7 @@ void parser::setType(Ex* a, Ex* ty) {
 	err("Type mismatch");
 }
 
-Ex* parser::setType(Str* s, Ex* ty) {
+Ex* parser::setType(Str* s, Type* ty) {
 	if (s->fn) {
 		auto a = s->fn;
 		assert(a->tag == Fn);
@@ -238,7 +238,7 @@ void parser::check(Ex* a, size_t n) {
 	err(buf);
 }
 
-void parser::check(Ex* a, Ex* ty) {
+void parser::check(Ex* a, Type* ty) {
 	// All symbols used in a formula must have specified types by the time this check is run. Otherwise, there would be no way of
 	// knowing whether the types they will be given in the future, would have passed the check.
 	// TODO: can a type still be unspecified by the time we get this far?
