@@ -215,13 +215,13 @@ where
 // whether they consider negative or positive equations in the second clause, so to avoid copy-pasting a significant chunk of
 // nontrivial and almost identical code, we specify here a single inference rule
 
-vec<size_t> posn;
+Vec<size_t> posn;
 
 Ex* splice(Ex* a, size_t i, Ex* b) {
 	if (i == posn.size()) return b;
 
 	assert(a->n);
-	vec<Ex*> v(a->n);
+	Vec<Ex*> v(a->n);
 	for (size_t j = 0; j < a->n; ++j) {
 		v[j] = at(a, j);
 		if (j == posn[i]) v[j] = splice(v[j], i + 1, b);
@@ -318,7 +318,7 @@ int result = 1;
 
 void superposn() {
 	// The active set starts off empty
-	vec<Clause*> active;
+	Vec<Clause*> active;
 
 	// Saturation proof procedure tries to perform all possible derivations until it derives a contradiction
 	for (;;) {

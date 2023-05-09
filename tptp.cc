@@ -57,7 +57,7 @@ struct parser1: parser {
 	// SORT
 	bool cnfMode;
 	const selection& sel;
-	vec<pair<Str*, Ex*>> vars;
+	Vec<pair<Str*, Ex*>> vars;
 	///
 
 	// Tokenizer
@@ -275,7 +275,7 @@ struct parser1: parser {
 	Type* topLevelType() {
 		if (eat('(')) {
 			// TODO: does vec(n) mean n or cap?
-			vec<Type*> v(1);
+			Vec<Type*> v(1);
 			do v.add(atomicType());
 			while (eat('*'));
 			expect(')');
@@ -289,7 +289,7 @@ struct parser1: parser {
 	}
 
 	// Expressions
-	void args(vec<Ex*>& v) {
+	void args(Vec<Ex*>& v) {
 		expect('(');
 		do v.add(atomicTerm());
 		while (eat(','));
@@ -297,7 +297,7 @@ struct parser1: parser {
 	}
 
 	Ex* definedFunctor(int tag) {
-		vec<Ex*> v;
+		Vec<Ex*> v;
 		args(v);
 		return ex(tag, v);
 	}
@@ -313,7 +313,7 @@ struct parser1: parser {
 			return distinctObj(s);
 		case k_dollarWord:
 		{
-			vec<Ex*> v;
+			Vec<Ex*> v;
 			switch (keyword(s)) {
 			case s_ceiling:
 				return definedFunctor(Ceil);
@@ -323,7 +323,7 @@ struct parser1: parser {
 			{
 				args(v);
 				for (auto& a: v) defaultType(a, &tindividual);
-				vec<Ex*> inequalities;
+				Vec<Ex*> inequalities;
 				for (auto i = v.begin(), e = v.end(); i < e; ++i)
 					for (auto j = v.begin(); j != i; ++j) inequalities.add(ex(Not, ex(Eq, *i, *j)));
 				return ex(And, inequalities);
@@ -389,7 +389,7 @@ struct parser1: parser {
 			if (tok != '(') return a;
 
 			// Function is being called, so gather the function and arguments
-			vec<Ex*> v(1, a);
+			Vec<Ex*> v(1, a);
 			args(v);
 
 			// By the TPTP specification, symbols can be assumed Boolean or individual, if not previously specified otherwise.
@@ -470,7 +470,7 @@ struct parser1: parser {
 		expect('[');
 		auto old = vars.size();
 		// TODO: check generated code
-		vec<Ex*> v{t, False};
+		Vec<Ex*> v{t, False};
 		do {
 			if (tok != k_var) err("Expected variable");
 			auto s = str;
@@ -509,7 +509,7 @@ struct parser1: parser {
 	}
 
 	Ex* associativeLogicFormula(int tag, Ex* a) {
-		vec<Ex*> v{t, a};
+		Vec<Ex*> v{t, a};
 		auto k = tok;
 		while (eat(k)) v.add(unary());
 		return ex(v);

@@ -11,7 +11,7 @@
 // improves performance in some cases.
 
 // Anything which doesn't meet this requirement, should use std::vector instead
-template <class T> struct vec {
+template <class T> struct Vec {
 	// TODO: simplify
 	using size_type = size_t;
 	using difference_type = ptrdiff_t;
@@ -46,29 +46,29 @@ template <class T> struct vec {
 
 	// Constructors use placement new to initialize elements where necessary with copies of source elements
 	// TODO: constructor that takes estimated initial capacity
-	explicit vec(size_t o = 0) {
+	explicit Vec(size_t o = 0) {
 		init(o);
 		for (auto i = begin(), e = end(); i < e; ++i) new (i) T;
 	}
 
-	explicit vec(size_t o, const T& b) {
+	explicit Vec(size_t o, const T& b) {
 		init(o);
 		for (auto i = begin(), e = end(); i < e; ++i) new (i) T(b);
 	}
 
-	explicit vec(T* first, T* last) {
+	explicit Vec(T* first, T* last) {
 		init(last - first);
 		auto i = begin();
 		for (auto j = first; j != last; ++j) new (i++) T(*j);
 	}
 
-	explicit vec(std::initializer_list<T> b) {
+	explicit Vec(std::initializer_list<T> b) {
 		init(b.size());
 		auto i = begin();
 		for (auto& x: b) new (i++) T(x);
 	}
 
-	vec(const vec& b) {
+	Vec(const Vec& b) {
 		// TODO: disable?
 		init(b.n);
 		auto i = begin();
@@ -77,7 +77,7 @@ template <class T> struct vec {
 
 	// Destructor calls element destructors, but only on those elements that have actually been initialized, i.e. up to size, not
 	// capacity.
-	~vec() {
+	~Vec() {
 		del(begin(), end());
 		free(data);
 	}
@@ -114,7 +114,7 @@ template <class T> struct vec {
 		end()->~T();
 	}
 
-	vec& operator=(const vec& b) {
+	Vec& operator=(const Vec& b) {
 		if (this == &b) return *this;
 
 		// Free the existing elements
@@ -265,7 +265,7 @@ template <class T> struct vec {
 	}
 };
 
-template <class T> bool get(T x, T& y, const vec<pair<T, T>>& m) {
+template <class T> bool get(T x, T& y, const Vec<pair<T, T>>& m) {
 	for (auto xy: m)
 		if (xy.first == x) {
 			y = xy.second;
@@ -274,13 +274,13 @@ template <class T> bool get(T x, T& y, const vec<pair<T, T>>& m) {
 	return 0;
 }
 
-template <class T> size_t hash(const vec<T>& a) {
+template <class T> size_t hash(const Vec<T>& a) {
 	size_t h = 0;
 	for (auto& x: a) h = hashCombine(h, hash(x));
 	return h;
 }
 
-template <class T> bool operator==(const vec<T>& a, const vec<T>& b) {
+template <class T> bool operator==(const Vec<T>& a, const Vec<T>& b) {
 	auto o = a.size();
 	if (o != b.size()) return 0;
 	for (size_t i = 0; i < o; ++i)
@@ -288,11 +288,11 @@ template <class T> bool operator==(const vec<T>& a, const vec<T>& b) {
 	return 1;
 }
 
-template <class T> bool operator!=(const vec<T>& a, const vec<T>& b) {
+template <class T> bool operator!=(const Vec<T>& a, const Vec<T>& b) {
 	return !(a == b);
 }
 
-template <class T> void print(const vec<T>& a) {
+template <class T> void print(const Vec<T>& a) {
 	putchar('[');
 	bool more = 0;
 	for (auto& x: a) {

@@ -1,7 +1,7 @@
 #include "main.h"
 
 namespace {
-vec<pair<Ex*, Ex*>> m;
+Vec<pair<Ex*, Ex*>> m;
 
 bool match(Ex* a, Ex* b) {
 	// Equals
@@ -53,7 +53,7 @@ Clause* d;
 range ds;
 
 // Multiset avoids breaking completeness when factoring is used
-vec<bool> used;
+Vec<bool> used;
 
 bool subsume(int ci) {
 	if (ci == cs.second) return 1;

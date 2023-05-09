@@ -16,7 +16,7 @@ struct Clause {
 	}
 };
 
-extern vec<Ex*> neg, pos;
+extern Vec<Ex*> neg, pos;
 
 inline Ex* at(Clause* c, size_t i) {
 	assert(i < c->n);

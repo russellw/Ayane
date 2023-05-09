@@ -87,7 +87,7 @@ void printStats() {
 	putchar('\n');
 
 	if (strStats.size()) {
-		vec<const char*> v;
+		Vec<const char*> v;
 		for (auto p: strStats) v.add(p.first);
 		sort(v.begin(), v.end(), [=](const char* a, const char* b) { return strcmp(a, b) < 0; });
 		for (auto k: v) printItem(strStats[k], k);
@@ -95,7 +95,7 @@ void printStats() {
 	}
 
 	if (numStats.size()) {
-		vec<size_t> v;
+		Vec<size_t> v;
 		for (auto p: numStats) v.add(p.first);
 		sort(v.begin(), v.end());
 		uint64_t totQty = 0;

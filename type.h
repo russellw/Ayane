@@ -72,4 +72,4 @@ inline Type* at(Type* a, size_t i) {
 }
 
 Type* type(Type* a, Type* b);
-Type* type(const vec<Type*>& v);
+Type* type(const Vec<Type*>& v);

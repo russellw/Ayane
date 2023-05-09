@@ -211,7 +211,7 @@ Ex* simplify(Ex* a) {
 	}
 	}
 	if (!a->n) return a;
-	vec<Ex*> v;
+	Vec<Ex*> v;
 	for (size_t i = 0; i < a->n; ++i) v.add(simplify(at(a, i)));
 	return ex(a->tag, v);
 }

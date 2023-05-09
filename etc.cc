@@ -20,7 +20,7 @@ void flatten(int tag, Ex* a, vector<Ex*>& r) {
 	r.push_back(a);
 }
 
-void freeVars(Ex* a, vec<Ex*> boundv, vec<Ex*>& freev) {
+void freeVars(Ex* a, Vec<Ex*> boundv, Vec<Ex*>& freev) {
 	// TODO: boundv static?
 	switch (a->tag) {
 	case All:
@@ -102,10 +102,10 @@ bool occurs(Ex* a, Ex* b) {
 }
 
 Ex* quantify(Ex* a) {
-	vec<Ex*> vars;
-	freeVars(a, vec<Ex*>(), vars);
+	Vec<Ex*> vars;
+	freeVars(a, Vec<Ex*>(), vars);
 	if (vars.empty()) return a;
-	vec<Ex*> v(1, a);
+	Vec<Ex*> v(1, a);
 	// TODO: add all at once
 	for (auto x: vars) v.add(x);
 	return ex(All, v);

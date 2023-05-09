@@ -41,7 +41,7 @@ Ex* ex(int tag, Ex* a, Ex* b) {
 	return comps.intern(tag, v, 2);
 }
 
-Ex* ex(int tag, const vec<Ex*>& v) {
+Ex* ex(int tag, const Vec<Ex*>& v) {
 	assert(v.size());
 	return comps.intern(tag, v.data, v.n);
 }
@@ -102,7 +102,7 @@ Type* type(Ex* a) {
 
 Type* ftype(Type* rty, Ex** first, Ex** last) {
 	if (first == last) return rty;
-	vec<Type*> v(1, rty);
+	Vec<Type*> v(1, rty);
 	// TODO: add in one op
 	for (auto i = first; i < last; ++i) v.add(type(*i));
 	return type(v);

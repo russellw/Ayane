@@ -82,23 +82,23 @@ size_t ncsApprox(int pol, Ex* a) {
 }
 
 // Skolem functions replace existentially quantified variables, also formulas that are renamed to avoid exponential expansion
-Ex* skolem(Type* rty, vec<Ex*>& args) {
-	vec<Ex*> v(1, gensym(ftype(rty, args.begin(), args.end())));
+Ex* skolem(Type* rty, Vec<Ex*>& args) {
+	Vec<Ex*> v(1, gensym(ftype(rty, args.begin(), args.end())));
 	// TODO: single call instead of loop?
 	for (auto b: args) v.add(b);
 	return ex(Call, v);
 }
 
 // SORT
-vec<Ex*> defs;
+Vec<Ex*> defs;
 size_t vars = 0;
 ///
 
 // Rename formulas to avoid exponential expansion. It's tricky to do this while in the middle of doing other things, easier to be
 // sure of the logic if it's done as a separate pass first.
 Ex* rename(int pol, Ex* a) {
-	vec<Ex*> vars;
-	freeVars(a, vec<Ex*>(), vars);
+	Vec<Ex*> vars;
+	freeVars(a, Vec<Ex*>(), vars);
 	auto b = skolem(type(a), vars);
 	// NO_SORT
 	switch (pol) {
@@ -123,7 +123,7 @@ Ex* rename(int pol, Ex* a) {
 
 // Maybe rename some of the arguments to an OR-over-AND (taking polarity into account), where the number of clauses generated would
 // be the product of the arguments
-void maybeRename(int pol, vec<Ex*>& v) {
+void maybeRename(int pol, Vec<Ex*>& v) {
 	// Sorting the arguments doesn't change the meaning of the formula, because AND and OR are commutative. The effect is that if
 	// only some of them are to be renamed, we will leave the simple ones alone and end up renaming the complicated ones, which is
 	// probably what we want.
@@ -143,7 +143,7 @@ void maybeRename(int pol, vec<Ex*>& v) {
 // rename on a global basis, but in practice, nontrivial subformulas are rarely duplicated (e.g. less than 1% of the nontrivial
 // formulas in the TPTP), so this is probably not worth doing.
 Ex* maybeRename(int pol, Ex* a) {
-	vec<Ex*> v;
+	Vec<Ex*> v;
 	// NO_SORT
 	switch (a->tag) {
 	case All:
@@ -185,12 +185,12 @@ Ex* maybeRename(int pol, Ex* a) {
 	return ex(a->tag, v);
 }
 
-Ex* nnf(bool pol, Ex* a, vec<pair<Ex*, Ex*>>& m);
+Ex* nnf(bool pol, Ex* a, Vec<pair<Ex*, Ex*>>& m);
 
 // For-all doesn't need much work to convert. Clauses contain variables with implied for-all. The tricky part is that quantifier
 // binds variables to local scope, so the same variable name used in two for-all's corresponds to two different logical variables.
 // So we rename each quantified variable to a new variable of the same type.
-Ex* all(int pol, Ex* a, vec<pair<Ex*, Ex*>>& m) {
+Ex* all(int pol, Ex* a, Vec<pair<Ex*, Ex*>>& m) {
 	// TODO: does it actually need to be new variables, if the parser has in any case not been allowing variable shadowing, because of types?
 	auto o = m.n;
 	for (size_t i = 2; i < a->n; ++i) {
@@ -206,9 +206,9 @@ Ex* all(int pol, Ex* a, vec<pair<Ex*, Ex*>>& m) {
 
 // Each existentially quantified variable is replaced with a Skolem function whose parameters are all the surrounding universally
 // quantified variables
-Ex* exists(int pol, Ex* a, vec<pair<Ex*, Ex*>>& m) {
+Ex* exists(int pol, Ex* a, Vec<pair<Ex*, Ex*>>& m) {
 	// Get the surrounding universally quantified variables that will be arguments to the Skolem functions
-	vec<Ex*> args;
+	Vec<Ex*> args;
 	for (auto& xy: m)
 		if (xy.second->tag == Var) args.add(xy.second);
 
@@ -227,8 +227,8 @@ Ex* exists(int pol, Ex* a, vec<pair<Ex*, Ex*>>& m) {
 
 // Negation normal form consists of several transformations that are as easy to do at the same time: Move NOTs inward to the literal
 // layer, flipping things around on the way, while simultaneously resolving quantifiers
-Ex* nnf(bool pol, Ex* a, vec<pair<Ex*, Ex*>>& m) {
-	vec<Ex*> v;
+Ex* nnf(bool pol, Ex* a, Vec<pair<Ex*, Ex*>>& m) {
+	Vec<Ex*> v;
 	auto tag = a->tag;
 	// NO_SORT
 	switch (tag) {
@@ -284,7 +284,7 @@ Ex* nnf(bool pol, Ex* a, vec<pair<Ex*, Ex*>>& m) {
 // Distribute OR down into AND, completing the layering of the operators for CNF. This is the second place where exponential
 // expansion would occur, had selected formulas not already been renamed.
 Ex* distribute(Ex* a) {
-	vec<Ex*> r;
+	Vec<Ex*> r;
 	switch (a->tag) {
 	case And:
 		for (size_t i = 0; i < a->n; ++i) r.add(distribute(at(a, i)));
@@ -349,7 +349,7 @@ bool hasNumeric(Ex* a) {
 	return 0;
 }
 
-bool hasNumeric(const vec<Ex*>& v) {
+bool hasNumeric(const Vec<Ex*>& v) {
 	for (auto a: v)
 		if (hasNumeric(a)) return 1;
 	return 0;
@@ -379,7 +379,7 @@ void cnf(Ex* a) {
 	// convert to negation normal form, distribute OR into AND, and convert to clauses
 	a = maybeRename(1, a);
 	vars = 0;
-	a = nnf(1, a, vec<pair<Ex*, Ex*>>());
+	a = nnf(1, a, Vec<pair<Ex*, Ex*>>());
 	a = distribute(a);
 	clausesTerm(a);
 
@@ -389,7 +389,7 @@ void cnf(Ex* a) {
 	for (auto a: defs) {
 		auto from = a;
 		vars = 0;
-		a = nnf(1, a, vec<pair<Ex*, Ex*>>());
+		a = nnf(1, a, Vec<pair<Ex*, Ex*>>());
 		a = distribute(a);
 		clausesTerm(a);
 	}

@@ -57,7 +57,7 @@ struct parser1: parser {
 	}
 
 	// Top level
-	void add(const vec<Ex*>& literals) {
+	void add(const Vec<Ex*>& literals) {
 		// TODO: provide a way to build input-only terms that bypasses interning?
 		cnf(ex(Or, literals));
 	}
@@ -77,7 +77,7 @@ struct parser1: parser {
 			if (tok != k_id) err("Expected count");
 			lex();
 		}
-		vec<Ex*> literals;
+		Vec<Ex*> literals;
 		for (;;) switch (tok) {
 			case '-':
 				lex();
