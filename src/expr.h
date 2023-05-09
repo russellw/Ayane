@@ -30,19 +30,26 @@ struct Var: Expr {
 struct Integer: Expr {
 	mpz_t val;
 
-	Integer(): Expr(Tag::integer) {
+	Integer(mpz_t val): Expr(Tag::integer) {
+		// TODO: check  sizeof
+		memcpy(this->val, val, sizeof this->val);
 	}
 };
 
 struct Rational: Expr {
 	mpq_t val;
 
-	Rational(Tag tag): Expr(tag) {
+	Rational(Tag tag, mpq_t val): Expr(tag) {
+		memcpy(this->val, val, sizeof this->val);
 	}
 };
 
 struct Comp: Expr {
 	Expr* v[];
+
+	Comp(Tag tag, size_t n): Expr(tag) {
+		this->n = n;
+	}
 };
 
 extern Expr bools[2];

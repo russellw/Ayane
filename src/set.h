@@ -4,6 +4,7 @@ template <class K, class L, class T, class Cmp> class Set {
 	size_t qty;
 	T** entries = (T**)calloc(cap, sizeof *entries);
 
+	// TODO: rename a to val
 	static size_t slot(T** entries, size_t cap, K tag, L a, size_t n) {
 		size_t mask = cap - 1;
 		auto i = Cmp::hash(tag, a, n) & mask;
@@ -49,13 +50,7 @@ public:
 			assert(!entries[i]);
 		}
 
-		// Make a new object
-		// TODO: param
-		auto r = (T*)malloc(offsetof(T, mpz) + sizeof(mpz_t));
-		r->tag = tag;
-		memcpy(r->mpz, a, sizeof r->mpz);
-
-		// Add to hash table
-		return entries[i] = r;
+		// Make a new object and add to hash table
+		return entries[i] = Cmp::make(tag, a, n);
 	}
 };

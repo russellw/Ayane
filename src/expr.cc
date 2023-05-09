@@ -7,18 +7,22 @@ Expr bools[2] = {{Tag::false1}, {Tag::true1}};
 // TODO: write test problems for integer division
 // Integers
 struct IntegerCmp {
-	static bool eq(Tag tag, mpz_t a, size_t n, Integer* b) {
-		return mpz_cmp(a, b->val) == 0;
+	static bool eq(Tag tag, mpz_t val, size_t n, Integer* b) {
+		return mpz_cmp(val, b->val) == 0;
 	}
 	static bool eq(Integer* a, Integer* b) {
 		return mpz_cmp(a->val, b->val) == 0;
 	}
 
-	static size_t hash(Tag tag, mpz_t a, size_t n) {
-		return mpz_get_ui(a);
+	static size_t hash(Tag tag, mpz_t val, size_t n) {
+		return mpz_get_ui(val);
 	}
 	static size_t hash(Integer* a) {
-		return mpz_get_ui(((Integer*)a)->val);
+		return hash(Tag::integer, ((Integer*)a)->val, 0);
+	}
+
+	static Integer* make(Tag tag, mpz_t val, size_t n) {
+		return new Integer(val);
 	}
 };
 
@@ -33,15 +37,26 @@ Integer* integer(mpz_t val) {
 }
 
 // Rationals
-bool eq(Tag tag, mpq_t a, size_t n, Rational* b) {
-	return mpq_equal(a, b->val);
-}
+struct RationalCmp {
+	// TODO: can we now remove the Cmp class?
+	static bool eq(Tag tag, mpq_t val, size_t n, Rational* b) {
+		return mpq_equal(val, b->val);
+	}
+	static bool eq(Rational* a, Rational* b) {
+		return mpq_equal(a->val, b->val);
+	}
 
-size_t hash(mpq_t a) {
-	return hashCombine(mpz_get_ui(mpq_numref(a)), mpz_get_ui(mpq_denref(a)));
-}
+	static size_t hash(Tag tag, mpq_t val, size_t n) {
+		return hashCombine(mpz_get_ui(mpq_numref(val)), mpz_get_ui(mpq_denref(val)));
+	}
+	static size_t hash(Rational* a) {
+		return hash(a->tag, ((Rational*)a)->val, 0);
+	}
 
-struct RationalCmp {};
+	static Rational* make(Tag tag, mpq_t val, size_t n) {
+		return new Rational(tag, val);
+	}
+};
 
 void clear(mpq_t val) {
 	mpq_clear(val);
@@ -68,6 +83,13 @@ struct CompCmp {
 	}
 	static size_t hash(Comp* a) {
 		return hash(a->tag, a->v, a->n);
+	}
+
+	static Comp* make(Tag tag, Expr** val, size_t n) {
+		auto p = malloc(offsetof(Comp, v) + n * sizeof(Expr*));
+		auto a = new (p) Comp(tag, n);
+		memcpy(a->v, val, n * sizeof(Expr*));
+		return a;
 	}
 };
 
