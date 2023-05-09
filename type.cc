@@ -29,4 +29,4 @@ struct CompCmp {
 static void clear(Type** a) {
 }
 
-static set<Type**, Type, CompCmp> comps;
+static Set<Type**, Type, CompCmp> comps;

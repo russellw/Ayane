@@ -1,5 +1,5 @@
 // TODO: document rationale
-template <class K, class T, class Cmp> class set {
+template <class K, class T, class Cmp> class Set {
 	size_t cap = 4;
 	size_t qty;
 	T** entries = (T**)calloc(cap, sizeof *entries);

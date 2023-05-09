@@ -32,7 +32,7 @@ struct CompCmp {
 static void clear(Ex** a) {
 }
 
-static set<Ex**, Ex, CompCmp> comps;
+static Set<Ex**, Ex, CompCmp> comps;
 
 Ex* ex(int tag, Ex* a, Ex* b) {
 	static Ex* v[2];
