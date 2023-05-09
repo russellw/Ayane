@@ -3,104 +3,92 @@
 namespace {
 bool constant(Ex* a) {
 	switch (a->tag) {
-	case False:
+	case Tag::distinctObj:
+	case Tag::integer:
+	case Tag::rational:
+	case Tag::true1:
+		return 1;
+	case Tag::false1:
 		// In the superposition calculus, true only shows up as an argument of equality and false never shows up as an argument
 		unreachable;
-	case Individual:
-	case Integer:
-	case Rational:
-	case True:
-		return 1;
 	}
 	return 0;
-}
-
-bool realConstant(Ex* a) {
-	return a->tag == ToReal && at(a, 0)->tag == Rational;
 }
 } // namespace
 
 Ex* simplify(Ex* a) {
 	// TODO: other simplifications e.g. x+0, x*1
+	// TODO: rename
 	auto t = a->tag;
 	// TODO: could this be folded into term creation?
 	switch (t) {
-	case Add:
+	case Tag::add:
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
 		if (constant(x) && constant(y)) return add(x, y);
-		if (realConstant(x) && realConstant(y)) return ex(ToReal, add(at(x, 0), at(y, 0)));
 		return ex(t, x, y);
 	}
-	case Ceil:
+	case Tag::ceil:
 	{
 		auto x = simplify(at(a, 0));
-		if (realConstant(x)) return ex(ToReal, ceil(at(x, 0)));
 		if (constant(x)) return ceil(x);
 		return ex(t, x);
 	}
-	case Div:
+	case Tag::div:
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
 		if (constant(x) && constant(y)) return div(x, y);
-		if (realConstant(x) && realConstant(y)) return ex(ToReal, div(at(x, 0), at(y, 0)));
 		return ex(t, x, y);
 	}
-	case DivE:
+	case Tag::dive:
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return divE(x, y);
-		if (realConstant(x) && realConstant(y)) return ex(ToReal, divE(at(x, 0), at(y, 0)));
+		if (constant(x) && constant(y)) return dive(x, y);
 		return ex(t, x, y);
 	}
-	case DivF:
+	case Tag::divf:
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return divF(x, y);
-		if (realConstant(x) && realConstant(y)) return ex(ToReal, divF(at(x, 0), at(y, 0)));
+		if (constant(x) && constant(y)) return divf(x, y);
 		return ex(t, x, y);
 	}
-	case DivT:
+	case Tag::divt:
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return divT(x, y);
-		if (realConstant(x) && realConstant(y)) return ex(ToReal, divT(at(x, 0), at(y, 0)));
+		if (constant(x) && constant(y)) return divt(x, y);
 		return ex(t, x, y);
 	}
-	case Eq:
+	case Tag::eq:
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
 		if (x == y) return bools + 1;
 		// TODO: optimize?
 		if (constant(x) && constant(y)) return bools;
-		if (realConstant(x) && realConstant(y)) return bools;
 		return ex(t, x, y);
 	}
-	case Floor:
+	case Tag::floor:
 	{
 		auto x = simplify(at(a, 0));
-		if (realConstant(x)) return ex(ToReal, floor(at(x, 0)));
 		if (constant(x)) return floor(x);
 		return ex(t, x);
 	}
-	case IsInteger:
+	case Tag::isInteger:
 	{
 		auto x = simplify(at(a, 0));
-		if (realConstant(x)) return bools + isInteger(at(x, 0));
 		if (constant(x)) return bools + isInteger(x);
 		if (type(x) == &tinteger) return bools + 1;
 		return ex(t, x);
 	}
-	case IsRational:
+	case Tag::isRational:
 	{
 		auto x = simplify(at(a, 0));
-		if (realConstant(x) || constant(x)) return bools + 1;
+		if (constant(x)) return bools + 1;
 		switch (type(x)->kind) {
 		case Kind::integer:
 		case Kind::rational:
@@ -108,104 +96,91 @@ Ex* simplify(Ex* a) {
 		}
 		return ex(t, x);
 	}
-	case Le:
+	case Tag::le:
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
 		if (constant(x) && constant(y)) return bools + (cmp(x, y) <= 0);
-		if (realConstant(x) && realConstant(y)) return bools + (cmp(at(x, 0), at(y, 0)) <= 0);
 		return ex(t, x, y);
 	}
-	case Lt:
+	case Tag::lt:
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
 		if (constant(x) && constant(y)) return bools + (cmp(x, y) < 0);
-		if (realConstant(x) && realConstant(y)) return bools + (cmp(at(x, 0), at(y, 0)) < 0);
 		return ex(t, x, y);
 	}
-	case Mul:
+	case Tag::minus:
+	{
+		auto x = simplify(at(a, 0));
+		if (constant(x)) return minus(x);
+		return ex(t, x);
+	}
+	case Tag::mul:
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
 		if (constant(x) && constant(y)) return mul(x, y);
-		if (realConstant(x) && realConstant(y)) return ex(ToReal, mul(at(x, 0), at(y, 0)));
 		return ex(t, x, y);
 	}
-	case Neg:
-	{
-		auto x = simplify(at(a, 0));
-		if (realConstant(x)) return ex(ToReal, minus(at(x, 0)));
-		if (constant(x)) return minus(x);
-		return ex(t, x);
-	}
-	case RemE:
+	case Tag::reme:
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return remE(x, y);
-		if (realConstant(x) && realConstant(y)) return ex(ToReal, remE(at(x, 0), at(y, 0)));
+		if (constant(x) && constant(y)) return reme(x, y);
 		return ex(t, x, y);
 	}
-	case RemF:
+	case Tag::remf:
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return remF(x, y);
-		if (realConstant(x) && realConstant(y)) return ex(ToReal, remF(at(x, 0), at(y, 0)));
+		if (constant(x) && constant(y)) return remf(x, y);
 		return ex(t, x, y);
 	}
-	case RemT:
+	case Tag::remt:
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return remT(x, y);
-		if (realConstant(x) && realConstant(y)) return ex(ToReal, remT(at(x, 0), at(y, 0)));
+		if (constant(x) && constant(y)) return remt(x, y);
 		return ex(t, x, y);
 	}
-	case Round:
+	case Tag::round:
 	{
 		auto x = simplify(at(a, 0));
-		if (realConstant(x)) return ex(ToReal, round(at(x, 0)));
 		if (constant(x)) return round(x);
 		return ex(t, x);
 	}
-	case Sub:
+	case Tag::sub:
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
 		if (constant(x) && constant(y)) return sub(x, y);
-		if (realConstant(x) && realConstant(y)) return ex(ToReal, sub(at(x, 0), at(y, 0)));
 		return ex(t, x, y);
 	}
-	case ToInteger:
+	case Tag::toInteger:
 	{
 		auto x = simplify(at(a, 0));
-		if (realConstant(x)) return toInteger(at(x, 0));
 		if (constant(x)) return toInteger(x);
 		if (type(x) == &tinteger) return x;
 		return ex(t, x);
 	}
-	case ToRational:
+	case Tag::toRational:
 	{
 		auto x = simplify(at(a, 0));
-		if (realConstant(x)) return at(x, 0);
 		if (constant(x)) return toRational(x);
 		if (type(x) == &trational) return x;
 		return ex(t, x);
 	}
-	case ToReal:
+	case Tag::toReal:
 	{
 		auto x = simplify(at(a, 0));
-		if (realConstant(x)) return x;
 		if (constant(x)) return ex(ToReal, toRational(x));
 		if (type(x) == &treal) return x;
 		return ex(t, x);
 	}
-	case Trunc:
+	case Tag::trunc:
 	{
 		auto x = simplify(at(a, 0));
-		if (realConstant(x)) return ex(ToReal, trunc(at(x, 0)));
 		if (constant(x)) return trunc(x);
 		return ex(t, x);
 	}

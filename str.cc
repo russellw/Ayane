@@ -128,6 +128,7 @@ Str* intern(const char* s, size_t n) {
 
 Type* type(Str* s) {
 	if (s->ty) return s->ty;
+	// TODO: Worth using a constructor?
 	auto ty = (TypeName*)malloc(sizeof(TypeName));
 	ty->kind = Kind::name;
 	ty->n = 0;

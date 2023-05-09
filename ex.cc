@@ -48,53 +48,53 @@ Ex* ex(Tag tag, const Vec<Ex*>& v) {
 
 Type* type(Ex* a) {
 	switch (a->tag) {
-	case Add:
-	case Ceil:
-	case Div:
-	case DivE:
-	case DivF:
-	case DivT:
-	case Floor:
-	case Mul:
-	case Neg:
-	case RemE:
-	case RemF:
-	case RemT:
-	case Round:
-	case Sub:
-	case Trunc:
-		return type(at(a, 0));
-	case All:
-	case And:
-	case Eq:
-	case Eqv:
-	case Exists:
-	case False:
-	case IsInteger:
-	case IsRational:
-	case Le:
-	case Lt:
-	case Not:
-	case Or:
-	case True:
+	case Tag:: or:
+	case Tag::all:
+	case Tag::and:
+	case Tag::eq:
+	case Tag::eqv:
+	case Tag::exists:
+	case Tag::false1:
+	case Tag::isInteger:
+	case Tag::isRational:
+	case Tag::le:
+	case Tag::lt:
+	case Tag::not:
+	case Tag::true1:
 		return &tbool;
-	case Call:
+	case Tag::add:
+	case Tag::ceil:
+	case Tag::div:
+	case Tag::dive:
+	case Tag::divf:
+	case Tag::divt:
+	case Tag::floor:
+	case Tag::minus:
+	case Tag::mul:
+	case Tag::reme:
+	case Tag::remf:
+	case Tag::remt:
+	case Tag::round:
+	case Tag::sub:
+	case Tag::trunc:
+		return type(at(a, 0));
+	case Tag::call:
 		a = at(a, 0);
-		assert(a->tag == Fn);
+		assert(a->tag == Tag::fn);
 		return at(a->ty, 0);
-	case Fn:
-	case Var:
-		return a->ty;
-	case Individual:
+	case Tag::distinctObj:
 		return &tindividual;
-	case Integer:
-	case ToInteger:
+	case Tag::fn:
+	case Tag::var:
+		return a->ty;
+	case Tag::integer:
+	case Tag::toInteger:
 		return &tinteger;
-	case Rational:
-	case ToRational:
+	case Tag::rational:
+	case Tag::toRational:
 		return &trational;
-	case Real:
-	case ToReal:
+	case Tag::real:
+	case Tag::toReal:
 		return &treal;
 	}
 	unreachable;
@@ -112,10 +112,10 @@ int cmp(Ex* a, Ex* b) {
 	assert(a->tag == b->tag);
 	if (a == b) return 0;
 	switch (a->tag) {
-	case Integer:
+	case Tag::integer:
 		return mpz_cmp(a->mpz, b->mpz);
-	case Rational:
-	case Real:
+	case Tag::rational:
+	case Tag::real:
 		return mpq_cmp(a->mpq, b->mpq);
 	}
 	unreachable;

@@ -12,7 +12,7 @@ bool match(Ex* a, Ex* b) {
 
 	// Variable
 	// TODO: check variables more efficiently
-	if (a->tag == Var) {
+	if (a->tag == Tag::var) {
 		// TODO: check generated code
 		if (get(a, a, m)) return a == b;
 		m.add(make_pair(a, b));

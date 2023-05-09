@@ -205,7 +205,7 @@ void Parser::num() {
 }
 
 void Parser::setType(Ex* a, Type* ty) {
-	assert(a->tag == Fn);
+	assert(a->tag == Tag::fn);
 	if (a->ty == ty) return;
 	if (!a->ty) {
 		a->ty = ty;
@@ -218,13 +218,12 @@ void Parser::setType(Ex* a, Type* ty) {
 Ex* Parser::setType(Str* s, Type* ty) {
 	if (s->fn) {
 		auto a = s->fn;
-		assert(a->tag == Fn);
 		assert(a->s == s->v);
 		setType(a, ty);
 		return a;
 	}
 	auto a = (Ex*)malloc(offsetof(Ex, s) + sizeof(char*));
-	a->tag = Fn;
+	a->tag = Tag::fn;
 	a->s = s->v;
 	a->ty = ty;
 	return a;
@@ -232,7 +231,7 @@ Ex* Parser::setType(Str* s, Type* ty) {
 
 void Parser::check(Ex* a, size_t n) {
 	if (a->n == n) return;
-	if (a->tag == Call) --n;
+	if (a->tag == Tag::call) --n;
 	sprintf(buf, "Expected %zu args", n);
 	// TODO: maybe should  return different exit codes depending whether the input file is definitely bad versus just not understood
 	err(buf);
@@ -251,7 +250,7 @@ void Parser::check(Ex* a, Type* ty) {
 
 	// Need to handle call before checking the type of this term, because the type of a call is only well-defined if the type of the
 	// function is well-defined
-	if (a->tag == Call) {
+	if (a->tag == Tag::call) {
 		assert(a->n > 1);
 		auto fty = at(a, 0)->ty;
 		if (!fty) err("Unspecified type");
@@ -286,46 +285,54 @@ void Parser::check(Ex* a, Type* ty) {
 	// In each case, the first step is to check the number of arguments, where applicable and necessary, and the last is to
 	// recursively check the argument expressions.
 	switch (a->tag) {
-	case Add:
-	case DivE:
-	case DivF:
-	case DivT:
-	case Mul:
-	case RemE:
-	case RemF:
-	case RemT:
-	case Sub:
+	case Tag:: or:
+	case Tag::and:
+	case Tag::eqv:
+	case Tag::not:
+		for (size_t i = 0; i < a->n; ++i) check(at(a, i), &tbool);
+		return;
+	case Tag::add:
+	case Tag::dive:
+	case Tag::divf:
+	case Tag::divt:
+	case Tag::mul:
+	case Tag::reme:
+	case Tag::remf:
+	case Tag::remt:
+	case Tag::sub:
 		check(a, 2);
 		if (!isNum(ty)) err("Invalid type for arithmetic");
 		check(at(a, 0), ty);
 		check(at(a, 1), ty);
 		return;
-	case All:
-	case Exists:
+	case Tag::all:
+	case Tag::exists:
 		check(at(a, 0), &tbool);
 		return;
-	case And:
-	case Eqv:
-	case Not:
-	case Or:
-		for (size_t i = 0; i < a->n; ++i) check(at(a, i), &tbool);
-		return;
-	case Ceil:
-	case Floor:
-	case IsInteger:
-	case IsRational:
-	case minus:
-	case Round:
-	case ToInteger:
-	case ToRational:
-	case ToReal:
-	case Trunc:
+	case Tag::ceil:
+	case Tag::floor:
+	case Tag::isInteger:
+	case Tag::isRational:
+	case Tag::minus:
+	case Tag::round:
+	case Tag::toInteger:
+	case Tag::toRational:
+	case Tag::toReal:
+	case Tag::trunc:
 		check(a, 1);
 		ty = type(at(a, 0));
 		if (!isNum(ty)) err("Invalid type for arithmetic");
 		check(at(a, 0), ty);
 		return;
-	case Div:
+	case Tag::distinctObj:
+	case Tag::false1:
+	case Tag::fn:
+	case Tag::integer:
+	case Tag::rational:
+	case Tag::true1:
+		assert(!a->n);
+		return;
+	case Tag::div:
 		check(a, 2);
 		switch (ty->kind) {
 		case Kind::rational:
@@ -337,7 +344,7 @@ void Parser::check(Ex* a, Type* ty) {
 		check(at(a, 0), ty);
 		check(at(a, 1), ty);
 		return;
-	case Eq:
+	case Tag::eq:
 		ty = type(at(a, 0));
 		switch (ty->kind) {
 		case Kind::boolean:
@@ -347,23 +354,15 @@ void Parser::check(Ex* a, Type* ty) {
 		check(at(a, 0), ty);
 		check(at(a, 1), ty);
 		return;
-	case False:
-	case Fn:
-	case Individual:
-	case Integer:
-	case Rational:
-	case True:
-		assert(!a->n);
-		return;
-	case Le:
-	case Lt:
+	case Tag::le:
+	case Tag::lt:
 		check(a, 2);
 		ty = type(at(a, 0));
 		if (!isNum(ty)) err("Invalid type for comparison");
 		check(at(a, 0), ty);
 		check(at(a, 1), ty);
 		return;
-	case Var:
+	case Tag::var:
 		// A function would also be an invalid type for a variable, but we already checked for that
 		// TODO: does this need to be dynamically checked here?
 		if (ty == &tbool) err("Invalid type for variable");

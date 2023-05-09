@@ -17,7 +17,7 @@ Ex* equate(Ex* a, Ex* b) {
 	if (b == bools + 1) return a;
 	assert(type(a) != &tbool);
 	assert(type(b) != &tbool);
-	return ex(Eq, a, b);
+	return ex(Tag::eq, a, b);
 }
 
 // Equality tends to generate a large number of clauses. Superposition calculus is designed to moderate the profusion of clauses
@@ -34,8 +34,8 @@ void check(Ex* a) {
 }
 
 size_t fn(Ex* a) {
-	if (a->tag == Call) return (size_t)at(a, 0);
-	return a->tag;
+	if (a->tag == Tag::call) return (size_t)at(a, 0);
+	return (size_t)a->tag;
 }
 
 bool gt(Ex* a, Ex* b);
@@ -59,8 +59,8 @@ bool gt(Ex* a, Ex* b) {
 
 	// Variables are unordered unless contained in other term
 	// TODO: check how that relates to variable identity between clauses
-	if (a->tag == Var) return 0;
-	if (b->tag == Var) return occurs(b, a);
+	if (a->tag == Tag::var) return 0;
+	if (b->tag == Tag::var) return occurs(b, a);
 
 	// Sufficient condition: Exists ai >= b
 	// TODO: check generated code
@@ -260,7 +260,7 @@ void superposnc() {
 // Descend into subterms
 void descend(Ex* a) {
 	// It is never necessary to paramodulate into variables
-	if (a->tag == Var) return;
+	if (a->tag == Tag::var) return;
 
 	// a is a subexpression of d, so its variables are subscripted 1
 	if (unify(c0, 0, a, 1)) superposnc();

@@ -20,7 +20,7 @@ Ex* distinctObj(Str* s) {
 	auto& a = distinctObjs[s];
 	if (a) return a;
 	a = (Ex*)malloc(offsetof(Ex, s) + sizeof(char*));
-	a->tag = Individual;
+	a->tag = Tag::distinctObj;
 	a->s = s->v;
 	return a;
 }
@@ -30,14 +30,14 @@ void defaultType(Ex* a, Type* ty) {
 	// A statement about the return type of a function call, can directly imply the type of the function. This generally does not
 	// apply to basic operators; in most cases, they already have a definite type. That is not entirely true of the arithmetic
 	// operators, but we don't try to do type inference to figure those out.
-	if (a->tag == Call) {
+	if (a->tag == Tag::call) {
 		// TODO: might be some blank types in the arguments; is that okay, or do we need to error?
 		ty = ftype(ty, a->v + 1, a->v + a->n);
 		a = at(a, 0);
 	}
 
 	// This is only a default assignment, only relevant if the function does not already have a type
-	if (a->tag == Fn && !a->ty) a->ty = ty;
+	if (a->tag == Tag::fn && !a->ty) a->ty = ty;
 }
 
 // TODO: Which types should use const?
