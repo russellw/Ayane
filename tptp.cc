@@ -296,7 +296,7 @@ struct Parser1: Parser {
 		expect(')');
 	}
 
-	Ex* definedFunctor(int tag) {
+	Ex* definedFunctor(Tag tag) {
 		Vec<Ex*> v;
 		args(v);
 		return ex(tag, v);
@@ -465,7 +465,7 @@ struct Parser1: Parser {
 		return a;
 	}
 
-	Ex* quant(int tag) {
+	Ex* quant(Tag tag) {
 		lex();
 		expect('[');
 		auto old = vars.size();
@@ -508,7 +508,7 @@ struct Parser1: Parser {
 		return infixUnary();
 	}
 
-	Ex* associativeLogicFormula(int tag, Ex* a) {
+	Ex* associativeLogicFormula(Tag tag, Ex* a) {
 		Vec<Ex*> v{t, a};
 		auto k = tok;
 		while (eat(k)) v.add(unary());

@@ -1,7 +1,7 @@
 extern char buf[5000];
 
 // SORT
-void flatten(int tag, Ex* a, vector<Ex*>& r);
+void flatten(Tag tag, Ex* a, vector<Ex*>& r);
 void freeVars(Ex* a, Vec<Ex*> boundv, Vec<Ex*>& freev);
 Ex* imp(Ex* a, Ex* b);
 void mpz_ediv_q(mpz_t q, const mpz_t n, const mpz_t d);

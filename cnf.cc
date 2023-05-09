@@ -30,19 +30,19 @@ size_t ncs(bool pol, Ex* a) {
 	// TODO: really want NO_SORT?
 	// NO_SORT
 	switch (a->tag) {
-	case All:
-	case Exists:
+	case Tag::all:
+	case Tag::exists:
 		return ncs(pol, at(a, 0));
 
-	case Not:
+	case Tag::not:
 		return ncs(!pol, at(a, 0));
 
-	case Or:
+	case Tag:: or:
 		return pol ? ncsMul(pol, a) : ncsAdd(pol, a);
-	case And:
+	case Tag::and:
 		return pol ? ncsAdd(pol, a) : ncsMul(pol, a);
 
-	case Eqv:
+	case Tag::eqv:
 	{
 		auto x = at(a, 0);
 		auto y = at(a, 1);
@@ -86,7 +86,7 @@ Ex* skolem(Type* rty, Vec<Ex*>& args) {
 	Vec<Ex*> v(1, gensym(ftype(rty, args.begin(), args.end())));
 	// TODO: single call instead of loop?
 	for (auto b: args) v.add(b);
-	return ex(Call, v);
+	return ex(Tag::call, v);
 }
 
 // SORT
@@ -112,7 +112,7 @@ Ex* rename(int pol, Ex* a) {
 		break;
 	case 0:
 		// In the general case, full equivalence is needed; the new name implies and is implied by the original formula
-		a = ex(And, imp(b, a), imp(a, b));
+		a = ex(Tag::and, imp(b, a), imp(a, b));
 		break;
 	default:
 		unreachable;
@@ -146,16 +146,16 @@ Ex* maybeRename(int pol, Ex* a) {
 	Vec<Ex*> v;
 	// NO_SORT
 	switch (a->tag) {
-	case All:
-	case Exists:
+	case Tag::all:
+	case Tag::exists:
 		v.add(maybeRename(pol, at(a, 0)));
 		for (size_t i = 2; i < a->n; ++i) v.add(at(a, i));
 		break;
 
-	case Not:
-		return ex(Not, maybeRename(-pol, at(a, 0)));
+	case Tag::not:
+		return ex(Tag::not, maybeRename(-pol, at(a, 0)));
 
-	case Or:
+	case Tag:: or:
 		for (size_t i = 0; i < a->n; ++i) v.add(maybeRename(pol, at(a, i)));
 
 		// If this formula will be used with positive polarity (including the case where it will be used both ways), we are looking
@@ -163,20 +163,20 @@ Ex* maybeRename(int pol, Ex* a) {
 		// of the arguments
 		if (pol >= 0) maybeRename(pol, v);
 		break;
-	case And:
+	case Tag::and:
 		for (size_t i = 0; i < a->n; ++i) v.add(maybeRename(pol, at(a, i)));
 
 		// NOT-AND yields OR, so mirror the OR case
 		if (pol <= 0) maybeRename(pol, v);
 		break;
 
-	case Eqv:
+	case Tag::eqv:
 	{
 		auto x = maybeRename(0, at(a, 0));
 		auto y = maybeRename(0, at(a, 1));
 		if (ncsApprox(0, x) >= many) x = rename(0, x);
 		if (ncsApprox(0, y) >= many) y = rename(0, y);
-		return ex(Eqv, x, y);
+		return ex(Tag::eqv, x, y);
 	}
 
 	default:
@@ -195,7 +195,7 @@ Ex* all(int pol, Ex* a, Vec<pair<Ex*, Ex*>>& m) {
 	auto o = m.n;
 	for (size_t i = 2; i < a->n; ++i) {
 		auto x = at(a, i);
-		assert(x->tag == Var);
+		assert(x->tag == Tag::var);
 		auto y = var(vars++, ((Ex*)x)->ty);
 		m.add(make_pair(x, y));
 	}
@@ -210,13 +210,13 @@ Ex* exists(int pol, Ex* a, Vec<pair<Ex*, Ex*>>& m) {
 	// Get the surrounding universally quantified variables that will be arguments to the Skolem functions
 	Vec<Ex*> args;
 	for (auto& xy: m)
-		if (xy.second->tag == Var) args.add(xy.second);
+		if (xy.second->tag == Tag::var) args.add(xy.second);
 
 	// Make a replacement for each existentially quantified variable
 	auto o = m.n;
 	for (size_t i = 2; i < a->n; ++i) {
 		auto x = at(a, i);
-		assert(x->tag == Var);
+		assert(x->tag == Tag::var);
 		auto y = skolem(((Ex*)x)->ty, args);
 		m.add(make_pair(x, y));
 	}
@@ -232,25 +232,25 @@ Ex* nnf(bool pol, Ex* a, Vec<pair<Ex*, Ex*>>& m) {
 	auto tag = a->tag;
 	// NO_SORT
 	switch (tag) {
-	case False:
+	case Tag::false1:
 		// Boolean constants and operators can be inverted by downward-sinking NOTs
 		return bools + !pol;
-	case True:
+	case Tag::true1:
 		return bools + pol;
 
-	case Not:
+	case Tag::not:
 		return nnf(!pol, at(a, 0), m);
 
-	case Or:
-		if (!pol) tag = And;
+	case Tag:: or:
+		if (!pol) tag = Tag::and;
 		for (size_t i = 0; i < a->n; ++i) v.add(nnf(pol, at(a, i), m));
 		return ex(tag, v);
-	case And:
-		if (!pol) tag = Or;
+	case Tag::and:
+		if (!pol) tag = Tag:: or ;
 		for (size_t i = 0; i < a->n; ++i) v.add(nnf(pol, at(a, i), m));
 		return ex(tag, v);
 
-	case Var:
+	case Tag::var:
 	{
 		// Variables are mapped to new variables or Skolem functions
 		// TODO: does assert need to work like that?
@@ -259,12 +259,12 @@ Ex* nnf(bool pol, Ex* a, Vec<pair<Ex*, Ex*>>& m) {
 		return a;
 	}
 
-	case All:
+	case Tag::all:
 		return pol ? all(pol, a, m) : exists(pol, a, m);
-	case Exists:
+	case Tag::exists:
 		return pol ? exists(pol, a, m) : all(pol, a, m);
 
-	case Eqv:
+	case Tag::eqv:
 	{
 		// Equivalence is the most difficult operator to deal with
 		auto x = at(a, 0);
@@ -273,12 +273,13 @@ Ex* nnf(bool pol, Ex* a, Vec<pair<Ex*, Ex*>>& m) {
 		auto x1 = nnf(1, x, m);
 		auto y0 = nnf(0, y, m);
 		auto y1 = nnf(1, y, m);
-		return pol ? ex(And, ex(Or, x0, y1), ex(Or, x1, y0)) : ex(And, ex(Or, x0, y0), ex(Or, x1, y1));
+		return pol ? ex(Tag::and, ex(Tag:: or, x0, y1), ex(Tag:: or, x1, y0))
+				   : ex(Tag::and, ex(Tag:: or, x0, y0), ex(Tag:: or, x1, y1));
 	}
 	}
 	for (size_t i = 0; i < a->n; ++i) v.add(nnf(1, at(a, i), m));
 	a = ex(tag, v);
-	return pol ? a : ex(Not, a);
+	return pol ? a : ex(Tag::not, a);
 }
 
 // Distribute OR down into AND, completing the layering of the operators for CNF. This is the second place where exponential
@@ -286,10 +287,7 @@ Ex* nnf(bool pol, Ex* a, Vec<pair<Ex*, Ex*>>& m) {
 Ex* distribute(Ex* a) {
 	Vec<Ex*> r;
 	switch (a->tag) {
-	case And:
-		for (size_t i = 0; i < a->n; ++i) r.add(distribute(at(a, i)));
-		break;
-	case Or:
+	case Tag:: or:
 	{
 		// Arguments can be taken without loss of generality as ANDs
 		vector<vector<Ex*>> ands;
@@ -299,34 +297,37 @@ Ex* distribute(Ex* a) {
 
 			// And make a flat layer of ANDs
 			vector<Ex*> v;
-			flatten(And, b, v);
+			flatten(Tag::and, b, v);
 			ands.push_back(v);
 		}
 
 		// OR distributes over AND by Cartesian product
 		// TODO: can this be done by reference?
-		for (auto v: cartProduct(ands)) r.add(ex(Or, v));
+		for (auto v: cartProduct(ands)) r.add(ex(Tag:: or, v));
 		break;
 	}
+	case Tag::and:
+		for (size_t i = 0; i < a->n; ++i) r.add(distribute(at(a, i)));
+		break;
 	default:
 		return a;
 	}
-	return ex(And, r);
+	return ex(Tag::and, r);
 }
 
 // Convert a suitably rearranged term into actual clauses
 void literalsTerm(Ex* a) {
 	switch (a->tag) {
-	case All:
-	case And:
-	case Eqv:
-	case Exists:
-		unreachable;
-	case Not:
-		neg.add(at(a, 0));
-		return;
-	case Or:
+	case Tag:: or:
 		for (size_t i = 0; i < a->n; ++i) literalsTerm(at(a, i));
+		return;
+	case Tag::all:
+	case Tag::and:
+	case Tag::eqv:
+	case Tag::exists:
+		unreachable;
+	case Tag::not:
+		neg.add(at(a, 0));
 		return;
 	}
 	pos.add(a);
@@ -346,7 +347,7 @@ bool hasNum(const Vec<Ex*>& v) {
 }
 
 void clausesTerm(Ex* a) {
-	if (a->tag == And) {
+	if (a->tag == Tag::and) {
 		for (size_t i = 0; i < a->n; ++i) clausesTerm(at(a, i));
 		return;
 	}

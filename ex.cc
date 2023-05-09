@@ -1,11 +1,11 @@
 #include "main.h"
 
-Ex bools[2] = {{False}, {True}};
+Ex bools[2] = {{Tag::false1}, {Tag::true1}};
 
 // TODO: rename?
 Ex* gensym(Type* ty) {
 	auto a = (Ex*)malloc(offsetof(Ex, s) + sizeof(char*));
-	a->tag = Fn;
+	a->tag = Tag::fn;
 	a->ty = ty;
 	a->s = 0;
 	return a;
@@ -13,14 +13,14 @@ Ex* gensym(Type* ty) {
 
 // Composite expressions
 struct CompCmp {
-	static bool eq(int tag, Ex** a, size_t n, Ex* b) {
+	static bool eq(Tag tag, Ex** a, size_t n, Ex* b) {
 		return tag == b->tag && n == b->n && memcmp(a, b->v, n * sizeof *a) == 0;
 	}
 	static bool eq(Ex* a, Ex* b) {
 		return eq(a->tag, a->v, a->n, b);
 	}
 
-	static size_t hash(int tag, Ex** a, size_t n) {
+	static size_t hash(Tag tag, Ex** a, size_t n) {
 		// TODO: hashCombine?
 		return fnv(a, n * sizeof *a);
 	}
@@ -32,16 +32,16 @@ struct CompCmp {
 static void clear(Ex** a) {
 }
 
-static Set<int, Ex**, Ex, CompCmp> comps;
+static Set<Tag, Ex**, Ex, CompCmp> comps;
 
-Ex* ex(int tag, Ex* a, Ex* b) {
+Ex* ex(Tag tag, Ex* a, Ex* b) {
 	static Ex* v[2];
 	v[0] = a;
 	v[1] = b;
 	return comps.intern(tag, v, 2);
 }
 
-Ex* ex(int tag, const Vec<Ex*>& v) {
+Ex* ex(Tag tag, const Vec<Ex*>& v) {
 	assert(v.size());
 	return comps.intern(tag, v.data, v.n);
 }

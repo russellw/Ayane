@@ -5,7 +5,7 @@ enum class Tag {
 
 // TODO: refactor source file organization
 struct Ex {
-	int tag;
+	Tag tag;
 	uint32_t n;
 	union {
 		// TODO: check size of v
@@ -33,10 +33,10 @@ Ex* var(size_t i, Type* ty);
 Ex* gensym(Type* ty);
 
 // TODO: test using a bump allocator
-Ex* ex(int tag, Ex* a);
-Ex* ex(int tag, Ex* a, Ex* b);
-Ex* ex(int tag, const Vec<Ex*>& v);
-Ex* ex(int tag, const vector<Ex*>& v);
+Ex* ex(Tag tag, Ex* a);
+Ex* ex(Tag tag, Ex* a, Ex* b);
+Ex* ex(Tag tag, const Vec<Ex*>& v);
+Ex* ex(Tag tag, const vector<Ex*>& v);
 Type* type(Ex* a);
 
 inline Ex* at(Ex* a, size_t i) {

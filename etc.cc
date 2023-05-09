@@ -3,7 +3,7 @@
 // SORT
 Eqn::Eqn(Ex* a) {
 	// TODO: move to same module as the definition of the structure
-	if (a->tag == Eq) {
+	if (a->tag == Tag::eq) {
 		first = at(a, 0);
 		second = at(a, 1);
 		return;
@@ -12,7 +12,7 @@ Eqn::Eqn(Ex* a) {
 	second = bools + 1;
 }
 
-void flatten(int tag, Ex* a, vector<Ex*>& r) {
+void flatten(Tag tag, Ex* a, vector<Ex*>& r) {
 	if (a->tag == tag) {
 		for (size_t i = 0; i < a->n; ++i) flatten(tag, at(a, i), r);
 		return;
@@ -23,8 +23,8 @@ void flatten(int tag, Ex* a, vector<Ex*>& r) {
 void freeVars(Ex* a, Vec<Ex*> boundv, Vec<Ex*>& freev) {
 	// TODO: boundv static?
 	switch (a->tag) {
-	case All:
-	case Exists:
+	case Tag::all:
+	case Tag::exists:
 	{
 		auto o = boundv.n;
 		// TODO: batch add
@@ -33,7 +33,7 @@ void freeVars(Ex* a, Vec<Ex*> boundv, Vec<Ex*>& freev) {
 		boundv.n = o;
 		return;
 	}
-	case Var:
+	case Tag::var:
 		if (!boundv.has(a) && !freev.has(a)) freev.add(a);
 		return;
 	}
@@ -41,7 +41,7 @@ void freeVars(Ex* a, Vec<Ex*> boundv, Vec<Ex*>& freev) {
 }
 
 Ex* imp(Ex* a, Ex* b) {
-	return ex(Or, ex(Not, a), b);
+	return ex(Tag:: or, ex(Tag::not, a), b);
 }
 
 void mpz_ediv_q(mpz_t q, const mpz_t n, const mpz_t d) {
@@ -108,6 +108,6 @@ Ex* quantify(Ex* a) {
 	Vec<Ex*> v(1, a);
 	// TODO: add all at once
 	for (auto x: vars) v.add(x);
-	return ex(All, v);
+	return ex(Tag::all, v);
 }
 ///

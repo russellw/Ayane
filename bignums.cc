@@ -6,7 +6,7 @@
 // TODO: divide this functionality between terms and simplify?
 // TODO: write test problems for integer division
 // Integers
-bool eq(int tag, mpz_t a, size_t n, Ex* b) {
+bool eq(Tag tag, mpz_t a, size_t n, Ex* b) {
 	return mpz_cmp(a, b->mpz) == 0;
 }
 
@@ -19,7 +19,7 @@ struct IntegerCmp {};
 static Set<int, mpz_t, Ex, IntegerCmp> integers;
 
 // Rationals
-bool eq(int tag, mpq_t a, size_t n, Ex* b) {
+bool eq(Tag tag, mpq_t a, size_t n, Ex* b) {
 	return mpq_equal(a, b->mpq);
 }
 
@@ -31,21 +31,17 @@ struct RationalCmp {};
 
 static Set<int, mpq_t, Ex, RationalCmp> rationals;
 
-Ex* real(mpq_t q) {
-	return ex(ToReal, intern(q));
-}
-
 // Arithmetic
 Ex* minus(Ex* a) {
 	switch (a->tag) {
-	case Integer:
+	case Tag::integer:
 	{
 		mpz_t r;
 		mpz_init(r);
 		mpz_neg(r, a->mpz);
 		return intern(r);
 	}
-	case Rational:
+	case Tag::rational:
 	{
 		mpq_t r;
 		mpq_init(r);
@@ -59,14 +55,14 @@ Ex* minus(Ex* a) {
 Ex* add(Ex* a, Ex* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
-	case Integer:
+	case Tag::integer:
 	{
 		mpz_t r;
 		mpz_init(r);
 		mpz_add(r, a->mpz, b->mpz);
 		return intern(r);
 	}
-	case Rational:
+	case Tag::rational:
 	{
 		mpq_t r;
 		mpq_init(r);
@@ -80,14 +76,14 @@ Ex* add(Ex* a, Ex* b) {
 Ex* sub(Ex* a, Ex* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
-	case Integer:
+	case Tag::integer:
 	{
 		mpz_t r;
 		mpz_init(r);
 		mpz_sub(r, a->mpz, b->mpz);
 		return intern(r);
 	}
-	case Rational:
+	case Tag::rational:
 	{
 		mpq_t r;
 		mpq_init(r);
@@ -101,14 +97,14 @@ Ex* sub(Ex* a, Ex* b) {
 Ex* mul(Ex* a, Ex* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
-	case Integer:
+	case Tag::integer:
 	{
 		mpz_t r;
 		mpz_init(r);
 		mpz_mul(r, a->mpz, b->mpz);
 		return intern(r);
 	}
-	case Rational:
+	case Tag::rational:
 	{
 		mpq_t r;
 		mpq_init(r);
@@ -122,7 +118,7 @@ Ex* mul(Ex* a, Ex* b) {
 Ex* div(Ex* a, Ex* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
-	case Integer:
+	case Tag::integer:
 	{
 		mpz_t r;
 		mpz_init(r);
@@ -133,7 +129,7 @@ Ex* div(Ex* a, Ex* b) {
 		mpz_tdiv_q(r, a->mpz, b->mpz);
 		return intern(r);
 	}
-	case Rational:
+	case Tag::rational:
 	{
 		mpq_t r;
 		mpq_init(r);
@@ -147,14 +143,14 @@ Ex* div(Ex* a, Ex* b) {
 Ex* divT(Ex* a, Ex* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
-	case Integer:
+	case Tag::integer:
 	{
 		mpz_t r;
 		mpz_init(r);
 		mpz_tdiv_q(r, a->mpz, b->mpz);
 		return intern(r);
 	}
-	case Rational:
+	case Tag::rational:
 	{
 		mpz_t xnum_yden;
 		mpz_init(xnum_yden);
@@ -179,14 +175,14 @@ Ex* divT(Ex* a, Ex* b) {
 Ex* divF(Ex* a, Ex* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
-	case Integer:
+	case Tag::integer:
 	{
 		mpz_t r;
 		mpz_init(r);
 		mpz_fdiv_q(r, a->mpz, b->mpz);
 		return intern(r);
 	}
-	case Rational:
+	case Tag::rational:
 	{
 		mpz_t xnum_yden;
 		mpz_init(xnum_yden);
@@ -211,14 +207,14 @@ Ex* divF(Ex* a, Ex* b) {
 Ex* divE(Ex* a, Ex* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
-	case Integer:
+	case Tag::integer:
 	{
 		mpz_t r;
 		mpz_init(r);
 		mpz_ediv_q(r, a->mpz, b->mpz);
 		return intern(r);
 	}
-	case Rational:
+	case Tag::rational:
 	{
 		mpz_t xnum_yden;
 		mpz_init(xnum_yden);
@@ -243,14 +239,14 @@ Ex* divE(Ex* a, Ex* b) {
 Ex* remT(Ex* a, Ex* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
-	case Integer:
+	case Tag::integer:
 	{
 		mpz_t r;
 		mpz_init(r);
 		mpz_tdiv_r(r, a->mpz, b->mpz);
 		return intern(r);
 	}
-	case Rational:
+	case Tag::rational:
 	{
 		mpz_t xnum_yden;
 		mpz_init(xnum_yden);
@@ -275,14 +271,14 @@ Ex* remT(Ex* a, Ex* b) {
 Ex* remF(Ex* a, Ex* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
-	case Integer:
+	case Tag::integer:
 	{
 		mpz_t r;
 		mpz_init(r);
 		mpz_fdiv_r(r, a->mpz, b->mpz);
 		return intern(r);
 	}
-	case Rational:
+	case Tag::rational:
 	{
 		mpz_t xnum_yden;
 		mpz_init(xnum_yden);
@@ -307,14 +303,14 @@ Ex* remF(Ex* a, Ex* b) {
 Ex* remE(Ex* a, Ex* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
-	case Integer:
+	case Tag::integer:
 	{
 		mpz_t r;
 		mpz_init(r);
 		mpz_ediv_r(r, a->mpz, b->mpz);
 		return intern(r);
 	}
-	case Rational:
+	case Tag::rational:
 	{
 		mpz_t xnum_yden;
 		mpz_init(xnum_yden);
@@ -339,9 +335,9 @@ Ex* remE(Ex* a, Ex* b) {
 
 Ex* ceil(Ex* a) {
 	switch (a->tag) {
-	case Integer:
+	case Tag::integer:
 		return a;
-	case Rational:
+	case Tag::rational:
 	{
 		mpq_t r;
 		mpq_init(r);
@@ -354,9 +350,9 @@ Ex* ceil(Ex* a) {
 
 Ex* floor(Ex* a) {
 	switch (a->tag) {
-	case Integer:
+	case Tag::integer:
 		return a;
-	case Rational:
+	case Tag::rational:
 	{
 		mpq_t r;
 		mpq_init(r);
@@ -369,9 +365,9 @@ Ex* floor(Ex* a) {
 
 Ex* trunc(Ex* a) {
 	switch (a->tag) {
-	case Integer:
+	case Tag::integer:
 		return a;
-	case Rational:
+	case Tag::rational:
 	{
 		mpq_t r;
 		mpq_init(r);
@@ -384,9 +380,9 @@ Ex* trunc(Ex* a) {
 
 Ex* round(Ex* a) {
 	switch (a->tag) {
-	case Integer:
+	case Tag::integer:
 		return a;
-	case Rational:
+	case Tag::rational:
 	{
 		mpq_t r;
 		mpq_init(r);
@@ -399,9 +395,9 @@ Ex* round(Ex* a) {
 
 bool isInteger(Ex* a) {
 	switch (a->tag) {
-	case Integer:
+	case Tag::integer:
 		return 1;
-	case Rational:
+	case Tag::rational:
 		return !mpz_cmp_ui(mpq_denref(a->mpq), 1);
 	}
 	unreachable;
@@ -409,9 +405,9 @@ bool isInteger(Ex* a) {
 
 Ex* toInteger(Ex* a) {
 	switch (a->tag) {
-	case Integer:
+	case Tag::integer:
 		return a;
-	case Rational:
+	case Tag::rational:
 	{
 		mpz_t r;
 		mpz_init(r);
@@ -428,14 +424,14 @@ Ex* toInteger(Ex* a) {
 
 Ex* toRational(Ex* a) {
 	switch (a->tag) {
-	case Integer:
+	case Tag::integer:
 	{
 		mpq_t r;
 		mpq_init(r);
 		mpz_set(mpq_numref(r), a->mpz);
 		return intern(r);
 	}
-	case Rational:
+	case Tag::rational:
 		return a;
 	}
 	unreachable;
@@ -443,15 +439,16 @@ Ex* toRational(Ex* a) {
 
 Ex* toReal(Ex* a) {
 	switch (a->tag) {
-	case Integer:
+	case Tag::integer:
 	{
 		mpq_t r;
 		mpq_init(r);
 		mpz_set(mpq_numref(r), a->mpz);
 		return real(r);
 	}
-	case Rational:
-		return ex(ToReal, a);
+	case Tag::rational:
+		// TODO: implement this in terms of changing the tag
+		return ex(Tag::toReal, a);
 	}
 	unreachable;
 }

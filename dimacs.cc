@@ -59,7 +59,7 @@ struct Parser1: Parser {
 	// Top level
 	void add(const Vec<Ex*>& literals) {
 		// TODO: provide a way to build input-only terms that bypasses interning?
-		cnf(ex(Or, literals));
+		cnf(ex(Tag:: or, literals));
 	}
 
 	Parser1(const char* file): Parser(file) {
@@ -81,7 +81,7 @@ struct Parser1: Parser {
 		for (;;) switch (tok) {
 			case '-':
 				lex();
-				literals.add(ex(Not, var()));
+				literals.add(ex(Tag::not, var()));
 				break;
 			case 0:
 				if (literals.n) add(literals);
