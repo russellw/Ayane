@@ -6,7 +6,7 @@ void freeVars(Expr* a, Vec<Expr*> boundv, Vec<Expr*>& freev);
 Expr* imp(Expr* a, Expr* b);
 void mpz_ediv_q(mpz_t q, const mpz_t n, const mpz_t d);
 void mpz_ediv_r(mpz_t r, const mpz_t n, const mpz_t d);
-void mpz_round(mpz_t q, mpz_t n, mpz_t d);
+void mpz_round(mpz_t q, const mpz_t n, const mpz_t d);
 bool occurs(Expr* a, Expr* b);
 Expr* quantify(Expr* a);
 ///

@@ -22,12 +22,6 @@ Expr* simplify(Expr* a) {
 	auto t = a->tag;
 	// TODO: could this be folded into term creation?
 	switch (t) {
-	case Tag::ceil:
-	{
-		auto x = simplify(at(a, 0));
-		if (constant(x)) return ceil(x);
-		return expr(t, x);
-	}
 	case Tag::eq:
 	{
 		auto x = simplify(at(a, 0));
@@ -36,12 +30,6 @@ Expr* simplify(Expr* a) {
 		// TODO: optimize?
 		if (constant(x) && constant(y)) return bools;
 		return expr(t, x, y);
-	}
-	case Tag::floor:
-	{
-		auto x = simplify(at(a, 0));
-		if (constant(x)) return floor(x);
-		return expr(t, x);
 	}
 	case Tag::isInteger:
 	{
@@ -75,12 +63,6 @@ Expr* simplify(Expr* a) {
 		if (constant(x) && constant(y)) return bools + (cmp(x, y) < 0);
 		return expr(t, x, y);
 	}
-	case Tag::round:
-	{
-		auto x = simplify(at(a, 0));
-		if (constant(x)) return round(x);
-		return expr(t, x);
-	}
 	case Tag::toInteger:
 	{
 		auto x = simplify(at(a, 0));
@@ -100,12 +82,6 @@ Expr* simplify(Expr* a) {
 		auto x = simplify(at(a, 0));
 		if (constant(x)) return expr(ToReal, toRational(x));
 		if (type(x) == &treal) return x;
-		return expr(t, x);
-	}
-	case Tag::trunc:
-	{
-		auto x = simplify(at(a, 0));
-		if (constant(x)) return trunc(x);
 		return expr(t, x);
 	}
 	}

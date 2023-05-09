@@ -65,7 +65,7 @@ void mpz_ediv_r(mpz_t r, const mpz_t n, const mpz_t d) {
 }
 
 // Calculate q = n/d, assuming common factors have already been canceled out, and applying bankers rounding
-void mpz_round(mpz_t q, mpz_t n, mpz_t d) {
+void mpz_round(mpz_t q, const mpz_t n, const mpz_t d) {
 	// If we are dividing by 2, the result could be exactly halfway between two integers, so need special case to apply bankers
 	// rounding
 	if (!mpz_cmp_ui(d, 2)) {

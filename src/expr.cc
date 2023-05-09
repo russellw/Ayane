@@ -110,6 +110,19 @@ bool constant(Expr* a) {
 	return 0;
 }
 
+Expr* op1(Expr* x, void (*f)(mpz_t, const mpz_t, const mpz_t)) {
+	auto tag = x->tag;
+
+	if (tag == Tag::integer) return x;
+
+	auto x1 = (Rational*)x;
+
+	mpq_t r;
+	mpq_init(r);
+	f(mpq_numref(r), mpq_numref(x1->val), mpq_denref(x1->val));
+	return rational(tag, r);
+}
+
 Expr* op2(Expr* x, Expr* y, void (*fz)(mpz_t, const mpz_t, const mpz_t), void (*fq)(mpq_t, const mpq_t, const mpq_t)) {
 	auto tag = x->tag;
 	assert(tag == y->tag);
@@ -127,28 +140,31 @@ Expr* op2(Expr* x, Expr* y, void (*fz)(mpz_t, const mpz_t, const mpz_t), void (*
 	return rational(tag, r);
 }
 
-Expr* div2(Expr* x, Expr* y, void (*fz)(mpz_t, const mpz_t, const mpz_t)) {
+Expr* div2(Expr* x, Expr* y, void (*f)(mpz_t, const mpz_t, const mpz_t)) {
 	auto tag = x->tag;
 	assert(tag == y->tag);
 
 	if (tag == Tag::integer) {
 		mpz_t r;
 		mpz_init(r);
-		fz(r, ((Integer*)x)->val, ((Integer*)y)->val);
+		f(r, ((Integer*)x)->val, ((Integer*)y)->val);
 		return integer(r);
 	}
 
+	auto x1 = (Rational*)x;
+	auto y1 = (Rational*)y;
+
 	mpz_t xnum_yden;
 	mpz_init(xnum_yden);
-	mpz_mul(xnum_yden, mpq_numref(((Rational*)x)->val), mpq_denref(((Rational*)y)->val));
+	mpz_mul(xnum_yden, mpq_numref(x1->val), mpq_denref(y1->val));
 
 	mpz_t xden_ynum;
 	mpz_init(xden_ynum);
-	mpz_mul(xden_ynum, mpq_denref(((Rational*)x)->val), mpq_numref(((Rational*)y)->val));
+	mpz_mul(xden_ynum, mpq_denref(x1->val), mpq_numref(y1->val));
 
 	mpq_t r;
 	mpq_init(r);
-	fz(mpq_numref(r), xnum_yden, xden_ynum);
+	f(mpq_numref(r), xnum_yden, xden_ynum);
 
 	mpz_clear(xnum_yden);
 	mpz_clear(xden_ynum);
@@ -162,6 +178,12 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) return op2(x, y, mpz_add, mpq_add);
+		break;
+	}
+	case Tag::ceil:
+	{
+		auto x = v[0];
+		if (constant(x)) return op1(x, mpz_cdiv_q);
 		break;
 	}
 	case Tag::div:
@@ -190,6 +212,12 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) return div2(x, y, mpz_tdiv_q);
+		break;
+	}
+	case Tag::floor:
+	{
+		auto x = v[0];
+		if (constant(x)) return op1(x, mpz_fdiv_q);
 		break;
 	}
 	case Tag::minus:
@@ -238,11 +266,23 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		if (constant(x) && constant(y)) return div2(x, y, mpz_tdiv_r);
 		break;
 	}
+	case Tag::round:
+	{
+		auto x = v[0];
+		if (constant(x)) return op1(x, mpz_round);
+		break;
+	}
 	case Tag::sub:
 	{
 		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) return op2(x, y, mpz_sub, mpq_sub);
+		break;
+	}
+	case Tag::trunc:
+	{
+		auto x = v[0];
+		if (constant(x)) return op1(x, mpz_tdiv_q);
 		break;
 	}
 	}
