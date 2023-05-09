@@ -43,7 +43,7 @@ using std::vector;
 // Logic
 #include "type.h"
 
-#include "ex.h"
+#include "expr.h"
 
 #include "bignums.h"
 #include "clause.h"
