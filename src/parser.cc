@@ -354,7 +354,6 @@ void Parser::check(Expr* a, Type* ty) {
 		check(at(a, 0), ty);
 		check(at(a, 1), ty);
 		return;
-	case Tag::le:
 	case Tag::lt:
 		check(a, 2);
 		ty = type(at(a, 0));

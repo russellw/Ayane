@@ -312,7 +312,6 @@ struct Parser1: Parser {
 			return distinctObj(s);
 		case k_dollarWord:
 		{
-			Vec<Expr*> v;
 			switch (keyword(s)) {
 			case s_ceiling:
 				return definedFunctor(Tag::ceil);
@@ -320,6 +319,7 @@ struct Parser1: Parser {
 				return definedFunctor(Tag::sub);
 			case s_distinct:
 			{
+				Vec<Expr*> v;
 				args(v);
 				for (auto& a: v) defaultType(a, &tindividual);
 				Vec<Expr*> inequalities;
@@ -332,11 +332,23 @@ struct Parser1: Parser {
 			case s_floor:
 				return definedFunctor(Tag::floor);
 			case s_greater:
-				args(v);
-				return expr(Tag::lt, v[1], v[0]);
+			{
+				expect('(');
+				auto a = atomicTerm();
+				expect(',');
+				auto b = atomicTerm();
+				expect(')');
+				return expr(Tag::lt, b, a);
+			}
 			case s_greatereq:
-				args(v);
-				return expr(Tag::le, v[1], v[0]);
+			{
+				expect('(');
+				auto a = atomicTerm();
+				expect(',');
+				auto b = atomicTerm();
+				expect(')');
+				return expr(Tag::or1, expr(Tag::eq, b, a), expr(Tag::lt, b, a));
+			}
 			case s_is_int:
 				return definedFunctor(Tag::isInteger);
 			case s_is_rat:
@@ -344,7 +356,14 @@ struct Parser1: Parser {
 			case s_less:
 				return definedFunctor(Tag::lt);
 			case s_lesseq:
-				return definedFunctor(Tag::le);
+			{
+				expect('(');
+				auto a = atomicTerm();
+				expect(',');
+				auto b = atomicTerm();
+				expect(')');
+				return expr(Tag::or1, expr(Tag::eq, a, b), expr(Tag::lt, a, b));
+			}
 			case s_product:
 				return definedFunctor(Tag::mul);
 			case s_quotient:

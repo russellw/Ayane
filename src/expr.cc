@@ -340,7 +340,6 @@ Type* type(Expr* a) {
 	case Tag::false1:
 	case Tag::isInteger:
 	case Tag::isRational:
-	case Tag::le:
 	case Tag::lt:
 	case Tag::not1:
 	case Tag::or1:

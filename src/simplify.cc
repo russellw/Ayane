@@ -49,20 +49,6 @@ Expr* simplify(Expr* a) {
 		}
 		return expr(t, x);
 	}
-	case Tag::le:
-	{
-		auto x = simplify(at(a, 0));
-		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return bools + (cmp(x, y) <= 0);
-		return expr(t, x, y);
-	}
-	case Tag::lt:
-	{
-		auto x = simplify(at(a, 0));
-		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return bools + (cmp(x, y) < 0);
-		return expr(t, x, y);
-	}
 	case Tag::toInteger:
 	{
 		auto x = simplify(at(a, 0));
