@@ -98,7 +98,7 @@ try:
         print("%0.3f" % t + " seconds")
         print()
 
-        if p.returncode not in (0, 7):
+        if p.returncode not in (0, 142):
             continue
 
         r = ""
