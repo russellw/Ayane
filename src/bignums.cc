@@ -1,36 +1,5 @@
 #include "main.h"
 
-// Numbers need to be interned, to preserve the property that equal terms have pointer equality, and in particular that they have
-// the same hash codes
-
-// TODO: divide this functionality between terms and simplify?
-// TODO: write test problems for integer division
-// Integers
-bool eq(Tag tag, mpz_t a, size_t n, Integer* b) {
-	return mpz_cmp(a, b->val) == 0;
-}
-
-size_t hash(mpz_t a) {
-	return mpz_get_ui(a);
-}
-
-struct IntegerCmp {};
-
-static Set<int, mpz_t, Integer, IntegerCmp> integers;
-
-// Rationals
-bool eq(Tag tag, mpq_t a, size_t n, Rational* b) {
-	return mpq_equal(a, b->val);
-}
-
-size_t hash(mpq_t a) {
-	return hashCombine(mpz_get_ui(mpq_numref(a)), mpz_get_ui(mpq_denref(a)));
-}
-
-struct RationalCmp {};
-
-static Set<int, mpq_t, Rational, RationalCmp> rationals;
-
 // Arithmetic
 Expr* minus(Expr* a) {
 	switch (a->tag) {

@@ -14,8 +14,16 @@ struct Expr {
 
 struct Fn: Expr {
 	char* name;
+	Type* ty;
 
-	Fn(char* name): Expr(Tag::fn), name(name) {
+	Fn(char* name, Type* ty): Expr(Tag::fn), name(name), ty(ty) {
+	}
+};
+
+struct Var: Expr {
+	Type* ty;
+
+	Var(Type* ty): Expr(Tag::var), ty(ty) {
 	}
 };
 
@@ -33,7 +41,7 @@ struct Rational: Expr {
 	}
 };
 
-struct CompExpr: Expr {
+struct Comp: Expr {
 	Expr* v[];
 };
 
@@ -44,8 +52,6 @@ Expr* expr(mpq_t val);
 
 Expr* var(size_t i, Type* ty);
 
-Expr* gensym(Type* ty);
-
 // TODO: test using a bump allocator
 Expr* expr(Tag tag, Expr* a);
 Expr* expr(Tag tag, Expr* a, Expr* b);
@@ -55,12 +61,10 @@ Type* type(Expr* a);
 
 inline Expr* at(Expr* a, size_t i) {
 	assert(i < a->n);
-	return ((CompExpr*)a)->v[i];
+	return ((Comp*)a)->v[i];
 }
 
 int cmp(Expr* a, Expr* b);
-
-Type* ftype(Type* rty, Expr** first, Expr** last);
 
 // Matching and unification must in the general case deal with two clauses which are assumed to have logically distinct variable
 // names, but it is inefficient to provide physically distinct variable names for each clause, so we logically extend variable names
