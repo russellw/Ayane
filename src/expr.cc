@@ -114,15 +114,45 @@ Expr* op2(
 	Expr* x, Expr* y, void (*opz)(mpz_t r, const mpz_t a, const mpz_t b), void (*opq)(mpq_t r, const mpq_t a, const mpq_t b)) {
 	auto tag = x->tag;
 	assert(tag == y->tag);
+
 	if (tag == Tag::integer) {
 		mpz_t r;
 		mpz_init(r);
 		opz(r, ((Integer*)x)->val, ((Integer*)y)->val);
 		return integer(r);
 	}
+
 	mpq_t r;
 	mpq_init(r);
 	opq(r, ((Rational*)x)->val, ((Rational*)y)->val);
+	return rational(tag, r);
+}
+
+Expr* div2(Expr* x, Expr* y, void (*opz)(mpz_t r, const mpz_t a, const mpz_t b)) {
+	auto tag = x->tag;
+	assert(tag == y->tag);
+
+	if (tag == Tag::integer) {
+		mpz_t r;
+		mpz_init(r);
+		opz(r, ((Integer*)x)->val, ((Integer*)y)->val);
+		return integer(r);
+	}
+
+	mpz_t xnum_yden;
+	mpz_init(xnum_yden);
+	mpz_mul(xnum_yden, mpq_numref(((Rational*)x)->val), mpq_denref(((Rational*)y)->val));
+
+	mpz_t xden_ynum;
+	mpz_init(xden_ynum);
+	mpz_mul(xden_ynum, mpq_denref(((Rational*)x)->val), mpq_numref(((Rational*)y)->val));
+
+	mpq_t r;
+	mpq_init(r);
+	opz(mpq_numref(r), xnum_yden, xden_ynum);
+
+	mpz_clear(xnum_yden);
+	mpz_clear(xden_ynum);
 	return rational(tag, r);
 }
 
@@ -146,31 +176,21 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 	{
 		auto x = v[0];
 		auto y = v[1];
-		if (constant(x) && constant(y)) {
-			auto tag = x->tag;
-			assert(tag == y->tag);
-			if (tag == Tag::integer) {
-				mpz_t r;
-				mpz_init(r);
-				mpz_ediv_q(r, ((Integer*)x)->val, ((Integer*)y)->val);
-				return integer(r);
-			}
-			mpz_t xnum_yden;
-			mpz_init(xnum_yden);
-			mpz_mul(xnum_yden, mpq_numref(((Rational*)x)->val), mpq_denref(((Rational*)y)->val));
-
-			mpz_t xden_ynum;
-			mpz_init(xden_ynum);
-			mpz_mul(xden_ynum, mpq_denref(((Rational*)x)->val), mpq_numref(((Rational*)y)->val));
-
-			mpq_t r;
-			mpq_init(r);
-			mpz_ediv_q(mpq_numref(r), xnum_yden, xden_ynum);
-
-			mpz_clear(xden_ynum);
-			mpz_clear(xnum_yden);
-			return rational(tag, r);
-		}
+		if (constant(x) && constant(y)) return div2(x, y, mpz_ediv_q);
+		break;
+	}
+	case Tag::divFloor:
+	{
+		auto x = v[0];
+		auto y = v[1];
+		if (constant(x) && constant(y)) return div2(x, y, mpz_fdiv_q);
+		break;
+	}
+	case Tag::divTrunc:
+	{
+		auto x = v[0];
+		auto y = v[1];
+		if (constant(x) && constant(y)) return div2(x, y, mpz_tdiv_q);
 		break;
 	}
 	case Tag::mul:
