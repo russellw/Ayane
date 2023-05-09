@@ -4,7 +4,7 @@
 #include <windows.h>
 
 namespace {
-LONG WINAPI handler(struct _EXCEPTION_POINTERS* ExceptionInfo) {
+LONG WINAPI handler(_EXCEPTION_POINTERS* ExceptionInfo) {
 	if (ExceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_STACK_OVERFLOW)
 		WriteFile(GetStdHandle(STD_ERROR_HANDLE), "Stack overflow\n", 15, 0, 0);
 	else {
