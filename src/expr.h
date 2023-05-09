@@ -71,8 +71,6 @@ inline Expr* at(Expr* a, size_t i) {
 	return ((Comp*)a)->v[i];
 }
 
-int cmp(Expr* a, Expr* b);
-
 // Matching and unification must in the general case deal with two clauses which are assumed to have logically distinct variable
 // names, but it is inefficient to provide physically distinct variable names for each clause, so we logically extend variable names
 // with subscripts indicating which side they are on. Though the extended term type is meant only for variables, those are not

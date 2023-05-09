@@ -110,6 +110,7 @@ bool constant(Expr* a) {
 	return 0;
 }
 
+// Factor out the most common calculation patterns
 Expr* op1(Expr* x, void (*f)(mpz_t, const mpz_t, const mpz_t)) {
 	auto tag = x->tag;
 
@@ -218,6 +219,18 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 	{
 		auto x = v[0];
 		if (constant(x)) return op1(x, mpz_fdiv_q);
+		break;
+	}
+	case Tag::lt:
+	{
+		auto x = v[0];
+		auto y = v[1];
+		if (constant(x) && constant(y)) {
+			auto tag = x->tag;
+			assert(tag == y->tag);
+			if (tag == Tag::integer) return bools + (mpz_cmp(((Integer*)x)->val, ((Integer*)y)->val) < 0);
+			return bools + (mpq_cmp(((Rational*)x)->val, ((Rational*)y)->val) < 0);
+		}
 		break;
 	}
 	case Tag::minus:
@@ -364,17 +377,4 @@ Type* ftype(Type* rty, Expr** first, Expr** last) {
 	// TODO: add in one op
 	for (auto i = first; i < last; ++i) v.add(type(*i));
 	return type(v);
-}
-
-int cmp(Expr* a, Expr* b) {
-	assert(a->tag == b->tag);
-	if (a == b) return 0;
-	switch (a->tag) {
-	case Tag::integer:
-		return mpz_cmp(((Integer*)a)->val, ((Integer*)b)->val);
-	case Tag::rational:
-	case Tag::real:
-		return mpq_cmp(((Rational*)a)->val, ((Rational*)b)->val);
-	}
-	unreachable;
 }
