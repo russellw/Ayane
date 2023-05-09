@@ -33,7 +33,7 @@ void check(Expr* a) {
 	assert(a->n);
 }
 
-size_t fn(Expr* a) {
+size_t sym(Expr* a) {
 	if (a->tag == Tag::call) return (size_t)at(a, 0);
 	return (size_t)a->tag;
 }
@@ -73,8 +73,8 @@ bool gt(Expr* a, Expr* b) {
 
 	// Different functions. Comparison has the required property that true is considered smaller than any other term (except false,
 	// which does not occur during superposition proof search).
-	auto af = fn(a);
-	auto bf = fn(b);
+	auto af = sym(a);
+	auto bf = sym(b);
 	if (af != bf) return af > bf;
 
 	// Same functions should mean similar terms
