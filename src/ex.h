@@ -4,6 +4,7 @@ enum class Tag {
 };
 
 // TODO: refactor source file organization
+// TODO: rename
 struct Ex {
 	Tag tag;
 	uint32_t n;

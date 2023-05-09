@@ -1,28 +1,28 @@
 #include "main.h"
 
 // TODO: rename to boolean?
-Type tbool = {True};
-Type tindividual = {Individual};
-Type tinteger = {Integer};
-Type trational = {Rational};
-Type treal = {Real};
+Type tbool(Kind::boolean);
+Type tindividual(Kind::individual);
+Type tinteger(Kind::integer);
+Type trational(Kind::rational);
+Type treal(Kind::real);
 
 // Composite types
 struct CompCmp {
 	// TODO: if this ends up also needing allocator, rename to something like compElement?
-	static bool eq(Kind tag, Type** a, size_t n, Type* b) {
-		return tag == b->tag && n == b->n && memcmp(a, b->v, n * sizeof *a) == 0;
+	static bool eq(Kind kind, Type** a, size_t n, Type* b) {
+		return kind == b->kind && n == b->n && memcmp(a, b->v, n * sizeof *a) == 0;
 	}
 	static bool eq(Type* a, Type* b) {
-		return eq(a->tag, a->v, a->n, b);
+		return eq(a->kind, a->v, a->n, b);
 	}
 
-	static size_t hash(Kind tag, Type** a, size_t n) {
+	static size_t hash(Kind kind, Type** a, size_t n) {
 		// TODO: hashCombine?
 		return fnv(a, n * sizeof *a);
 	}
 	static size_t hash(Type* a) {
-		return hash(a->tag, a->v, a->n);
+		return hash(a->kind, a->v, a->n);
 	}
 };
 

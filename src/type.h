@@ -6,6 +6,9 @@ enum class Kind {
 struct Type {
 	Kind kind;
 	uint32_t n;
+
+	Type(Kind kind): kind(kind) {
+	}
 };
 
 struct TypeName: Type {
