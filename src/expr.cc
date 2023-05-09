@@ -199,6 +199,27 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		if (constant(x) && constant(y)) return op2(x, y, mpz_mul, mpq_mul);
 		break;
 	}
+	case Tag::remEuclid:
+	{
+		auto x = v[0];
+		auto y = v[1];
+		if (constant(x) && constant(y)) return div2(x, y, mpz_ediv_r);
+		break;
+	}
+	case Tag::remFloor:
+	{
+		auto x = v[0];
+		auto y = v[1];
+		if (constant(x) && constant(y)) return div2(x, y, mpz_fdiv_r);
+		break;
+	}
+	case Tag::remTrunc:
+	{
+		auto x = v[0];
+		auto y = v[1];
+		if (constant(x) && constant(y)) return div2(x, y, mpz_tdiv_r);
+		break;
+	}
 	case Tag::sub:
 	{
 		auto x = v[0];
