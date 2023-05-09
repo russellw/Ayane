@@ -1,15 +1,5 @@
 #include "main.h"
 
-bool isInteger(Expr* a) {
-	switch (a->tag) {
-	case Tag::integer:
-		return 1;
-	case Tag::rational:
-		return !mpz_cmp_ui(mpq_denref(a->mpq), 1);
-	}
-	unreachable;
-}
-
 Expr* toInteger(Expr* a) {
 	switch (a->tag) {
 	case Tag::integer:

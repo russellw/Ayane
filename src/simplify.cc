@@ -5,24 +5,6 @@ Expr* simplify(Expr* a) {
 	auto t = a->tag;
 	// TODO: could this be folded into term creation?
 	switch (t) {
-	case Tag::isInteger:
-	{
-		auto x = simplify(at(a, 0));
-		if (constant(x)) return bools + isInteger(x);
-		if (type(x) == &tinteger) return bools + 1;
-		return expr(t, x);
-	}
-	case Tag::isRational:
-	{
-		auto x = simplify(at(a, 0));
-		if (constant(x)) return bools + 1;
-		switch (type(x)->kind) {
-		case Kind::integer:
-		case Kind::rational:
-			return bools + 1;
-		}
-		return expr(t, x);
-	}
 	case Tag::toInteger:
 	{
 		auto x = simplify(at(a, 0));

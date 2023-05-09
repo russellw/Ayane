@@ -230,6 +230,22 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		if (constant(x)) return op1(x, mpz_fdiv_q);
 		break;
 	}
+	case Tag::isInteger:
+	{
+		auto x = v[0];
+		if (type(x) == &tinteger) return bools + 1;
+		if (constant(x)) return bools + (mpz_cmp_ui(mpq_denref(((Rational*)x)->val), 1) == 0);
+	}
+	case Tag::isRational:
+	{
+		auto x = v[0];
+		switch (type(x)->kind) {
+		case Kind::integer:
+		case Kind::rational:
+			return bools + 1;
+		}
+		if (constant(x)) return bools + 1;
+	}
 	case Tag::lt:
 	{
 		auto x = v[0];

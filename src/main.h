@@ -44,7 +44,6 @@ using std::vector;
 
 #include "expr.h"
 
-#include "bignums.h"
 #include "clause.h"
 
 // Parsers
@@ -58,7 +57,6 @@ using std::vector;
 // Algorithms
 #include "cnf.h"
 #include "etc.h"
-#include "simplify.h"
 #include "subsume.h"
 #include "superposn.h"
 #include "unify.h"
