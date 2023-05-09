@@ -173,82 +173,65 @@ Expr* div2(Expr* x, Expr* y, void (*f)(mpz_t, const mpz_t, const mpz_t)) {
 }
 
 Expr* comp(Tag tag, Expr** v, size_t n) {
+	assert(n);
+	auto x = v[0];
 	// TODO: other simplifications e.g. x+0, x*1
 	switch (tag) {
 	case Tag::add:
 	{
-		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) return op2(x, y, mpz_add, mpq_add);
 		break;
 	}
 	case Tag::ceil:
-	{
-		auto x = v[0];
 		if (constant(x)) return op1(x, mpz_cdiv_q);
 		break;
-	}
 	case Tag::div:
 	{
-		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) return op2(x, y, 0, mpq_div);
 		break;
 	}
 	case Tag::divEuclid:
 	{
-		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) return div2(x, y, mpz_ediv_q);
 		break;
 	}
 	case Tag::divFloor:
 	{
-		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) return div2(x, y, mpz_fdiv_q);
 		break;
 	}
 	case Tag::divTrunc:
 	{
-		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) return div2(x, y, mpz_tdiv_q);
 		break;
 	}
 	case Tag::eq:
 	{
-		auto x = v[0];
 		auto y = v[1];
 		if (x == y) return bools + 1;
 		if (constant(x) && constant(y)) return bools;
 		break;
 	}
 	case Tag::floor:
-	{
-		auto x = v[0];
 		if (constant(x)) return op1(x, mpz_fdiv_q);
 		break;
-	}
 	case Tag::isInteger:
-	{
-		auto x = v[0];
 		if (type(x) == &tinteger) return bools + 1;
 		if (constant(x)) return bools + (mpz_cmp_ui(mpq_denref(((Rational*)x)->val), 1) == 0);
-	}
 	case Tag::isRational:
-	{
-		auto x = v[0];
 		switch (type(x)->kind) {
 		case Kind::integer:
 		case Kind::rational:
 			return bools + 1;
 		}
 		if (constant(x)) return bools + 1;
-	}
 	case Tag::lt:
 	{
-		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) {
 			auto tag = x->tag;
@@ -259,8 +242,6 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		break;
 	}
 	case Tag::minus:
-	{
-		auto x = v[0];
 		if (constant(x)) {
 			auto tag = x->tag;
 			if (tag == Tag::integer) {
@@ -275,54 +256,53 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 			return rational(tag, r);
 		}
 		break;
-	}
 	case Tag::mul:
 	{
-		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) return op2(x, y, mpz_mul, mpq_mul);
 		break;
 	}
 	case Tag::remEuclid:
 	{
-		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) return div2(x, y, mpz_ediv_r);
 		break;
 	}
 	case Tag::remFloor:
 	{
-		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) return div2(x, y, mpz_fdiv_r);
 		break;
 	}
 	case Tag::remTrunc:
 	{
-		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) return div2(x, y, mpz_tdiv_r);
 		break;
 	}
 	case Tag::round:
-	{
-		auto x = v[0];
 		if (constant(x)) return op1(x, mpz_round);
 		break;
-	}
 	case Tag::sub:
 	{
-		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) return op2(x, y, mpz_sub, mpq_sub);
 		break;
 	}
+	case Tag::toRational:
+		if (type(x) == &trational) return x;
+		if (constant(x)) {
+			if (x->tag == Tag::integer) {
+				mpq_t r;
+				mpq_init(r);
+				mpz_set(mpq_numref(r), ((Integer*)x)->val);
+				return rational(Tag::rational, r);
+			}
+			return rational(Tag::rational, ((Rational*)x)->val);
+		}
 	case Tag::trunc:
-	{
-		auto x = v[0];
 		if (constant(x)) return op1(x, mpz_tdiv_q);
 		break;
-	}
 	}
 	return comps.intern(tag, v, n);
 }
