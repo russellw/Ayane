@@ -67,8 +67,8 @@ size_t cap = 0x100;
 size_t qty = nkeywords;
 Str** entries;
 
-struct init {
-	init() {
+struct Init {
+	Init() {
 		static_assert(isPow2(sizeof(Str)));
 		assert(isPow2(cap));
 		assert(qty <= cap * 3 / 4);
@@ -88,7 +88,7 @@ struct init {
 			entries[slot(entries, cap, s->v, n)] = s;
 		}
 	}
-} _;
+} init;
 
 void expand() {
 	auto cap1 = cap * 2;
