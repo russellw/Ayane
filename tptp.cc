@@ -41,10 +41,10 @@ void defaultType(Ex* a, Type* ty) {
 }
 
 // TODO: Which types should use const?
-struct selection: unordered_set<const char*> {
+struct Select: unordered_set<const char*> {
 	bool all;
 
-	explicit selection(bool all): all(all) {
+	explicit Select(bool all): all(all) {
 	}
 
 	size_t count(const char* s) const {
@@ -56,7 +56,7 @@ struct selection: unordered_set<const char*> {
 struct Parser1: Parser {
 	// SORT
 	bool cnfMode;
-	const selection& sel;
+	const Select& select;
 	Vec<pair<Str*, Ex*>> vars;
 	///
 
@@ -575,7 +575,7 @@ struct Parser1: Parser {
 		lex();
 	}
 
-	Parser1(const char* file, const selection& sel): Parser(file), sel(sel) {
+	Parser1(const char* file, const Select& select): Parser(file), select(select) {
 		lex();
 		while (tok) {
 			// TODO: assert(!vars.n)
@@ -597,7 +597,7 @@ struct Parser1: Parser {
 				auto a = quantify(logicFormula());
 
 				// Select
-				if (!sel.count(name)) break;
+				if (!select.count(name)) break;
 
 				// Clause
 				problem.axiom(a, file, name);
@@ -640,7 +640,7 @@ struct Parser1: Parser {
 				check(a, &tbool);
 
 				// Select
-				if (!sel.count(name)) break;
+				if (!select.count(name)) break;
 
 				// Conjecture
 				if (role == s_conjecture) {
@@ -670,16 +670,16 @@ struct Parser1: Parser {
 				if (eat(',')) {
 					expect('[');
 
-					selection sel1(0);
+					Select sel(0);
 					do {
 						auto selName = wordOrDigits();
-						if (sel.count(selName->v)) sel1.add(selName->v);
+						if (select.count(selName->v)) sel.add(selName->v);
 					} while (eat(','));
 
 					expect(']');
-					Parser1 parser(file1, sel1, problem);
-				} else {
 					Parser1 parser(file1, sel, problem);
+				} else {
+					Parser1 parser(file1, select, problem);
 				}
 				break;
 			}
@@ -697,5 +697,5 @@ struct Parser1: Parser {
 } // namespace
 
 void tptp(const char* file, Problem& problem) {
-	Parser1 parser(file, selection(1), problem);
+	Parser1 parser(file, Select(1), problem);
 }
