@@ -53,7 +53,7 @@ struct selection: unordered_set<const char*> {
 	}
 };
 
-struct Parser1: parser {
+struct Parser1: Parser {
 	// SORT
 	bool cnfMode;
 	const selection& sel;
@@ -575,7 +575,7 @@ struct Parser1: parser {
 		lex();
 	}
 
-	Parser1(const char* file, const selection& sel): parser(file), sel(sel) {
+	Parser1(const char* file, const selection& sel): Parser(file), sel(sel) {
 		lex();
 		while (tok) {
 			// TODO: assert(!vars.n)
@@ -677,9 +677,9 @@ struct Parser1: parser {
 					} while (eat(','));
 
 					expect(']');
-					Parser1 _(file1, sel1, problem);
+					Parser1 parser(file1, sel1, problem);
 				} else {
-					Parser1 _(file1, sel, problem);
+					Parser1 parser(file1, sel, problem);
 				}
 				break;
 			}
@@ -697,5 +697,5 @@ struct Parser1: parser {
 } // namespace
 
 void tptp(const char* file, Problem& problem) {
-	Parser1 _(file, selection(1), problem);
+	Parser1 parser(file, selection(1), problem);
 }

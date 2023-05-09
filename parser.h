@@ -42,7 +42,7 @@ enum {
 	ntoks
 };
 
-struct parser {
+struct Parser {
 	// Current file
 	const char* file;
 
@@ -64,8 +64,8 @@ struct parser {
 	// If tok == k_const, this is the value of the constant
 	Ex* constant;
 
-	parser(const char* file);
-	~parser();
+	Parser(const char* file);
+	~Parser();
 
 	// Report an error with line number, and exit
 	[[noreturn]] void err(const char* msg);

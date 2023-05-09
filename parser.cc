@@ -9,7 +9,7 @@
 #define O_BINARY 0
 #endif
 
-parser::parser(const char* file): file(file) {
+Parser::Parser(const char* file): file(file) {
 	// Read all the input in one go before beginning parsing, to make the parsers simpler and faster. Testing indicates
 	// memory-mapped files are not really faster for this case, so the input data is read-write so parsers can scribble over it if
 	// that makes their job easier. The only thing parsers are not allowed change is the number of linefeed characters up to the
@@ -62,11 +62,11 @@ parser::parser(const char* file): file(file) {
 	src[n + 1] = 0;
 }
 
-parser::~parser() {
+Parser::~Parser() {
 	free(src0);
 }
 
-void parser::err(const char* msg) {
+void Parser::err(const char* msg) {
 	size_t line = 1;
 	for (auto s = src0; s < srck; ++s)
 		if (*s == '\n') ++line;
@@ -74,7 +74,7 @@ void parser::err(const char* msg) {
 	exit(1);
 }
 
-void parser::word() {
+void Parser::word() {
 	auto s = src;
 	while (isWord(*s)) ++s;
 	str = intern(src, s - src);
@@ -82,7 +82,7 @@ void parser::word() {
 	tok = k_id;
 }
 
-void parser::quote() {
+void Parser::quote() {
 	auto r = src;
 	auto s = src;
 	auto q = *s++;
@@ -95,13 +95,13 @@ void parser::quote() {
 	src = s + 1;
 }
 
-void parser::digits() {
+void Parser::digits() {
 	auto s = src;
 	while (isDigit(*s)) ++s;
 	src = s;
 }
 
-void parser::integer(mpz_t z) {
+void Parser::integer(mpz_t z) {
 	auto s = src;
 	switch (*s) {
 	case '+':
@@ -125,7 +125,7 @@ void parser::integer(mpz_t z) {
 	*src = c;
 }
 
-void parser::exponent(mpq_t q) {
+void Parser::exponent(mpq_t q) {
 	assert(*src == 'e' || *src == 'E');
 	++src;
 
@@ -147,7 +147,7 @@ void parser::exponent(mpq_t q) {
 	mpz_clear(powExponent);
 }
 
-void parser::num() {
+void Parser::num() {
 	mpq_t q;
 	tok = k_num;
 
@@ -204,7 +204,7 @@ void parser::num() {
 	constant = ex(q);
 }
 
-void parser::setType(Ex* a, Type* ty) {
+void Parser::setType(Ex* a, Type* ty) {
 	assert(a->tag == Fn);
 	if (a->ty == ty) return;
 	if (!a->ty) {
@@ -215,7 +215,7 @@ void parser::setType(Ex* a, Type* ty) {
 	err("Type mismatch");
 }
 
-Ex* parser::setType(Str* s, Type* ty) {
+Ex* Parser::setType(Str* s, Type* ty) {
 	if (s->fn) {
 		auto a = s->fn;
 		assert(a->tag == Fn);
@@ -230,7 +230,7 @@ Ex* parser::setType(Str* s, Type* ty) {
 	return a;
 }
 
-void parser::check(Ex* a, size_t n) {
+void Parser::check(Ex* a, size_t n) {
 	if (a->n == n) return;
 	if (a->tag == Call) --n;
 	sprintf(buf, "Expected %zu args", n);
@@ -238,7 +238,7 @@ void parser::check(Ex* a, size_t n) {
 	err(buf);
 }
 
-void parser::check(Ex* a, Type* ty) {
+void Parser::check(Ex* a, Type* ty) {
 	// All symbols used in a formula must have specified types by the time this check is run. Otherwise, there would be no way of
 	// knowing whether the types they will be given in the future, would have passed the check.
 	// TODO: can a type still be unspecified by the time we get this far?

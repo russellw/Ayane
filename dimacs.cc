@@ -5,7 +5,7 @@ enum {
 	k_zero = ntoks,
 };
 
-struct Parser1: parser {
+struct Parser1: Parser {
 	// Tokenizer
 	void lex() {
 	loop:
@@ -62,7 +62,7 @@ struct Parser1: parser {
 		cnf(ex(Or, literals));
 	}
 
-	Parser1(const char* file): parser(file) {
+	Parser1(const char* file): Parser(file) {
 		lex();
 		if (tok == 'p') {
 			while (isSpace(*src)) ++src;
@@ -102,5 +102,5 @@ struct Parser1: parser {
 } // namespace
 
 void dimacs(const char* file) {
-	Parser1 _(file);
+	Parser1 parser(file);
 }
