@@ -2,7 +2,7 @@
 
 namespace {
 enum {
-	k_distinctObj = parser_k,
+	k_distinctObj = ntoks,
 	k_dollarWord,
 	k_eqv,
 	k_imp,
@@ -53,7 +53,7 @@ struct selection: unordered_set<const char*> {
 	}
 };
 
-struct parser1: parser {
+struct Parser1: parser {
 	// SORT
 	bool cnfMode;
 	const selection& sel;
@@ -575,7 +575,7 @@ struct parser1: parser {
 		lex();
 	}
 
-	parser1(const char* file, const selection& sel): parser(file), sel(sel) {
+	Parser1(const char* file, const selection& sel): parser(file), sel(sel) {
 		lex();
 		while (tok) {
 			// TODO: assert(!vars.n)
@@ -677,9 +677,9 @@ struct parser1: parser {
 					} while (eat(','));
 
 					expect(']');
-					parser1 _(file1, sel1, problem);
+					Parser1 _(file1, sel1, problem);
 				} else {
-					parser1 _(file1, sel, problem);
+					Parser1 _(file1, sel, problem);
 				}
 				break;
 			}
@@ -697,5 +697,5 @@ struct parser1: parser {
 } // namespace
 
 void tptp(const char* file, Problem& problem) {
-	parser1 _(file, selection(1), problem);
+	Parser1 _(file, selection(1), problem);
 }

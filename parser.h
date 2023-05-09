@@ -34,10 +34,12 @@ inline bool isWord(int c) {
 	return isAlnum(c) || c == '_';
 }
 
+// This, and its effective sub-enums in specific parsers, are not enum classes because enumerated tokens will be freely mixed with
+// literal characters
 enum {
 	k_id = 0x100,
 	k_num,
-	parser_k
+	ntoks
 };
 
 struct parser {
