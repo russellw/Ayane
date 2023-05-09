@@ -197,11 +197,11 @@ void Parser::number() {
 		exponent(q);
 		break;
 	default:
-		num = ex(z);
+		num = expr(z);
 		return;
 	}
 	mpq_canonicalize(q);
-	num = ex(q);
+	num = expr(q);
 }
 
 void Parser::setType(Expr* a, Type* ty) {

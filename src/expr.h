@@ -26,18 +26,18 @@ struct Expr {
 
 extern Expr bools[2];
 
-Expr* ex(mpz_t val);
-Expr* ex(mpq_t val);
+Expr* expr(mpz_t val);
+Expr* expr(mpq_t val);
 
 Expr* var(size_t i, Type* ty);
 
 Expr* gensym(Type* ty);
 
 // TODO: test using a bump allocator
-Expr* ex(Tag tag, Expr* a);
-Expr* ex(Tag tag, Expr* a, Expr* b);
-Expr* ex(Tag tag, const Vec<Expr*>& v);
-Expr* ex(Tag tag, const vector<Expr*>& v);
+Expr* expr(Tag tag, Expr* a);
+Expr* expr(Tag tag, Expr* a, Expr* b);
+Expr* expr(Tag tag, const Vec<Expr*>& v);
+Expr* expr(Tag tag, const vector<Expr*>& v);
 Type* type(Expr* a);
 
 inline Expr* at(Expr* a, size_t i) {

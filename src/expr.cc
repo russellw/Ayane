@@ -34,14 +34,14 @@ static void clear(Expr** a) {
 
 static Set<Tag, Expr**, Expr, CompCmp> comps;
 
-Expr* ex(Tag tag, Expr* a, Expr* b) {
+Expr* expr(Tag tag, Expr* a, Expr* b) {
 	static Expr* v[2];
 	v[0] = a;
 	v[1] = b;
 	return comps.intern(tag, v, 2);
 }
 
-Expr* ex(Tag tag, const Vec<Expr*>& v) {
+Expr* expr(Tag tag, const Vec<Expr*>& v) {
 	assert(v.size());
 	return comps.intern(tag, v.data, v.n);
 }

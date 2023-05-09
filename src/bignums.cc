@@ -448,7 +448,7 @@ Expr* toReal(Expr* a) {
 	}
 	case Tag::rational:
 		// TODO: implement this in terms of changing the tag
-		return ex(Tag::toReal, a);
+		return expr(Tag::toReal, a);
 	}
 	unreachable;
 }
