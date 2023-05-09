@@ -305,6 +305,7 @@ struct Parser1: Parser {
 	Ex* atomicTerm() {
 		auto k = tok;
 		auto s = str;
+		auto num1 = num;
 		lex();
 		switch (k) {
 		case k_distinctObj:
@@ -381,7 +382,7 @@ struct Parser1: Parser {
 		}
 		case k_id:
 		{
-			ex a(s, kind::Unknown);
+			auto a = ex(s, 0);
 
 			// Not a function call
 			if (tok != '(') return a;
@@ -399,7 +400,7 @@ struct Parser1: Parser {
 			return ex(v);
 		}
 		case k_num:
-			return c;
+			return num1;
 		case k_var:
 		{
 			for (auto i = vars.rbegin(), e = vars.rend(); i < e; ++i)
