@@ -1,36 +1,10 @@
 #include "main.h"
 
-namespace {
-bool constant(Expr* a) {
-	switch (a->tag) {
-	case Tag::distinctObj:
-	case Tag::integer:
-	case Tag::rational:
-	case Tag::true1:
-		return 1;
-	case Tag::false1:
-		// In the superposition calculus, true only shows up as an argument of equality and false never shows up as an argument
-		unreachable;
-	}
-	return 0;
-}
-} // namespace
-
 Expr* simplify(Expr* a) {
-	// TODO: other simplifications e.g. x+0, x*1
 	// TODO: rename
 	auto t = a->tag;
 	// TODO: could this be folded into term creation?
 	switch (t) {
-	case Tag::eq:
-	{
-		auto x = simplify(at(a, 0));
-		auto y = simplify(at(a, 1));
-		if (x == y) return bools + 1;
-		// TODO: optimize?
-		if (constant(x) && constant(y)) return bools;
-		return expr(t, x, y);
-	}
 	case Tag::isInteger:
 	{
 		auto x = simplify(at(a, 0));

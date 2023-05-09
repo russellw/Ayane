@@ -173,6 +173,7 @@ Expr* div2(Expr* x, Expr* y, void (*f)(mpz_t, const mpz_t, const mpz_t)) {
 }
 
 Expr* comp(Tag tag, Expr** v, size_t n) {
+	// TODO: other simplifications e.g. x+0, x*1
 	switch (tag) {
 	case Tag::add:
 	{
@@ -213,6 +214,14 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) return div2(x, y, mpz_tdiv_q);
+		break;
+	}
+	case Tag::eq:
+	{
+		auto x = v[0];
+		auto y = v[1];
+		if (x == y) return bools + 1;
+		if (constant(x) && constant(y)) return bools;
 		break;
 	}
 	case Tag::floor:
