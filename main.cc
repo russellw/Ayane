@@ -25,7 +25,7 @@ VOID CALLBACK timeout(PVOID a, BOOLEAN b) {
 
 #define version "3"
 
-enum class Language {
+enum class Lang {
 	dimacs,
 	none,
 	tptp,
@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
 #endif
 
 	// Command line
-	auto language = Language::none;
+	auto lang = Lang::none;
 	char* file = 0;
 	for (int i = 1; i < argc; ++i) {
 		auto s = argv[i];
@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
 
 			switch (*s) {
 			case 'd':
-				language = Language::dimacs;
+				lang = Lang::dimacs;
 				continue;
 			case 'h':
 				printf("-h Show help\n"
@@ -120,18 +120,18 @@ int main(int argc, char** argv) {
 		file = s;
 	}
 	if (!file) file = "stdin";
-	if (language == Language::none) switch (keyword(intern(ext(file)))) {
+	if (lang == Lang::none) switch (keyword(intern(ext(file)))) {
 		case s_cnf:
-			language = Language::dimacs;
+			lang = Lang::dimacs;
 			break;
 		}
 
 	// Parse
-	switch (language) {
-	case Language::dimacs:
+	switch (lang) {
+	case Lang::dimacs:
 		dimacs(file);
 		break;
-	case Language::tptp:
+	case Lang::tptp:
 		tptp(file);
 		break;
 	}
