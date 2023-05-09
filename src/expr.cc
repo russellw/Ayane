@@ -110,40 +110,36 @@ bool constant(Expr* a) {
 	return 0;
 }
 
+Expr* op2(
+	Expr* x, Expr* y, void (*opz)(mpz_t r, const mpz_t a, const mpz_t b), void (*opq)(mpq_t r, const mpq_t a, const mpq_t b)) {
+	auto tag = x->tag;
+	assert(tag == y->tag);
+	if (tag == Tag::integer) {
+		mpz_t r;
+		mpz_init(r);
+		opz(r, ((Integer*)x)->val, ((Integer*)y)->val);
+		return integer(r);
+	}
+	mpq_t r;
+	mpq_init(r);
+	opq(r, ((Rational*)x)->val, ((Rational*)y)->val);
+	return rational(tag, r);
+}
+
 Expr* comp(Tag tag, Expr** v, size_t n) {
 	switch (tag) {
 	case Tag::add:
 	{
 		auto x = v[0];
 		auto y = v[1];
-		if (constant(x) && constant(y)) {
-			auto tag = x->tag;
-			assert(tag == y->tag);
-			if (tag == Tag::integer) {
-				mpz_t r;
-				mpz_init(r);
-				mpz_add(r, ((Integer*)x)->val, ((Integer*)y)->val);
-				return integer(r);
-			}
-			mpq_t r;
-			mpq_init(r);
-			mpq_add(r, ((Rational*)x)->val, ((Rational*)y)->val);
-			return rational(tag, r);
-		}
+		if (constant(x) && constant(y)) return op2(x, y, mpz_add, mpq_add);
 		break;
 	}
 	case Tag::div:
 	{
 		auto x = v[0];
 		auto y = v[1];
-		if (constant(x) && constant(y)) {
-			auto tag = x->tag;
-			assert(tag == y->tag);
-			mpq_t r;
-			mpq_init(r);
-			mpq_add(r, ((Rational*)x)->val, ((Rational*)y)->val);
-			return rational(tag, r);
-		}
+		if (constant(x) && constant(y)) return op2(x, y, 0, mpq_div);
 		break;
 	}
 	case Tag::divEuclid:
@@ -181,40 +177,14 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 	{
 		auto x = v[0];
 		auto y = v[1];
-		if (constant(x) && constant(y)) {
-			auto tag = x->tag;
-			assert(tag == y->tag);
-			if (tag == Tag::integer) {
-				mpz_t r;
-				mpz_init(r);
-				mpz_mul(r, ((Integer*)x)->val, ((Integer*)y)->val);
-				return integer(r);
-			}
-			mpq_t r;
-			mpq_init(r);
-			mpq_mul(r, ((Rational*)x)->val, ((Rational*)y)->val);
-			return rational(tag, r);
-		}
+		if (constant(x) && constant(y)) return op2(x, y, mpz_mul, mpq_mul);
 		break;
 	}
 	case Tag::sub:
 	{
 		auto x = v[0];
 		auto y = v[1];
-		if (constant(x) && constant(y)) {
-			auto tag = x->tag;
-			assert(tag == y->tag);
-			if (tag == Tag::integer) {
-				mpz_t r;
-				mpz_init(r);
-				mpz_sub(r, ((Integer*)x)->val, ((Integer*)y)->val);
-				return integer(r);
-			}
-			mpq_t r;
-			mpq_init(r);
-			mpq_sub(r, ((Rational*)x)->val, ((Rational*)y)->val);
-			return rational(tag, r);
-		}
+		if (constant(x) && constant(y)) return op2(x, y, mpz_sub, mpq_sub);
 		break;
 	}
 	}
