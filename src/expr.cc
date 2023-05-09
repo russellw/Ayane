@@ -110,32 +110,31 @@ bool constant(Expr* a) {
 	return 0;
 }
 
-Expr* op2(
-	Expr* x, Expr* y, void (*opz)(mpz_t r, const mpz_t a, const mpz_t b), void (*opq)(mpq_t r, const mpq_t a, const mpq_t b)) {
+Expr* op2(Expr* x, Expr* y, void (*fz)(mpz_t, const mpz_t, const mpz_t), void (*fq)(mpq_t, const mpq_t, const mpq_t)) {
 	auto tag = x->tag;
 	assert(tag == y->tag);
 
 	if (tag == Tag::integer) {
 		mpz_t r;
 		mpz_init(r);
-		opz(r, ((Integer*)x)->val, ((Integer*)y)->val);
+		fz(r, ((Integer*)x)->val, ((Integer*)y)->val);
 		return integer(r);
 	}
 
 	mpq_t r;
 	mpq_init(r);
-	opq(r, ((Rational*)x)->val, ((Rational*)y)->val);
+	fq(r, ((Rational*)x)->val, ((Rational*)y)->val);
 	return rational(tag, r);
 }
 
-Expr* div2(Expr* x, Expr* y, void (*opz)(mpz_t r, const mpz_t a, const mpz_t b)) {
+Expr* div2(Expr* x, Expr* y, void (*fz)(mpz_t, const mpz_t, const mpz_t)) {
 	auto tag = x->tag;
 	assert(tag == y->tag);
 
 	if (tag == Tag::integer) {
 		mpz_t r;
 		mpz_init(r);
-		opz(r, ((Integer*)x)->val, ((Integer*)y)->val);
+		fz(r, ((Integer*)x)->val, ((Integer*)y)->val);
 		return integer(r);
 	}
 
@@ -149,7 +148,7 @@ Expr* div2(Expr* x, Expr* y, void (*opz)(mpz_t r, const mpz_t a, const mpz_t b))
 
 	mpq_t r;
 	mpq_init(r);
-	opz(mpq_numref(r), xnum_yden, xden_ynum);
+	fz(mpq_numref(r), xnum_yden, xden_ynum);
 
 	mpz_clear(xnum_yden);
 	mpz_clear(xden_ynum);
