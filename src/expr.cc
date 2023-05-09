@@ -110,7 +110,7 @@ bool constant(Expr* a) {
 	return 0;
 }
 
-// Factor out the most common calculation patterns
+// Factor out common calculation patterns
 Expr* op1(Expr* x, void (*f)(mpz_t, const mpz_t, const mpz_t)) {
 	auto tag = x->tag;
 
@@ -121,6 +121,15 @@ Expr* op1(Expr* x, void (*f)(mpz_t, const mpz_t, const mpz_t)) {
 	mpq_t r;
 	mpq_init(r);
 	f(mpq_numref(r), mpq_numref(x1->val), mpq_denref(x1->val));
+	return rational(tag, r);
+}
+
+Rational* toRational(Expr* x, Tag tag) {
+	mpq_t r;
+	mpq_init(r);
+	if (x->tag == Tag::integer) mpz_set(mpq_numref(r), ((Integer*)x)->val);
+	else
+		mpq_set(r, ((Rational*)x)->val);
 	return rational(tag, r);
 }
 
@@ -291,15 +300,10 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 	}
 	case Tag::toRational:
 		if (type(x) == &trational) return x;
-		if (constant(x)) {
-			if (x->tag == Tag::integer) {
-				mpq_t r;
-				mpq_init(r);
-				mpz_set(mpq_numref(r), ((Integer*)x)->val);
-				return rational(Tag::rational, r);
-			}
-			return rational(Tag::rational, ((Rational*)x)->val);
-		}
+		if (constant(x)) return toRational(x, Tag::rational);
+	case Tag::toReal:
+		if (type(x) == &treal) return x;
+		if (constant(x)) return toRational(x, Tag::real);
 	case Tag::trunc:
 		if (constant(x)) return op1(x, mpz_tdiv_q);
 		break;
