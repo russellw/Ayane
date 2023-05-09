@@ -4,24 +4,37 @@ enum class Tag {
 };
 
 // TODO: refactor source file organization
-// TODO: rename
 struct Expr {
 	Tag tag;
-	uint32_t n;
-	union {
-		// TODO: check size of v
-		Expr* v[9];
-		struct {
-			// TODO: can this be omitted for numbers?
-			Type* ty;
-			union {
-				char* s;
-				size_t idx;
-				mpz_t mpz;
-				mpq_t mpq;
-			};
-		};
-	};
+	uint32_t n = 0;
+
+	Expr(Tag tag): tag(tag) {
+	}
+};
+
+struct Fn: Expr {
+	char* name;
+
+	Fn(char* name): Expr(Tag::fn), name(name) {
+	}
+};
+
+struct Integer: Expr {
+	mpz_t val;
+
+	Integer(): Expr(Tag::integer) {
+	}
+};
+
+struct Rational: Expr {
+	mpq_t val;
+
+	Rational(Tag tag): Expr(tag) {
+	}
+};
+
+struct CompExpr: Expr {
+	Expr* v[];
 };
 
 extern Expr bools[2];
@@ -42,7 +55,7 @@ Type* type(Expr* a);
 
 inline Expr* at(Expr* a, size_t i) {
 	assert(i < a->n);
-	return a->v[i];
+	return ((CompExpr*)a)->v[i];
 }
 
 int cmp(Expr* a, Expr* b);

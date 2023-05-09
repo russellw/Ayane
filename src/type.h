@@ -5,7 +5,7 @@ enum class Kind {
 
 struct Type {
 	Kind kind;
-	uint32_t n;
+	uint32_t n = 0;
 
 	Type(Kind kind): kind(kind) {
 	}
