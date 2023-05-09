@@ -146,6 +146,37 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		}
 		break;
 	}
+	case Tag::divEuclid:
+	{
+		auto x = v[0];
+		auto y = v[1];
+		if (constant(x) && constant(y)) {
+			auto tag = x->tag;
+			assert(tag == y->tag);
+			if (tag == Tag::integer) {
+				mpz_t r;
+				mpz_init(r);
+				mpz_ediv_q(r, ((Integer*)x)->val, ((Integer*)y)->val);
+				return integer(r);
+			}
+			mpz_t xnum_yden;
+			mpz_init(xnum_yden);
+			mpz_mul(xnum_yden, mpq_numref(((Rational*)x)->val), mpq_denref(((Rational*)y)->val));
+
+			mpz_t xden_ynum;
+			mpz_init(xden_ynum);
+			mpz_mul(xden_ynum, mpq_denref(((Rational*)x)->val), mpq_numref(((Rational*)y)->val));
+
+			mpq_t r;
+			mpq_init(r);
+			mpz_ediv_q(mpq_numref(r), xnum_yden, xden_ynum);
+
+			mpz_clear(xden_ynum);
+			mpz_clear(xnum_yden);
+			return rational(tag, r);
+		}
+		break;
+	}
 	case Tag::mul:
 	{
 		auto x = v[0];

@@ -28,27 +28,6 @@ Expr* simplify(Expr* a) {
 		if (constant(x)) return ceil(x);
 		return expr(t, x);
 	}
-	case Tag::divEuclid:
-	{
-		auto x = simplify(at(a, 0));
-		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return divEuclid(x, y);
-		return expr(t, x, y);
-	}
-	case Tag::divFloor:
-	{
-		auto x = simplify(at(a, 0));
-		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return divFloor(x, y);
-		return expr(t, x, y);
-	}
-	case Tag::divTrunc:
-	{
-		auto x = simplify(at(a, 0));
-		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return divTrunc(x, y);
-		return expr(t, x, y);
-	}
 	case Tag::eq:
 	{
 		auto x = simplify(at(a, 0));
@@ -101,27 +80,6 @@ Expr* simplify(Expr* a) {
 		auto x = simplify(at(a, 0));
 		if (constant(x)) return minus(x);
 		return expr(t, x);
-	}
-	case Tag::remEuclid:
-	{
-		auto x = simplify(at(a, 0));
-		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return remEuclid(x, y);
-		return expr(t, x, y);
-	}
-	case Tag::remFloor:
-	{
-		auto x = simplify(at(a, 0));
-		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return remFloor(x, y);
-		return expr(t, x, y);
-	}
-	case Tag::remTrunc:
-	{
-		auto x = simplify(at(a, 0));
-		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return remTrunc(x, y);
-		return expr(t, x, y);
 	}
 	case Tag::round:
 	{
