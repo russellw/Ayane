@@ -60,10 +60,10 @@ Expr* expr(mpq_t val);
 Expr* var(size_t i, Type* ty);
 
 // TODO: test using a bump allocator
-Expr* expr(Tag tag, Expr* a);
-Expr* expr(Tag tag, Expr* a, Expr* b);
-Expr* expr(Tag tag, const Vec<Expr*>& v);
-Expr* expr(Tag tag, const vector<Expr*>& v);
+Expr* comp(Tag tag, Expr* a);
+Expr* comp(Tag tag, Expr* a, Expr* b);
+Expr* comp(Tag tag, const Vec<Expr*>& v);
+Expr* comp(Tag tag, const vector<Expr*>& v);
 Type* type(Expr* a);
 
 inline Expr* at(Expr* a, size_t i) {

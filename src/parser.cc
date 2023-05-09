@@ -204,7 +204,7 @@ void Parser::number() {
 	num = expr(q);
 }
 
-void Parser::setType(Expr* a, Type* ty) {
+void Parser::setType(Fn* a, Type* ty) {
 	assert(a->tag == Tag::fn);
 	if (a->ty == ty) return;
 	if (!a->ty) {
@@ -215,6 +215,7 @@ void Parser::setType(Expr* a, Type* ty) {
 	err("Type mismatch");
 }
 
+// TODO: Is this what it should be called, since it can create a new function?
 Expr* Parser::setType(Str* s, Type* ty) {
 	if (s->fn) {
 		auto a = s->fn;

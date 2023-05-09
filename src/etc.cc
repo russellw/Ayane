@@ -41,7 +41,7 @@ void freeVars(Expr* a, Vec<Expr*> boundv, Vec<Expr*>& freev) {
 }
 
 Expr* imp(Expr* a, Expr* b) {
-	return expr(Tag::or1, expr(Tag::not1, a), b);
+	return comp(Tag::or1, comp(Tag::not1, a), b);
 }
 
 void mpz_ediv_q(mpz_t q, const mpz_t n, const mpz_t d) {
@@ -108,6 +108,6 @@ Expr* quantify(Expr* a) {
 	Vec<Expr*> v(1, a);
 	// TODO: add all at once
 	for (auto x: vars) v.add(x);
-	return expr(Tag::all, v);
+	return comp(Tag::all, v);
 }
 ///

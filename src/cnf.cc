@@ -83,10 +83,10 @@ size_t ncsApprox(int pol, Expr* a) {
 
 // Skolem functions replace existentially quantified variables, also formulas that are renamed to avoid exponential expansion
 Expr* skolem(Type* rty, Vec<Expr*>& args) {
-	Vec<Expr*> v(1, gensym(compType(rty, args.begin(), args.end())));
+	Vec<Expr*> v(1, new Fn(0, compType(rty, args.begin(), args.end())));
 	// TODO: single call instead of loop?
 	for (auto b: args) v.add(b);
-	return expr(Tag::call, v);
+	return comp(Tag::call, v);
 }
 
 // SORT
@@ -112,7 +112,7 @@ Expr* rename(int pol, Expr* a) {
 		break;
 	case 0:
 		// In the general case, full equivalence is needed; the new name implies and is implied by the original formula
-		a = expr(Tag::and1, imp(b, a), imp(a, b));
+		a = comp(Tag::and1, imp(b, a), imp(a, b));
 		break;
 	default:
 		unreachable;
@@ -153,7 +153,7 @@ Expr* maybeRename(int pol, Expr* a) {
 		break;
 
 	case Tag::not1:
-		return expr(Tag::not1, maybeRename(-pol, at(a, 0)));
+		return comp(Tag::not1, maybeRename(-pol, at(a, 0)));
 
 	case Tag::or1:
 		for (size_t i = 0; i < a->n; ++i) v.add(maybeRename(pol, at(a, i)));
@@ -176,13 +176,13 @@ Expr* maybeRename(int pol, Expr* a) {
 		auto y = maybeRename(0, at(a, 1));
 		if (ncsApprox(0, x) >= many) x = rename(0, x);
 		if (ncsApprox(0, y) >= many) y = rename(0, y);
-		return expr(Tag::eqv, x, y);
+		return comp(Tag::eqv, x, y);
 	}
 
 	default:
 		return a;
 	}
-	return expr(a->tag, v);
+	return comp(a->tag, v);
 }
 
 Expr* nnf(bool pol, Expr* a, Vec<pair<Expr*, Expr*>>& m);
@@ -196,7 +196,7 @@ Expr* all(int pol, Expr* a, Vec<pair<Expr*, Expr*>>& m) {
 	for (size_t i = 2; i < a->n; ++i) {
 		auto x = at(a, i);
 		assert(x->tag == Tag::var);
-		auto y = var(vars++, ((Expr*)x)->ty);
+		auto y = var(vars++, ((Var*)x)->ty);
 		m.add(make_pair(x, y));
 	}
 	a = nnf(pol, at(a, 0), m);
@@ -217,7 +217,7 @@ Expr* exists(int pol, Expr* a, Vec<pair<Expr*, Expr*>>& m) {
 	for (size_t i = 2; i < a->n; ++i) {
 		auto x = at(a, i);
 		assert(x->tag == Tag::var);
-		auto y = skolem(((Expr*)x)->ty, args);
+		auto y = skolem(((Var*)x)->ty, args);
 		m.add(make_pair(x, y));
 	}
 	a = nnf(pol, at(a, 0), m);
@@ -244,11 +244,11 @@ Expr* nnf(bool pol, Expr* a, Vec<pair<Expr*, Expr*>>& m) {
 	case Tag::or1:
 		if (!pol) tag = Tag::and1;
 		for (size_t i = 0; i < a->n; ++i) v.add(nnf(pol, at(a, i), m));
-		return expr(tag, v);
+		return comp(tag, v);
 	case Tag::and1:
 		if (!pol) tag = Tag::or1;
 		for (size_t i = 0; i < a->n; ++i) v.add(nnf(pol, at(a, i), m));
-		return expr(tag, v);
+		return comp(tag, v);
 
 	case Tag::var:
 	{
@@ -273,13 +273,13 @@ Expr* nnf(bool pol, Expr* a, Vec<pair<Expr*, Expr*>>& m) {
 		auto x1 = nnf(1, x, m);
 		auto y0 = nnf(0, y, m);
 		auto y1 = nnf(1, y, m);
-		return pol ? expr(Tag::and1, expr(Tag::or1, x0, y1), expr(Tag::or1, x1, y0))
-				   : expr(Tag::and1, expr(Tag::or1, x0, y0), expr(Tag::or1, x1, y1));
+		return pol ? comp(Tag::and1, comp(Tag::or1, x0, y1), comp(Tag::or1, x1, y0))
+				   : comp(Tag::and1, comp(Tag::or1, x0, y0), comp(Tag::or1, x1, y1));
 	}
 	}
 	for (size_t i = 0; i < a->n; ++i) v.add(nnf(1, at(a, i), m));
-	a = expr(tag, v);
-	return pol ? a : expr(Tag::not1, a);
+	a = comp(tag, v);
+	return pol ? a : comp(Tag::not1, a);
 }
 
 // Distribute OR down into AND, completing the layering of the operators for CNF. This is the second place where exponential
@@ -306,13 +306,13 @@ Expr* distribute(Expr* a) {
 
 		// OR distributes over AND by Cartesian product
 		// TODO: can this be done by reference?
-		for (auto v: cartProduct(ands)) r.add(expr(Tag::or1, v));
+		for (auto v: cartProduct(ands)) r.add(comp(Tag::or1, v));
 		break;
 	}
 	default:
 		return a;
 	}
-	return expr(Tag::and1, r);
+	return comp(Tag::and1, r);
 }
 
 // Convert a suitably rearranged term into actual clauses

@@ -1,13 +1,13 @@
 // Strings are interned for fast comparison, and fast access to associated types and values
 struct Str {
-	Expr* fn;
+	Fn* fn;
 	Type* ty;
 
 	// Although the allocated size of dynamically allocated strings will vary according to the number of characters needed, the
 	// declared size of the character array needs to be positive for the statically allocated array of known strings (keywords). It
 	// needs to be large enough to accommodate the longest keyword plus null terminator. And the size of the whole structure should
 	// be a power of 2 because keyword() needs to divide by that size.
-	char v[32 - sizeof(Expr*) * 2];
+	char v[32 - 2 * sizeof(void*)];
 };
 
 // Keywords are strings that are known to be important

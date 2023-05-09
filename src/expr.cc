@@ -40,10 +40,10 @@ Integer* integer(mpz_t val) {
 struct RationalCmp {
 	// TODO: can we now remove the Cmp class?
 	static bool eq(Tag tag, mpq_t val, size_t n, Rational* b) {
-		return mpq_equal(val, b->val);
+		return tag == b->tag && mpq_equal(val, b->val);
 	}
 	static bool eq(Rational* a, Rational* b) {
-		return mpq_equal(a->val, b->val);
+		return a->tag == b->tag && mpq_equal(a->val, b->val);
 	}
 
 	static size_t hash(Tag tag, mpq_t val, size_t n) {
@@ -327,14 +327,14 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 	return comps.intern(tag, v, n);
 }
 
-Expr* expr(Tag tag, Expr* a, Expr* b) {
+Expr* comp(Tag tag, Expr* a, Expr* b) {
 	static Expr* v[2];
 	v[0] = a;
 	v[1] = b;
 	return comp(tag, v, 2);
 }
 
-Expr* expr(Tag tag, const Vec<Expr*>& v) {
+Expr* comp(Tag tag, const Vec<Expr*>& v) {
 	assert(v.size());
 	return comps.intern(tag, v.data, v.n);
 }
