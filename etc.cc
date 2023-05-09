@@ -41,7 +41,7 @@ void freeVars(Ex* a, Vec<Ex*> boundv, Vec<Ex*>& freev) {
 }
 
 Ex* imp(Ex* a, Ex* b) {
-	return ex(Tag:: or, ex(Tag::not, a), b);
+	return ex(Tag::or1, ex(Tag::not1, a), b);
 }
 
 void mpz_ediv_q(mpz_t q, const mpz_t n, const mpz_t d) {

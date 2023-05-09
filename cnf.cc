@@ -34,12 +34,12 @@ size_t ncs(bool pol, Ex* a) {
 	case Tag::exists:
 		return ncs(pol, at(a, 0));
 
-	case Tag::not:
+	case Tag::not1:
 		return ncs(!pol, at(a, 0));
 
-	case Tag:: or:
+	case Tag::or1:
 		return pol ? ncsMul(pol, a) : ncsAdd(pol, a);
-	case Tag::and:
+	case Tag::and1:
 		return pol ? ncsAdd(pol, a) : ncsMul(pol, a);
 
 	case Tag::eqv:
@@ -112,7 +112,7 @@ Ex* rename(int pol, Ex* a) {
 		break;
 	case 0:
 		// In the general case, full equivalence is needed; the new name implies and is implied by the original formula
-		a = ex(Tag::and, imp(b, a), imp(a, b));
+		a = ex(Tag::and1, imp(b, a), imp(a, b));
 		break;
 	default:
 		unreachable;
@@ -152,10 +152,10 @@ Ex* maybeRename(int pol, Ex* a) {
 		for (size_t i = 2; i < a->n; ++i) v.add(at(a, i));
 		break;
 
-	case Tag::not:
-		return ex(Tag::not, maybeRename(-pol, at(a, 0)));
+	case Tag::not1:
+		return ex(Tag::not1, maybeRename(-pol, at(a, 0)));
 
-	case Tag:: or:
+	case Tag::or1:
 		for (size_t i = 0; i < a->n; ++i) v.add(maybeRename(pol, at(a, i)));
 
 		// If this formula will be used with positive polarity (including the case where it will be used both ways), we are looking
@@ -163,7 +163,7 @@ Ex* maybeRename(int pol, Ex* a) {
 		// of the arguments
 		if (pol >= 0) maybeRename(pol, v);
 		break;
-	case Tag::and:
+	case Tag::and1:
 		for (size_t i = 0; i < a->n; ++i) v.add(maybeRename(pol, at(a, i)));
 
 		// NOT-AND yields OR, so mirror the OR case
@@ -238,15 +238,15 @@ Ex* nnf(bool pol, Ex* a, Vec<pair<Ex*, Ex*>>& m) {
 	case Tag::true1:
 		return bools + pol;
 
-	case Tag::not:
+	case Tag::not1:
 		return nnf(!pol, at(a, 0), m);
 
-	case Tag:: or:
-		if (!pol) tag = Tag::and;
+	case Tag::or1:
+		if (!pol) tag = Tag::and1;
 		for (size_t i = 0; i < a->n; ++i) v.add(nnf(pol, at(a, i), m));
 		return ex(tag, v);
-	case Tag::and:
-		if (!pol) tag = Tag:: or ;
+	case Tag::and1:
+		if (!pol) tag = Tag::or1;
 		for (size_t i = 0; i < a->n; ++i) v.add(nnf(pol, at(a, i), m));
 		return ex(tag, v);
 
@@ -273,13 +273,13 @@ Ex* nnf(bool pol, Ex* a, Vec<pair<Ex*, Ex*>>& m) {
 		auto x1 = nnf(1, x, m);
 		auto y0 = nnf(0, y, m);
 		auto y1 = nnf(1, y, m);
-		return pol ? ex(Tag::and, ex(Tag:: or, x0, y1), ex(Tag:: or, x1, y0))
-				   : ex(Tag::and, ex(Tag:: or, x0, y0), ex(Tag:: or, x1, y1));
+		return pol ? ex(Tag::and1, ex(Tag::or1, x0, y1), ex(Tag::or1, x1, y0))
+				   : ex(Tag::and1, ex(Tag::or1, x0, y0), ex(Tag::or1, x1, y1));
 	}
 	}
 	for (size_t i = 0; i < a->n; ++i) v.add(nnf(1, at(a, i), m));
 	a = ex(tag, v);
-	return pol ? a : ex(Tag::not, a);
+	return pol ? a : ex(Tag::not1, a);
 }
 
 // Distribute OR down into AND, completing the layering of the operators for CNF. This is the second place where exponential
@@ -287,7 +287,10 @@ Ex* nnf(bool pol, Ex* a, Vec<pair<Ex*, Ex*>>& m) {
 Ex* distribute(Ex* a) {
 	Vec<Ex*> r;
 	switch (a->tag) {
-	case Tag:: or:
+	case Tag::and1:
+		for (size_t i = 0; i < a->n; ++i) r.add(distribute(at(a, i)));
+		break;
+	case Tag::or1:
 	{
 		// Arguments can be taken without loss of generality as ANDs
 		vector<vector<Ex*>> ands;
@@ -297,37 +300,34 @@ Ex* distribute(Ex* a) {
 
 			// And make a flat layer of ANDs
 			vector<Ex*> v;
-			flatten(Tag::and, b, v);
+			flatten(Tag::and1, b, v);
 			ands.push_back(v);
 		}
 
 		// OR distributes over AND by Cartesian product
 		// TODO: can this be done by reference?
-		for (auto v: cartProduct(ands)) r.add(ex(Tag:: or, v));
+		for (auto v: cartProduct(ands)) r.add(ex(Tag::or1, v));
 		break;
 	}
-	case Tag::and:
-		for (size_t i = 0; i < a->n; ++i) r.add(distribute(at(a, i)));
-		break;
 	default:
 		return a;
 	}
-	return ex(Tag::and, r);
+	return ex(Tag::and1, r);
 }
 
 // Convert a suitably rearranged term into actual clauses
 void literalsTerm(Ex* a) {
 	switch (a->tag) {
-	case Tag:: or:
-		for (size_t i = 0; i < a->n; ++i) literalsTerm(at(a, i));
-		return;
 	case Tag::all:
-	case Tag::and:
+	case Tag::and1:
 	case Tag::eqv:
 	case Tag::exists:
 		unreachable;
-	case Tag::not:
+	case Tag::not1:
 		neg.add(at(a, 0));
+		return;
+	case Tag::or1:
+		for (size_t i = 0; i < a->n; ++i) literalsTerm(at(a, i));
 		return;
 	}
 	pos.add(a);
@@ -347,7 +347,7 @@ bool hasNum(const Vec<Ex*>& v) {
 }
 
 void clausesTerm(Ex* a) {
-	if (a->tag == Tag::and) {
+	if (a->tag == Tag::and1) {
 		for (size_t i = 0; i < a->n; ++i) clausesTerm(at(a, i));
 		return;
 	}

@@ -48,20 +48,6 @@ Ex* ex(Tag tag, const Vec<Ex*>& v) {
 
 Type* type(Ex* a) {
 	switch (a->tag) {
-	case Tag:: or:
-	case Tag::all:
-	case Tag::and:
-	case Tag::eq:
-	case Tag::eqv:
-	case Tag::exists:
-	case Tag::false1:
-	case Tag::isInteger:
-	case Tag::isRational:
-	case Tag::le:
-	case Tag::lt:
-	case Tag::not:
-	case Tag::true1:
-		return &tbool;
 	case Tag::add:
 	case Tag::ceil:
 	case Tag::div:
@@ -78,6 +64,20 @@ Type* type(Ex* a) {
 	case Tag::sub:
 	case Tag::trunc:
 		return type(at(a, 0));
+	case Tag::all:
+	case Tag::and1:
+	case Tag::eq:
+	case Tag::eqv:
+	case Tag::exists:
+	case Tag::false1:
+	case Tag::isInteger:
+	case Tag::isRational:
+	case Tag::le:
+	case Tag::lt:
+	case Tag::not1:
+	case Tag::or1:
+	case Tag::true1:
+		return &tbool;
 	case Tag::call:
 		a = at(a, 0);
 		assert(a->tag == Tag::fn);

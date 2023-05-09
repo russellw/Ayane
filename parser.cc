@@ -285,12 +285,6 @@ void Parser::check(Ex* a, Type* ty) {
 	// In each case, the first step is to check the number of arguments, where applicable and necessary, and the last is to
 	// recursively check the argument expressions.
 	switch (a->tag) {
-	case Tag:: or:
-	case Tag::and:
-	case Tag::eqv:
-	case Tag::not:
-		for (size_t i = 0; i < a->n; ++i) check(at(a, i), &tbool);
-		return;
 	case Tag::add:
 	case Tag::dive:
 	case Tag::divf:
@@ -308,6 +302,12 @@ void Parser::check(Ex* a, Type* ty) {
 	case Tag::all:
 	case Tag::exists:
 		check(at(a, 0), &tbool);
+		return;
+	case Tag::and1:
+	case Tag::eqv:
+	case Tag::not1:
+	case Tag::or1:
+		for (size_t i = 0; i < a->n; ++i) check(at(a, i), &tbool);
 		return;
 	case Tag::ceil:
 	case Tag::floor:
