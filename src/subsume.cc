@@ -1,9 +1,9 @@
 #include "main.h"
 
 namespace {
-Vec<pair<Ex*, Ex*>> m;
+Vec<pair<Expr*, Expr*>> m;
 
-bool match(Ex* a, Ex* b) {
+bool match(Expr* a, Expr* b) {
 	// Equals
 	if (eq(a, 0, b, 1)) return 1;
 

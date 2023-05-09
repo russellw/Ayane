@@ -1,7 +1,7 @@
 #include "main.h"
 
 namespace {
-bool constant(Ex* a) {
+bool constant(Expr* a) {
 	switch (a->tag) {
 	case Tag::distinctObj:
 	case Tag::integer:
@@ -16,7 +16,7 @@ bool constant(Ex* a) {
 }
 } // namespace
 
-Ex* simplify(Ex* a) {
+Expr* simplify(Expr* a) {
 	// TODO: other simplifications e.g. x+0, x*1
 	// TODO: rename
 	auto t = a->tag;
@@ -186,7 +186,7 @@ Ex* simplify(Ex* a) {
 	}
 	}
 	if (!a->n) return a;
-	Vec<Ex*> v;
+	Vec<Expr*> v;
 	for (size_t i = 0; i < a->n; ++i) v.add(simplify(at(a, i)));
 	return ex(a->tag, v);
 }

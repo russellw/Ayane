@@ -6,9 +6,9 @@ const size_t many = 50;
 // How many clauses a term will expand into, for the purpose of deciding when subformulas need to be renamed. The answer could
 // exceed the range of a fixed-size integer, but then we don't actually need the number, we only need to know whether it went over
 // the threshold.
-size_t ncs(bool pol, Ex* a);
+size_t ncs(bool pol, Expr* a);
 
-size_t ncsMul(bool pol, Ex* a) {
+size_t ncsMul(bool pol, Expr* a) {
 	size_t n = 1;
 	for (size_t i = 0; i < a->n; ++i) {
 		n *= ncs(pol, at(a, i));
@@ -17,7 +17,7 @@ size_t ncsMul(bool pol, Ex* a) {
 	return n;
 }
 
-size_t ncsAdd(bool pol, Ex* a) {
+size_t ncsAdd(bool pol, Expr* a) {
 	size_t n = 0;
 	for (size_t i = 0; i < a->n; ++i) {
 		n += ncs(pol, at(a, i));
@@ -26,7 +26,7 @@ size_t ncsAdd(bool pol, Ex* a) {
 	return n;
 }
 
-size_t ncs(bool pol, Ex* a) {
+size_t ncs(bool pol, Expr* a) {
 	// TODO: really want NO_SORT?
 	// NO_SORT
 	switch (a->tag) {
@@ -74,7 +74,7 @@ size_t ncs(bool pol, Ex* a) {
 // context that is both positive and negative, we add the two values for the number of clauses; this doesn't have a clear
 // mathematical justification, but seems as reasonable as anything else, and simple enough that there are hopefully few ways it can
 // go wrong.
-size_t ncsApprox(int pol, Ex* a) {
+size_t ncsApprox(int pol, Expr* a) {
 	size_t n = 0;
 	if (pol >= 0) n += ncs(1, a);
 	if (pol <= 0) n += ncs(0, a);
@@ -82,23 +82,23 @@ size_t ncsApprox(int pol, Ex* a) {
 }
 
 // Skolem functions replace existentially quantified variables, also formulas that are renamed to avoid exponential expansion
-Ex* skolem(Type* rty, Vec<Ex*>& args) {
-	Vec<Ex*> v(1, gensym(ftype(rty, args.begin(), args.end())));
+Expr* skolem(Type* rty, Vec<Expr*>& args) {
+	Vec<Expr*> v(1, gensym(ftype(rty, args.begin(), args.end())));
 	// TODO: single call instead of loop?
 	for (auto b: args) v.add(b);
 	return ex(Tag::call, v);
 }
 
 // SORT
-Vec<Ex*> defs;
+Vec<Expr*> defs;
 size_t vars = 0;
 ///
 
 // Rename formulas to avoid exponential expansion. It's tricky to do this while in the middle of doing other things, easier to be
 // sure of the logic if it's done as a separate pass first.
-Ex* rename(int pol, Ex* a) {
-	Vec<Ex*> vars;
-	freeVars(a, Vec<Ex*>(), vars);
+Expr* rename(int pol, Expr* a) {
+	Vec<Expr*> vars;
+	freeVars(a, Vec<Expr*>(), vars);
 	auto b = skolem(type(a), vars);
 	// NO_SORT
 	switch (pol) {
@@ -123,11 +123,11 @@ Ex* rename(int pol, Ex* a) {
 
 // Maybe rename some of the arguments to an OR-over-AND (taking polarity into account), where the number of clauses generated would
 // be the product of the arguments
-void maybeRename(int pol, Vec<Ex*>& v) {
+void maybeRename(int pol, Vec<Expr*>& v) {
 	// Sorting the arguments doesn't change the meaning of the formula, because AND and OR are commutative. The effect is that if
 	// only some of them are to be renamed, we will leave the simple ones alone and end up renaming the complicated ones, which is
 	// probably what we want.
-	sort(v.begin() + 1, v.end(), [=](Ex* a, Ex* b) { return ncsApprox(pol, a) < ncsApprox(pol, b); });
+	sort(v.begin() + 1, v.end(), [=](Expr* a, Expr* b) { return ncsApprox(pol, a) < ncsApprox(pol, b); });
 	size_t n = 1;
 	for (size_t i = 0; i < v.size(); ++i) {
 		auto m = ncsApprox(pol, v[i]);
@@ -142,8 +142,8 @@ void maybeRename(int pol, Vec<Ex*>& v) {
 // isolation each time, so that each occurrence could end up with a different name. In principle, it would be more efficient to
 // rename on a global basis, but in practice, nontrivial subformulas are rarely duplicated (e.g. less than 1% of the nontrivial
 // formulas in the TPTP), so this is probably not worth doing.
-Ex* maybeRename(int pol, Ex* a) {
-	Vec<Ex*> v;
+Expr* maybeRename(int pol, Expr* a) {
+	Vec<Expr*> v;
 	// NO_SORT
 	switch (a->tag) {
 	case Tag::all:
@@ -185,18 +185,18 @@ Ex* maybeRename(int pol, Ex* a) {
 	return ex(a->tag, v);
 }
 
-Ex* nnf(bool pol, Ex* a, Vec<pair<Ex*, Ex*>>& m);
+Expr* nnf(bool pol, Expr* a, Vec<pair<Expr*, Expr*>>& m);
 
 // For-all doesn't need much work to convert. Clauses contain variables with implied for-all. The tricky part is that quantifier
 // binds variables to local scope, so the same variable name used in two for-all's corresponds to two different logical variables.
 // So we rename each quantified variable to a new variable of the same type.
-Ex* all(int pol, Ex* a, Vec<pair<Ex*, Ex*>>& m) {
+Expr* all(int pol, Expr* a, Vec<pair<Expr*, Expr*>>& m) {
 	// TODO: does it actually need to be new variables, if the parser has in any case not been allowing variable shadowing, because of types?
 	auto o = m.n;
 	for (size_t i = 2; i < a->n; ++i) {
 		auto x = at(a, i);
 		assert(x->tag == Tag::var);
-		auto y = var(vars++, ((Ex*)x)->ty);
+		auto y = var(vars++, ((Expr*)x)->ty);
 		m.add(make_pair(x, y));
 	}
 	a = nnf(pol, at(a, 0), m);
@@ -206,9 +206,9 @@ Ex* all(int pol, Ex* a, Vec<pair<Ex*, Ex*>>& m) {
 
 // Each existentially quantified variable is replaced with a Skolem function whose parameters are all the surrounding universally
 // quantified variables
-Ex* exists(int pol, Ex* a, Vec<pair<Ex*, Ex*>>& m) {
+Expr* exists(int pol, Expr* a, Vec<pair<Expr*, Expr*>>& m) {
 	// Get the surrounding universally quantified variables that will be arguments to the Skolem functions
-	Vec<Ex*> args;
+	Vec<Expr*> args;
 	for (auto& xy: m)
 		if (xy.second->tag == Tag::var) args.add(xy.second);
 
@@ -217,7 +217,7 @@ Ex* exists(int pol, Ex* a, Vec<pair<Ex*, Ex*>>& m) {
 	for (size_t i = 2; i < a->n; ++i) {
 		auto x = at(a, i);
 		assert(x->tag == Tag::var);
-		auto y = skolem(((Ex*)x)->ty, args);
+		auto y = skolem(((Expr*)x)->ty, args);
 		m.add(make_pair(x, y));
 	}
 	a = nnf(pol, at(a, 0), m);
@@ -227,8 +227,8 @@ Ex* exists(int pol, Ex* a, Vec<pair<Ex*, Ex*>>& m) {
 
 // Negation normal form consists of several transformations that are as easy to do at the same time: Move NOTs inward to the literal
 // layer, flipping things around on the way, while simultaneously resolving quantifiers
-Ex* nnf(bool pol, Ex* a, Vec<pair<Ex*, Ex*>>& m) {
-	Vec<Ex*> v;
+Expr* nnf(bool pol, Expr* a, Vec<pair<Expr*, Expr*>>& m) {
+	Vec<Expr*> v;
 	auto tag = a->tag;
 	// NO_SORT
 	switch (tag) {
@@ -284,8 +284,8 @@ Ex* nnf(bool pol, Ex* a, Vec<pair<Ex*, Ex*>>& m) {
 
 // Distribute OR down into AND, completing the layering of the operators for CNF. This is the second place where exponential
 // expansion would occur, had selected formulas not already been renamed.
-Ex* distribute(Ex* a) {
-	Vec<Ex*> r;
+Expr* distribute(Expr* a) {
+	Vec<Expr*> r;
 	switch (a->tag) {
 	case Tag::and1:
 		for (size_t i = 0; i < a->n; ++i) r.add(distribute(at(a, i)));
@@ -293,13 +293,13 @@ Ex* distribute(Ex* a) {
 	case Tag::or1:
 	{
 		// Arguments can be taken without loss of generality as ANDs
-		vector<vector<Ex*>> ands;
+		vector<vector<Expr*>> ands;
 		for (size_t i = 0; i < a->n; ++i) {
 			// Recur
 			auto b = distribute(at(a, i));
 
 			// And make a flat layer of ANDs
-			vector<Ex*> v;
+			vector<Expr*> v;
 			flatten(Tag::and1, b, v);
 			ands.push_back(v);
 		}
@@ -316,7 +316,7 @@ Ex* distribute(Ex* a) {
 }
 
 // Convert a suitably rearranged term into actual clauses
-void literalsTerm(Ex* a) {
+void literalsTerm(Expr* a) {
 	switch (a->tag) {
 	case Tag::all:
 	case Tag::and1:
@@ -333,20 +333,20 @@ void literalsTerm(Ex* a) {
 	pos.add(a);
 }
 
-bool hasNum(Ex* a) {
+bool hasNum(Expr* a) {
 	if (isNum(type(a))) return 1;
 	for (size_t i = 0; i < a->n; ++i)
 		if (hasNum(at(a, i))) return 1;
 	return 0;
 }
 
-bool hasNum(const Vec<Ex*>& v) {
+bool hasNum(const Vec<Expr*>& v) {
 	for (auto a: v)
 		if (hasNum(a)) return 1;
 	return 0;
 }
 
-void clausesTerm(Ex* a) {
+void clausesTerm(Expr* a) {
 	if (a->tag == Tag::and1) {
 		for (size_t i = 0; i < a->n; ++i) clausesTerm(at(a, i));
 		return;
@@ -365,12 +365,12 @@ void clausesTerm(Ex* a) {
 }
 } // namespace
 
-void cnf(Ex* a) {
+void cnf(Expr* a) {
 	// First run the input formula through the full process: Rename subformulas where necessary to avoid exponential expansion, then
 	// convert to negation normal form, distribute OR into AND, and convert to clauses
 	a = maybeRename(1, a);
 	vars = 0;
-	a = nnf(1, a, Vec<pair<Ex*, Ex*>>());
+	a = nnf(1, a, Vec<pair<Expr*, Expr*>>());
 	a = distribute(a);
 	clausesTerm(a);
 
@@ -380,7 +380,7 @@ void cnf(Ex* a) {
 	for (auto a: defs) {
 		auto from = a;
 		vars = 0;
-		a = nnf(1, a, Vec<pair<Ex*, Ex*>>());
+		a = nnf(1, a, Vec<pair<Expr*, Expr*>>());
 		a = distribute(a);
 		clausesTerm(a);
 	}

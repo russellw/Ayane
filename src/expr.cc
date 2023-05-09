@@ -1,10 +1,10 @@
 #include "main.h"
 
-Ex bools[2] = {{Tag::false1}, {Tag::true1}};
+Expr bools[2] = {{Tag::false1}, {Tag::true1}};
 
 // TODO: rename?
-Ex* gensym(Type* ty) {
-	auto a = (Ex*)malloc(offsetof(Ex, s) + sizeof(char*));
+Expr* gensym(Type* ty) {
+	auto a = (Expr*)malloc(offsetof(Expr, s) + sizeof(char*));
 	a->tag = Tag::fn;
 	a->ty = ty;
 	a->s = 0;
@@ -13,40 +13,40 @@ Ex* gensym(Type* ty) {
 
 // Composite expressions
 struct CompCmp {
-	static bool eq(Tag tag, Ex** a, size_t n, Ex* b) {
+	static bool eq(Tag tag, Expr** a, size_t n, Expr* b) {
 		return tag == b->tag && n == b->n && memcmp(a, b->v, n * sizeof *a) == 0;
 	}
-	static bool eq(Ex* a, Ex* b) {
+	static bool eq(Expr* a, Expr* b) {
 		return eq(a->tag, a->v, a->n, b);
 	}
 
-	static size_t hash(Tag tag, Ex** a, size_t n) {
+	static size_t hash(Tag tag, Expr** a, size_t n) {
 		// TODO: hashCombine?
 		return fnv(a, n * sizeof *a);
 	}
-	static size_t hash(Ex* a) {
+	static size_t hash(Expr* a) {
 		return hash(a->tag, a->v, a->n);
 	}
 };
 
-static void clear(Ex** a) {
+static void clear(Expr** a) {
 }
 
-static Set<Tag, Ex**, Ex, CompCmp> comps;
+static Set<Tag, Expr**, Expr, CompCmp> comps;
 
-Ex* ex(Tag tag, Ex* a, Ex* b) {
-	static Ex* v[2];
+Expr* ex(Tag tag, Expr* a, Expr* b) {
+	static Expr* v[2];
 	v[0] = a;
 	v[1] = b;
 	return comps.intern(tag, v, 2);
 }
 
-Ex* ex(Tag tag, const Vec<Ex*>& v) {
+Expr* ex(Tag tag, const Vec<Expr*>& v) {
 	assert(v.size());
 	return comps.intern(tag, v.data, v.n);
 }
 
-Type* type(Ex* a) {
+Type* type(Expr* a) {
 	switch (a->tag) {
 	case Tag::add:
 	case Tag::ceil:
@@ -100,7 +100,7 @@ Type* type(Ex* a) {
 	unreachable;
 }
 
-Type* ftype(Type* rty, Ex** first, Ex** last) {
+Type* ftype(Type* rty, Expr** first, Expr** last) {
 	if (first == last) return rty;
 	Vec<Type*> v(1, rty);
 	// TODO: add in one op
@@ -108,7 +108,7 @@ Type* ftype(Type* rty, Ex** first, Ex** last) {
 	return type(v);
 }
 
-int cmp(Ex* a, Ex* b) {
+int cmp(Expr* a, Expr* b) {
 	assert(a->tag == b->tag);
 	if (a == b) return 0;
 	switch (a->tag) {

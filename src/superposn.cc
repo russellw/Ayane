@@ -4,14 +4,14 @@ namespace {
 // First-order logic usually takes the view that equality is a special case, but superposition calculus takes the view that equality
 // is the general case. Non-equality predicates are considered to be equations 'p=true'; this is a special exemption from the usual
 // rule that equality is not allowed on Boolean terms.
-bool equatable(Ex* a, Ex* b) {
+bool equatable(Expr* a, Expr* b) {
 	if (type(a) != type(b)) return 0;
 	if (type(a) == &tbool) return a == bools + 1 || b == bools + 1;
 	return 1;
 }
 
 // TODO: -> eqn.ex()?
-Ex* equate(Ex* a, Ex* b) {
+Expr* equate(Expr* a, Expr* b) {
 	assert(equatable(a, b));
 	if (a == bools + 1) return b;
 	if (b == bools + 1) return a;
@@ -28,19 +28,19 @@ Ex* equate(Ex* a, Ex* b) {
 
 // The greater-than test is supposed to be called on complete terms, which can include constant symbols (zero arity), or calls of
 // function symbols (positive arity) with arguments. Make sure it's not being called on an isolated function symbol.
-void check(Ex* a) {
+void check(Expr* a) {
 	// TODO: is this still valid?
 	assert(a->n);
 }
 
-size_t fn(Ex* a) {
+size_t fn(Expr* a) {
 	if (a->tag == Tag::call) return (size_t)at(a, 0);
 	return (size_t)a->tag;
 }
 
-bool gt(Ex* a, Ex* b);
+bool gt(Expr* a, Expr* b);
 
-bool ge(Ex* a, Ex* b) {
+bool ge(Expr* a, Expr* b) {
 	return a == b || gt(a, b);
 }
 
@@ -50,7 +50,7 @@ bool ge(Ex* a, Ex* b) {
 // Check whether one term is unambiguously greater than another. This is much more delicate than comparison for e.g. sorting, where
 // arbitrary choices can be made; to avoid breaking completeness of the calculus, the criteria are much stricter, and when in doubt,
 // we return false.
-bool gt(Ex* a, Ex* b) {
+bool gt(Expr* a, Expr* b) {
 	check(a);
 	check(b);
 
@@ -95,13 +95,13 @@ bool gt(Ex* a, Ex* b) {
 // Inputs
 Clause* c;
 size_t ci;
-Ex* c0;
-Ex* c1;
+Expr* c0;
+Expr* c1;
 
 Clause* d;
 size_t di;
-Ex* d0;
-Ex* d1;
+Expr* d0;
+Expr* d1;
 
 /*
 equality resolution
@@ -217,11 +217,11 @@ where
 
 Vec<size_t> posn;
 
-Ex* splice(Ex* a, size_t i, Ex* b) {
+Expr* splice(Expr* a, size_t i, Expr* b) {
 	if (i == posn.size()) return b;
 
 	assert(a->n);
-	Vec<Ex*> v(a->n);
+	Vec<Expr*> v(a->n);
 	for (size_t j = 0; j < a->n; ++j) {
 		v[j] = at(a, j);
 		if (j == posn[i]) v[j] = splice(v[j], i + 1, b);
@@ -258,7 +258,7 @@ void superposnc() {
 }
 
 // Descend into subterms
-void descend(Ex* a) {
+void descend(Expr* a) {
 	// It is never necessary to paramodulate into variables
 	if (a->tag == Tag::var) return;
 

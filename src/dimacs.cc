@@ -50,14 +50,14 @@ struct Parser1: Parser {
 	}
 
 	// A variable in propositional logic is a constant in first-order logic
-	Ex* var() {
+	Expr* var() {
 		auto a = setType(str, &tbool);
 		lex();
 		return a;
 	}
 
 	// Top level
-	void add(const Vec<Ex*>& literals) {
+	void add(const Vec<Expr*>& literals) {
 		// TODO: provide a way to build input-only terms that bypasses interning?
 		cnf(ex(Tag::or1, literals));
 	}
@@ -77,7 +77,7 @@ struct Parser1: Parser {
 			if (tok != k_id) err("Expected count");
 			lex();
 		}
-		Vec<Ex*> literals;
+		Vec<Expr*> literals;
 		for (;;) switch (tok) {
 			case '-':
 				lex();

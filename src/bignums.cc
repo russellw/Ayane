@@ -6,7 +6,7 @@
 // TODO: divide this functionality between terms and simplify?
 // TODO: write test problems for integer division
 // Integers
-bool eq(Tag tag, mpz_t a, size_t n, Ex* b) {
+bool eq(Tag tag, mpz_t a, size_t n, Expr* b) {
 	return mpz_cmp(a, b->mpz) == 0;
 }
 
@@ -16,10 +16,10 @@ size_t hash(mpz_t a) {
 
 struct IntegerCmp {};
 
-static Set<int, mpz_t, Ex, IntegerCmp> integers;
+static Set<int, mpz_t, Expr, IntegerCmp> integers;
 
 // Rationals
-bool eq(Tag tag, mpq_t a, size_t n, Ex* b) {
+bool eq(Tag tag, mpq_t a, size_t n, Expr* b) {
 	return mpq_equal(a, b->mpq);
 }
 
@@ -29,10 +29,10 @@ size_t hash(mpq_t a) {
 
 struct RationalCmp {};
 
-static Set<int, mpq_t, Ex, RationalCmp> rationals;
+static Set<int, mpq_t, Expr, RationalCmp> rationals;
 
 // Arithmetic
-Ex* minus(Ex* a) {
+Expr* minus(Expr* a) {
 	switch (a->tag) {
 	case Tag::integer:
 	{
@@ -52,7 +52,7 @@ Ex* minus(Ex* a) {
 	unreachable;
 }
 
-Ex* add(Ex* a, Ex* b) {
+Expr* add(Expr* a, Expr* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Tag::integer:
@@ -73,7 +73,7 @@ Ex* add(Ex* a, Ex* b) {
 	unreachable;
 }
 
-Ex* sub(Ex* a, Ex* b) {
+Expr* sub(Expr* a, Expr* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Tag::integer:
@@ -94,7 +94,7 @@ Ex* sub(Ex* a, Ex* b) {
 	unreachable;
 }
 
-Ex* mul(Ex* a, Ex* b) {
+Expr* mul(Expr* a, Expr* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Tag::integer:
@@ -115,7 +115,7 @@ Ex* mul(Ex* a, Ex* b) {
 	unreachable;
 }
 
-Ex* div(Ex* a, Ex* b) {
+Expr* div(Expr* a, Expr* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Tag::integer:
@@ -140,7 +140,7 @@ Ex* div(Ex* a, Ex* b) {
 	unreachable;
 }
 
-Ex* divTrunc(Ex* a, Ex* b) {
+Expr* divTrunc(Expr* a, Expr* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Tag::integer:
@@ -172,7 +172,7 @@ Ex* divTrunc(Ex* a, Ex* b) {
 	unreachable;
 }
 
-Ex* divFloor(Ex* a, Ex* b) {
+Expr* divFloor(Expr* a, Expr* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Tag::integer:
@@ -204,7 +204,7 @@ Ex* divFloor(Ex* a, Ex* b) {
 	unreachable;
 }
 
-Ex* divEuclid(Ex* a, Ex* b) {
+Expr* divEuclid(Expr* a, Expr* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Tag::integer:
@@ -236,7 +236,7 @@ Ex* divEuclid(Ex* a, Ex* b) {
 	unreachable;
 }
 
-Ex* remTrunc(Ex* a, Ex* b) {
+Expr* remTrunc(Expr* a, Expr* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Tag::integer:
@@ -268,7 +268,7 @@ Ex* remTrunc(Ex* a, Ex* b) {
 	unreachable;
 }
 
-Ex* remFloor(Ex* a, Ex* b) {
+Expr* remFloor(Expr* a, Expr* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Tag::integer:
@@ -300,7 +300,7 @@ Ex* remFloor(Ex* a, Ex* b) {
 	unreachable;
 }
 
-Ex* remEuclid(Ex* a, Ex* b) {
+Expr* remEuclid(Expr* a, Expr* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Tag::integer:
@@ -333,7 +333,7 @@ Ex* remEuclid(Ex* a, Ex* b) {
 	unreachable;
 }
 
-Ex* ceil(Ex* a) {
+Expr* ceil(Expr* a) {
 	switch (a->tag) {
 	case Tag::integer:
 		return a;
@@ -348,7 +348,7 @@ Ex* ceil(Ex* a) {
 	unreachable;
 }
 
-Ex* floor(Ex* a) {
+Expr* floor(Expr* a) {
 	switch (a->tag) {
 	case Tag::integer:
 		return a;
@@ -363,7 +363,7 @@ Ex* floor(Ex* a) {
 	unreachable;
 }
 
-Ex* trunc(Ex* a) {
+Expr* trunc(Expr* a) {
 	switch (a->tag) {
 	case Tag::integer:
 		return a;
@@ -378,7 +378,7 @@ Ex* trunc(Ex* a) {
 	unreachable;
 }
 
-Ex* round(Ex* a) {
+Expr* round(Expr* a) {
 	switch (a->tag) {
 	case Tag::integer:
 		return a;
@@ -393,7 +393,7 @@ Ex* round(Ex* a) {
 	unreachable;
 }
 
-bool isInteger(Ex* a) {
+bool isInteger(Expr* a) {
 	switch (a->tag) {
 	case Tag::integer:
 		return 1;
@@ -403,7 +403,7 @@ bool isInteger(Ex* a) {
 	unreachable;
 }
 
-Ex* toInteger(Ex* a) {
+Expr* toInteger(Expr* a) {
 	switch (a->tag) {
 	case Tag::integer:
 		return a;
@@ -422,7 +422,7 @@ Ex* toInteger(Ex* a) {
 	unreachable;
 }
 
-Ex* toRational(Ex* a) {
+Expr* toRational(Expr* a) {
 	switch (a->tag) {
 	case Tag::integer:
 	{
@@ -437,7 +437,7 @@ Ex* toRational(Ex* a) {
 	unreachable;
 }
 
-Ex* toReal(Ex* a) {
+Expr* toReal(Expr* a) {
 	switch (a->tag) {
 	case Tag::integer:
 	{

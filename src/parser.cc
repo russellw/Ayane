@@ -204,7 +204,7 @@ void Parser::number() {
 	num = ex(q);
 }
 
-void Parser::setType(Ex* a, Type* ty) {
+void Parser::setType(Expr* a, Type* ty) {
 	assert(a->tag == Tag::fn);
 	if (a->ty == ty) return;
 	if (!a->ty) {
@@ -215,21 +215,21 @@ void Parser::setType(Ex* a, Type* ty) {
 	err("Type mismatch");
 }
 
-Ex* Parser::setType(Str* s, Type* ty) {
+Expr* Parser::setType(Str* s, Type* ty) {
 	if (s->fn) {
 		auto a = s->fn;
 		assert(a->s == s->v);
 		setType(a, ty);
 		return a;
 	}
-	auto a = (Ex*)malloc(offsetof(Ex, s) + sizeof(char*));
+	auto a = (Expr*)malloc(offsetof(Expr, s) + sizeof(char*));
 	a->tag = Tag::fn;
 	a->s = s->v;
 	a->ty = ty;
 	return a;
 }
 
-void Parser::check(Ex* a, size_t n) {
+void Parser::check(Expr* a, size_t n) {
 	if (a->n == n) return;
 	if (a->tag == Tag::call) --n;
 	sprintf(buf, "Expected %zu args", n);
@@ -237,7 +237,7 @@ void Parser::check(Ex* a, size_t n) {
 	err(buf);
 }
 
-void Parser::check(Ex* a, Type* ty) {
+void Parser::check(Expr* a, Type* ty) {
 	// All symbols used in a formula must have specified types by the time this check is run. Otherwise, there would be no way of
 	// knowing whether the types they will be given in the future, would have passed the check.
 	// TODO: can a type still be unspecified by the time we get this far?

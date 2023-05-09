@@ -1,14 +1,14 @@
 extern char buf[5000];
 
 // SORT
-void flatten(Tag tag, Ex* a, vector<Ex*>& r);
-void freeVars(Ex* a, Vec<Ex*> boundv, Vec<Ex*>& freev);
-Ex* imp(Ex* a, Ex* b);
+void flatten(Tag tag, Expr* a, vector<Expr*>& r);
+void freeVars(Expr* a, Vec<Expr*> boundv, Vec<Expr*>& freev);
+Expr* imp(Expr* a, Expr* b);
 void mpz_ediv_q(mpz_t q, const mpz_t n, const mpz_t d);
 void mpz_ediv_r(mpz_t r, const mpz_t n, const mpz_t d);
 void mpz_round(mpz_t q, mpz_t n, mpz_t d);
-bool occurs(Ex* a, Ex* b);
-Ex* quantify(Ex* a);
+bool occurs(Expr* a, Expr* b);
+Expr* quantify(Expr* a);
 ///
 
 template <class T> void cartProduct(const vector<vector<T>>& vs, size_t i, Vec<size_t>& js, vector<vector<T>>& rs) {

@@ -6,7 +6,7 @@
 struct Clause {
 	uint16_t nn, n;
 	bool dead;
-	Ex* atoms[];
+	Expr* atoms[];
 
 	Range neg() const {
 		return Range(0, nn);
@@ -16,9 +16,9 @@ struct Clause {
 	}
 };
 
-extern Vec<Ex*> neg, pos;
+extern Vec<Expr*> neg, pos;
 
-inline Ex* at(Clause* c, size_t i) {
+inline Expr* at(Clause* c, size_t i) {
 	assert(i < c->n);
 	return c->atoms[i];
 }

@@ -1,7 +1,7 @@
 #include "main.h"
 
 // SORT
-Eqn::Eqn(Ex* a) {
+Eqn::Eqn(Expr* a) {
 	// TODO: move to same module as the definition of the structure
 	if (a->tag == Tag::eq) {
 		first = at(a, 0);
@@ -12,7 +12,7 @@ Eqn::Eqn(Ex* a) {
 	second = bools + 1;
 }
 
-void flatten(Tag tag, Ex* a, vector<Ex*>& r) {
+void flatten(Tag tag, Expr* a, vector<Expr*>& r) {
 	if (a->tag == tag) {
 		for (size_t i = 0; i < a->n; ++i) flatten(tag, at(a, i), r);
 		return;
@@ -20,7 +20,7 @@ void flatten(Tag tag, Ex* a, vector<Ex*>& r) {
 	r.push_back(a);
 }
 
-void freeVars(Ex* a, Vec<Ex*> boundv, Vec<Ex*>& freev) {
+void freeVars(Expr* a, Vec<Expr*> boundv, Vec<Expr*>& freev) {
 	// TODO: boundv static?
 	switch (a->tag) {
 	case Tag::all:
@@ -40,7 +40,7 @@ void freeVars(Ex* a, Vec<Ex*> boundv, Vec<Ex*>& freev) {
 	for (size_t i = 0; i < a->n; ++i) freeVars(at(a, i), boundv, freev);
 }
 
-Ex* imp(Ex* a, Ex* b) {
+Expr* imp(Expr* a, Expr* b) {
 	return ex(Tag::or1, ex(Tag::not1, a), b);
 }
 
@@ -94,18 +94,18 @@ void mpz_round(mpz_t q, mpz_t n, mpz_t d) {
 	mpz_fdiv_q(q, q, d);
 }
 
-bool occurs(Ex* a, Ex* b) {
+bool occurs(Expr* a, Expr* b) {
 	if (a == b) return 1;
 	for (size_t i = 0; i < b->n; ++i)
 		if (occurs(a, at(b, i))) return 1;
 	return 0;
 }
 
-Ex* quantify(Ex* a) {
-	Vec<Ex*> vars;
-	freeVars(a, Vec<Ex*>(), vars);
+Expr* quantify(Expr* a) {
+	Vec<Expr*> vars;
+	freeVars(a, Vec<Expr*>(), vars);
 	if (vars.empty()) return a;
-	Vec<Ex*> v(1, a);
+	Vec<Expr*> v(1, a);
 	// TODO: add all at once
 	for (auto x: vars) v.add(x);
 	return ex(Tag::all, v);

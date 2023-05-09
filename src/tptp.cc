@@ -14,19 +14,19 @@ enum {
 	k_xor,
 };
 
-unordered_map<Str*, Ex*> distinctObjs;
+unordered_map<Str*, Expr*> distinctObjs;
 
-Ex* distinctObj(Str* s) {
+Expr* distinctObj(Str* s) {
 	auto& a = distinctObjs[s];
 	if (a) return a;
-	a = (Ex*)malloc(offsetof(Ex, s) + sizeof(char*));
+	a = (Expr*)malloc(offsetof(Expr, s) + sizeof(char*));
 	a->tag = Tag::distinctObj;
 	a->s = s->v;
 	return a;
 }
 
 // If a term does not already have a type, assign it a specified one
-void defaultType(Ex* a, Type* ty) {
+void defaultType(Expr* a, Type* ty) {
 	// A statement about the return type of a function call, can directly imply the type of the function. This generally does not
 	// apply to basic operators; in most cases, they already have a definite type. That is not entirely true of the arithmetic
 	// operators, but we don't try to do type inference to figure those out.
@@ -57,7 +57,7 @@ struct Parser1: Parser {
 	// SORT
 	bool cnfMode;
 	const Select& select;
-	Vec<pair<Str*, Ex*>> vars;
+	Vec<pair<Str*, Expr*>> vars;
 	///
 
 	// Tokenizer
@@ -289,20 +289,20 @@ struct Parser1: Parser {
 	}
 
 	// Expressions
-	void args(Vec<Ex*>& v) {
+	void args(Vec<Expr*>& v) {
 		expect('(');
 		do v.add(atomicTerm());
 		while (eat(','));
 		expect(')');
 	}
 
-	Ex* definedFunctor(Tag tag) {
-		Vec<Ex*> v;
+	Expr* definedFunctor(Tag tag) {
+		Vec<Expr*> v;
 		args(v);
 		return ex(tag, v);
 	}
 
-	Ex* atomicTerm() {
+	Expr* atomicTerm() {
 		auto k = tok;
 		auto s = str;
 		auto num1 = num;
@@ -312,7 +312,7 @@ struct Parser1: Parser {
 			return distinctObj(s);
 		case k_dollarWord:
 		{
-			Vec<Ex*> v;
+			Vec<Expr*> v;
 			switch (keyword(s)) {
 			case s_ceiling:
 				return definedFunctor(Tag::ceil);
@@ -322,7 +322,7 @@ struct Parser1: Parser {
 			{
 				args(v);
 				for (auto& a: v) defaultType(a, &tindividual);
-				Vec<Ex*> inequalities;
+				Vec<Expr*> inequalities;
 				for (auto i = v.begin(), e = v.end(); i < e; ++i)
 					for (auto j = v.begin(); j != i; ++j) inequalities.add(ex(Tag::not1, ex(Tag::eq, *i, *j)));
 				return ex(Tag::and1, inequalities);
@@ -388,7 +388,7 @@ struct Parser1: Parser {
 			if (tok != '(') return a;
 
 			// Function is being called, so gather the function and arguments
-			Vec<Ex*> v(1, a);
+			Vec<Expr*> v(1, a);
 			args(v);
 
 			// By the TPTP specification, symbols can be assumed Boolean or individual, if not previously specified otherwise.
@@ -414,7 +414,7 @@ struct Parser1: Parser {
 		err("Expected expression");
 	}
 
-	Ex* infixUnary() {
+	Expr* infixUnary() {
 		auto a = atomicTerm();
 		switch (tok) {
 		case '=':
@@ -438,12 +438,12 @@ struct Parser1: Parser {
 		return a;
 	}
 
-	Ex* quant(Tag tag) {
+	Expr* quant(Tag tag) {
 		lex();
 		expect('[');
 		auto old = vars.size();
 		// TODO: check generated code
-		Vec<Ex*> v(1, 0);
+		Vec<Expr*> v(1, 0);
 		do {
 			if (tok != k_var) err("Expected variable");
 			auto s = str;
@@ -461,7 +461,7 @@ struct Parser1: Parser {
 		return ex(tag, v);
 	}
 
-	Ex* unary() {
+	Expr* unary() {
 		switch (tok) {
 		case '!':
 			return quant(Tag::all);
@@ -481,14 +481,14 @@ struct Parser1: Parser {
 		return infixUnary();
 	}
 
-	Ex* associativeLogicFormula(Tag tag, Ex* a) {
-		Vec<Ex*> v(1, a);
+	Expr* associativeLogicFormula(Tag tag, Expr* a) {
+		Vec<Expr*> v(1, a);
 		auto k = tok;
 		while (eat(k)) v.add(unary());
 		return ex(tag, v);
 	}
 
-	Ex* logicFormula() {
+	Expr* logicFormula() {
 		auto a = unary();
 		switch (tok) {
 		case '&':

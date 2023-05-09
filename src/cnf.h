@@ -1,1 +1,1 @@
-void cnf(Ex* a);
+void cnf(Expr* a);
