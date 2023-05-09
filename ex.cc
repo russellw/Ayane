@@ -57,9 +57,9 @@ Type* type(Ex* a) {
 	case Tag::floor:
 	case Tag::minus:
 	case Tag::mul:
-	case Tag::reme:
-	case Tag::remf:
-	case Tag::remt:
+	case Tag::remEuclid:
+	case Tag::remFloor:
+	case Tag::remTrunc:
 	case Tag::round:
 	case Tag::sub:
 	case Tag::trunc:

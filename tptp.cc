@@ -357,11 +357,11 @@ struct Parser1: Parser {
 			case s_quotient_t:
 				return definedFunctor(Tag::divTrunc);
 			case s_remainder_e:
-				return definedFunctor(Tag::RemE);
+				return definedFunctor(Tag::remEuclid);
 			case s_remainder_f:
-				return definedFunctor(Tag::RemF);
+				return definedFunctor(Tag::remFloor);
 			case s_remainder_t:
-				return definedFunctor(Tag::RemT);
+				return definedFunctor(Tag::remTrunc);
 			case s_round:
 				return definedFunctor(Tag::round);
 			case s_sum:

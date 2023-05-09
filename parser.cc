@@ -290,9 +290,9 @@ void Parser::check(Ex* a, Type* ty) {
 	case Tag::divFloor:
 	case Tag::divTrunc:
 	case Tag::mul:
-	case Tag::reme:
-	case Tag::remf:
-	case Tag::remt:
+	case Tag::remEuclid:
+	case Tag::remFloor:
+	case Tag::remTrunc:
 	case Tag::sub:
 		check(a, 2);
 		if (!isNum(ty)) err("Invalid type for arithmetic");

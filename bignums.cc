@@ -236,7 +236,7 @@ Ex* divEuclid(Ex* a, Ex* b) {
 	unreachable;
 }
 
-Ex* remT(Ex* a, Ex* b) {
+Ex* remTrunc(Ex* a, Ex* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Tag::integer:
@@ -268,7 +268,7 @@ Ex* remT(Ex* a, Ex* b) {
 	unreachable;
 }
 
-Ex* remF(Ex* a, Ex* b) {
+Ex* remFloor(Ex* a, Ex* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Tag::integer:
@@ -300,7 +300,7 @@ Ex* remF(Ex* a, Ex* b) {
 	unreachable;
 }
 
-Ex* remE(Ex* a, Ex* b) {
+Ex* remEuclid(Ex* a, Ex* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Tag::integer:

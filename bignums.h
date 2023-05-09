@@ -19,9 +19,9 @@ Ex* div(Ex* a, Ex* b);
 Ex* divTrunc(Ex* a, Ex* b);
 Ex* divFloor(Ex* a, Ex* b);
 Ex* divEuclid(Ex* a, Ex* b);
-Ex* remT(Ex* a, Ex* b);
-Ex* remF(Ex* a, Ex* b);
-Ex* remE(Ex* a, Ex* b);
+Ex* remTrunc(Ex* a, Ex* b);
+Ex* remFloor(Ex* a, Ex* b);
+Ex* remEuclid(Ex* a, Ex* b);
 
 Ex* ceil(Ex* a);
 Ex* floor(Ex* a);

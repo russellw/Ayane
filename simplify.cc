@@ -123,25 +123,25 @@ Ex* simplify(Ex* a) {
 		if (constant(x) && constant(y)) return mul(x, y);
 		return ex(t, x, y);
 	}
-	case Tag::reme:
+	case Tag::remEuclid:
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return reme(x, y);
+		if (constant(x) && constant(y)) return remEuclid(x, y);
 		return ex(t, x, y);
 	}
-	case Tag::remf:
+	case Tag::remFloor:
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return remf(x, y);
+		if (constant(x) && constant(y)) return remFloor(x, y);
 		return ex(t, x, y);
 	}
-	case Tag::remt:
+	case Tag::remTrunc:
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return remt(x, y);
+		if (constant(x) && constant(y)) return remTrunc(x, y);
 		return ex(t, x, y);
 	}
 	case Tag::round:
