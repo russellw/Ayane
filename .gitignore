@@ -3,7 +3,6 @@
 *.log
 *.lst
 *.obj
-*.p
 *.pdb
 *.png
 ayane
