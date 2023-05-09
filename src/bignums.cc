@@ -1,26 +1,6 @@
 #include "main.h"
 
 // Arithmetic
-Expr* minus(Expr* a) {
-	switch (a->tag) {
-	case Tag::integer:
-	{
-		mpz_t r;
-		mpz_init(r);
-		mpz_neg(r, a->mpz);
-		return intern(r);
-	}
-	case Tag::rational:
-	{
-		mpq_t r;
-		mpq_init(r);
-		mpq_neg(r, a->mpq);
-		return intern(r);
-	}
-	}
-	unreachable;
-}
-
 Expr* ceil(Expr* a) {
 	switch (a->tag) {
 	case Tag::integer:

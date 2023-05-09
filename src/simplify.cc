@@ -75,12 +75,6 @@ Expr* simplify(Expr* a) {
 		if (constant(x) && constant(y)) return bools + (cmp(x, y) < 0);
 		return expr(t, x, y);
 	}
-	case Tag::minus:
-	{
-		auto x = simplify(at(a, 0));
-		if (constant(x)) return minus(x);
-		return expr(t, x);
-	}
 	case Tag::round:
 	{
 		auto x = simplify(at(a, 0));

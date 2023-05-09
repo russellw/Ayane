@@ -192,6 +192,24 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		if (constant(x) && constant(y)) return div2(x, y, mpz_tdiv_q);
 		break;
 	}
+	case Tag::minus:
+	{
+		auto x = v[0];
+		if (constant(x)) {
+			auto tag = x->tag;
+			if (tag == Tag::integer) {
+				mpz_t r;
+				mpz_init(r);
+				mpz_neg(r, ((Integer*)x)->val);
+				return integer(r);
+			}
+			mpq_t r;
+			mpq_init(r);
+			mpq_neg(r, ((Rational*)x)->val);
+			return rational(tag, r);
+		}
+		break;
+	}
 	case Tag::mul:
 	{
 		auto x = v[0];

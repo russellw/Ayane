@@ -1,6 +1,4 @@
 // Arithmetic is polymorphic on integers and rationals
-Expr* minus(Expr* a);
-
 Expr* ceil(Expr* a);
 Expr* floor(Expr* a);
 Expr* trunc(Expr* a);
