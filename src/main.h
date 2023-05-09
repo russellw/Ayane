@@ -30,11 +30,10 @@ using std::vector;
 
 #include <gmp.h>
 
-// The debugging header needs to be included first, to make the assert macro available everywhere else, because assert is used all
-// over the place, including in some inline functions defined in headers
+// Clang-format sorts headers in a block, which is good. However, some headers define things needed by others that would come before
+// them in alphabetical order, so they are placed in separate blocks separated by blank lines.
 #include "dbg.h"
 
-// General
 #include "base.h"
 #include "set.h"
 #include "stats.h"
