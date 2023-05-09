@@ -21,69 +21,6 @@ Expr* minus(Expr* a) {
 	unreachable;
 }
 
-Expr* add(Expr* a, Expr* b) {
-	assert(a->tag == b->tag);
-	switch (a->tag) {
-	case Tag::integer:
-	{
-		mpz_t r;
-		mpz_init(r);
-		mpz_add(r, a->mpz, b->mpz);
-		return intern(r);
-	}
-	case Tag::rational:
-	{
-		mpq_t r;
-		mpq_init(r);
-		mpq_add(r, a->mpq, b->mpq);
-		return intern(r);
-	}
-	}
-	unreachable;
-}
-
-Expr* sub(Expr* a, Expr* b) {
-	assert(a->tag == b->tag);
-	switch (a->tag) {
-	case Tag::integer:
-	{
-		mpz_t r;
-		mpz_init(r);
-		mpz_sub(r, a->mpz, b->mpz);
-		return intern(r);
-	}
-	case Tag::rational:
-	{
-		mpq_t r;
-		mpq_init(r);
-		mpq_sub(r, a->mpq, b->mpq);
-		return intern(r);
-	}
-	}
-	unreachable;
-}
-
-Expr* mul(Expr* a, Expr* b) {
-	assert(a->tag == b->tag);
-	switch (a->tag) {
-	case Tag::integer:
-	{
-		mpz_t r;
-		mpz_init(r);
-		mpz_mul(r, a->mpz, b->mpz);
-		return intern(r);
-	}
-	case Tag::rational:
-	{
-		mpq_t r;
-		mpq_init(r);
-		mpq_mul(r, a->mpq, b->mpq);
-		return intern(r);
-	}
-	}
-	unreachable;
-}
-
 Expr* div(Expr* a, Expr* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {

@@ -22,13 +22,6 @@ Expr* simplify(Expr* a) {
 	auto t = a->tag;
 	// TODO: could this be folded into term creation?
 	switch (t) {
-	case Tag::add:
-	{
-		auto x = simplify(at(a, 0));
-		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return add(x, y);
-		return expr(t, x, y);
-	}
 	case Tag::ceil:
 	{
 		auto x = simplify(at(a, 0));
@@ -116,13 +109,6 @@ Expr* simplify(Expr* a) {
 		if (constant(x)) return minus(x);
 		return expr(t, x);
 	}
-	case Tag::mul:
-	{
-		auto x = simplify(at(a, 0));
-		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return mul(x, y);
-		return expr(t, x, y);
-	}
 	case Tag::remEuclid:
 	{
 		auto x = simplify(at(a, 0));
@@ -149,13 +135,6 @@ Expr* simplify(Expr* a) {
 		auto x = simplify(at(a, 0));
 		if (constant(x)) return round(x);
 		return expr(t, x);
-	}
-	case Tag::sub:
-	{
-		auto x = simplify(at(a, 0));
-		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return sub(x, y);
-		return expr(t, x, y);
 	}
 	case Tag::toInteger:
 	{

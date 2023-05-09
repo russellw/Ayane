@@ -1,19 +1,5 @@
-Expr* intern(mpz_t a);
-Expr* intern(mpq_t a);
-
-// Real number literals are represented as rational number literals wrapped in ToReal. It's a function call that is not actually
-// evaluated, since there is no representation of real number literals as such.
-// TODO: reevaluate this; we have room for a Real tag anyway
-Expr* real(mpq_t q);
-
-// Per TPTP syntax, decimal/exponent string parses to a real number literal
-Expr* real(char* s);
-
 // Arithmetic is polymorphic on integers and rationals
 Expr* minus(Expr* a);
-Expr* add(Expr* a, Expr* b);
-Expr* sub(Expr* a, Expr* b);
-Expr* mul(Expr* a, Expr* b);
 Expr* div(Expr* a, Expr* b);
 
 Expr* divTrunc(Expr* a, Expr* b);
