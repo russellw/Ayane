@@ -42,25 +42,25 @@ Ex* simplify(Ex* a) {
 		if (constant(x) && constant(y)) return div(x, y);
 		return ex(t, x, y);
 	}
-	case Tag::dive:
+	case Tag::divEuclid:
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return dive(x, y);
+		if (constant(x) && constant(y)) return divEuclid(x, y);
 		return ex(t, x, y);
 	}
-	case Tag::divf:
+	case Tag::divFloor:
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return divf(x, y);
+		if (constant(x) && constant(y)) return divFloor(x, y);
 		return ex(t, x, y);
 	}
-	case Tag::divt:
+	case Tag::divTrunc:
 	{
 		auto x = simplify(at(a, 0));
 		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return divt(x, y);
+		if (constant(x) && constant(y)) return divTrunc(x, y);
 		return ex(t, x, y);
 	}
 	case Tag::eq:

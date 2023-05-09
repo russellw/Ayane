@@ -51,9 +51,9 @@ Type* type(Ex* a) {
 	case Tag::add:
 	case Tag::ceil:
 	case Tag::div:
-	case Tag::dive:
-	case Tag::divf:
-	case Tag::divt:
+	case Tag::divEuclid:
+	case Tag::divFloor:
+	case Tag::divTrunc:
 	case Tag::floor:
 	case Tag::minus:
 	case Tag::mul:

@@ -16,9 +16,9 @@ Ex* sub(Ex* a, Ex* b);
 Ex* mul(Ex* a, Ex* b);
 Ex* div(Ex* a, Ex* b);
 
-Ex* divT(Ex* a, Ex* b);
-Ex* divF(Ex* a, Ex* b);
-Ex* divE(Ex* a, Ex* b);
+Ex* divTrunc(Ex* a, Ex* b);
+Ex* divFloor(Ex* a, Ex* b);
+Ex* divEuclid(Ex* a, Ex* b);
 Ex* remT(Ex* a, Ex* b);
 Ex* remF(Ex* a, Ex* b);
 Ex* remE(Ex* a, Ex* b);

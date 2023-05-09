@@ -140,7 +140,7 @@ Ex* div(Ex* a, Ex* b) {
 	unreachable;
 }
 
-Ex* divT(Ex* a, Ex* b) {
+Ex* divTrunc(Ex* a, Ex* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Tag::integer:
@@ -172,7 +172,7 @@ Ex* divT(Ex* a, Ex* b) {
 	unreachable;
 }
 
-Ex* divF(Ex* a, Ex* b) {
+Ex* divFloor(Ex* a, Ex* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Tag::integer:
@@ -204,7 +204,7 @@ Ex* divF(Ex* a, Ex* b) {
 	unreachable;
 }
 
-Ex* divE(Ex* a, Ex* b) {
+Ex* divEuclid(Ex* a, Ex* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
 	case Tag::integer:

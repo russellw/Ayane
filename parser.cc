@@ -286,9 +286,9 @@ void Parser::check(Ex* a, Type* ty) {
 	// recursively check the argument expressions.
 	switch (a->tag) {
 	case Tag::add:
-	case Tag::dive:
-	case Tag::divf:
-	case Tag::divt:
+	case Tag::divEuclid:
+	case Tag::divFloor:
+	case Tag::divTrunc:
 	case Tag::mul:
 	case Tag::reme:
 	case Tag::remf:
