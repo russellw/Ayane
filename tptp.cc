@@ -105,7 +105,7 @@ struct Parser1: Parser {
 		case '7':
 		case '8':
 		case '9':
-			num();
+			number();
 			return;
 		case '/':
 			switch (s[1]) {

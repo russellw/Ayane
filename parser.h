@@ -62,7 +62,7 @@ struct Parser {
 	Str* str;
 
 	// If tok == k_num, this is the parsed number
-	Ex* constant;
+	Ex* num;
 
 	Parser(const char* file);
 	~Parser();
@@ -70,11 +70,11 @@ struct Parser {
 	// Report an error with line number, and exit
 	[[noreturn]] void err(const char* msg);
 
-	// Lex an unquoted word, set str, and set tok = k_id
+	// Lex an unquoted word, tok = k_id, str = the word
 	void word();
 
-	// Lex a quoted string, set str, and leave tok unset, because different kinds of quotes can mean different things depending on
-	// language
+	// Lex a quoted string, leave tok unset (because different kinds of quotes can mean different things depending on language), str
+	// = the string, minus quotes and escapes
 	void quote();
 
 	// Helper functions
@@ -82,8 +82,8 @@ struct Parser {
 	void integer(mpz_t z);
 	void exponent(mpq_t q);
 
-	// Lex a number, set constant, and set tok = k_const
-	void num();
+	// Lex a number, tok = k_num, num = the number
+	void number();
 
 	// Type a function, in context where error can report line number
 	void setType(Ex* a, Type* ty);

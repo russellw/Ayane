@@ -147,7 +147,7 @@ void Parser::exponent(mpq_t q) {
 	mpz_clear(powExponent);
 }
 
-void Parser::num() {
+void Parser::number() {
 	mpq_t q;
 	tok = k_num;
 
@@ -197,11 +197,11 @@ void Parser::num() {
 		exponent(q);
 		break;
 	default:
-		constant = ex(z);
+		num = ex(z);
 		return;
 	}
 	mpq_canonicalize(q);
-	constant = ex(q);
+	num = ex(q);
 }
 
 void Parser::setType(Ex* a, Type* ty) {
