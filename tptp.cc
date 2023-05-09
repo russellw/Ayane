@@ -316,68 +316,68 @@ struct Parser1: Parser {
 			Vec<Ex*> v;
 			switch (keyword(s)) {
 			case s_ceiling:
-				return definedFunctor(Ceil);
+				return definedFunctor(Tag::ceil);
 			case s_difference:
-				return definedFunctor(Sub);
+				return definedFunctor(Tag::sub);
 			case s_distinct:
 			{
 				args(v);
 				for (auto& a: v) defaultType(a, &tindividual);
 				Vec<Ex*> inequalities;
 				for (auto i = v.begin(), e = v.end(); i < e; ++i)
-					for (auto j = v.begin(); j != i; ++j) inequalities.add(ex(Not, ex(Eq, *i, *j)));
-				return ex(And, inequalities);
+					for (auto j = v.begin(); j != i; ++j) inequalities.add(ex(Tag::not1, ex(Tag::eq, *i, *j)));
+				return ex(Tag::and1, inequalities);
 			}
 			case s_false:
 				return bools;
 			case s_floor:
-				return definedFunctor(Floor);
+				return definedFunctor(Tag::floor);
 			case s_greater:
 				args(v);
-				return ex(Lt, v[1], v[0]);
+				return ex(Tag::lt, v[1], v[0]);
 			case s_greatereq:
 				args(v);
-				return ex(Le, v[1], v[0]);
+				return ex(Tag::le, v[1], v[0]);
 			case s_is_int:
-				return definedFunctor(IsInteger);
+				return definedFunctor(Tag::isInteger);
 			case s_is_rat:
-				return definedFunctor(IsRational);
+				return definedFunctor(Tag::isRational);
 			case s_less:
-				return definedFunctor(Lt);
+				return definedFunctor(Tag::lt);
 			case s_lesseq:
-				return definedFunctor(Le);
+				return definedFunctor(Tag::le);
 			case s_product:
-				return definedFunctor(Mul);
+				return definedFunctor(Tag::mul);
 			case s_quotient:
-				return definedFunctor(Div);
+				return definedFunctor(Tag::div);
 			case s_quotient_e:
-				return definedFunctor(DivE);
+				return definedFunctor(Tag::divE);
 			case s_quotient_f:
-				return definedFunctor(DivF);
+				return definedFunctor(Tag::divF);
 			case s_quotient_t:
-				return definedFunctor(DivT);
+				return definedFunctor(Tag::divT);
 			case s_remainder_e:
-				return definedFunctor(RemE);
+				return definedFunctor(Tag::RemE);
 			case s_remainder_f:
-				return definedFunctor(RemF);
+				return definedFunctor(Tag::RemF);
 			case s_remainder_t:
-				return definedFunctor(RemT);
+				return definedFunctor(Tag::RemT);
 			case s_round:
-				return definedFunctor(Round);
+				return definedFunctor(Tag::round);
 			case s_sum:
-				return definedFunctor(Add);
+				return definedFunctor(Tag::add);
 			case s_to_int:
-				return definedFunctor(ToInteger);
+				return definedFunctor(Tag::toInteger);
 			case s_to_rat:
-				return definedFunctor(ToRational);
+				return definedFunctor(Tag::toRational);
 			case s_to_real:
-				return definedFunctor(ToReal);
+				return definedFunctor(Tag::toReal);
 			case s_true:
 				return bools + 1;
 			case s_truncate:
-				return definedFunctor(Trunc);
+				return definedFunctor(Tag::trunc);
 			case s_uminus:
-				return definedFunctor(Neg);
+				return definedFunctor(Tag::minus);
 			}
 			break;
 		}
