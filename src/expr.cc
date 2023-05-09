@@ -132,6 +132,20 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		}
 		break;
 	}
+	case Tag::div:
+	{
+		auto x = v[0];
+		auto y = v[1];
+		if (constant(x) && constant(y)) {
+			auto tag = x->tag;
+			assert(tag == y->tag);
+			mpq_t r;
+			mpq_init(r);
+			mpq_add(r, ((Rational*)x)->val, ((Rational*)y)->val);
+			return rational(tag, r);
+		}
+		break;
+	}
 	case Tag::mul:
 	{
 		auto x = v[0];

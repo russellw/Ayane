@@ -28,13 +28,6 @@ Expr* simplify(Expr* a) {
 		if (constant(x)) return ceil(x);
 		return expr(t, x);
 	}
-	case Tag::div:
-	{
-		auto x = simplify(at(a, 0));
-		auto y = simplify(at(a, 1));
-		if (constant(x) && constant(y)) return div(x, y);
-		return expr(t, x, y);
-	}
 	case Tag::divEuclid:
 	{
 		auto x = simplify(at(a, 0));

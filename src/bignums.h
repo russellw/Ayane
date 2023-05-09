@@ -1,6 +1,5 @@
 // Arithmetic is polymorphic on integers and rationals
 Expr* minus(Expr* a);
-Expr* div(Expr* a, Expr* b);
 
 Expr* divTrunc(Expr* a, Expr* b);
 Expr* divFloor(Expr* a, Expr* b);

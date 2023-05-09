@@ -21,31 +21,6 @@ Expr* minus(Expr* a) {
 	unreachable;
 }
 
-Expr* div(Expr* a, Expr* b) {
-	assert(a->tag == b->tag);
-	switch (a->tag) {
-	case Tag::integer:
-	{
-		mpz_t r;
-		mpz_init(r);
-
-		// TPTP does not define integer division with unspecified rounding mode, but most programming languages nowadays define it
-		// as truncating
-		// TODO: Does SMT-LIB use this?
-		mpz_tdiv_q(r, a->mpz, b->mpz);
-		return intern(r);
-	}
-	case Tag::rational:
-	{
-		mpq_t r;
-		mpq_init(r);
-		mpq_div(r, a->mpq, b->mpq);
-		return intern(r);
-	}
-	}
-	unreachable;
-}
-
 Expr* divTrunc(Expr* a, Expr* b) {
 	assert(a->tag == b->tag);
 	switch (a->tag) {
