@@ -232,6 +232,7 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 	case Tag::isInteger:
 		if (type(x) == &tinteger) return bools + 1;
 		if (constant(x)) return bools + (mpz_cmp_ui(mpq_denref(((Rational*)x)->val), 1) == 0);
+		break;
 	case Tag::isRational:
 		switch (type(x)->kind) {
 		case Kind::integer:
@@ -298,12 +299,27 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		if (constant(x) && constant(y)) return op2(x, y, mpz_sub, mpq_sub);
 		break;
 	}
+	case Tag::toInteger:
+		if (type(x) == &tinteger) return x;
+		if (constant(x)) {
+			auto x1 = (Rational*)x;
+			mpz_t r;
+			mpz_init(r);
+			// Different languages have different conventions on the default rounding mode for converting fractions to integers.
+			// TPTP defines it as floor, so that is used here. To use a different rounding mode, explicity round the rational number
+			// first, and then convert to integer.
+			mpz_fdiv_q(r, mpq_numref(x1->val), mpq_denref(x1->val));
+			return integer(r);
+		}
+		break;
 	case Tag::toRational:
 		if (type(x) == &trational) return x;
 		if (constant(x)) return toRational(x, Tag::rational);
+		break;
 	case Tag::toReal:
 		if (type(x) == &treal) return x;
 		if (constant(x)) return toRational(x, Tag::real);
+		break;
 	case Tag::trunc:
 		if (constant(x)) return op1(x, mpz_tdiv_q);
 		break;
