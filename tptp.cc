@@ -626,7 +626,7 @@ struct Parser1: Parser {
 					} else {
 						// The symbol is the name of a function with the specified type. Call the term constructor that allows a
 						// type to be specified, which will check for consistency.
-						ex _(s, topLevelType());
+						ex(s, topLevelType());
 					}
 
 					while (parens--) expect(')');
@@ -649,12 +649,12 @@ struct Parser1: Parser {
 					// reject the problem as ambiguous and require it to be restated with the conjectures folded into one, using
 					// explicit conjunction or disjunction
 					if (conjecture) err("Multiple conjectures not supported");
-					problem.conjecture(a, file, name);
-					break;
+					a = ex(Tag::not1, a);
+					conjecture = 1;
 				}
 
-				// Ordinary formula
-				problem.axiom(a, file, name);
+				// Formula
+				cnf(a);
 				break;
 			}
 			case s_include:
@@ -664,7 +664,7 @@ struct Parser1: Parser {
 
 				// File
 				snprintf(buf, sizeof buf, "%s/%s", dir, name);
-				auto file1 = intern(buf)->v;
+				auto file1 = strdup(buf);
 
 				// Select and read
 				if (eat(',')) {
