@@ -305,8 +305,6 @@ struct Parser1: Parser {
 	Ex* atomicTerm() {
 		auto k = tok;
 		auto s = str;
-		auto sk = srck;
-		auto end = src;
 		lex();
 		switch (k) {
 		case k_distinctObj:
@@ -400,34 +398,8 @@ struct Parser1: Parser {
 
 			return ex(v);
 		}
-		case k_integer:
-		{
-			// It is more efficient to parse directly from the source buffer than to copy into a separate buffer first. The GMP
-			// number parsers require a null terminator, so we supply one, overwriting the character immediately after the number
-			// token. But it's possible that character was a newline, and later there will be an error that requires counting
-			// newlines to report the line number, so we need to restore the character before returning.
-			auto c = *end;
-			*end = 0;
-			auto a = integer(sk);
-			*end = c;
-			return a;
-		}
-		case k_rational:
-		{
-			auto c = *end;
-			*end = 0;
-			auto a = rational(sk);
-			*end = c;
-			return a;
-		}
-		case k_real:
-		{
-			auto c = *end;
-			*end = 0;
-			auto a = real(sk);
-			*end = c;
-			return a;
-		}
+		case k_num:
+			return c;
 		case k_var:
 		{
 			for (auto i = vars.rbegin(), e = vars.rend(); i < e; ++i)

@@ -43,25 +43,25 @@ enum {
 };
 
 struct Parser {
-	// Current file
+	// Name of the file being parsed, or "stdin" for standard input
 	const char* file;
 
 	// Source text
 	char* src0;
 
-	// Current position in source text
-	char* src;
-
 	// Current token in source text
 	char* srck;
 
-	// Current token keyword or identifier
-	Str* str;
+	// Current position in source text
+	char* src;
 
 	// Current token, as direct char for single-char tokens, or language-specific enum otherwise
 	int tok;
 
-	// If tok == k_const, this is the value of the constant
+	// Current token keyword or identifier
+	Str* str;
+
+	// If tok == k_num, this is the parsed number
 	Ex* constant;
 
 	Parser(const char* file);
