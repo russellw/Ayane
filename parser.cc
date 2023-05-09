@@ -247,7 +247,7 @@ void Parser::check(Ex* a, Type* ty) {
 	// In first-order logic, a function cannot return a function, nor can a variable store one. (That would be higher-order logic.)
 	// The code should be written so that neither the top-level callers nor the recursive calls, can ever ask for a function to be
 	// returned.
-	assert(ty->tag != Fn);
+	assert(ty->kind != Kind::fn);
 
 	// Need to handle call before checking the type of this term, because the type of a call is only well-defined if the type of the
 	// function is well-defined
@@ -257,7 +257,7 @@ void Parser::check(Ex* a, Type* ty) {
 		if (!fty) err("Unspecified type");
 
 		// Check for input like a(b) where a is just a constant
-		if (fty->tag != Fn) err("Called a non-function");
+		if (fty->kind != Kind::fn) err("Called a non-function");
 
 		// Check for input like a(b) followed by a(b, c)
 		check(a, fty->n);
@@ -269,9 +269,9 @@ void Parser::check(Ex* a, Type* ty) {
 		// And recur, based on the parameter types
 		for (size_t i = 1; i < fty->n; ++i) {
 			// TODO: does this check on parameter types need to be repeated here?
-			switch (at(fty, i)->tag) {
-			case Fn:
-			case True:
+			switch (at(fty, i)->kind) {
+			case Kind::boolean:
+			case Kind::fn:
 				err("Invalid type for function parameter");
 			}
 			check(at(a, i), at(fty, i));
@@ -283,6 +283,8 @@ void Parser::check(Ex* a, Type* ty) {
 	if (type(a) != ty) err("Type mismatch");
 
 	// Further checks can be done depending on operator. For example, arithmetic operators should have matching numeric arguments.
+	// In each case, the first step is to check the number of arguments, where applicable and necessary, and the last is to
+	// recursively check the argument expressions.
 	switch (a->tag) {
 	case Add:
 	case DivE:
@@ -294,16 +296,9 @@ void Parser::check(Ex* a, Type* ty) {
 	case RemT:
 	case Sub:
 		check(a, 2);
-		ty = type(at(a, 0));
-		switch (ty->tag) {
-		case Integer:
-		case Rational:
-		case Real:
-			break;
-		default:
-			err("Invalid type for arithmetic");
-		}
-		for (size_t i = 0; i < a->n; ++i) check(at(a, i), ty);
+		if (!isNum(ty)) err("Invalid type for arithmetic");
+		check(at(a, 0), ty);
+		check(at(a, 1), ty);
 		return;
 	case All:
 	case Exists:
@@ -319,7 +314,7 @@ void Parser::check(Ex* a, Type* ty) {
 	case Floor:
 	case IsInteger:
 	case IsRational:
-	case Neg:
+	case minus:
 	case Round:
 	case ToInteger:
 	case ToRational:
@@ -327,33 +322,26 @@ void Parser::check(Ex* a, Type* ty) {
 	case Trunc:
 		check(a, 1);
 		ty = type(at(a, 0));
-		switch (ty->tag) {
-		case Integer:
-		case Rational:
-		case Real:
-			break;
-		default:
-			err("Invalid type for arithmetic");
-		}
-		for (size_t i = 0; i < a->n; ++i) check(at(a, i), ty);
+		if (!isNum(ty)) err("Invalid type for arithmetic");
+		check(at(a, 0), ty);
 		return;
 	case Div:
 		check(a, 2);
-		ty = type(at(a, 0));
-		switch (ty->tag) {
-		case Rational:
-		case Real:
+		switch (ty->kind) {
+		case Kind::rational:
+		case Kind::real:
 			break;
 		default:
 			err("Invalid type for rational division");
 		}
-		for (size_t i = 0; i < a->n; ++i) check(at(a, i), ty);
+		check(at(a, 0), ty);
+		check(at(a, 1), ty);
 		return;
 	case Eq:
 		ty = type(at(a, 0));
-		switch (ty->tag) {
-		case Fn:
-		case True:
+		switch (ty->kind) {
+		case Kind::boolean:
+		case Kind::fn:
 			err("Invalid type for equality");
 		}
 		check(at(a, 0), ty);
@@ -371,14 +359,7 @@ void Parser::check(Ex* a, Type* ty) {
 	case Lt:
 		check(a, 2);
 		ty = type(at(a, 0));
-		switch (ty->tag) {
-		case Integer:
-		case Rational:
-		case Real:
-			break;
-		default:
-			err("Invalid type for comparison");
-		}
+		if (!isNum(ty)) err("Invalid type for comparison");
 		check(at(a, 0), ty);
 		check(at(a, 1), ty);
 		return;

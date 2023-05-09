@@ -332,26 +332,16 @@ void literalsTerm(Ex* a) {
 	pos.add(a);
 }
 
-bool isNumeric(Ex* a) {
-	switch (type(a)->tag) {
-	case Integer:
-	case Rational:
-	case Real:
-		return 1;
-	}
-	return 0;
-}
-
-bool hasNumeric(Ex* a) {
-	if (isNumeric(a)) return 1;
+bool hasNum(Ex* a) {
+	if (isNum(type(a))) return 1;
 	for (size_t i = 0; i < a->n; ++i)
-		if (hasNumeric(at(a, i))) return 1;
+		if (hasNum(at(a, i))) return 1;
 	return 0;
 }
 
-bool hasNumeric(const Vec<Ex*>& v) {
+bool hasNum(const Vec<Ex*>& v) {
 	for (auto a: v)
-		if (hasNumeric(a)) return 1;
+		if (hasNum(a)) return 1;
 	return 0;
 }
 
@@ -368,7 +358,7 @@ void clausesTerm(Ex* a) {
 	// First-order logic is not complete on arithmetic. The conservative approach to this is that if any clause contains terms of
 	// numeric type, we mark the proof search incomplete, so that failure to derive a contradiction, means the result is
 	// inconclusive rather than satisfiable.
-	if (result == 1 && (hasNumeric(neg) || hasNumeric(pos))) result = -1;
+	if (result == 1 && (hasNum(neg) || hasNum(pos))) result = -1;
 
 	clause();
 }

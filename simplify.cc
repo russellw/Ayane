@@ -101,9 +101,9 @@ Ex* simplify(Ex* a) {
 	{
 		auto x = simplify(at(a, 0));
 		if (realConstant(x) || constant(x)) return bools + 1;
-		switch (type(x)->tag) {
-		case Integer:
-		case Rational:
+		switch (type(x)->kind) {
+		case Kind::integer:
+		case Kind::rational:
 			return bools + 1;
 		}
 		return ex(t, x);

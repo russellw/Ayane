@@ -1,3 +1,8 @@
+enum class Kind {
+#define _(x) x,
+#include "kinds.h"
+};
+
 enum {
 	// TODO: True needs to be early in the list, but does False need any particular order?
 	False,
@@ -45,7 +50,7 @@ enum {
 };
 
 struct Type {
-	int tag;
+	Kind kind;
 	uint32_t n;
 };
 
@@ -57,11 +62,8 @@ struct CompType: Type {
 	Type* v[];
 };
 
-// First-order logic types
 extern Type tbool;
 extern Type tindividual;
-
-// Number types
 extern Type tinteger;
 extern Type trational;
 extern Type treal;
@@ -73,3 +75,4 @@ inline Type* at(Type* a, size_t i) {
 
 Type* type(Type* a, Type* b);
 Type* type(const Vec<Type*>& v);
+bool isNum(Type* ty);

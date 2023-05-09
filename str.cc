@@ -129,7 +129,7 @@ Str* intern(const char* s, size_t n) {
 Type* type(Str* s) {
 	if (s->ty) return s->ty;
 	auto ty = (TypeName*)malloc(sizeof(TypeName));
-	ty->tag = False;
+	ty->kind = Kind::name;
 	ty->n = 0;
 	ty->s = s->v;
 	return s->ty = ty;
