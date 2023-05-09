@@ -52,6 +52,6 @@ using Ex2 = pair<Ex*, bool>;
 // Equality can be represented in term form like any other binary operator, but there are also algorithms that need to pay
 // particular attention to equations, e.g. in order to apply them in both directions, enough that it is worth having a specific type
 // for them in such contexts.
-struct eqn: pair<Ex*, Ex*> {
-	eqn(Ex* a);
+struct Eqn: pair<Ex*, Ex*> {
+	Eqn(Ex* a);
 };

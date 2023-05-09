@@ -34,7 +34,7 @@ bool match(Ex* a, Ex* b) {
 	return 1;
 }
 
-bool match(eqn a, eqn b) {
+bool match(Eqn a, Eqn b) {
 	auto o = m.size();
 
 	if (match(a.first, b.first) && match(a.second, b.second)) return 1;

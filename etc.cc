@@ -1,7 +1,7 @@
 #include "main.h"
 
 // SORT
-eqn::eqn(Ex* a) {
+Eqn::Eqn(Ex* a) {
 	// TODO: move to same module as the definition of the structure
 	if (a->tag == Eq) {
 		first = at(a, 0);

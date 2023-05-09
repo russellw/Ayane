@@ -128,7 +128,7 @@ void resolve1() {
 // For each negative equation
 void resolve() {
 	for (auto i: c->neg()) {
-		auto e = eqn(at(c, i));
+		auto e = Eqn(at(c, i));
 		if (unify(e.first, 0, e.second, 0)) {
 			ci = i;
 			resolve1();
@@ -173,7 +173,7 @@ void factor1() {
 	for (auto i: c->pos()) {
 		if (i == ci) continue;
 		di = i;
-		auto e = eqn(at(c, i));
+		auto e = Eqn(at(c, i));
 
 		d0 = e.first;
 		d1 = e.second;
@@ -188,7 +188,7 @@ void factor1() {
 // For each positive equation (both directions)
 void factor() {
 	for (auto i: c->pos()) {
-		auto e = eqn(at(c, i));
+		auto e = Eqn(at(c, i));
 		ci = i;
 
 		c0 = e.first;
@@ -279,7 +279,7 @@ void superposn2() {
 	// TODO: check this
 	if (c0 == bools + 1) return;
 	for (auto i: d) {
-		auto e = eqn(at(d, i));
+		auto e = Eqn(at(d, i));
 		di = i;
 
 		assert(!posn.n);
@@ -297,7 +297,7 @@ void superposn2() {
 // For each positive equation in c (both directions)
 void superposn1() {
 	for (auto i: c->pos()) {
-		auto e = eqn(at(c, i));
+		auto e = Eqn(at(c, i));
 		ci = i;
 
 		c0 = e.first;
