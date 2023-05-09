@@ -30,6 +30,8 @@ inline Type* at(Type* a, size_t i) {
 	return ((CompType*)a)->v[i];
 }
 
-Type* type(Type* a, Type* b);
-Type* type(const Vec<Type*>& v);
+Type* compType(Type* a, Type* b);
+Type* compType(const Vec<Type*>& v);
 bool isNum(Type* ty);
+Type* compType(Type* rty, Expr** first, Expr** last);
+Type* typeName(Str* s);

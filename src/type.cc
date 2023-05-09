@@ -8,7 +8,7 @@ Type trational(Kind::rational);
 Type treal(Kind::real);
 
 // Composite types
-struct CompCmp {
+struct Cmp {
 	// TODO: if this ends up also needing allocator, rename to something like compElement?
 	static bool eq(Kind kind, Type** a, size_t n, Type* b) {
 		return kind == b->kind && n == b->n && memcmp(a, b->v, n * sizeof *a) == 0;
@@ -29,7 +29,7 @@ struct CompCmp {
 static void clear(Type** a) {
 }
 
-static Set<Kind, Type**, Type, CompCmp> comps;
+static Set<Kind, Type**, CompType, Cmp> compTypes;
 
 bool isNum(Type* ty) {
 	switch (ty->kind) {
@@ -39,4 +39,22 @@ bool isNum(Type* ty) {
 		return 1;
 	}
 	return 0;
+}
+
+Type* compType(Type* rty, Expr** first, Expr** last) {
+	if (first == last) return rty;
+	Vec<Type*> v(1, rty);
+	// TODO: add in one op
+	for (auto i = first; i < last; ++i) v.add(type(*i));
+	return compType(v);
+}
+
+Type* typeName(Str* s) {
+	if (s->ty) return s->ty;
+	// TODO: Worth using a constructor?
+	auto ty = (TypeName*)malloc(sizeof(TypeName));
+	ty->kind = Kind::name;
+	ty->n = 0;
+	ty->s = s->v;
+	return s->ty = ty;
 }

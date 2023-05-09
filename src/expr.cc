@@ -394,11 +394,3 @@ Type* type(Expr* a) {
 	}
 	unreachable;
 }
-
-Type* ftype(Type* rty, Expr** first, Expr** last) {
-	if (first == last) return rty;
-	Vec<Type*> v(1, rty);
-	// TODO: add in one op
-	for (auto i = first; i < last; ++i) v.add(type(*i));
-	return type(v);
-}

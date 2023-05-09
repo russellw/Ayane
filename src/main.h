@@ -40,6 +40,9 @@ using std::vector;
 #include "vec.h"
 
 // Logic
+struct Expr;
+struct Str;
+
 #include "type.h"
 
 #include "expr.h"
