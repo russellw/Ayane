@@ -1,3 +1,8 @@
+import os
+
+here = os.path.dirname(os.path.realpath(__file__))
+src = os.path.join(here, "..", "src")
+
 words = [
     "ax",
     "bool",
@@ -62,7 +67,7 @@ def san(s):
     return s
 
 
-xs = open("str.h").readlines()
+xs = open(os.path.join(src, "str.h")).readlines()
 i = find("enum") + 1
 j = end(i)
 ys = []
@@ -70,9 +75,9 @@ for y in words:
     ys.append(f"\ts_{san(y)},\n")
 ys.append("\tnkeywords\n")
 xs[i:j] = ys
-open("str.h", "w", newline="\n").writelines(xs)
+open(os.path.join(src, "str.h"), "w", newline="\n").writelines(xs)
 
-xs = open("str.cc").readlines()
+xs = open(os.path.join(src, "str.cc")).readlines()
 i = find("Str keywords") + 1
 j = end(i)
 ys = []
@@ -81,4 +86,4 @@ for y in words:
     ys.append('\t{0, 0, "%s"},\n' % y)
 ys.append("// clang-format on\n")
 xs[i:j] = ys
-open("str.cc", "w", newline="\n").writelines(xs)
+open(os.path.join(src, "str.cc"), "w", newline="\n").writelines(xs)
