@@ -26,8 +26,9 @@ VOID CALLBACK timeout(PVOID a, BOOLEAN b) {
 #define version "3"
 
 enum class Lang {
-	dimacs,
 	none,
+
+	dimacs,
 	tptp,
 };
 

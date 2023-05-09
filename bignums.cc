@@ -16,7 +16,7 @@ size_t hash(mpz_t a) {
 
 struct IntegerCmp {};
 
-static Set<mpz_t, Ex, IntegerCmp> integers;
+static Set<int, mpz_t, Ex, IntegerCmp> integers;
 
 // Rationals
 bool eq(int tag, mpq_t a, size_t n, Ex* b) {
@@ -29,7 +29,7 @@ size_t hash(mpq_t a) {
 
 struct RationalCmp {};
 
-static Set<mpq_t, Ex, RationalCmp> rationals;
+static Set<int, mpq_t, Ex, RationalCmp> rationals;
 
 Ex* real(mpq_t q) {
 	return ex(ToReal, intern(q));

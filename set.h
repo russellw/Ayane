@@ -1,10 +1,10 @@
 // TODO: document rationale
-template <class K, class T, class Cmp> class Set {
+template <class K, class L, class T, class Cmp> class Set {
 	size_t cap = 4;
 	size_t qty;
 	T** entries = (T**)calloc(cap, sizeof *entries);
 
-	static size_t slot(T** entries, size_t cap, int tag, K a, size_t n) {
+	static size_t slot(T** entries, size_t cap, K tag, L a, size_t n) {
 		size_t mask = cap - 1;
 		auto i = Cmp::hash(tag, a, n) & mask;
 		while (entries[i] && !Cmp::eq(tag, a, n, entries[i])) i = (i + 1) & mask;
@@ -32,7 +32,7 @@ template <class K, class T, class Cmp> class Set {
 	}
 
 public:
-	T* intern(int tag, K a, size_t n) {
+	T* intern(K tag, L a, size_t n) {
 		auto i = slot(entries, cap, tag, a, n);
 
 		// If we have seen this before, return the existing object
