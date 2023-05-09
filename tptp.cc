@@ -423,7 +423,7 @@ struct Parser1: Parser {
 			auto b = atomicTerm();
 			defaultType(a, &tindividual);
 			defaultType(b, &tindividual);
-			return ex(Eq, a, b);
+			return ex(Tag::eq, a, b);
 		}
 		case k_ne:
 		{
@@ -431,7 +431,7 @@ struct Parser1: Parser {
 			auto b = atomicTerm();
 			defaultType(a, &tindividual);
 			defaultType(b, &tindividual);
-			return ex(Not, ex(Eq, a, b));
+			return ex(Tag::not1, ex(Tag::eq, a, b));
 		}
 		}
 		defaultType(a, &tbool);
@@ -443,12 +443,12 @@ struct Parser1: Parser {
 		expect('[');
 		auto old = vars.size();
 		// TODO: check generated code
-		Vec<Ex*> v{t, False};
+		Vec<Ex*> v(1, 0);
 		do {
 			if (tok != k_var) err("Expected variable");
 			auto s = str;
 			lex();
-			type ty = &tindividual;
+			Type* ty = &tindividual;
 			if (eat(':')) ty = atomicType();
 			auto x = var(vars.size(), ty);
 			vars.add(make_pair(s, x));
@@ -456,15 +456,15 @@ struct Parser1: Parser {
 		} while (eat(','));
 		expect(']');
 		expect(':');
-		v[1] = unary();
+		v[0] = unary();
 		vars.resize(old);
-		return ex(v);
+		return ex(tag, v);
 	}
 
 	Ex* unary() {
 		switch (tok) {
 		case '!':
-			return quant(All);
+			return quant(Tag::all);
 		case '(':
 		{
 			lex();
@@ -473,31 +473,31 @@ struct Parser1: Parser {
 			return a;
 		}
 		case '?':
-			return quant(Exists);
+			return quant(Tag::exists);
 		case '~':
 			lex();
-			return ex(Not, unary());
+			return ex(Tag::not1, unary());
 		}
 		return infixUnary();
 	}
 
 	Ex* associativeLogicFormula(Tag tag, Ex* a) {
-		Vec<Ex*> v{t, a};
+		Vec<Ex*> v(1, a);
 		auto k = tok;
 		while (eat(k)) v.add(unary());
-		return ex(v);
+		return ex(tag, v);
 	}
 
 	Ex* logicFormula() {
 		auto a = unary();
 		switch (tok) {
 		case '&':
-			return associativeLogicFormula(And, a);
+			return associativeLogicFormula(Tag::and1, a);
 		case '|':
-			return associativeLogicFormula(Or, a);
+			return associativeLogicFormula(Tag::or1, a);
 		case k_eqv:
 			lex();
-			return ex(Eqv, a, unary());
+			return ex(Tag::eqv, a, unary());
 		case k_imp:
 			lex();
 			return imp(a, unary());
@@ -506,13 +506,13 @@ struct Parser1: Parser {
 			return imp(unary(), a);
 		case k_nand:
 			lex();
-			return ex(Not, ex(And, a, unary()));
+			return ex(Tag::not1, ex(Tag::and1, a, unary()));
 		case k_nor:
 			lex();
-			return ex(Not, ex(Or, a, unary()));
+			return ex(Tag::not1, ex(Tag::or1, a, unary()));
 		case k_xor:
 			lex();
-			return ex(Not, ex(Eqv, a, unary()));
+			return ex(Tag::not1, ex(Tag::eqv, a, unary()));
 		}
 		return a;
 	}
@@ -570,10 +570,7 @@ struct Parser1: Parser {
 				auto a = quantify(logicFormula());
 
 				// Select
-				if (!select.count(name)) break;
-
-				// Clause
-				problem.axiom(a, file, name);
+				if (select.count(name)) cnf(a);
 				break;
 			}
 			case s_fof:
@@ -621,12 +618,13 @@ struct Parser1: Parser {
 					// disjunction), and no consensus on which is correct, so rather than risk silently giving a wrong answer,
 					// reject the problem as ambiguous and require it to be restated with the conjectures folded into one, using
 					// explicit conjunction or disjunction
+					static bool conjecture;
 					if (conjecture) err("Multiple conjectures not supported");
 					a = ex(Tag::not1, a);
 					conjecture = 1;
 				}
 
-				// Formula
+				// Convert to clauses
 				cnf(a);
 				break;
 			}
@@ -646,13 +644,13 @@ struct Parser1: Parser {
 					Select sel(0);
 					do {
 						auto selName = wordOrDigits();
-						if (select.count(selName->v)) sel.add(selName->v);
+						if (select.count(selName->v)) sel.insert(selName->v);
 					} while (eat(','));
 
 					expect(']');
-					Parser1 parser(file1, sel, problem);
+					Parser1 parser(file1, sel);
 				} else {
-					Parser1 parser(file1, select, problem);
+					Parser1 parser(file1, select);
 				}
 				break;
 			}
@@ -669,6 +667,6 @@ struct Parser1: Parser {
 };
 } // namespace
 
-void tptp(const char* file, Problem& problem) {
-	Parser1 parser(file, Select(1), problem);
+void tptp(const char* file) {
+	Parser1 parser(file, Select(1));
 }
