@@ -1,3 +1,8 @@
+enum class Tag {
+#define _(a) a,
+#include "tags.h"
+};
+
 // TODO: refactor source file organization
 struct Ex {
 	int tag;
