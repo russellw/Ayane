@@ -47,10 +47,10 @@ bool match(eqn a, eqn b) {
 }
 
 Clause* c;
-range cs;
+Range cs;
 
 Clause* d;
-range ds;
+Range ds;
 
 // Multiset avoids breaking completeness when factoring is used
 Vec<bool> used;

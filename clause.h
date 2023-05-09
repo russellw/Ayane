@@ -8,11 +8,11 @@ struct Clause {
 	bool dead;
 	Ex* atoms[];
 
-	range neg() const {
-		return range(0, nn);
+	Range neg() const {
+		return Range(0, nn);
 	}
-	range pos() const {
-		return range(nn, n);
+	Range pos() const {
+		return Range(nn, n);
 	}
 };
 
@@ -23,10 +23,10 @@ inline Ex* at(Clause* c, size_t i) {
 	return c->atoms[i];
 }
 
-inline range::iterator begin(const Clause* c) {
+inline Range::iterator begin(const Clause* c) {
 	return 0;
 }
-inline range::iterator end(const Clause* c) {
+inline Range::iterator end(const Clause* c) {
 	return c->n;
 }
 

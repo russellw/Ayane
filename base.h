@@ -1,5 +1,5 @@
 // TODO: separate file?
-struct range: pair<size_t, size_t> {
+struct Range: pair<size_t, size_t> {
 	struct iterator {
 		size_t i;
 
@@ -20,9 +20,9 @@ struct range: pair<size_t, size_t> {
 		}
 	};
 
-	range() {
+	Range() {
 	}
-	range(size_t first, size_t second): pair(first, second) {
+	Range(size_t first, size_t second): pair(first, second) {
 	}
 
 	iterator begin() {
