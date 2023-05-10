@@ -428,7 +428,7 @@ struct Parser1: Parser {
 			return num1;
 		case k_var:
 		{
-			for (auto i = vars.rbegin(), e = vars.rend(); i < e; ++i)
+			for (auto i = vars.rbegin(), e = vars.rend(); i != e; ++i)
 				if (i->first == s) return i->second;
 			if (!cnfMode) err("Unknown variable");
 			auto x = var(vars.size(), &tindividual);
