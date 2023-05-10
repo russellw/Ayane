@@ -10,10 +10,10 @@ Type treal(Kind::real);
 // Composite types
 struct Cmp {
 	// TODO: if this ends up also needing allocator, rename to something like compElement?
-	static bool eq(Kind kind, Type** a, size_t n, Type* b) {
+	static bool eq(Kind kind, Type** a, size_t n, CompType* b) {
 		return kind == b->kind && n == b->n && memcmp(a, b->v, n * sizeof *a) == 0;
 	}
-	static bool eq(Type* a, Type* b) {
+	static bool eq(CompType* a, CompType* b) {
 		return eq(a->kind, a->v, a->n, b);
 	}
 
@@ -21,7 +21,7 @@ struct Cmp {
 		// TODO: hashCombine?
 		return fnv(a, n * sizeof *a);
 	}
-	static size_t hash(Type* a) {
+	static size_t hash(CompType* a) {
 		return hash(a->kind, a->v, a->n);
 	}
 };

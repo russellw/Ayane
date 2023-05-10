@@ -17,14 +17,14 @@ bool eq(Expr* a, bool ax, Expr* b, bool bx) {
 	if (ax == bx) return 1;
 
 	// Two variables on different sides, are not equal
-	if (a->tag == Var) return 0;
+	if (a->tag == Tag::var) return 0;
 
-	// Compound terms on opposite sides, even though syntactically equal, could contain variables, which would make them logically
+	// Composite terms on opposite sides, even though syntactically equal, could contain variables, which would make them logically
 	// unequal; to find out for sure, we would need to recur through subterms, but that is the job of match/unify, so here we just
 	// give the conservative answer that they are not equal
-	if (a.size()) return 0;
+	if (a->n) return 0;
 
-	// Non-variable atoms do not have associated subscripts, so given that they are syntactically equal, they must be logically
+	// Non-variable leaves do not have associated subscripts, so given that they are syntactically equal, they must be logically
 	// equal
 	return 1;
 }
@@ -32,27 +32,27 @@ bool eq(Expr* a, bool ax, Expr* b, bool bx) {
 namespace {
 Vec<pair<ExprSubscript, ExprSubscript>> m;
 
-bool occurs(Expr* a, bool ax, Expr* b, bool bx) {
-	assert(a->tag == Var);
-	if (b->tag == Var) {
+bool occurs(Var* a, bool ax, Expr* b, bool bx) {
+	assert(a->tag == Tag::var);
+	if (b->tag == Tag::var) {
 		if (eq(a, ax, b, bx)) return 1;
 		auto b1 = make_pair(b, bx);
 		ExprSubscript mb;
-		if (m.get(b1, mb)) return occurs(a, ax, mb.first, mb.second);
+		if (get(b1, mb, m)) return occurs(a, ax, mb.first, mb.second);
 	}
-	for (size_t i = 0; i < b.size(); ++i)
-		if (occurs(a, ax, b[i], bx)) return 1;
+	for (auto i: b)
+		if (occurs(a, ax, i, bx)) return 1;
 	return 0;
 }
 
-bool unifyVar(Expr* a, bool ax, Expr* b, bool bx) {
-	assert(a->tag == Var);
+bool unifyVar(Var* a, bool ax, Expr* b, bool bx) {
+	assert(a->tag == Tag::var);
 	assert(type(a) == type(b));
 
 	// Existing mappings
 	auto a1 = make_pair(a, ax);
 	ExprSubscript ma;
-	if (m.get(a1, ma)) return unify1(ma.first, ma.second, b, bx);
+	if (get(a1, ma, m)) return unify1(ma.first, ma.second, b, bx);
 
 	auto b1 = make_pair(b, bx);
 	ExprSubscript mb;
@@ -74,8 +74,8 @@ bool unify1(Expr* a, bool ax, Expr* b, bool bx) {
 	if (type(a) != type(b)) return 0;
 
 	// Variable
-	if (a->tag == Var) return unifyVar(a, ax, b, bx);
-	if (b->tag == Var) return unifyVar(b, bx, a, ax);
+	if (a->tag == Tag::var) return unifyVar((Var*)a, ax, b, bx);
+	if (b->tag == Tag::var) return unifyVar((Var*)b, bx, a, ax);
 
 	// Mismatched tags
 	if (a->tag != b->tag) return 0;
@@ -102,7 +102,7 @@ Expr* replace(Expr* a, bool ax) {
 	ExprSubscript ma;
 	// TODO: check only if it is a variable
 	if (m.get(a1, ma)) {
-		assert(a->tag == Var);
+		assert(a->tag == Tag::var);
 		return replace(ma.first, ma.second);
 	}
 
