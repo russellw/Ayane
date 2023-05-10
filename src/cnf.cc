@@ -185,6 +185,7 @@ Expr* maybeRename(int pol, Expr* a) {
 	return comp(a->tag, v);
 }
 
+// TODO: Should that be pair<Var*, Expr*>?
 Expr* nnf(bool pol, Expr* a, Vec<pair<Expr*, Expr*>>& m);
 
 // For-all doesn't need much work to convert. Clauses contain variables with implied for-all. The tricky part is that quantifier
