@@ -16,19 +16,19 @@ struct Clause {
 	}
 };
 
-extern Vec<Expr*> neg, pos;
-
-inline Expr* at(Clause* c, size_t i) {
-	assert(i < c->n);
-	return c->atoms[i];
-}
-
 inline Range::iterator begin(const Clause* c) {
 	return 0;
 }
 inline Range::iterator end(const Clause* c) {
 	return c->n;
 }
+
+inline Expr* at(Clause* c, size_t i) {
+	assert(i < c->n);
+	return c->atoms[i];
+}
+
+extern Vec<Expr*> neg, pos;
 
 // Passive clauses are stored in a priority queue with smaller clauses first
 size_t cost(Clause* c);

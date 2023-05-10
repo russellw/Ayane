@@ -320,6 +320,10 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 	return comps.intern(tag, v, n);
 }
 
+Expr* comp(Tag tag, Expr* a) {
+	return comp(tag, &a, 1);
+}
+
 Expr* comp(Tag tag, Expr* a, Expr* b) {
 	static Expr* v[2];
 	v[0] = a;
@@ -328,8 +332,11 @@ Expr* comp(Tag tag, Expr* a, Expr* b) {
 }
 
 Expr* comp(Tag tag, const Vec<Expr*>& v) {
-	assert(v.size());
 	return comps.intern(tag, v.data, v.n);
+}
+
+Expr* comp(Tag tag, vector<Expr*>& v) {
+	return comps.intern(tag, v.data(), v.size());
 }
 
 Type* type(Expr* a) {

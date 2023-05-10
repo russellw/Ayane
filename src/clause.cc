@@ -1,5 +1,7 @@
 #include "main.h"
 
+Vec<Expr*> neg, pos;
+
 static size_t cost(Expr* a) {
 	size_t n = 1;
 	for (size_t i = 0; i < a->n; ++i) n += cost(at(a, i));
@@ -13,3 +15,7 @@ size_t cost(Clause* c) {
 }
 
 priority_queue<Clause*, vector<Clause*>, ClauseCompare> passive;
+
+void clause() {
+	// TODO: implement
+}

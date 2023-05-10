@@ -1,5 +1,7 @@
 #include "main.h"
 
+char buf[5000];
+
 // SORT
 Eqn::Eqn(Expr* a) {
 	// TODO: move to same module as the definition of the structure
