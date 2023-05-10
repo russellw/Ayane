@@ -613,9 +613,8 @@ struct Parser1: Parser {
 						// this and move on.
 						lex();
 					} else {
-						// The symbol is the name of a function with the specified type. Call the term constructor that allows a
-						// type to be specified, which will check for consistency.
-						expr(s, topLevelType());
+						// The symbol is the name of a function with the specified type. Make sure it has this type.
+						fn(s, topLevelType());
 					}
 
 					while (parens--) expect(')');

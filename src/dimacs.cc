@@ -49,9 +49,9 @@ struct Parser1: Parser {
 		tok = *s;
 	}
 
-	// A variable in propositional logic is a constant in first-order logic
+	// A variable in propositional logic is a constant (i.e. function of arity zero) in first-order logic.
 	Expr* var() {
-		auto a = setType(str, &tbool);
+		auto a = fn(str, &tbool);
 		lex();
 		return a;
 	}

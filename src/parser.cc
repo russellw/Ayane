@@ -215,19 +215,15 @@ void Parser::setType(Fn* a, Type* ty) {
 	err("Type mismatch");
 }
 
-// TODO: Is this what it should be called, since it can create a new function?
-Expr* Parser::setType(Str* s, Type* ty) {
+Expr* Parser::fn(Str* s, Type* ty) {
 	if (s->fn) {
 		auto a = s->fn;
-		assert(a->s == s->v);
+		assert(a->name == s->v);
 		setType(a, ty);
 		return a;
 	}
-	auto a = (Expr*)malloc(offsetof(Expr, s) + sizeof(char*));
-	a->tag = Tag::fn;
-	a->s = s->v;
-	a->ty = ty;
-	return a;
+	auto a = new Fn(s->v, ty);
+	return s->fn = a;
 }
 
 void Parser::check(Expr* a, size_t n) {
