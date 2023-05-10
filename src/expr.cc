@@ -193,6 +193,8 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		break;
 	}
 	case Tag::ceil:
+		// Could do type-based simplification in cases like this, e.g. if x is an integer, then ceil(x) = x. But the value of that
+		// is questionable: Is anyone going to write ceil(x) where x is an integer, in the first place?
 		if (constant(x)) return op1(x, mpz_cdiv_q);
 		break;
 	case Tag::div:
@@ -230,15 +232,9 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		if (constant(x)) return op1(x, mpz_fdiv_q);
 		break;
 	case Tag::isInteger:
-		if (type(x) == &tinteger) return bools + 1;
 		if (constant(x)) return bools + (mpz_cmp_ui(mpq_denref(((Rational*)x)->val), 1) == 0);
 		break;
 	case Tag::isRational:
-		switch (type(x)->kind) {
-		case Kind::integer:
-		case Kind::rational:
-			return bools + 1;
-		}
 		if (constant(x)) return bools + 1;
 	case Tag::lt:
 	{
@@ -300,7 +296,6 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		break;
 	}
 	case Tag::toInteger:
-		if (type(x) == &tinteger) return x;
 		if (constant(x)) {
 			auto x1 = (Rational*)x;
 			mpz_t r;
@@ -313,11 +308,9 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		}
 		break;
 	case Tag::toRational:
-		if (type(x) == &trational) return x;
 		if (constant(x)) return toRational(x, Tag::rational);
 		break;
 	case Tag::toReal:
-		if (type(x) == &treal) return x;
 		if (constant(x)) return toRational(x, Tag::real);
 		break;
 	case Tag::trunc:
