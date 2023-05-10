@@ -1,7 +1,7 @@
-black %~dp0
+black %~dp0..
 if %errorlevel% neq 0 goto :eof
 
-isort %~dp0
+isort %~dp0..
 if %errorlevel% neq 0 goto :eof
 
 "C:\Program Files\LLVM\bin\clang-format" -i -style=file %~dp0..\src\*.cc %~dp0..\src\*.h
