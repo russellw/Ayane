@@ -249,7 +249,7 @@ void Parser::check(Expr* a, Type* ty) {
 	// function is well-defined
 	if (a->tag == Tag::call) {
 		assert(a->n > 1);
-		auto fty = at(a, 0)->ty;
+		auto fty = ((Fn*)at(a, 0))->ty;
 		if (!fty) err("Unspecified type");
 
 		// Check for input like a(b) where a is just a constant

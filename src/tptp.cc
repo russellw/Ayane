@@ -19,9 +19,7 @@ unordered_map<Str*, Expr*> distinctObjs;
 Expr* distinctObj(Str* s) {
 	auto& a = distinctObjs[s];
 	if (a) return a;
-	a = (Expr*)malloc(offsetof(Expr, s) + sizeof(char*));
-	a->tag = Tag::distinctObj;
-	a->s = s->v;
+	a = new Expr(Tag::distinctObj);
 	return a;
 }
 
