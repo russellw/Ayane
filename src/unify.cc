@@ -30,39 +30,36 @@ bool eq(Expr* a, bool ax, Expr* b, bool bx) {
 }
 
 namespace {
-Vec<pair<ExprSubscript, ExprSubscript>> m;
+Vec<pair<pair<Var*, bool>, pair<Expr*, bool>>> m;
 
 bool occurs(Var* a, bool ax, Expr* b, bool bx) {
 	assert(a->tag == Tag::var);
 	if (b->tag == Tag::var) {
 		if (eq(a, ax, b, bx)) return 1;
-		auto b1 = make_pair(b, bx);
-		ExprSubscript mb;
-		if (get(b1, mb, m)) return occurs(a, ax, mb.first, mb.second);
+		pair<Expr*, bool> r;
+		if (get(make_pair((Var*)b, bx), r, m)) return occurs(a, ax, r.first, r.second);
 	}
-	for (auto i: b)
-		if (occurs(a, ax, i, bx)) return 1;
+	for (auto bi: b)
+		if (occurs(a, ax, bi, bx)) return 1;
 	return 0;
 }
+
+bool unify1(Expr* a, bool ax, Expr* b, bool bx);
 
 bool unifyVar(Var* a, bool ax, Expr* b, bool bx) {
 	assert(a->tag == Tag::var);
 	assert(type(a) == type(b));
 
 	// Existing mappings
-	auto a1 = make_pair(a, ax);
-	ExprSubscript ma;
-	if (get(a1, ma, m)) return unify1(ma.first, ma.second, b, bx);
-
-	auto b1 = make_pair(b, bx);
-	ExprSubscript mb;
-	if (m.get(b1, mb)) return unify1(a, ax, mb.first, mb.second);
+	pair<Expr*, bool> r;
+	if (get(make_pair(a, ax), r, m)) return unify1(r.first, r.second, b, bx);
+	if (b->tag == Tag::var && get(make_pair((Var*)b, bx), r, m)) return unify1(a, ax, r.first, r.second);
 
 	// Occurs check
 	if (occurs(a, ax, b, bx)) return 0;
 
 	// New mapping
-	m.add(a1, b1);
+	m.add(make_pair(make_pair(a, ax), make_pair(b, bx)));
 	return 1;
 }
 
@@ -77,17 +74,17 @@ bool unify1(Expr* a, bool ax, Expr* b, bool bx) {
 	if (a->tag == Tag::var) return unifyVar((Var*)a, ax, b, bx);
 	if (b->tag == Tag::var) return unifyVar((Var*)b, bx, a, ax);
 
-	// Mismatched tags
+	// Different operators
 	if (a->tag != b->tag) return 0;
 
 	// If nonvariable atoms could unify, they would already have tested equal
-	auto n = a.size();
+	auto n = a->n;
 	if (!n) return 0;
 
 	// Recur
-	if (b.size() != n) return 0;
+	if (b->n != n) return 0;
 	for (size_t i = 0; i < n; ++i)
-		if (!unify1(at(a, i), ax, b[i], bx)) return 0;
+		if (!unify1(at(a, i), ax, at(b, i), bx)) return 0;
 	return 1;
 }
 } // namespace
@@ -98,16 +95,12 @@ bool unify(Expr* a, bool ax, Expr* b, bool bx) {
 }
 
 Expr* replace(Expr* a, bool ax) {
-	auto a1 = make_pair(a, ax);
-	ExprSubscript ma;
-	// TODO: check only if it is a variable
-	if (m.get(a1, ma)) {
-		assert(a->tag == Tag::var);
-		return replace(ma.first, ma.second);
+	if (a->tag == Tag::var) {
+		pair<Expr*, bool> r;
+		if (get(make_pair((Var*)a, ax), r, m)) return replace(r.first, r.second);
 	}
-
-	auto n = a.size();
+	if (!a->n) return a;
 	Vec<Expr*> v;
-	for (size_t i = 0; i < n; ++i) v.add(replace(at(a, i), ax));
+	for (auto b: a) v.add(replace(b, ax));
 	return comp(a->tag, v);
 }

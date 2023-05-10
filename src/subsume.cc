@@ -19,7 +19,7 @@ bool match(Expr* a, Expr* b) {
 		return 1;
 	}
 
-	// Mismatched tags
+	// Different operators
 	if (a->tag != b->tag) return 0;
 
 	// If nonvariable atoms could match, they would already have tested equal
