@@ -54,10 +54,10 @@ struct Comp: Expr {
 
 extern Expr bools[2];
 
-Expr** begin(Expr* a) {
+inline Expr** begin(Expr* a) {
 	return ((Comp*)a)->v;
 }
-Expr** end(Expr* a) {
+inline Expr** end(Expr* a) {
 	return ((Comp*)a)->v + a->n;
 }
 
