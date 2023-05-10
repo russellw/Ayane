@@ -9,7 +9,7 @@
 // trivially unify) because two syntactically identical terms could be, or contain, the same variable names but with different
 // associated subscripts
 // TODO: update terminology in comments
-bool eq(expr a, bool ax, expr b, bool bx) {
+bool eq(Expr* a, bool ax, Expr* b, bool bx) {
 	// If the terms are not syntactically equal then we definitely do not have logical equality
 	if (a != b) return 0;
 
@@ -32,7 +32,7 @@ bool eq(expr a, bool ax, expr b, bool bx) {
 namespace {
 Vec<pair<ExprSubscript, ExprSubscript>> m;
 
-bool occurs(expr a, bool ax, expr b, bool bx) {
+bool occurs(Expr* a, bool ax, Expr* b, bool bx) {
 	assert(a->tag == Var);
 	if (b->tag == Var) {
 		if (eq(a, ax, b, bx)) return 1;
@@ -45,7 +45,7 @@ bool occurs(expr a, bool ax, expr b, bool bx) {
 	return 0;
 }
 
-bool unifyVar(expr a, bool ax, expr b, bool bx) {
+bool unifyVar(Expr* a, bool ax, Expr* b, bool bx) {
 	assert(a->tag == Var);
 	assert(type(a) == type(b));
 
@@ -66,7 +66,7 @@ bool unifyVar(expr a, bool ax, expr b, bool bx) {
 	return 1;
 }
 
-bool unify1(expr a, bool ax, expr b, bool bx) {
+bool unify1(Expr* a, bool ax, Expr* b, bool bx) {
 	// Equals
 	if (eq(a, ax, b, bx)) return 1;
 
@@ -92,12 +92,12 @@ bool unify1(expr a, bool ax, expr b, bool bx) {
 }
 } // namespace
 
-bool unify(expr a, bool ax, expr b, bool bx) {
+bool unify(Expr* a, bool ax, Expr* b, bool bx) {
 	m.n = 0;
 	return unify1(a, ax, b, bx);
 }
 
-expr replace(expr a, bool ax) {
+Expr* replace(Expr* a, bool ax) {
 	auto a1 = make_pair(a, ax);
 	ExprSubscript ma;
 	// TODO: check only if it is a variable
@@ -107,7 +107,7 @@ expr replace(expr a, bool ax) {
 	}
 
 	auto n = a.size();
-	Vec<expr> v;
+	Vec<Expr*> v;
 	for (size_t i = 0; i < n; ++i) v.add(replace(at(a, i), ax));
-	return expr(a->tag, v);
+	return comp(a->tag, v);
 }

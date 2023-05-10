@@ -265,7 +265,7 @@ struct Parser1: Parser {
 			}
 			break;
 		case k_id:
-			return type(s);
+			return typeName(s);
 		}
 		err("Expected type");
 	}
@@ -279,10 +279,10 @@ struct Parser1: Parser {
 			expect(')');
 			expect('>');
 			v[0] = atomicType();
-			return type(v);
+			return compType(v);
 		}
 		auto ty = atomicType();
-		if (eat('>')) return type(atomicType(), ty);
+		if (eat('>')) return compType(atomicType(), ty);
 		return ty;
 	}
 
@@ -297,7 +297,7 @@ struct Parser1: Parser {
 	Expr* definedFunctor(Tag tag) {
 		Vec<Expr*> v;
 		args(v);
-		return expr(tag, v);
+		return comp(tag, v);
 	}
 
 	Expr* atomicTerm() {
@@ -322,8 +322,8 @@ struct Parser1: Parser {
 				for (auto& a: v) defaultType(a, &tindividual);
 				Vec<Expr*> inequalities;
 				for (auto i = v.begin(), e = v.end(); i < e; ++i)
-					for (auto j = v.begin(); j != i; ++j) inequalities.add(expr(Tag::not1, expr(Tag::eq, *i, *j)));
-				return expr(Tag::and1, inequalities);
+					for (auto j = v.begin(); j != i; ++j) inequalities.add(comp(Tag::not1, comp(Tag::eq, *i, *j)));
+				return comp(Tag::and1, inequalities);
 			}
 			case s_false:
 				return bools;
@@ -336,7 +336,7 @@ struct Parser1: Parser {
 				expect(',');
 				auto b = atomicTerm();
 				expect(')');
-				return expr(Tag::lt, b, a);
+				return comp(Tag::lt, b, a);
 			}
 			case s_greatereq:
 			{
@@ -345,7 +345,7 @@ struct Parser1: Parser {
 				expect(',');
 				auto b = atomicTerm();
 				expect(')');
-				return expr(Tag::or1, expr(Tag::eq, b, a), expr(Tag::lt, b, a));
+				return comp(Tag::or1, comp(Tag::eq, b, a), comp(Tag::lt, b, a));
 			}
 			case s_is_int:
 				return definedFunctor(Tag::isInteger);
@@ -360,7 +360,7 @@ struct Parser1: Parser {
 				expect(',');
 				auto b = atomicTerm();
 				expect(')');
-				return expr(Tag::or1, expr(Tag::eq, a, b), expr(Tag::lt, a, b));
+				return comp(Tag::or1, comp(Tag::eq, a, b), comp(Tag::lt, a, b));
 			}
 			case s_product:
 				return definedFunctor(Tag::mul);
@@ -399,7 +399,7 @@ struct Parser1: Parser {
 		}
 		case k_id:
 		{
-			auto a = expr(s, 0);
+			auto a = fn(s, 0);
 
 			// Not a function call
 			if (tok != '(') return a;
@@ -414,7 +414,7 @@ struct Parser1: Parser {
 			// Leave it to the caller, which will know from context whether that is the case.
 			for (size_t i = 0; i < v.size(); ++i) defaultType(v[i], &tindividual);
 
-			return expr(v);
+			return comp(Tag::call, v);
 		}
 		case k_num:
 			return num1;
@@ -440,7 +440,7 @@ struct Parser1: Parser {
 			auto b = atomicTerm();
 			defaultType(a, &tindividual);
 			defaultType(b, &tindividual);
-			return expr(Tag::eq, a, b);
+			return comp(Tag::eq, a, b);
 		}
 		case k_ne:
 		{
@@ -448,7 +448,7 @@ struct Parser1: Parser {
 			auto b = atomicTerm();
 			defaultType(a, &tindividual);
 			defaultType(b, &tindividual);
-			return expr(Tag::not1, expr(Tag::eq, a, b));
+			return comp(Tag::not1, comp(Tag::eq, a, b));
 		}
 		}
 		defaultType(a, &tbool);
@@ -475,7 +475,7 @@ struct Parser1: Parser {
 		expect(':');
 		v[0] = unary();
 		vars.resize(old);
-		return expr(tag, v);
+		return comp(tag, v);
 	}
 
 	Expr* unary() {
@@ -493,7 +493,7 @@ struct Parser1: Parser {
 			return quant(Tag::exists);
 		case '~':
 			lex();
-			return expr(Tag::not1, unary());
+			return comp(Tag::not1, unary());
 		}
 		return infixUnary();
 	}
@@ -502,7 +502,7 @@ struct Parser1: Parser {
 		Vec<Expr*> v(1, a);
 		auto k = tok;
 		while (eat(k)) v.add(unary());
-		return expr(tag, v);
+		return comp(tag, v);
 	}
 
 	Expr* logicFormula() {
@@ -514,7 +514,7 @@ struct Parser1: Parser {
 			return associativeLogicFormula(Tag::or1, a);
 		case k_eqv:
 			lex();
-			return expr(Tag::eqv, a, unary());
+			return comp(Tag::eqv, a, unary());
 		case k_imp:
 			lex();
 			return imp(a, unary());
@@ -523,13 +523,13 @@ struct Parser1: Parser {
 			return imp(unary(), a);
 		case k_nand:
 			lex();
-			return expr(Tag::not1, expr(Tag::and1, a, unary()));
+			return comp(Tag::not1, comp(Tag::and1, a, unary()));
 		case k_nor:
 			lex();
-			return expr(Tag::not1, expr(Tag::or1, a, unary()));
+			return comp(Tag::not1, comp(Tag::or1, a, unary()));
 		case k_xor:
 			lex();
-			return expr(Tag::not1, expr(Tag::eqv, a, unary()));
+			return comp(Tag::not1, comp(Tag::eqv, a, unary()));
 		}
 		return a;
 	}
@@ -636,7 +636,7 @@ struct Parser1: Parser {
 					// explicit conjunction or disjunction
 					static bool conjecture;
 					if (conjecture) err("Multiple conjectures not supported");
-					a = expr(Tag::not1, a);
+					a = comp(Tag::not1, a);
 					conjecture = 1;
 				}
 
