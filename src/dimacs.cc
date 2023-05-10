@@ -50,7 +50,7 @@ struct Parser1: Parser {
 	}
 
 	// A variable in propositional logic is a constant (i.e. function of arity zero) in first-order logic.
-	Expr* var() {
+	Expr* propVar() {
 		auto a = fn(str, &tbool);
 		lex();
 		return a;
@@ -81,13 +81,13 @@ struct Parser1: Parser {
 		for (;;) switch (tok) {
 			case '-':
 				lex();
-				literals.add(comp(Tag::not1, var()));
+				literals.add(comp(Tag::not1, propVar()));
 				break;
 			case 0:
 				if (literals.n) add(literals);
 				return;
 			case k_id:
-				literals.add(var());
+				literals.add(propVar());
 				break;
 			case k_zero:
 				lex();
