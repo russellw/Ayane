@@ -1,4 +1,5 @@
 // TODO: separate file?
+// TODO: change to use pointers?
 struct Range: pair<size_t, size_t> {
 	struct iterator {
 		size_t i;

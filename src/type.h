@@ -33,5 +33,6 @@ inline Type* at(Type* a, size_t i) {
 Type* compType(Type* a, Type* b);
 Type* compType(const Vec<Type*>& v);
 bool isNum(Type* ty);
+// TODO: rename params
 Type* compType(Type* rty, Expr** first, Expr** last);
 Type* typeName(Str* s);

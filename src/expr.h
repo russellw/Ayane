@@ -54,6 +54,13 @@ struct Comp: Expr {
 
 extern Expr bools[2];
 
+Expr** begin(Expr* a) {
+	return ((Comp*)a)->v;
+}
+Expr** end(Expr* a) {
+	return ((Comp*)a)->v + a->n;
+}
+
 Expr* expr(mpz_t val);
 Expr* expr(mpq_t val);
 
