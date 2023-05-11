@@ -132,21 +132,6 @@ template <class T> struct Vec {
 		n = o;
 	}
 
-	void clear() {
-		resize(0);
-	}
-
-	// Capacity
-	size_t size() const {
-		// TODO: inline
-		return n;
-	}
-
-	bool empty() const {
-		// TODO: inline
-		return !n;
-	}
-
 	// Iterators
 	iterator begin() {
 		return data;

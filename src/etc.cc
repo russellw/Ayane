@@ -106,7 +106,7 @@ bool occurs(Expr* a, Expr* b) {
 Expr* quantify(Expr* a) {
 	Vec<Expr*> vars;
 	freeVars(a, Vec<Expr*>(), vars);
-	if (vars.empty()) return a;
+	if (!vars.n) return a;
 	Vec<Expr*> v(1, a);
 	// TODO: add all at once
 	for (auto x: vars) v.add(x);

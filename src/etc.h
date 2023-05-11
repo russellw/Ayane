@@ -12,7 +12,7 @@ Expr* quantify(Expr* a);
 ///
 
 template <class T> void cartProduct(const vector<vector<T>>& vs, size_t i, Vec<size_t>& js, vector<vector<T>>& rs) {
-	if (i == js.size()) {
+	if (i == js.n) {
 		vector<T> r;
 		for (size_t i = 0; i < vs.size(); ++i) r.push_back(vs[i][js[i]]);
 		rs.push_back(r);

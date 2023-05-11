@@ -35,13 +35,13 @@ bool match(Expr* a, Expr* b) {
 }
 
 bool match(Eqn a, Eqn b) {
-	auto o = m.size();
+	auto o = m.n;
 
 	if (match(a.first, b.first) && match(a.second, b.second)) return 1;
-	m.resize(o);
+	m.n = o;
 
 	if (match(a.first, b.second) && match(a.second, b.first)) return 1;
-	m.resize(o);
+	m.n = o;
 
 	return 0;
 }
@@ -64,11 +64,11 @@ bool subsume(int ci) {
 		auto b = at(d, di);
 		if (!match(a, b)) continue;
 
-		auto o = m.size();
+		auto o = m.n;
 		used[di] = 1;
 		if (subsume(ci)) return 1;
 		used[di] = 0;
-		m.resize(o);
+		m.n = o;
 	}
 	return 0;
 }
@@ -79,10 +79,10 @@ bool subsumes(Clause* c0, Clause* d0) {
 
 	c = c0;
 	d = d0;
-	m.clear();
+	m.n = 0;
 
 	used.resize(d->n);
-	memset(used.data, 0, used.size());
+	memset(used.data, 0, used.n);
 
 	cs = c->neg();
 	ds = d->neg();

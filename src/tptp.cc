@@ -428,7 +428,7 @@ struct Parser1: Parser {
 			// First-order logic does not allow functions to take Boolean arguments, so the arguments can default to individual. But
 			// we cannot yet make any assumption about the function return type. For all we know here, it could still be Boolean.
 			// Leave it to the caller, which will know from context whether that is the case.
-			for (size_t i = 0; i < v.size(); ++i) defaultType(v[i], &tindividual);
+			for (size_t i = 0; i < v.n; ++i) defaultType(v[i], &tindividual);
 
 			return comp(Tag::call, v);
 		}
@@ -439,7 +439,7 @@ struct Parser1: Parser {
 			for (auto i = vars.rbegin(), e = vars.rend(); i != e; ++i)
 				if (i->first == s) return i->second;
 			if (!cnfMode) err("Unknown variable");
-			auto x = var(vars.size(), &tindividual);
+			auto x = var(vars.n, &tindividual);
 			vars.add(make_pair(s, x));
 			return x;
 		}
@@ -474,23 +474,23 @@ struct Parser1: Parser {
 	Expr* quant(Tag tag) {
 		lex();
 		expect('[');
-		auto old = vars.size();
 		// TODO: check generated code
 		Vec<Expr*> v(1, 0);
+		auto o = vars.n;
 		do {
 			if (tok != k_var) err("Expected variable");
 			auto s = str;
 			lex();
 			LeafType* ty = &tindividual;
 			if (eat(':')) ty = typeName(id());
-			auto x = var(vars.size(), ty);
+			auto x = var(vars.n, ty);
 			vars.add(make_pair(s, x));
 			v.add(x);
 		} while (eat(','));
+		vars.n = o;
 		expect(']');
 		expect(':');
 		v[0] = unary();
-		vars.resize(old);
 		return comp(tag, v);
 	}
 
@@ -584,8 +584,7 @@ struct Parser1: Parser {
 	Parser1(const char* file, const Select& select): Parser(file), select(select) {
 		lex();
 		while (tok) {
-			// TODO: assert(!vars.n)
-			vars.clear();
+			assert(!vars.n);
 			auto kw = keyword(wordOrDigits());
 			expect('(');
 			auto name = wordOrDigits()->v;
@@ -601,6 +600,7 @@ struct Parser1: Parser {
 				// Literals
 				cnfMode = 1;
 				auto a = quantify(logicFormula());
+				vars.n = 0;
 
 				// Select
 				if (select.count(name)) cnf(a);
@@ -638,7 +638,7 @@ struct Parser1: Parser {
 				// Formula
 				cnfMode = 0;
 				auto a = logicFormula();
-				assert(vars.empty());
+				assert(!vars.n);
 				check(a, &tbool);
 
 				// Select

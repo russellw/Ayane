@@ -216,7 +216,7 @@ where
 Vec<size_t> posn;
 
 Expr* splice(Expr* a, size_t i, Expr* b) {
-	if (i == posn.size()) return b;
+	if (i == posn.n) return b;
 
 	assert(a->n);
 	Vec<Expr*> v(a->n);
