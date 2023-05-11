@@ -38,12 +38,6 @@ template <class T> struct Vec {
 		data = (T*)malloc(cap * sizeof(T));
 	}
 
-	// Turn some elements back into uninitialized memory
-	void del(T* i, T* j) {
-		// TODO: more efficient to free in reverse order?
-		while (i < j) i++->~T();
-	}
-
 	// Constructors use placement new to initialize elements where necessary with copies of source elements
 	// TODO: constructor that takes estimated initial capacity
 	explicit Vec(size_t o = 0) {
@@ -75,10 +69,7 @@ template <class T> struct Vec {
 		for (auto& x: b) new (i++) T(x);
 	}
 
-	// Destructor calls element destructors, but only on those elements that have actually been initialized, i.e. up to size, not
-	// capacity.
 	~Vec() {
-		del(begin(), end());
 		free(data);
 	}
 
@@ -111,14 +102,10 @@ template <class T> struct Vec {
 	void pop_back() {
 		assert(n);
 		--n;
-		end()->~T();
 	}
 
 	Vec& operator=(const Vec& b) {
 		if (this == &b) return *this;
-
-		// Free the existing elements
-		del(begin(), end());
 
 		// Make room for new elements
 		reserve(b.n);
@@ -160,7 +147,6 @@ template <class T> struct Vec {
 		assert(begin() <= first && first <= end());
 		assert(begin() <= last && last <= end());
 		assert(first <= last);
-		del(first, last);
 		memmove(first, last, (end() - last) * sizeof(T));
 		n -= last - first;
 	}
@@ -174,7 +160,6 @@ template <class T> struct Vec {
 	void resize(size_t o) {
 		// TODO: inline
 		assert(o <= n);
-		del(begin() + o, end());
 		n = o;
 	}
 
