@@ -22,7 +22,7 @@ void flatten(Tag tag, Expr* a, vector<Expr*>& r) {
 	r.push_back(a);
 }
 
-void freeVars(Expr* a, Vec<Expr*> boundv, Vec<Expr*>& freev) {
+void freeVars(Expr* a, Vec<Expr*>& boundv, Vec<Expr*>& freev) {
 	// TODO: boundv static?
 	switch (a->tag) {
 	case Tag::all:

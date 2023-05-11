@@ -22,6 +22,9 @@ template <class T> struct Vec {
 	// TODO: optimize for small sizes
 	T* data;
 
+	Vec(const Vec&) = delete;
+	Vec& operator=(const Vec&) = delete;
+
 	// Initialize the vector, only for use in constructors; assumes in particular that the pointer to allocated memory is not yet
 	// initialized
 	void init(size_t o) {
@@ -51,13 +54,6 @@ template <class T> struct Vec {
 
 	explicit Vec(std::initializer_list<T> b) {
 		init(b.size());
-		auto i = begin();
-		for (auto& x: b) new (i++) T(x);
-	}
-
-	Vec(const Vec& b) {
-		// TODO: disable?
-		init(b.n);
 		auto i = begin();
 		for (auto& x: b) new (i++) T(x);
 	}
@@ -95,26 +91,6 @@ template <class T> struct Vec {
 	void pop_back() {
 		assert(n);
 		--n;
-	}
-
-	Vec& operator=(const Vec& b) {
-		if (this == &b) return *this;
-
-		// Make room for new elements
-		reserve(b.n);
-
-		// Assign the new elements. These can be objects with pointers to data they own (just not internal pointers), so it cannot
-		// be done with memcpy. The assignment operator must leave the original object untouched, so it cannot be done with a move
-		// constructor. But we have already freed the existing elements (thereby turning the entire array into uninitialized
-		// memory), so it can be done with placement new calling a copy constructor.
-
-		// An alternative approach would have used the element assignment operator up to min(n, b.n). However, this would have made
-		// the code more complicated (two different mop-up cases to consider, depending on which vector was larger) and would almost
-		// certainly have made it no faster.
-		n = b.n;
-		auto i = begin();
-		for (auto& x: b) new (i++) T(x);
-		return *this;
 	}
 
 	void insert(T* position, const T* first, const T* last) {
