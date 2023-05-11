@@ -127,7 +127,7 @@ void maybeRename(int pol, Vec<Expr*>& v) {
 	// Sorting the arguments doesn't change the meaning of the formula, because AND and OR are commutative. The effect is that if
 	// only some of them are to be renamed, we will leave the simple ones alone and end up renaming the complicated ones, which is
 	// probably what we want.
-	sort(v.begin() + 1, v.end(), [=](Expr* a, Expr* b) { return ncsApprox(pol, a) < ncsApprox(pol, b); });
+	sort(v.begin(), v.end(), [=](Expr* a, Expr* b) { return ncsApprox(pol, a) < ncsApprox(pol, b); });
 	size_t n = 1;
 	for (size_t i = 0; i < v.size(); ++i) {
 		auto m = ncsApprox(pol, v[i]);

@@ -54,4 +54,5 @@ for file in problems:
         r = 1
     else:
         raise Exception(s)
-    assert r == e
+    if r != e:
+        raise Exception(s)
