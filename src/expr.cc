@@ -190,63 +190,91 @@ Expr* div2(Expr* x, Expr* y, void (*f)(mpz_t, const mpz_t, const mpz_t)) {
 }
 
 Expr* comp(Tag tag, Expr** v, size_t n) {
-	assert(n);
-	auto x = v[0];
 	// TODO: other simplifications e.g. x+0, x*1
 	switch (tag) {
 	case Tag::add:
 	{
+		assert(n == 2);
+		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) return op2(x, y, mpz_add, mpq_add);
 		break;
 	}
 	case Tag::ceil:
+	{
+		assert(n == 1);
+		auto x = v[0];
 		// Could do type-based simplification in cases like this, e.g. if x is an integer, then ceil(x) = x. But the value of that
-		// is questionable: Is anyone going to write ceil(x) where x is an integer, in the first place?
+		// is questionable. Is anyone going to write ceil(x) where x is an integer, in the first place?
 		if (constant(x)) return op1(x, mpz_cdiv_q);
 		break;
+	}
 	case Tag::div:
 	{
+		assert(n == 2);
+		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) return op2(x, y, 0, mpq_div);
 		break;
 	}
 	case Tag::divEuclid:
 	{
+		assert(n == 2);
+		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) return div2(x, y, mpz_ediv_q);
 		break;
 	}
 	case Tag::divFloor:
 	{
+		assert(n == 2);
+		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) return div2(x, y, mpz_fdiv_q);
 		break;
 	}
 	case Tag::divTrunc:
 	{
+		assert(n == 2);
+		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) return div2(x, y, mpz_tdiv_q);
 		break;
 	}
 	case Tag::eq:
 	{
+		assert(n == 2);
+		auto x = v[0];
 		auto y = v[1];
 		if (x == y) return bools + 1;
 		if (constant(x) && constant(y)) return bools;
 		break;
 	}
 	case Tag::floor:
+	{
+		assert(n == 1);
+		auto x = v[0];
 		if (constant(x)) return op1(x, mpz_fdiv_q);
 		break;
+	}
 	case Tag::isInt:
+	{
+		assert(n == 1);
+		auto x = v[0];
 		if (constant(x)) return bools + (mpz_cmp_ui(mpq_denref(((Rat*)x)->v), 1) == 0);
 		break;
+	}
 	case Tag::isRat:
+	{
+		assert(n == 1);
+		auto x = v[0];
 		if (constant(x)) return bools + 1;
 		break;
+	}
 	case Tag::lt:
 	{
+		assert(n == 2);
+		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) {
 			auto tag = x->tag;
@@ -257,6 +285,9 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		break;
 	}
 	case Tag::minus:
+	{
+		assert(n == 1);
+		auto x = v[0];
 		if (constant(x)) {
 			auto tag = x->tag;
 			if (tag == Tag::integer) {
@@ -271,40 +302,58 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 			return rat(tag, r);
 		}
 		break;
+	}
 	case Tag::mul:
 	{
+		assert(n == 2);
+		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) return op2(x, y, mpz_mul, mpq_mul);
 		break;
 	}
 	case Tag::remEuclid:
 	{
+		assert(n == 2);
+		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) return div2(x, y, mpz_ediv_r);
 		break;
 	}
 	case Tag::remFloor:
 	{
+		assert(n == 2);
+		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) return div2(x, y, mpz_fdiv_r);
 		break;
 	}
 	case Tag::remTrunc:
 	{
+		assert(n == 2);
+		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) return div2(x, y, mpz_tdiv_r);
 		break;
 	}
 	case Tag::round:
+	{
+		assert(n == 1);
+		auto x = v[0];
 		if (constant(x)) return op1(x, mpz_round);
 		break;
+	}
 	case Tag::sub:
 	{
+		assert(n == 2);
+		auto x = v[0];
 		auto y = v[1];
 		if (constant(x) && constant(y)) return op2(x, y, mpz_sub, mpq_sub);
 		break;
 	}
 	case Tag::toInt:
+	{
+		assert(n == 1);
+		auto x = v[0];
 		if (constant(x)) {
 			auto x1 = (Rat*)x;
 			mpz_t r;
@@ -316,15 +365,28 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 			return integer(r);
 		}
 		break;
+	}
 	case Tag::toRat:
+	{
+		assert(n == 1);
+		auto x = v[0];
 		if (constant(x)) return toRat(x, Tag::rat);
 		break;
+	}
 	case Tag::toReal:
+	{
+		assert(n == 1);
+		auto x = v[0];
 		if (constant(x)) return toRat(x, Tag::real);
 		break;
+	}
 	case Tag::trunc:
+	{
+		assert(n == 1);
+		auto x = v[0];
 		if (constant(x)) return op1(x, mpz_tdiv_q);
 		break;
+	}
 	}
 	return comps.intern(tag, v, n);
 }
@@ -345,6 +407,7 @@ Expr* comp(Tag tag, const Vec<Expr*>& v) {
 }
 
 Expr* comp(Tag tag, vector<Expr*>& v) {
+	// TODO: sizeof void* consistently
 	return comp(tag, v.data(), v.size());
 }
 

@@ -57,7 +57,6 @@ struct Parser1: Parser {
 
 	// Top level
 	void add(const Vec<Expr*>& literals) {
-		// TODO: provide a way to build input-only terms that bypasses interning?
 		cnf(comp(Tag::or1, literals));
 	}
 
