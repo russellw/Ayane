@@ -6,7 +6,7 @@ Expr bools[2] = {{Tag::false1}, {Tag::true1}};
 
 // TODO: write test problems for integer division
 // Integers
-struct IntegerCmp {
+struct IntCmp {
 	static bool eq(Tag tag, mpz_t val, size_t n, Int* b) {
 		return mpz_cmp(val, b->val) == 0;
 	}
@@ -30,14 +30,14 @@ void clear(mpz_t val) {
 	mpz_clear(val);
 }
 
-static Set<Tag, mpz_t, Int, IntegerCmp> integers;
+static Set<Tag, mpz_t, Int, IntCmp> integers;
 
 Int* integer(mpz_t val) {
 	return integers.intern(Tag::integer, val, 0);
 }
 
 // Rationals
-struct RationalCmp {
+struct RatCmp {
 	// TODO: can we now remove the Cmp class?
 	static bool eq(Tag tag, mpq_t val, size_t n, Rat* b) {
 		return tag == b->tag && mpq_equal(val, b->val);
@@ -62,7 +62,7 @@ void clear(mpq_t val) {
 	mpq_clear(val);
 }
 
-static Set<Tag, mpq_t, Rat, RationalCmp> rationals;
+static Set<Tag, mpq_t, Rat, RatCmp> rationals;
 
 Rat* rational(Tag tag, mpq_t val) {
 	return rationals.intern(tag, val, 0);
@@ -132,7 +132,7 @@ Expr* op1(Expr* x, void (*f)(mpz_t, const mpz_t, const mpz_t)) {
 	return rational(tag, r);
 }
 
-Rat* toRational(Expr* x, Tag tag) {
+Rat* toRat(Expr* x, Tag tag) {
 	mpq_t r;
 	mpq_init(r);
 	if (x->tag == Tag::integer) mpz_set(mpq_numref(r), ((Int*)x)->val);
@@ -239,10 +239,10 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 	case Tag::floor:
 		if (constant(x)) return op1(x, mpz_fdiv_q);
 		break;
-	case Tag::isInteger:
+	case Tag::isInt:
 		if (constant(x)) return bools + (mpz_cmp_ui(mpq_denref(((Rat*)x)->val), 1) == 0);
 		break;
-	case Tag::isRational:
+	case Tag::isRat:
 		if (constant(x)) return bools + 1;
 	case Tag::lt:
 	{
@@ -303,7 +303,7 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		if (constant(x) && constant(y)) return op2(x, y, mpz_sub, mpq_sub);
 		break;
 	}
-	case Tag::toInteger:
+	case Tag::toInt:
 		if (constant(x)) {
 			auto x1 = (Rat*)x;
 			mpz_t r;
@@ -315,11 +315,11 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 			return integer(r);
 		}
 		break;
-	case Tag::toRational:
-		if (constant(x)) return toRational(x, Tag::rational);
+	case Tag::toRat:
+		if (constant(x)) return toRat(x, Tag::rational);
 		break;
 	case Tag::toReal:
-		if (constant(x)) return toRational(x, Tag::real);
+		if (constant(x)) return toRat(x, Tag::real);
 		break;
 	case Tag::trunc:
 		if (constant(x)) return op1(x, mpz_tdiv_q);
@@ -371,8 +371,8 @@ Type* type(Expr* a) {
 	case Tag::eqv:
 	case Tag::exists:
 	case Tag::false1:
-	case Tag::isInteger:
-	case Tag::isRational:
+	case Tag::isInt:
+	case Tag::isRat:
 	case Tag::lt:
 	case Tag::not1:
 	case Tag::or1:
@@ -389,10 +389,10 @@ Type* type(Expr* a) {
 	case Tag::fn:
 		return ((Fn*)a)->ty;
 	case Tag::integer:
-	case Tag::toInteger:
+	case Tag::toInt:
 		return &tinteger;
 	case Tag::rational:
-	case Tag::toRational:
+	case Tag::toRat:
 		return &trational;
 	case Tag::real:
 	case Tag::toReal:

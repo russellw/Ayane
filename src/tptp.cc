@@ -364,9 +364,9 @@ struct Parser1: Parser {
 				return comp(Tag::or1, comp(Tag::eq, b, a), comp(Tag::lt, b, a));
 			}
 			case s_is_int:
-				return definedFunctor(Tag::isInteger);
+				return definedFunctor(Tag::isInt);
 			case s_is_rat:
-				return definedFunctor(Tag::isRational);
+				return definedFunctor(Tag::isRat);
 			case s_less:
 				return definedFunctor(Tag::lt);
 			case s_lesseq:
@@ -399,9 +399,9 @@ struct Parser1: Parser {
 			case s_sum:
 				return definedFunctor(Tag::add);
 			case s_to_int:
-				return definedFunctor(Tag::toInteger);
+				return definedFunctor(Tag::toInt);
 			case s_to_rat:
-				return definedFunctor(Tag::toRational);
+				return definedFunctor(Tag::toRat);
 			case s_to_real:
 				return definedFunctor(Tag::toReal);
 			case s_true:

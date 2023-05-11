@@ -79,7 +79,7 @@ struct Parser {
 
 	// Helper functions
 	void digits();
-	void lexInteger(mpz_t z);
+	void lexInt(mpz_t z);
 	void exponent(mpq_t q);
 
 	// Lex a number, tok = k_num, num = the number
