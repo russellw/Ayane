@@ -44,7 +44,7 @@ struct Cmp {
 		return hash(a->kind, a->v, a->n);
 	}
 
-	static Comp* make(Kind kind, Type** v, size_t n) {
+	static CompType* make(Kind kind, Type** v, size_t n) {
 		auto p = malloc(offsetof(CompType, v) + n * sizeof *v);
 		auto a = new (p) CompType(kind, n);
 		memcpy(a->v, v, n * sizeof *v);
@@ -68,6 +68,10 @@ Type* compType(Type* a, Type* b) {
 	v[0] = a;
 	v[1] = b;
 	return compType(v, 2);
+}
+
+Type* compType(const Vec<Type*>& v) {
+	return compType(v.data, v.n);
 }
 
 Type* compType(Type* rty, Expr** first, Expr** last) {

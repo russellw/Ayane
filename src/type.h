@@ -40,6 +40,10 @@ TypeName* typeName(Str* s);
 // function.
 struct CompType: Type {
 	Type* v[];
+
+	CompType(Kind kind, size_t n): Type(kind) {
+		this->n = n;
+	}
 };
 
 inline Type* at(Type* a, size_t i) {
