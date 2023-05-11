@@ -487,10 +487,10 @@ struct Parser1: Parser {
 			vars.add(make_pair(s, x));
 			v.add(x);
 		} while (eat(','));
-		vars.n = o;
 		expect(']');
 		expect(':');
 		v[0] = unary();
+		vars.n = o;
 		return comp(tag, v);
 	}
 
