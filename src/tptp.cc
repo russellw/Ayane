@@ -428,7 +428,7 @@ struct Parser1: Parser {
 			// First-order logic does not allow functions to take Boolean arguments, so the arguments can default to individual. But
 			// we cannot yet make any assumption about the function return type. For all we know here, it could still be Boolean.
 			// Leave it to the caller, which will know from context whether that is the case.
-			for (size_t i = 0; i < v.n; ++i) defaultType(v[i], &tindividual);
+			for (size_t i = 1; i < v.n; ++i) defaultType(v[i], &tindividual);
 
 			return comp(Tag::call, v);
 		}
