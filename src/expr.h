@@ -62,7 +62,7 @@ struct Rat: Expr {
 	}
 };
 
-Rat* rational(Tag tag, mpq_t val);
+Rat* rat(Tag tag, mpq_t val);
 
 // Composite expressions. Built-in operators like equality and addition are represented by tags. The most important variety of
 // composite expression is the function call, represented by Tag::call, with the function as v[0], so in that case the arguments

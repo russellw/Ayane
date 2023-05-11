@@ -62,10 +62,10 @@ void clear(mpq_t val) {
 	mpq_clear(val);
 }
 
-static Set<Tag, mpq_t, Rat, RatCmp> rationals;
+static Set<Tag, mpq_t, Rat, RatCmp> rats;
 
-Rat* rational(Tag tag, mpq_t val) {
-	return rationals.intern(tag, val, 0);
+Rat* rat(Tag tag, mpq_t val) {
+	return rats.intern(tag, val, 0);
 }
 
 // Variables
@@ -111,7 +111,7 @@ bool constant(Expr* a) {
 	switch (a->tag) {
 	case Tag::distinctObj:
 	case Tag::integer:
-	case Tag::rational:
+	case Tag::rat:
 	case Tag::real:
 		return 1;
 	}
@@ -129,7 +129,7 @@ Expr* op1(Expr* x, void (*f)(mpz_t, const mpz_t, const mpz_t)) {
 	mpq_t r;
 	mpq_init(r);
 	f(mpq_numref(r), mpq_numref(x1->val), mpq_denref(x1->val));
-	return rational(tag, r);
+	return rat(tag, r);
 }
 
 Rat* toRat(Expr* x, Tag tag) {
@@ -138,7 +138,7 @@ Rat* toRat(Expr* x, Tag tag) {
 	if (x->tag == Tag::integer) mpz_set(mpq_numref(r), ((Int*)x)->val);
 	else
 		mpq_set(r, ((Rat*)x)->val);
-	return rational(tag, r);
+	return rat(tag, r);
 }
 
 Expr* op2(Expr* x, Expr* y, void (*fz)(mpz_t, const mpz_t, const mpz_t), void (*fq)(mpq_t, const mpq_t, const mpq_t)) {
@@ -155,7 +155,7 @@ Expr* op2(Expr* x, Expr* y, void (*fz)(mpz_t, const mpz_t, const mpz_t), void (*
 	mpq_t r;
 	mpq_init(r);
 	fq(r, ((Rat*)x)->val, ((Rat*)y)->val);
-	return rational(tag, r);
+	return rat(tag, r);
 }
 
 Expr* div2(Expr* x, Expr* y, void (*f)(mpz_t, const mpz_t, const mpz_t)) {
@@ -186,7 +186,7 @@ Expr* div2(Expr* x, Expr* y, void (*f)(mpz_t, const mpz_t, const mpz_t)) {
 
 	mpz_clear(xnum_yden);
 	mpz_clear(xden_ynum);
-	return rational(tag, r);
+	return rat(tag, r);
 }
 
 Expr* comp(Tag tag, Expr** v, size_t n) {
@@ -267,7 +267,7 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 			mpq_t r;
 			mpq_init(r);
 			mpq_neg(r, ((Rat*)x)->val);
-			return rational(tag, r);
+			return rat(tag, r);
 		}
 		break;
 	case Tag::mul:
@@ -316,7 +316,7 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		}
 		break;
 	case Tag::toRat:
-		if (constant(x)) return toRat(x, Tag::rational);
+		if (constant(x)) return toRat(x, Tag::rat);
 		break;
 	case Tag::toReal:
 		if (constant(x)) return toRat(x, Tag::real);
@@ -391,9 +391,9 @@ Type* type(Expr* a) {
 	case Tag::integer:
 	case Tag::toInt:
 		return &tinteger;
-	case Tag::rational:
+	case Tag::rat:
 	case Tag::toRat:
-		return &trational;
+		return &trat;
 	case Tag::real:
 	case Tag::toReal:
 		return &treal;

@@ -191,7 +191,7 @@ void Parser::number() {
 		++src;
 		lexInt(mpq_denref(q));
 		mpq_canonicalize(q);
-		num = rational(Tag::rational, q);
+		num = rat(Tag::rat, q);
 		return;
 	case 'E':
 	case 'e':
@@ -203,7 +203,7 @@ void Parser::number() {
 		return;
 	}
 	mpq_canonicalize(q);
-	num = rational(Tag::real, q);
+	num = rat(Tag::real, q);
 }
 
 void Parser::setType(Fn* a, Type* ty) {
@@ -327,18 +327,18 @@ void Parser::check(Expr* a, Type* ty) {
 	case Tag::false1:
 	case Tag::fn:
 	case Tag::integer:
-	case Tag::rational:
+	case Tag::rat:
 	case Tag::true1:
 		assert(!a->n);
 		return;
 	case Tag::div:
 		check(a, 2);
 		switch (ty->kind) {
-		case Kind::rational:
+		case Kind::rat:
 		case Kind::real:
 			break;
 		default:
-			err("Invalid type for rational division");
+			err("Invalid type for division");
 		}
 		check(at(a, 0), ty);
 		check(at(a, 1), ty);

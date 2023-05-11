@@ -275,7 +275,7 @@ struct Parser1: Parser {
 			case s_o:
 				return &tbool;
 			case s_rat:
-				return &trational;
+				return &trat;
 			case s_real:
 				return &treal;
 			}

@@ -3,13 +3,13 @@
 LeafType tbool(Kind::boolean);
 LeafType tindividual(Kind::individual);
 LeafType tinteger(Kind::integer);
-LeafType trational(Kind::rational);
+LeafType trat(Kind::rat);
 LeafType treal(Kind::real);
 
 bool isNum(Type* ty) {
 	switch (ty->kind) {
 	case Kind::integer:
-	case Kind::rational:
+	case Kind::rat:
 	case Kind::real:
 		return 1;
 	}

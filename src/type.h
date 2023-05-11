@@ -22,7 +22,7 @@ struct LeafType: Type {
 extern LeafType tbool;
 extern LeafType tindividual;
 extern LeafType tinteger;
-extern LeafType trational;
+extern LeafType trat;
 extern LeafType treal;
 
 bool isNum(Type* ty);

@@ -3,7 +3,7 @@ _(fn)
 _(individual)
 _(integer)
 _(name)
-_(rational)
+_(rat)
 _(real)
 
 #undef _
