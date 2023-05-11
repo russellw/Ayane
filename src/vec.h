@@ -176,16 +176,6 @@ template <class T> struct Vec {
 		return begin()[i];
 	}
 
-	T& front() {
-		assert(n);
-		return *begin();
-	}
-
-	const T& front() const {
-		assert(n);
-		return *begin();
-	}
-
 	T& back() {
 		assert(n);
 		return begin()[n - 1];
