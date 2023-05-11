@@ -258,6 +258,7 @@ template <class T> struct Vec {
 	}
 
 	// Etc
+	// TODO: use this
 	bool has(const T& x) {
 		for (auto& y: *this)
 			if (y == x) return 1;
@@ -272,24 +273,6 @@ template <class K, class T> bool get(K x, T& y, const Vec<pair<K, T>>& m) {
 			return 1;
 		}
 	return 0;
-}
-
-template <class T> size_t hash(const Vec<T>& a) {
-	size_t h = 0;
-	for (auto& x: a) h = hashCombine(h, hash(x));
-	return h;
-}
-
-template <class T> bool operator==(const Vec<T>& a, const Vec<T>& b) {
-	auto o = a.size();
-	if (o != b.size()) return 0;
-	for (size_t i = 0; i < o; ++i)
-		if (at(a, i) != b[i]) return 0;
-	return 1;
-}
-
-template <class T> bool operator!=(const Vec<T>& a, const Vec<T>& b) {
-	return !(a == b);
 }
 
 template <class T> void print(const Vec<T>& a) {
