@@ -345,7 +345,7 @@ Expr* comp(Tag tag, const Vec<Expr*>& v) {
 }
 
 Expr* comp(Tag tag, vector<Expr*>& v) {
-	return comps.intern(tag, v.data(), v.size());
+	return comp(tag, v.data(), v.size());
 }
 
 Type* type(Expr* a) {
