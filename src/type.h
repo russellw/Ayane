@@ -19,19 +19,25 @@ struct LeafType: Type {
 	}
 };
 
-struct TypeName: LeafType {
-	char* s;
-};
-
-struct CompType: Type {
-	Type* v[];
-};
-
 extern LeafType tbool;
 extern LeafType tindividual;
 extern LeafType tinteger;
 extern LeafType trational;
 extern LeafType treal;
+
+bool isNum(Type* ty);
+
+// In typed first-order logic, we can name a type, and then work with it without needing to know what it is made of
+struct TypeName: LeafType {
+	char* s;
+};
+
+TypeName* typeName(Str* s);
+
+// At the moment, the only composite types understood by the system, are functions specified by parameters and return type
+struct CompType: Type {
+	Type* v[];
+};
 
 inline Type* at(Type* a, size_t i) {
 	assert(i < a->n);
@@ -40,7 +46,5 @@ inline Type* at(Type* a, size_t i) {
 
 Type* compType(Type* a, Type* b);
 Type* compType(const Vec<Type*>& v);
-bool isNum(Type* ty);
 // TODO: rename params
 Type* compType(Type* rty, Expr** first, Expr** last);
-TypeName* typeName(Str* s);

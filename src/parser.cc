@@ -101,7 +101,7 @@ void Parser::digits() {
 	src = s;
 }
 
-void Parser::integer(mpz_t z) {
+void Parser::lexInteger(mpz_t z) {
 	auto s = src;
 	switch (*s) {
 	case '+':
@@ -153,7 +153,7 @@ void Parser::number() {
 
 	// Both TPTP and SMT-LIB require nonempty digit sequences before and after '.', which makes parsing slightly easier.
 	auto z = mpq_numref(q);
-	integer(z);
+	lexInteger(z);
 
 	// After parsing the integer, we find out if this is actually a rational or decimal
 	switch (*src) {
@@ -168,7 +168,7 @@ void Parser::number() {
 		if (!isDigit(*s)) err("Expected digit");
 
 		mpz_t decimal;
-		integer(decimal);
+		lexInteger(decimal);
 
 		// Given 1.23, first convert to 100/100, to make room, so to speak, to add in the decimal part.
 		auto scale = src - s;
@@ -189,19 +189,21 @@ void Parser::number() {
 	}
 	case '/':
 		++src;
-		integer(mpq_denref(q));
-		break;
+		lexInteger(mpq_denref(q));
+		mpq_canonicalize(q);
+		num = rational(Tag::rational, q);
+		return;
 	case 'E':
 	case 'e':
 		mpz_init_set_ui(mpq_denref(q), 1);
 		exponent(q);
 		break;
 	default:
-		num = expr(z);
+		num = integer(z);
 		return;
 	}
 	mpq_canonicalize(q);
-	num = expr(q);
+	num = rational(Tag::real, q);
 }
 
 void Parser::setType(Fn* a, Type* ty) {
