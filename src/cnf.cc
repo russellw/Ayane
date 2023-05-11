@@ -280,6 +280,7 @@ Expr* nnf(bool pol, Expr* a, Vec<pair<Expr*, Expr*>>& m) {
 	}
 	}
 
+	// TODO: should this be more cases instead?
 	if (!a->n) return a;
 
 	for (size_t i = 0; i < a->n; ++i) v.add(nnf(1, at(a, i), m));
