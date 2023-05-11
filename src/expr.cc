@@ -511,7 +511,7 @@ void print(Expr* a) {
 	print(a->tag);
 	if (!a->n) return;
 	putchar('(');
-	for (size_t i = 1; i < a->n; ++i) {
+	for (size_t i = 0; i < a->n; ++i) {
 		if (i) print(", ");
 		print(at(a, i));
 	}
