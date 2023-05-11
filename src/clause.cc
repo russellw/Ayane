@@ -43,6 +43,7 @@ void clause() {
 	auto c = (Clause*)malloc(offsetof(Clause, v) + n * sizeof(Expr*));
 	c->nn = nn;
 	c->n = n;
+	c->dead = 0;
 	memcpy(c->v, neg.data, nn * sizeof(Expr*));
 	memcpy(c->v + nn, pos.data, pos.n * sizeof(Expr*));
 
