@@ -82,15 +82,10 @@ template <class T> struct Vec {
 		cap = cap1;
 	}
 
-	void add(const T& x) {
+	void add(T x) {
 		reserve(n + 1);
 		new (end()) T(x);
 		++n;
-	}
-
-	void pop_back() {
-		assert(n);
-		--n;
 	}
 
 	void insert(T* position, const T* first, const T* last) {
