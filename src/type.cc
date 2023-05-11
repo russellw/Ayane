@@ -1,6 +1,5 @@
 #include "main.h"
 
-// TODO: rename to boolean?
 LeafType tbool(Kind::boolean);
 LeafType tindividual(Kind::individual);
 LeafType tinteger(Kind::integer);

@@ -7,22 +7,22 @@ Expr bools[2] = {{Tag::false1}, {Tag::true1}};
 // TODO: write test problems for integer division
 // Integers
 struct IntegerCmp {
-	static bool eq(Tag tag, mpz_t val, size_t n, Integer* b) {
+	static bool eq(Tag tag, mpz_t val, size_t n, Int* b) {
 		return mpz_cmp(val, b->val) == 0;
 	}
-	static bool eq(Integer* a, Integer* b) {
+	static bool eq(Int* a, Int* b) {
 		return mpz_cmp(a->val, b->val) == 0;
 	}
 
 	static size_t hash(Tag tag, mpz_t val, size_t n) {
 		return mpz_get_ui(val);
 	}
-	static size_t hash(Integer* a) {
-		return hash(Tag::integer, ((Integer*)a)->val, 0);
+	static size_t hash(Int* a) {
+		return hash(Tag::integer, ((Int*)a)->val, 0);
 	}
 
-	static Integer* make(Tag tag, mpz_t val, size_t n) {
-		return new Integer(val);
+	static Int* make(Tag tag, mpz_t val, size_t n) {
+		return new Int(val);
 	}
 };
 
@@ -30,31 +30,31 @@ void clear(mpz_t val) {
 	mpz_clear(val);
 }
 
-static Set<Tag, mpz_t, Integer, IntegerCmp> integers;
+static Set<Tag, mpz_t, Int, IntegerCmp> integers;
 
-Integer* integer(mpz_t val) {
+Int* integer(mpz_t val) {
 	return integers.intern(Tag::integer, val, 0);
 }
 
 // Rationals
 struct RationalCmp {
 	// TODO: can we now remove the Cmp class?
-	static bool eq(Tag tag, mpq_t val, size_t n, Rational* b) {
+	static bool eq(Tag tag, mpq_t val, size_t n, Rat* b) {
 		return tag == b->tag && mpq_equal(val, b->val);
 	}
-	static bool eq(Rational* a, Rational* b) {
+	static bool eq(Rat* a, Rat* b) {
 		return a->tag == b->tag && mpq_equal(a->val, b->val);
 	}
 
 	static size_t hash(Tag tag, mpq_t val, size_t n) {
 		return hashCombine(mpz_get_ui(mpq_numref(val)), mpz_get_ui(mpq_denref(val)));
 	}
-	static size_t hash(Rational* a) {
-		return hash(a->tag, ((Rational*)a)->val, 0);
+	static size_t hash(Rat* a) {
+		return hash(a->tag, ((Rat*)a)->val, 0);
 	}
 
-	static Rational* make(Tag tag, mpq_t val, size_t n) {
-		return new Rational(tag, val);
+	static Rat* make(Tag tag, mpq_t val, size_t n) {
+		return new Rat(tag, val);
 	}
 };
 
@@ -62,9 +62,9 @@ void clear(mpq_t val) {
 	mpq_clear(val);
 }
 
-static Set<Tag, mpq_t, Rational, RationalCmp> rationals;
+static Set<Tag, mpq_t, Rat, RationalCmp> rationals;
 
-Rational* rational(Tag tag, mpq_t val) {
+Rat* rational(Tag tag, mpq_t val) {
 	return rationals.intern(tag, val, 0);
 }
 
@@ -124,7 +124,7 @@ Expr* op1(Expr* x, void (*f)(mpz_t, const mpz_t, const mpz_t)) {
 
 	if (tag == Tag::integer) return x;
 
-	auto x1 = (Rational*)x;
+	auto x1 = (Rat*)x;
 
 	mpq_t r;
 	mpq_init(r);
@@ -132,12 +132,12 @@ Expr* op1(Expr* x, void (*f)(mpz_t, const mpz_t, const mpz_t)) {
 	return rational(tag, r);
 }
 
-Rational* toRational(Expr* x, Tag tag) {
+Rat* toRational(Expr* x, Tag tag) {
 	mpq_t r;
 	mpq_init(r);
-	if (x->tag == Tag::integer) mpz_set(mpq_numref(r), ((Integer*)x)->val);
+	if (x->tag == Tag::integer) mpz_set(mpq_numref(r), ((Int*)x)->val);
 	else
-		mpq_set(r, ((Rational*)x)->val);
+		mpq_set(r, ((Rat*)x)->val);
 	return rational(tag, r);
 }
 
@@ -148,13 +148,13 @@ Expr* op2(Expr* x, Expr* y, void (*fz)(mpz_t, const mpz_t, const mpz_t), void (*
 	if (tag == Tag::integer) {
 		mpz_t r;
 		mpz_init(r);
-		fz(r, ((Integer*)x)->val, ((Integer*)y)->val);
+		fz(r, ((Int*)x)->val, ((Int*)y)->val);
 		return integer(r);
 	}
 
 	mpq_t r;
 	mpq_init(r);
-	fq(r, ((Rational*)x)->val, ((Rational*)y)->val);
+	fq(r, ((Rat*)x)->val, ((Rat*)y)->val);
 	return rational(tag, r);
 }
 
@@ -165,12 +165,12 @@ Expr* div2(Expr* x, Expr* y, void (*f)(mpz_t, const mpz_t, const mpz_t)) {
 	if (tag == Tag::integer) {
 		mpz_t r;
 		mpz_init(r);
-		f(r, ((Integer*)x)->val, ((Integer*)y)->val);
+		f(r, ((Int*)x)->val, ((Int*)y)->val);
 		return integer(r);
 	}
 
-	auto x1 = (Rational*)x;
-	auto y1 = (Rational*)y;
+	auto x1 = (Rat*)x;
+	auto y1 = (Rat*)y;
 
 	mpz_t xnum_yden;
 	mpz_init(xnum_yden);
@@ -240,7 +240,7 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		if (constant(x)) return op1(x, mpz_fdiv_q);
 		break;
 	case Tag::isInteger:
-		if (constant(x)) return bools + (mpz_cmp_ui(mpq_denref(((Rational*)x)->val), 1) == 0);
+		if (constant(x)) return bools + (mpz_cmp_ui(mpq_denref(((Rat*)x)->val), 1) == 0);
 		break;
 	case Tag::isRational:
 		if (constant(x)) return bools + 1;
@@ -250,8 +250,8 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		if (constant(x) && constant(y)) {
 			auto tag = x->tag;
 			assert(tag == y->tag);
-			if (tag == Tag::integer) return bools + (mpz_cmp(((Integer*)x)->val, ((Integer*)y)->val) < 0);
-			return bools + (mpq_cmp(((Rational*)x)->val, ((Rational*)y)->val) < 0);
+			if (tag == Tag::integer) return bools + (mpz_cmp(((Int*)x)->val, ((Int*)y)->val) < 0);
+			return bools + (mpq_cmp(((Rat*)x)->val, ((Rat*)y)->val) < 0);
 		}
 		break;
 	}
@@ -261,12 +261,12 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 			if (tag == Tag::integer) {
 				mpz_t r;
 				mpz_init(r);
-				mpz_neg(r, ((Integer*)x)->val);
+				mpz_neg(r, ((Int*)x)->val);
 				return integer(r);
 			}
 			mpq_t r;
 			mpq_init(r);
-			mpq_neg(r, ((Rational*)x)->val);
+			mpq_neg(r, ((Rat*)x)->val);
 			return rational(tag, r);
 		}
 		break;
@@ -305,7 +305,7 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 	}
 	case Tag::toInteger:
 		if (constant(x)) {
-			auto x1 = (Rational*)x;
+			auto x1 = (Rat*)x;
 			mpz_t r;
 			mpz_init(r);
 			// Different languages have different conventions on the default rounding mode for converting fractions to integers.
