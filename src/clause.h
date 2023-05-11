@@ -6,7 +6,7 @@
 struct Clause {
 	uint16_t nn, n;
 	bool dead;
-	Expr* atoms[];
+	Expr* v[];
 
 	Range neg() const {
 		return Range(0, nn);
@@ -25,7 +25,7 @@ inline Range::iterator end(const Clause* c) {
 
 inline Expr* at(Clause* c, size_t i) {
 	assert(i < c->n);
-	return c->atoms[i];
+	return c->v[i];
 }
 
 extern Vec<Expr*> neg, pos;
