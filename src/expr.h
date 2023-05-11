@@ -21,9 +21,9 @@ struct Fn: Expr {
 };
 
 struct Var: Expr {
-	Type* ty;
+	LeafType* ty;
 
-	Var(Type* ty): Expr(Tag::var), ty(ty) {
+	Var(LeafType* ty): Expr(Tag::var), ty(ty) {
 	}
 };
 
@@ -64,7 +64,7 @@ inline Expr** end(Expr* a) {
 Expr* expr(mpz_t val);
 Expr* expr(mpq_t val);
 
-Expr* var(size_t i, Type* ty);
+Expr* var(size_t i, LeafType* ty);
 
 // TODO: test using a bump allocator
 Expr* comp(Tag tag, Expr* a);

@@ -68,6 +68,14 @@ Rational* rational(Tag tag, mpq_t val) {
 	return rationals.intern(tag, val, 0);
 }
 
+// Variables
+Expr* var(size_t i, LeafType* ty) {
+	// TODO: optimize
+	while (ty->vars.n <= i) ty->vars.add(0);
+	if (!ty->vars[i]) ty->vars[i] = new Var(ty);
+	return ty->vars[i];
+}
+
 // Composite expressions
 struct CompCmp {
 	static bool eq(Tag tag, Expr** a, size_t n, Comp* b) {

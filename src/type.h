@@ -12,6 +12,7 @@ struct Type {
 };
 
 struct LeafType: Type {
+	// In first-order logic, variables can only have leaf types
 	Vec<Var*> vars;
 
 	LeafType(Kind kind): Type(kind) {

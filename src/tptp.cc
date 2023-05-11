@@ -232,6 +232,7 @@ struct Parser1: Parser {
 		tok = *s;
 	}
 
+	// Parser
 	bool eat(int k) {
 		if (tok == k) {
 			lex();
@@ -244,6 +245,13 @@ struct Parser1: Parser {
 		if (eat(k)) return;
 		sprintf(buf, "Expected '%c'", k);
 		err(buf);
+	}
+
+	Str* id() {
+		if (tok != k_id) err("Expected word");
+		auto s = str;
+		lex();
+		return s;
 	}
 
 	// Types
@@ -473,8 +481,8 @@ struct Parser1: Parser {
 			if (tok != k_var) err("Expected variable");
 			auto s = str;
 			lex();
-			Type* ty = &tindividual;
-			if (eat(':')) ty = atomicType();
+			LeafType* ty = &tindividual;
+			if (eat(':')) ty = typeName(id());
 			auto x = var(vars.size(), ty);
 			vars.add(make_pair(s, x));
 			v.add(x);
