@@ -213,8 +213,7 @@ void Parser::setType(Fn* a, Type* ty) {
 		a->ty = ty;
 		return;
 	}
-	// TODO: do we also need a case for unknown assigned type?
-	err("Type mismatch");
+	if (ty) err("Type mismatch");
 }
 
 Expr* Parser::fn(Str* s, Type* ty) {
