@@ -13,13 +13,6 @@
 // Anything which doesn't meet this requirement, should use std::vector instead
 template <class T> struct Vec {
 	// TODO: simplify
-	using size_type = size_t;
-	using difference_type = ptrdiff_t;
-
-	using value_type = T;
-	using reference = T&;
-	using const_reference = const T&;
-
 	using iterator = T*;
 	using const_iterator = const T*;
 	using reverse_iterator = std::reverse_iterator<iterator>;
