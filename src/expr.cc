@@ -244,6 +244,7 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		break;
 	case Tag::isRat:
 		if (constant(x)) return bools + 1;
+		break;
 	case Tag::lt:
 	{
 		auto y = v[1];
@@ -340,7 +341,7 @@ Expr* comp(Tag tag, Expr* a, Expr* b) {
 }
 
 Expr* comp(Tag tag, const Vec<Expr*>& v) {
-	return comps.intern(tag, v.data, v.n);
+	return comp(tag, v.data, v.n);
 }
 
 Expr* comp(Tag tag, vector<Expr*>& v) {

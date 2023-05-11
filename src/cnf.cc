@@ -231,6 +231,7 @@ Expr* exists(int pol, Expr* a, Vec<pair<Expr*, Expr*>>& m) {
 Expr* nnf(bool pol, Expr* a, Vec<pair<Expr*, Expr*>>& m) {
 	Vec<Expr*> v;
 	auto tag = a->tag;
+
 	// NO_SORT
 	switch (tag) {
 	case Tag::false1:
@@ -278,6 +279,9 @@ Expr* nnf(bool pol, Expr* a, Vec<pair<Expr*, Expr*>>& m) {
 				   : comp(Tag::and1, comp(Tag::or1, x0, y0), comp(Tag::or1, x1, y1));
 	}
 	}
+
+	if (!a->n) return a;
+
 	for (size_t i = 0; i < a->n; ++i) v.add(nnf(1, at(a, i), m));
 	a = comp(tag, v);
 	return pol ? a : comp(Tag::not1, a);
