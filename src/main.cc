@@ -132,7 +132,7 @@ int main(int argc, char** argv) {
 	case Lang::dimacs:
 		dimacs(file);
 		break;
-	case Lang::tptp:
+	default:
 		tptp(file);
 		break;
 	}
