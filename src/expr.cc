@@ -466,3 +466,55 @@ Type* type(Expr* a) {
 	}
 	unreachable;
 }
+
+#ifdef DBG
+void print(Tag tag) {
+	static const char* tagNames[] = {
+#define _(a) #a,
+#include "tags.h"
+	};
+	print(tagNames[(int)tag]);
+}
+
+void print(Expr* a) {
+	switch (a->tag) {
+	case Tag::call:
+	{
+		print(at(a, 0));
+		putchar('(');
+		for (size_t i = 1; i < a->n; ++i) {
+			if (i > 1) print(", ");
+			print(at(a, i));
+		}
+		putchar(')');
+		return;
+	}
+	case Tag::fn:
+	{
+		auto s = ((Fn*)a)->s;
+		if (s) print(s);
+		else
+			printf("_%p", a);
+		return;
+	}
+	case Tag::integer:
+		mpz_out_str(stdout, 10, ((Int*)a)->v);
+		return;
+	case Tag::rat:
+	case Tag::real:
+		mpq_out_str(stdout, 10, ((Rat*)a)->v);
+		return;
+	case Tag::var:
+		printf("%p", a);
+		return;
+	}
+	print(a->tag);
+	if (!a->n) return;
+	putchar('(');
+	for (size_t i = 1; i < a->n; ++i) {
+		if (i) print(", ");
+		print(at(a, i));
+	}
+	putchar(')');
+}
+#endif

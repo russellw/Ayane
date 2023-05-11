@@ -220,7 +220,7 @@ void Parser::setType(Fn* a, Type* ty) {
 Expr* Parser::fn(Str* s, Type* ty) {
 	if (s->fn) {
 		auto a = s->fn;
-		assert(a->name == s->v);
+		assert(a->s == s->v);
 		setType(a, ty);
 		return a;
 	}

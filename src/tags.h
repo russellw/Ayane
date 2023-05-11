@@ -40,3 +40,5 @@ _(toReal)
 _(trunc)
 _(var)
 ///
+
+#undef _
