@@ -379,7 +379,6 @@ void cnf(Expr* a) {
 	// renamed subformula is simple, so there is no need to put the definitions through the renaming process again; they just need
 	// to go through the rest of the conversion steps.
 	for (auto a: defs) {
-		auto from = a;
 		vars = 0;
 		a = nnf(1, a, Vec<pair<Expr*, Expr*>>());
 		a = distribute(a);
