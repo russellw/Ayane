@@ -42,27 +42,27 @@ Expr* var(size_t i, LeafType* ty);
 
 // Arbitrary precision integers
 struct Int: Expr {
-	mpz_t val;
+	mpz_t v;
 
-	Int(mpz_t val): Expr(Tag::integer) {
+	Int(mpz_t v): Expr(Tag::integer) {
 		// TODO: check  sizeof
-		memcpy(this->val, val, sizeof this->val);
+		memcpy(this->v, v, sizeof this->v);
 	}
 };
 
-Int* integer(mpz_t val);
+Int* integer(mpz_t v);
 
 // Arbitrary precision rationals. These also represent real numbers (well, the rational subset of the reals), distinguished (for the
 // sake of the type system) by tag.
 struct Rat: Expr {
-	mpq_t val;
+	mpq_t v;
 
-	Rat(Tag tag, mpq_t val): Expr(tag) {
-		memcpy(this->val, val, sizeof this->val);
+	Rat(Tag tag, mpq_t v): Expr(tag) {
+		memcpy(this->v, v, sizeof this->v);
 	}
 };
 
-Rat* rat(Tag tag, mpq_t val);
+Rat* rat(Tag tag, mpq_t v);
 
 // Composite expressions. Built-in operators like equality and addition are represented by tags. The most important variety of
 // composite expression is the function call, represented by Tag::call, with the function as v[0], so in that case the arguments

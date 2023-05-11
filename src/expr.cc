@@ -7,65 +7,65 @@ Expr bools[2] = {{Tag::false1}, {Tag::true1}};
 // TODO: write test problems for integer division
 // Integers
 struct IntCmp {
-	static bool eq(Tag tag, mpz_t val, size_t n, Int* b) {
-		return mpz_cmp(val, b->val) == 0;
+	static bool eq(Tag tag, mpz_t v, size_t n, Int* b) {
+		return mpz_cmp(v, b->v) == 0;
 	}
 	static bool eq(Int* a, Int* b) {
-		return mpz_cmp(a->val, b->val) == 0;
+		return mpz_cmp(a->v, b->v) == 0;
 	}
 
-	static size_t hash(Tag tag, mpz_t val, size_t n) {
-		return mpz_get_ui(val);
+	static size_t hash(Tag tag, mpz_t v, size_t n) {
+		return mpz_get_ui(v);
 	}
 	static size_t hash(Int* a) {
-		return hash(Tag::integer, ((Int*)a)->val, 0);
+		return hash(Tag::integer, ((Int*)a)->v, 0);
 	}
 
-	static Int* make(Tag tag, mpz_t val, size_t n) {
-		return new Int(val);
+	static Int* make(Tag tag, mpz_t v, size_t n) {
+		return new Int(v);
 	}
 };
 
-void clear(mpz_t val) {
-	mpz_clear(val);
+void clear(mpz_t v) {
+	mpz_clear(v);
 }
 
 static Set<Tag, mpz_t, Int, IntCmp> integers;
 
-Int* integer(mpz_t val) {
-	return integers.intern(Tag::integer, val, 0);
+Int* integer(mpz_t v) {
+	return integers.intern(Tag::integer, v, 0);
 }
 
 // Rationals
 struct RatCmp {
 	// TODO: can we now remove the Cmp class?
-	static bool eq(Tag tag, mpq_t val, size_t n, Rat* b) {
-		return tag == b->tag && mpq_equal(val, b->val);
+	static bool eq(Tag tag, mpq_t v, size_t n, Rat* b) {
+		return tag == b->tag && mpq_equal(v, b->v);
 	}
 	static bool eq(Rat* a, Rat* b) {
-		return a->tag == b->tag && mpq_equal(a->val, b->val);
+		return a->tag == b->tag && mpq_equal(a->v, b->v);
 	}
 
-	static size_t hash(Tag tag, mpq_t val, size_t n) {
-		return hashCombine(mpz_get_ui(mpq_numref(val)), mpz_get_ui(mpq_denref(val)));
+	static size_t hash(Tag tag, mpq_t v, size_t n) {
+		return hashCombine(mpz_get_ui(mpq_numref(v)), mpz_get_ui(mpq_denref(v)));
 	}
 	static size_t hash(Rat* a) {
-		return hash(a->tag, ((Rat*)a)->val, 0);
+		return hash(a->tag, ((Rat*)a)->v, 0);
 	}
 
-	static Rat* make(Tag tag, mpq_t val, size_t n) {
-		return new Rat(tag, val);
+	static Rat* make(Tag tag, mpq_t v, size_t n) {
+		return new Rat(tag, v);
 	}
 };
 
-void clear(mpq_t val) {
-	mpq_clear(val);
+void clear(mpq_t v) {
+	mpq_clear(v);
 }
 
 static Set<Tag, mpq_t, Rat, RatCmp> rats;
 
-Rat* rat(Tag tag, mpq_t val) {
-	return rats.intern(tag, val, 0);
+Rat* rat(Tag tag, mpq_t v) {
+	return rats.intern(tag, v, 0);
 }
 
 // Variables
@@ -93,10 +93,10 @@ struct CompCmp {
 		return hash(a->tag, a->v, a->n);
 	}
 
-	static Comp* make(Tag tag, Expr** val, size_t n) {
-		auto p = malloc(offsetof(Comp, v) + n * sizeof(Expr*));
+	static Comp* make(Tag tag, Expr** v, size_t n) {
+		auto p = malloc(offsetof(Comp, v) + n * sizeof *v);
 		auto a = new (p) Comp(tag, n);
-		memcpy(a->v, val, n * sizeof(Expr*));
+		memcpy(a->v, v, n * sizeof *v);
 		return a;
 	}
 };
@@ -128,16 +128,16 @@ Expr* op1(Expr* x, void (*f)(mpz_t, const mpz_t, const mpz_t)) {
 
 	mpq_t r;
 	mpq_init(r);
-	f(mpq_numref(r), mpq_numref(x1->val), mpq_denref(x1->val));
+	f(mpq_numref(r), mpq_numref(x1->v), mpq_denref(x1->v));
 	return rat(tag, r);
 }
 
 Rat* toRat(Expr* x, Tag tag) {
 	mpq_t r;
 	mpq_init(r);
-	if (x->tag == Tag::integer) mpz_set(mpq_numref(r), ((Int*)x)->val);
+	if (x->tag == Tag::integer) mpz_set(mpq_numref(r), ((Int*)x)->v);
 	else
-		mpq_set(r, ((Rat*)x)->val);
+		mpq_set(r, ((Rat*)x)->v);
 	return rat(tag, r);
 }
 
@@ -148,13 +148,13 @@ Expr* op2(Expr* x, Expr* y, void (*fz)(mpz_t, const mpz_t, const mpz_t), void (*
 	if (tag == Tag::integer) {
 		mpz_t r;
 		mpz_init(r);
-		fz(r, ((Int*)x)->val, ((Int*)y)->val);
+		fz(r, ((Int*)x)->v, ((Int*)y)->v);
 		return integer(r);
 	}
 
 	mpq_t r;
 	mpq_init(r);
-	fq(r, ((Rat*)x)->val, ((Rat*)y)->val);
+	fq(r, ((Rat*)x)->v, ((Rat*)y)->v);
 	return rat(tag, r);
 }
 
@@ -165,7 +165,7 @@ Expr* div2(Expr* x, Expr* y, void (*f)(mpz_t, const mpz_t, const mpz_t)) {
 	if (tag == Tag::integer) {
 		mpz_t r;
 		mpz_init(r);
-		f(r, ((Int*)x)->val, ((Int*)y)->val);
+		f(r, ((Int*)x)->v, ((Int*)y)->v);
 		return integer(r);
 	}
 
@@ -174,11 +174,11 @@ Expr* div2(Expr* x, Expr* y, void (*f)(mpz_t, const mpz_t, const mpz_t)) {
 
 	mpz_t xnum_yden;
 	mpz_init(xnum_yden);
-	mpz_mul(xnum_yden, mpq_numref(x1->val), mpq_denref(y1->val));
+	mpz_mul(xnum_yden, mpq_numref(x1->v), mpq_denref(y1->v));
 
 	mpz_t xden_ynum;
 	mpz_init(xden_ynum);
-	mpz_mul(xden_ynum, mpq_denref(x1->val), mpq_numref(y1->val));
+	mpz_mul(xden_ynum, mpq_denref(x1->v), mpq_numref(y1->v));
 
 	mpq_t r;
 	mpq_init(r);
@@ -240,7 +240,7 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		if (constant(x)) return op1(x, mpz_fdiv_q);
 		break;
 	case Tag::isInt:
-		if (constant(x)) return bools + (mpz_cmp_ui(mpq_denref(((Rat*)x)->val), 1) == 0);
+		if (constant(x)) return bools + (mpz_cmp_ui(mpq_denref(((Rat*)x)->v), 1) == 0);
 		break;
 	case Tag::isRat:
 		if (constant(x)) return bools + 1;
@@ -250,8 +250,8 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		if (constant(x) && constant(y)) {
 			auto tag = x->tag;
 			assert(tag == y->tag);
-			if (tag == Tag::integer) return bools + (mpz_cmp(((Int*)x)->val, ((Int*)y)->val) < 0);
-			return bools + (mpq_cmp(((Rat*)x)->val, ((Rat*)y)->val) < 0);
+			if (tag == Tag::integer) return bools + (mpz_cmp(((Int*)x)->v, ((Int*)y)->v) < 0);
+			return bools + (mpq_cmp(((Rat*)x)->v, ((Rat*)y)->v) < 0);
 		}
 		break;
 	}
@@ -261,12 +261,12 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 			if (tag == Tag::integer) {
 				mpz_t r;
 				mpz_init(r);
-				mpz_neg(r, ((Int*)x)->val);
+				mpz_neg(r, ((Int*)x)->v);
 				return integer(r);
 			}
 			mpq_t r;
 			mpq_init(r);
-			mpq_neg(r, ((Rat*)x)->val);
+			mpq_neg(r, ((Rat*)x)->v);
 			return rat(tag, r);
 		}
 		break;
@@ -311,7 +311,7 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 			// Different languages have different conventions on the default rounding mode for converting fractions to integers.
 			// TPTP defines it as floor, so that is used here. To use a different rounding mode, explicity round the rational number
 			// first, and then convert to integer.
-			mpz_fdiv_q(r, mpq_numref(x1->val), mpq_denref(x1->val));
+			mpz_fdiv_q(r, mpq_numref(x1->v), mpq_denref(x1->v));
 			return integer(r);
 		}
 		break;
