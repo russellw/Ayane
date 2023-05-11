@@ -176,12 +176,13 @@ void Parser::number() {
 		mpz_init(powScale);
 		mpz_ui_pow_ui(powScale, 10, scale);
 		mpz_mul(z, z, powScale);
-		mpz_clear(powScale);
 
 		// Now convert to 123/100
 		if (*srck == '-') mpz_sub(z, z, decimal);
 		else
 			mpz_add(z, z, decimal);
+
+		mpz_clear(decimal);
 
 		// Exponent
 		if (*src == 'e' || *src == 'E') exponent(q);
