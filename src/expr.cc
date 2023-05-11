@@ -479,7 +479,6 @@ void print(Tag tag) {
 void print(Expr* a) {
 	switch (a->tag) {
 	case Tag::call:
-	{
 		print(at(a, 0));
 		putchar('(');
 		for (size_t i = 1; i < a->n; ++i) {
@@ -488,7 +487,6 @@ void print(Expr* a) {
 		}
 		putchar(')');
 		return;
-	}
 	case Tag::fn:
 	{
 		auto s = ((Fn*)a)->s;

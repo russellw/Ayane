@@ -81,3 +81,31 @@ Type* compType(Type* rty, Expr** first, Expr** last) {
 	for (auto i = first; i < last; ++i) v.add(type(*i));
 	return compType(v);
 }
+
+#ifdef DBG
+void print(Kind kind) {
+	static const char* kindNames[] = {
+#define _(a) #a,
+#include "kinds.h"
+	};
+	print(kindNames[(int)kind]);
+}
+
+void print(Type* ty) {
+	switch (ty->kind) {
+	case Kind::fn:
+		print(at(ty, 0));
+		putchar('(');
+		for (size_t i = 1; i < ty->n; ++i) {
+			if (i > 1) print(", ");
+			print(at(ty, i));
+		}
+		putchar(')');
+		return;
+	case Kind::name:
+		print(((TypeName*)ty)->s);
+		return;
+	}
+	print(ty->kind);
+}
+#endif
