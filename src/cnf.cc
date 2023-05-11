@@ -357,9 +357,8 @@ void clausesTerm(Expr* a) {
 		for (size_t i = 0; i < a->n; ++i) clausesTerm(at(a, i));
 		return;
 	}
-	assert(!neg.n);
-	assert(!pos.n);
 
+	neg.n = pos.n = 0;
 	literalsTerm(a);
 
 	// First-order logic is not complete on arithmetic. The conservative approach to this is that if any clause contains terms of

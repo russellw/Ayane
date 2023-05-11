@@ -114,12 +114,11 @@ where
 
 // Make new clause
 void resolve1() {
-	assert(!neg.n);
-	assert(!pos.n);
-
+	neg.n = 0;
 	for (auto i: c->neg())
 		if (i != ci) neg.add(replace(at(c, i), 0));
 
+	pos.n = 0;
 	for (auto i: c->pos()) pos.add(replace(at(c, i), 0));
 
 	clause();
@@ -147,9 +146,6 @@ where
 
 // Make new clause
 void factorc() {
-	assert(!neg.n);
-	assert(!pos.n);
-
 	// If these two terms are not equatable (for which the types must match, and predicates can only be equated with true),
 	// replacing variables with expressions would not make them become so
 	if (!equatable(c1, d1)) return;
@@ -159,9 +155,11 @@ void factorc() {
 	// variable subscript on both sides.
 	if (!unify(c0, 0, d0, 0)) return;
 
+	neg.n = 0;
 	for (auto i: c->neg()) neg.add(replace(at(c, i), 0));
 	neg.add(equate(replace(c1, 0), replace(d1, 0)));
 
+	pos.n = 0;
 	for (auto i: c->pos())
 		if (i != di) pos.add(replace(at(c, i), 0));
 
@@ -231,9 +229,6 @@ Expr* splice(Expr* a, size_t i, Expr* b) {
 
 // Make new clause
 void superposnc() {
-	assert(!neg.n);
-	assert(!pos.n);
-
 	// To calculate d0(c1), we first perform the replacement of variables with substitute values, on the component terms, then
 	// splice them together. This is necessary because the component terms are from different clauses, therefore have different
 	// logical variable names. The composition would not be valid if we were replacing arbitrary terms, but is valid because we are
@@ -242,10 +237,12 @@ void superposnc() {
 	auto d1_ = replace(d1, 1);
 	if (!equatable(d0c1, d1_)) return;
 
+	neg.n = 0;
 	for (auto i: c->neg()) neg.add(replace(at(c, i), 0));
 	for (auto i: d->neg())
 		if (i != di) neg.add(replace(at(d, i), 1));
 
+	pos.n = 0;
 	for (auto i: c->pos())
 		if (i != ci) pos.add(replace(at(c, i), 0));
 	for (auto i: d->pos())
