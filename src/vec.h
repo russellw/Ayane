@@ -66,11 +66,11 @@ template <class T> struct Vec {
 	// semantically mostly a no-op, but serves as an optimization hint. The case where it is important for correctness is if you
 	// want to do something like adding new elements while holding a live iterator to the vector or a live reference to an element;
 	// reserving enough space in advance, can ensure that reallocation doesn't need to happen on the fly.
-	void reserve(size_t o) {
-		if (o <= cap) return;
+	void reserve(size_t cap1) {
+		if (cap1 <= cap) return;
 
 		// Make sure adding one element at a time is amortized constant time
-		auto cap1 = max(o, (size_t)cap * 2);
+		cap1 = max(cap1, (size_t)cap * 2);
 
 		// Realloc is okay because of the precondition that elements have no internal pointers. It is theoretically possible for
 		// realloc to be inefficient here because, knowing nothing about the semantics of vectors, it must (if actual reallocation
@@ -117,14 +117,6 @@ template <class T> struct Vec {
 
 	void erase(T* position) {
 		erase(position, position + 1);
-	}
-
-	// This could be used to either expand or shrink the vector. At the moment it is only used for shrinking, so that is the only
-	// supported case.
-	void resize(size_t o) {
-		// TODO: inline
-		assert(o <= n);
-		n = o;
 	}
 
 	// Iterators

@@ -81,7 +81,8 @@ bool subsumes(Clause* c0, Clause* d0) {
 	d = d0;
 	m.n = 0;
 
-	used.resize(d->n);
+	used.reserve(d->n);
+	used.n = d->n;
 	memset(used.data, 0, used.n);
 
 	cs = c->neg();
