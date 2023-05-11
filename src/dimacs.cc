@@ -35,8 +35,7 @@ struct Parser1: Parser {
 		case '7':
 		case '8':
 		case '9':
-			digits();
-			tok = k_id;
+			word();
 			return;
 		case 'c':
 			src = strchr(s, '\n');
