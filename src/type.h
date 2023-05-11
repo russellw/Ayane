@@ -11,7 +11,14 @@ struct Type {
 	}
 };
 
-struct TypeName: Type {
+struct LeafType: Type {
+	Vec<Var*> vars;
+
+	LeafType(Kind kind): Type(kind) {
+	}
+};
+
+struct TypeName: LeafType {
 	char* s;
 };
 
@@ -19,11 +26,11 @@ struct CompType: Type {
 	Type* v[];
 };
 
-extern Type tbool;
-extern Type tindividual;
-extern Type tinteger;
-extern Type trational;
-extern Type treal;
+extern LeafType tbool;
+extern LeafType tindividual;
+extern LeafType tinteger;
+extern LeafType trational;
+extern LeafType treal;
 
 inline Type* at(Type* a, size_t i) {
 	assert(i < a->n);
@@ -35,4 +42,4 @@ Type* compType(const Vec<Type*>& v);
 bool isNum(Type* ty);
 // TODO: rename params
 Type* compType(Type* rty, Expr** first, Expr** last);
-Type* typeName(Str* s);
+TypeName* typeName(Str* s);

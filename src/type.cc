@@ -1,11 +1,11 @@
 #include "main.h"
 
 // TODO: rename to boolean?
-Type tbool(Kind::boolean);
-Type tindividual(Kind::individual);
-Type tinteger(Kind::integer);
-Type trational(Kind::rational);
-Type treal(Kind::real);
+LeafType tbool(Kind::boolean);
+LeafType tindividual(Kind::individual);
+LeafType tinteger(Kind::integer);
+LeafType trational(Kind::rational);
+LeafType treal(Kind::real);
 
 // Composite types
 struct Cmp {
@@ -49,7 +49,7 @@ Type* compType(Type* rty, Expr** first, Expr** last) {
 	return compType(v);
 }
 
-Type* typeName(Str* s) {
+TypeName* typeName(Str* s) {
 	if (s->ty) return s->ty;
 	// TODO: Worth using a constructor?
 	auto ty = (TypeName*)malloc(sizeof(TypeName));

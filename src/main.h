@@ -42,6 +42,7 @@ using std::vector;
 // Logic
 struct Expr;
 struct Str;
+struct Var;
 
 #include "type.h"
 
