@@ -60,6 +60,6 @@ void stackTrace() {
 bool assertFail(const char* file, int line, const char* func, const char* s) {
 	printf("%s:%d: %s: Assert failed: %s\n", file, line, func, s);
 	stackTrace();
-	exit(1);
+	exit(-2);
 }
 #endif

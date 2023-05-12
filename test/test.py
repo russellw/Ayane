@@ -91,17 +91,20 @@ for file in problems:
         cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf-8"
     )
     s = p.stdout
-
-    if p.returncode:
+    if p.returncode not in (0, -1):
         print(s, end="")
         raise Exception(str(p.returncode))
-    r = None
+
+    if p.returncode == -1:
+        r = -1
     if "unsat" in s:
         r = 0
     elif "sat" in s:
         r = 1
     else:
-        raise Exception(s)
+        print(s, end="")
+        raise Exception(str(p.returncode))
 
     if r != e:
-        raise Exception(s)
+        print(s, end="")
+        raise Exception(str(p.returncode))
