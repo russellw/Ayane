@@ -135,19 +135,15 @@ static void clear(Expr** a) {
 static Set<Tag, Expr**, Comp, CompCmp> comps;
 
 // TODO: static
-bool constNum(Expr* a) {
+bool constant(Expr* a) {
 	switch (a->tag) {
+	case Tag::distinctObj:
 	case Tag::integer:
 	case Tag::rat:
 	case Tag::real:
 		return 1;
 	}
 	return 0;
-}
-
-// TODO: fold
-bool constant(Expr* a) {
-	return constNum(a) || a->tag == Tag::distinctObj;
 }
 
 // Factor out common calculation patterns
@@ -229,7 +225,7 @@ Expr* compc(Tag tag, Expr** v, size_t n) {
 		assert(n == 2);
 		auto x = v[0];
 		auto y = v[1];
-		if (constNum(x) && constNum(y)) return op2(x, y, mpz_add, mpq_add);
+		if (constant(x) && constant(y)) return op2(x, y, mpz_add, mpq_add);
 		break;
 	}
 	case Tag::ceil:
@@ -238,7 +234,7 @@ Expr* compc(Tag tag, Expr** v, size_t n) {
 		auto x = v[0];
 		// Could do type-based simplification in cases like this, e.g. if x is an integer, then ceil(x) = x. But the value of that
 		// is questionable. Is anyone going to write ceil(x) where x is an integer, in the first place?
-		if (constNum(x)) return op1(x, mpz_cdiv_q);
+		if (constant(x)) return op1(x, mpz_cdiv_q);
 		break;
 	}
 	case Tag::div:
@@ -246,7 +242,7 @@ Expr* compc(Tag tag, Expr** v, size_t n) {
 		assert(n == 2);
 		auto x = v[0];
 		auto y = v[1];
-		if (constNum(x) && constNum(y)) return op2(x, y, 0, mpq_div);
+		if (constant(x) && constant(y)) return op2(x, y, 0, mpq_div);
 		break;
 	}
 	case Tag::divEuclid:
@@ -254,7 +250,7 @@ Expr* compc(Tag tag, Expr** v, size_t n) {
 		assert(n == 2);
 		auto x = v[0];
 		auto y = v[1];
-		if (constNum(x) && constNum(y)) return div2(x, y, mpz_ediv_q);
+		if (constant(x) && constant(y)) return div2(x, y, mpz_ediv_q);
 		break;
 	}
 	case Tag::divFloor:
@@ -262,7 +258,7 @@ Expr* compc(Tag tag, Expr** v, size_t n) {
 		assert(n == 2);
 		auto x = v[0];
 		auto y = v[1];
-		if (constNum(x) && constNum(y)) return div2(x, y, mpz_fdiv_q);
+		if (constant(x) && constant(y)) return div2(x, y, mpz_fdiv_q);
 		break;
 	}
 	case Tag::divTrunc:
@@ -270,7 +266,7 @@ Expr* compc(Tag tag, Expr** v, size_t n) {
 		assert(n == 2);
 		auto x = v[0];
 		auto y = v[1];
-		if (constNum(x) && constNum(y)) return div2(x, y, mpz_tdiv_q);
+		if (constant(x) && constant(y)) return div2(x, y, mpz_tdiv_q);
 		break;
 	}
 	case Tag::eq:
@@ -286,21 +282,21 @@ Expr* compc(Tag tag, Expr** v, size_t n) {
 	{
 		assert(n == 1);
 		auto x = v[0];
-		if (constNum(x)) return op1(x, mpz_fdiv_q);
+		if (constant(x)) return op1(x, mpz_fdiv_q);
 		break;
 	}
 	case Tag::isInt:
 	{
 		assert(n == 1);
 		auto x = v[0];
-		if (constNum(x)) return bools + (mpz_cmp_ui(mpq_denref(((Rat*)x)->v), 1) == 0);
+		if (constant(x)) return bools + (mpz_cmp_ui(mpq_denref(((Rat*)x)->v), 1) == 0);
 		break;
 	}
 	case Tag::isRat:
 	{
 		assert(n == 1);
 		auto x = v[0];
-		if (constNum(x)) return bools + 1;
+		if (constant(x)) return bools + 1;
 		break;
 	}
 	case Tag::lt:
@@ -308,7 +304,7 @@ Expr* compc(Tag tag, Expr** v, size_t n) {
 		assert(n == 2);
 		auto x = v[0];
 		auto y = v[1];
-		if (constNum(x) && constNum(y)) {
+		if (constant(x) && constant(y)) {
 			auto tag = x->tag;
 			assert(tag == y->tag);
 			if (tag == Tag::integer) return bools + (mpz_cmp(((Int*)x)->v, ((Int*)y)->v) < 0);
@@ -320,7 +316,7 @@ Expr* compc(Tag tag, Expr** v, size_t n) {
 	{
 		assert(n == 1);
 		auto x = v[0];
-		if (constNum(x)) {
+		if (constant(x)) {
 			auto tag = x->tag;
 			if (tag == Tag::integer) {
 				mpz_t r;
@@ -340,7 +336,7 @@ Expr* compc(Tag tag, Expr** v, size_t n) {
 		assert(n == 2);
 		auto x = v[0];
 		auto y = v[1];
-		if (constNum(x) && constNum(y)) return op2(x, y, mpz_mul, mpq_mul);
+		if (constant(x) && constant(y)) return op2(x, y, mpz_mul, mpq_mul);
 		break;
 	}
 	case Tag::remEuclid:
@@ -348,7 +344,7 @@ Expr* compc(Tag tag, Expr** v, size_t n) {
 		assert(n == 2);
 		auto x = v[0];
 		auto y = v[1];
-		if (constNum(x) && constNum(y)) return div2(x, y, mpz_ediv_r);
+		if (constant(x) && constant(y)) return div2(x, y, mpz_ediv_r);
 		break;
 	}
 	case Tag::remFloor:
@@ -356,7 +352,7 @@ Expr* compc(Tag tag, Expr** v, size_t n) {
 		assert(n == 2);
 		auto x = v[0];
 		auto y = v[1];
-		if (constNum(x) && constNum(y)) return div2(x, y, mpz_fdiv_r);
+		if (constant(x) && constant(y)) return div2(x, y, mpz_fdiv_r);
 		break;
 	}
 	case Tag::remTrunc:
@@ -364,14 +360,14 @@ Expr* compc(Tag tag, Expr** v, size_t n) {
 		assert(n == 2);
 		auto x = v[0];
 		auto y = v[1];
-		if (constNum(x) && constNum(y)) return div2(x, y, mpz_tdiv_r);
+		if (constant(x) && constant(y)) return div2(x, y, mpz_tdiv_r);
 		break;
 	}
 	case Tag::round:
 	{
 		assert(n == 1);
 		auto x = v[0];
-		if (constNum(x)) return op1(x, mpz_round);
+		if (constant(x)) return op1(x, mpz_round);
 		break;
 	}
 	case Tag::sub:
@@ -379,14 +375,14 @@ Expr* compc(Tag tag, Expr** v, size_t n) {
 		assert(n == 2);
 		auto x = v[0];
 		auto y = v[1];
-		if (constNum(x) && constNum(y)) return op2(x, y, mpz_sub, mpq_sub);
+		if (constant(x) && constant(y)) return op2(x, y, mpz_sub, mpq_sub);
 		break;
 	}
 	case Tag::toInt:
 	{
 		assert(n == 1);
 		auto x = v[0];
-		if (constNum(x)) {
+		if (constant(x)) {
 			auto x1 = (Rat*)x;
 			mpz_t r;
 			mpz_init(r);
@@ -402,21 +398,21 @@ Expr* compc(Tag tag, Expr** v, size_t n) {
 	{
 		assert(n == 1);
 		auto x = v[0];
-		if (constNum(x)) return toRat(x, Tag::rat);
+		if (constant(x)) return toRat(x, Tag::rat);
 		break;
 	}
 	case Tag::toReal:
 	{
 		assert(n == 1);
 		auto x = v[0];
-		if (constNum(x)) return toRat(x, Tag::real);
+		if (constant(x)) return toRat(x, Tag::real);
 		break;
 	}
 	case Tag::trunc:
 	{
 		assert(n == 1);
 		auto x = v[0];
-		if (constNum(x)) return op1(x, mpz_tdiv_q);
+		if (constant(x)) return op1(x, mpz_tdiv_q);
 		break;
 	}
 	}
@@ -424,7 +420,7 @@ Expr* compc(Tag tag, Expr** v, size_t n) {
 }
 
 Expr* compc(Tag tag, const Vec<Expr*>& v) {
-	return comp(tag, v.data, v.n);
+	return compc(tag, v.data, v.n);
 }
 
 Type* type(Expr* a) {
