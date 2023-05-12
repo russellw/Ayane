@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
 
 	// Command line
 	auto lang = Lang::none;
-	char* file = 0;
+	const char* file = 0;
 	for (int i = 1; i < argc; ++i) {
 		auto s = argv[i];
 		if (*s == '-') {
