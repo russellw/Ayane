@@ -76,5 +76,6 @@ for file in problems:
         r = 1
     else:
         raise Exception(s)
+
     if r != e:
         raise Exception(s)
