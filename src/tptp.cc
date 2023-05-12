@@ -247,15 +247,8 @@ struct Parser1: Parser {
 		err(buf);
 	}
 
-	Str* id() {
-		if (tok != k_id) err("Expected word");
-		auto s = str;
-		lex();
-		return s;
-	}
-
 	// Types
-	Type* atomicType() {
+	LeafType* atomicType() {
 		auto k = tok;
 		auto s = str;
 		lex();
@@ -482,7 +475,7 @@ struct Parser1: Parser {
 			auto s = str;
 			lex();
 			LeafType* ty = &tindividual;
-			if (eat(':')) ty = typeName(id());
+			if (eat(':')) ty = atomicType();
 			auto x = var(vars.n, ty);
 			vars.add(make_pair(s, x));
 			v.add(x);
