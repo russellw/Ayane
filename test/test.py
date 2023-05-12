@@ -65,6 +65,12 @@ else:
             if ext in (".p", ".cnf"):
                 problems.append(os.path.join(root, file))
 
+
+def err():
+    print(s, end="")
+    raise Exception(str(code))
+
+
 for file in problems:
     print(file)
 
@@ -90,21 +96,21 @@ for file in problems:
     p = subprocess.run(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf-8"
     )
+    code = p.returncode
+    if code >= 1 << 31:
+        code -= 1 << 32
     s = p.stdout
-    if p.returncode not in (0, -1):
-        print(s, end="")
-        raise Exception(str(p.returncode))
+    if code not in (0, -1):
+        err()
 
-    if p.returncode == -1:
+    if code == -1:
         r = -1
-    if "unsat" in s:
+    elif "unsat" in s:
         r = 0
     elif "sat" in s:
         r = 1
     else:
-        print(s, end="")
-        raise Exception(str(p.returncode))
+        err()
 
     if r != e:
-        print(s, end="")
-        raise Exception(str(p.returncode))
+        err()

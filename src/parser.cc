@@ -66,12 +66,12 @@ Parser::~Parser() {
 	free(src0);
 }
 
-void Parser::err(const char* msg) {
+void Parser::err(const char* msg, int code) {
 	size_t line = 1;
 	for (auto s = src0; s < srck; ++s)
 		if (*s == '\n') ++line;
 	fprintf(stderr, "%s:%zu: %s\n", file, line, msg);
-	exit(1);
+	exit(code);
 }
 
 void Parser::word() {
@@ -214,7 +214,7 @@ void Parser::setType(Fn* a, Type* ty) {
 		a->ty = ty;
 		return;
 	}
-	if (ty) err("Type mismatch");
+	if (ty) err("Type mismatch", -1);
 }
 
 Expr* Parser::fn(Str* s, Type* ty) {
@@ -232,15 +232,14 @@ void Parser::check(Expr* a, size_t n) {
 	if (a->n == n) return;
 	if (a->tag == Tag::call) --n;
 	sprintf(buf, "Expected %zu args", n);
-	// TODO: maybe should  return different exit codes depending whether the input file is definitely bad versus just not understood
-	err(buf);
+	err(buf, -1);
 }
 
 void Parser::check(Expr* a, Type* ty) {
 	// All symbols used in a formula must have specified types by the time this check is run. Otherwise, there would be no way of
 	// knowing whether the types they will be given in the future, would have passed the check.
 	// TODO: can a type still be unspecified by the time we get this far?
-	if (!ty) err("Unspecified type");
+	if (!ty) err("Unspecified type", -1);
 
 	// In first-order logic, a function cannot return a function, nor can a variable store one. (That would be higher-order logic.)
 	// The code should be written so that neither the top-level callers nor the recursive calls, can ever ask for a function to be
@@ -252,17 +251,17 @@ void Parser::check(Expr* a, Type* ty) {
 	if (a->tag == Tag::call) {
 		assert(a->n > 1);
 		auto fty = ((Fn*)at(a, 0))->ty;
-		if (!fty) err("Unspecified type");
+		if (!fty) err("Unspecified type", -1);
 
 		// Check for input like a(b) where a is just a constant
-		if (fty->kind != Kind::fn) err("Called a non-function");
+		if (fty->kind != Kind::fn) err("Called a non-function", -1);
 
 		// Check for input like a(b) followed by a(b, c)
 		check(a, fty->n);
 
 		// The core of the check: Make sure the term is of the required type. At this point, could have rejoined the common logic,
 		// but call is by far the most common composite expression, so might as well keep it going on the fast track.
-		if (at(fty, 0) != ty) err("Type mismatch");
+		if (at(fty, 0) != ty) err("Type mismatch", -1);
 
 		// And recur, based on the parameter types
 		for (size_t i = 1; i < fty->n; ++i) {
@@ -270,7 +269,7 @@ void Parser::check(Expr* a, Type* ty) {
 			switch (at(fty, i)->kind) {
 			case Kind::boolean:
 			case Kind::fn:
-				err("Invalid type for function parameter");
+				err("Invalid type for function parameter", -1);
 			}
 			check(at(a, i), at(fty, i));
 		}
@@ -278,7 +277,7 @@ void Parser::check(Expr* a, Type* ty) {
 	}
 
 	// The core of the check: Make sure the term is of the required type
-	if (type(a) != ty) err("Type mismatch");
+	if (type(a) != ty) err("Type mismatch", -1);
 
 	// Further checks can be done depending on operator. For example, arithmetic operators should have matching numeric arguments.
 	// In each case, the first step is to check the number of arguments, where applicable and necessary, and the last is to
@@ -294,7 +293,7 @@ void Parser::check(Expr* a, Type* ty) {
 	case Tag::remTrunc:
 	case Tag::sub:
 		check(a, 2);
-		if (!isNum(ty)) err("Invalid type for arithmetic");
+		if (!isNum(ty)) err("Invalid type for arithmetic", -1);
 		check(at(a, 0), ty);
 		check(at(a, 1), ty);
 		return;
@@ -320,7 +319,7 @@ void Parser::check(Expr* a, Type* ty) {
 	case Tag::trunc:
 		check(a, 1);
 		ty = type(at(a, 0));
-		if (!isNum(ty)) err("Invalid type for arithmetic");
+		if (!isNum(ty)) err("Invalid type for arithmetic", -1);
 		check(at(a, 0), ty);
 		return;
 	case Tag::distinctObj:
@@ -338,7 +337,7 @@ void Parser::check(Expr* a, Type* ty) {
 		case Kind::real:
 			break;
 		default:
-			err("Invalid type for division");
+			err("Invalid type for division", -1);
 		}
 		check(at(a, 0), ty);
 		check(at(a, 1), ty);
@@ -348,7 +347,7 @@ void Parser::check(Expr* a, Type* ty) {
 		switch (ty->kind) {
 		case Kind::boolean:
 		case Kind::fn:
-			err("Invalid type for equality");
+			err("Invalid type for equality", -1);
 		}
 		check(at(a, 0), ty);
 		check(at(a, 1), ty);
@@ -356,14 +355,14 @@ void Parser::check(Expr* a, Type* ty) {
 	case Tag::lt:
 		check(a, 2);
 		ty = type(at(a, 0));
-		if (!isNum(ty)) err("Invalid type for comparison");
+		if (!isNum(ty)) err("Invalid type for comparison", -1);
 		check(at(a, 0), ty);
 		check(at(a, 1), ty);
 		return;
 	case Tag::var:
 		// A function would also be an invalid type for a variable, but we already checked for that
 		// TODO: does this need to be dynamically checked here?
-		if (ty == &tbool) err("Invalid type for variable");
+		if (ty == &tbool) err("Invalid type for variable", -1);
 		return;
 	}
 	unreachable;
