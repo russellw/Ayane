@@ -57,6 +57,7 @@ struct Parser1: Parser {
 
 	// Top level
 	void add(const Vec<Expr*>& literals) {
+		// TODO: bypass cnf?
 		cnf(comp(Tag::or1, literals));
 	}
 
