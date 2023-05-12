@@ -4,15 +4,17 @@
 #include <windows.h>
 
 namespace {
+#ifdef DBG
 LONG WINAPI handler(_EXCEPTION_POINTERS* ExceptionInfo) {
 	if (ExceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_STACK_OVERFLOW)
-		WriteFile(GetStdHandle(STD_ERROR_HANDLE), "Stack overflow\n", 15, 0, 0);
+		WriteFile(GetStdHandle(STD_OUTPUT_HANDLE), "Stack overflow\n", 15, 0, 0);
 	else {
-		fprintf(stderr, "Exception code %lx\n", ExceptionInfo->ExceptionRecord->ExceptionCode);
+		printf("Exception code %lx\n", ExceptionInfo->ExceptionRecord->ExceptionCode);
 		stackTrace();
 	}
 	ExitProcess(ExceptionInfo->ExceptionRecord->ExceptionCode);
 }
+#endif
 
 VOID CALLBACK timeout(PVOID a, BOOLEAN b) {
 	// Same exit code as on Linux
@@ -38,7 +40,7 @@ static const char* ext(const char* file) {
 }
 
 int main(int argc, char** argv) {
-#ifdef _WIN32
+#if defined(DBG) && defined(_WIN32)
 	AddVectoredExceptionHandler(0, handler);
 #endif
 

@@ -98,7 +98,7 @@ size_t vars = 0;
 // sure of the logic if it's done as a separate pass first.
 Expr* rename(int pol, Expr* a) {
 	Vec<Expr*> vars;
-	freeVars(a, Vec<Expr*>(), vars);
+	freeVars(a, vars);
 	auto b = skolem(type(a), vars);
 	// NO_SORT
 	switch (pol) {
@@ -186,12 +186,13 @@ Expr* maybeRename(int pol, Expr* a) {
 }
 
 // TODO: Should that be pair<Var*, Expr*>?
-Expr* nnf(bool pol, Expr* a, Vec<pair<Expr*, Expr*>>& m);
+Vec<pair<Expr*, Expr*>> m;
+Expr* nnf(bool pol, Expr* a);
 
 // For-all doesn't need much work to convert. Clauses contain variables with implied for-all. The tricky part is that quantifier
 // binds variables to local scope, so the same variable name used in two for-all's corresponds to two different logical variables.
 // So we rename each quantified variable to a new variable of the same type.
-Expr* all(int pol, Expr* a, Vec<pair<Expr*, Expr*>>& m) {
+Expr* all(int pol, Expr* a) {
 	// TODO: does it actually need to be new variables, if the parser has in any case not been allowing variable shadowing, because of types?
 	auto o = m.n;
 	for (size_t i = 1; i < a->n; ++i) {
@@ -200,14 +201,14 @@ Expr* all(int pol, Expr* a, Vec<pair<Expr*, Expr*>>& m) {
 		auto y = var(vars++, ((Var*)x)->ty);
 		m.add(make_pair(x, y));
 	}
-	a = nnf(pol, at(a, 0), m);
+	a = nnf(pol, at(a, 0));
 	m.n = o;
 	return a;
 }
 
 // Each existentially quantified variable is replaced with a Skolem function whose parameters are all the surrounding universally
 // quantified variables
-Expr* exists(int pol, Expr* a, Vec<pair<Expr*, Expr*>>& m) {
+Expr* exists(int pol, Expr* a) {
 	// Get the surrounding universally quantified variables that will be arguments to the Skolem functions
 	Vec<Expr*> args;
 	for (auto& xy: m)
@@ -221,14 +222,14 @@ Expr* exists(int pol, Expr* a, Vec<pair<Expr*, Expr*>>& m) {
 		auto y = skolem(((Var*)x)->ty, args);
 		m.add(make_pair(x, y));
 	}
-	a = nnf(pol, at(a, 0), m);
+	a = nnf(pol, at(a, 0));
 	m.n = o;
 	return a;
 }
 
 // Negation normal form consists of several transformations that are as easy to do at the same time: Move NOTs inward to the literal
 // layer, flipping things around on the way, while simultaneously resolving quantifiers
-Expr* nnf(bool pol, Expr* a, Vec<pair<Expr*, Expr*>>& m) {
+Expr* nnf(bool pol, Expr* a) {
 	Vec<Expr*> v;
 	auto tag = a->tag;
 	// NO_SORT
@@ -240,15 +241,15 @@ Expr* nnf(bool pol, Expr* a, Vec<pair<Expr*, Expr*>>& m) {
 		return bools + pol;
 
 	case Tag::not1:
-		return nnf(!pol, at(a, 0), m);
+		return nnf(!pol, at(a, 0));
 
 	case Tag::or1:
 		if (!pol) tag = Tag::and1;
-		for (size_t i = 0; i < a->n; ++i) v.add(nnf(pol, at(a, i), m));
+		for (size_t i = 0; i < a->n; ++i) v.add(nnf(pol, at(a, i)));
 		return comp(tag, v);
 	case Tag::and1:
 		if (!pol) tag = Tag::or1;
-		for (size_t i = 0; i < a->n; ++i) v.add(nnf(pol, at(a, i), m));
+		for (size_t i = 0; i < a->n; ++i) v.add(nnf(pol, at(a, i)));
 		return comp(tag, v);
 
 	case Tag::var:
@@ -261,26 +262,26 @@ Expr* nnf(bool pol, Expr* a, Vec<pair<Expr*, Expr*>>& m) {
 	}
 
 	case Tag::all:
-		return pol ? all(pol, a, m) : exists(pol, a, m);
+		return pol ? all(pol, a) : exists(pol, a);
 	case Tag::exists:
-		return pol ? exists(pol, a, m) : all(pol, a, m);
+		return pol ? exists(pol, a) : all(pol, a);
 
 	case Tag::eqv:
 	{
 		// Equivalence is the most difficult operator to deal with
 		auto x = at(a, 0);
 		auto y = at(a, 1);
-		auto x0 = nnf(0, x, m);
-		auto x1 = nnf(1, x, m);
-		auto y0 = nnf(0, y, m);
-		auto y1 = nnf(1, y, m);
+		auto x0 = nnf(0, x);
+		auto x1 = nnf(1, x);
+		auto y0 = nnf(0, y);
+		auto y1 = nnf(1, y);
 		return pol ? comp(Tag::and1, comp(Tag::or1, x0, y1), comp(Tag::or1, x1, y0))
 				   : comp(Tag::and1, comp(Tag::or1, x0, y0), comp(Tag::or1, x1, y1));
 	}
 	}
 	// TODO: should this be more cases instead?
 	if (a->n) {
-		for (size_t i = 0; i < a->n; ++i) v.add(nnf(1, at(a, i), m));
+		for (size_t i = 0; i < a->n; ++i) v.add(nnf(1, at(a, i)));
 		a = comp(tag, v);
 	}
 	return pol ? a : comp(Tag::not1, a);
@@ -372,8 +373,9 @@ void cnf(Expr* a) {
 	// First run the input formula through the full process: Rename subformulas where necessary to avoid exponential expansion, then
 	// convert to negation normal form, distribute OR into AND, and convert to clauses
 	a = maybeRename(1, a);
+	assert(!m.n);
 	vars = 0;
-	a = nnf(1, a, Vec<pair<Expr*, Expr*>>());
+	a = nnf(1, a);
 	a = distribute(a);
 	clausesTerm(a);
 
@@ -381,8 +383,9 @@ void cnf(Expr* a) {
 	// renamed subformula is simple, so there is no need to put the definitions through the renaming process again; they just need
 	// to go through the rest of the conversion steps.
 	for (auto a: defs) {
+		assert(!m.n);
 		vars = 0;
-		a = nnf(1, a, Vec<pair<Expr*, Expr*>>());
+		a = nnf(1, a);
 		a = distribute(a);
 		clausesTerm(a);
 	}

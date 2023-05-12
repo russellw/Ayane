@@ -2,7 +2,7 @@ extern char buf[5000];
 
 // SORT
 void flatten(Tag tag, Expr* a, vector<Expr*>& r);
-void freeVars(Expr* a, Vec<Expr*>& boundv, Vec<Expr*>& freev);
+void freeVars(Expr* a, Vec<Expr*>& freev);
 Expr* imp(Expr* a, Expr* b);
 void mpz_ediv_q(mpz_t q, const mpz_t n, const mpz_t d);
 void mpz_ediv_r(mpz_t r, const mpz_t n, const mpz_t d);

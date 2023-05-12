@@ -1,6 +1,7 @@
 #include "main.h"
 
 char buf[5000];
+static Vec<Expr*> boundv;
 
 // SORT
 Eqn::Eqn(Expr* a) {
@@ -22,8 +23,7 @@ void flatten(Tag tag, Expr* a, vector<Expr*>& r) {
 	r.push_back(a);
 }
 
-void freeVars(Expr* a, Vec<Expr*>& boundv, Vec<Expr*>& freev) {
-	// TODO: boundv static?
+void freeVars(Expr* a, Vec<Expr*>& freev) {
 	switch (a->tag) {
 	case Tag::all:
 	case Tag::exists:
@@ -31,7 +31,7 @@ void freeVars(Expr* a, Vec<Expr*>& boundv, Vec<Expr*>& freev) {
 		auto o = boundv.n;
 		// TODO: batch add
 		for (size_t i = 1; i < a->n; ++i) boundv.add(at(a, i));
-		freeVars(at(a, 0), boundv, freev);
+		freeVars(at(a, 0), freev);
 		boundv.n = o;
 		return;
 	}
@@ -39,7 +39,7 @@ void freeVars(Expr* a, Vec<Expr*>& boundv, Vec<Expr*>& freev) {
 		if (!boundv.has(a) && !freev.has(a)) freev.add(a);
 		return;
 	}
-	for (size_t i = 0; i < a->n; ++i) freeVars(at(a, i), boundv, freev);
+	for (size_t i = 0; i < a->n; ++i) freeVars(at(a, i), freev);
 }
 
 Expr* imp(Expr* a, Expr* b) {
@@ -104,9 +104,12 @@ bool occurs(Expr* a, Expr* b) {
 }
 
 Expr* quantify(Expr* a) {
+	assert(!boundv.n);
 	Vec<Expr*> vars;
-	freeVars(a, Vec<Expr*>(), vars);
+	freeVars(a, vars);
+
 	if (!vars.n) return a;
+
 	Vec<Expr*> v(1, a);
 	// TODO: add all at once
 	for (auto x: vars) v.add(x);

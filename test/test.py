@@ -6,6 +6,26 @@ here = os.path.dirname(os.path.realpath(__file__))
 src = os.path.join(here, "..", "src", "*.cc")
 
 cmd = (
+    "C:/Program Files/LLVM/bin/clang-cl",
+    "/DDBG",
+    "/Feayane",
+    "/IC:/mpir",
+    "/MTd",
+    "/WX",
+    "/Zi",
+    "/std:c++17",
+    "-Wimplicit-fallthrough",
+    "-Wno-deprecated-declarations",
+    "-Wno-switch",
+    "-ferror-limit=10",
+    src,
+    "C:/mpir/debug.lib",
+    "dbghelp.lib",
+)
+subprocess.check_call(cmd)
+print()
+
+cmd = (
     "cl",
     "/DDBG",
     "/Feayane",

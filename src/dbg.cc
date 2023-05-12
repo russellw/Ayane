@@ -47,14 +47,14 @@ void stackTrace() {
 		auto addr = (DWORD64)(stack[i]);
 		SymFromAddr(process, addr, 0, si);
 		DWORD displacement;
-		if (SymGetLineFromAddr64(process, addr, &displacement, &loc)) fprintf(stderr, "%s:%u: ", loc.FileName, loc.LineNumber);
-		fprintf(stderr, "%s\n", si->Name);
+		if (SymGetLineFromAddr64(process, addr, &displacement, &loc)) printf("%s:%lu: ", loc.FileName, loc.LineNumber);
+		printf("%s\n", si->Name);
 	}
 #endif
 }
 
 bool assertFail(const char* file, int line, const char* func, const char* s) {
-	fprintf(stderr, "%s:%d: %s: Assert failed: %s\n", file, line, func, s);
+	printf("%s:%d: %s: Assert failed: %s\n", file, line, func, s);
 	stackTrace();
 	exit(1);
 }
