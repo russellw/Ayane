@@ -79,6 +79,7 @@ Expr* var(size_t i, LeafType* ty) {
 // Composite expressions
 struct CompCmp {
 	static bool eq(Tag tag, Expr** a, size_t n, Comp* b) {
+		assert(a);
 		return tag == b->tag && n == b->n && memcmp(a, b->v, n * sizeof *a) == 0;
 	}
 	static bool eq(Comp* a, Comp* b) {
@@ -200,6 +201,9 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		if (constant(x) && constant(y)) return op2(x, y, mpz_add, mpq_add);
 		break;
 	}
+	case Tag::and1:
+		if (!n) return bools + 1;
+		break;
 	case Tag::ceil:
 	{
 		assert(n == 1);
@@ -311,6 +315,9 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		if (constant(x) && constant(y)) return op2(x, y, mpz_mul, mpq_mul);
 		break;
 	}
+	case Tag::or1:
+		if (!n) return bools;
+		break;
 	case Tag::remEuclid:
 	{
 		assert(n == 2);
