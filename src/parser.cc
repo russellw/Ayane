@@ -327,6 +327,7 @@ void Parser::check(Expr* a, Type* ty) {
 	case Tag::fn:
 	case Tag::integer:
 	case Tag::rat:
+	case Tag::real:
 	case Tag::true1:
 		assert(!a->n);
 		return;

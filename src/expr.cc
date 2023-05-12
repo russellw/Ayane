@@ -76,6 +76,34 @@ Expr* var(size_t i, LeafType* ty) {
 }
 
 // Composite expressions
+Expr* comp(Tag tag, Expr** v, size_t n) {
+	auto a = (Comp*)malloc(sizeof(Comp) + n * sizeof *v);
+	a->tag = tag;
+	a->n = n;
+	memcpy(a->v, v, n * sizeof *v);
+	return a;
+}
+
+Expr* comp(Tag tag, Expr* a) {
+	return comp(tag, &a, 1);
+}
+
+Expr* comp(Tag tag, Expr* a, Expr* b) {
+	static Expr* v[2];
+	v[0] = a;
+	v[1] = b;
+	return comp(tag, v, 2);
+}
+
+Expr* comp(Tag tag, const Vec<Expr*>& v) {
+	return comp(tag, v.data, v.n);
+}
+
+Expr* comp(Tag tag, vector<Expr*>& v) {
+	// TODO: sizeof void* consistently
+	return comp(tag, v.data(), v.size());
+}
+
 struct CompCmp {
 	static bool eq(Tag tag, Expr** a, size_t n, Comp* b) {
 		assert(a);
@@ -107,15 +135,6 @@ static void clear(Expr** a) {
 static Set<Tag, Expr**, Comp, CompCmp> comps;
 
 // TODO: static
-bool constFraction(Expr* a) {
-	switch (a->tag) {
-	case Tag::rat:
-	case Tag::real:
-		return 1;
-	}
-	return 0;
-}
-
 bool constNum(Expr* a) {
 	switch (a->tag) {
 	case Tag::integer:
@@ -126,6 +145,7 @@ bool constNum(Expr* a) {
 	return 0;
 }
 
+// TODO: fold
 bool constant(Expr* a) {
 	return constNum(a) || a->tag == Tag::distinctObj;
 }
@@ -201,7 +221,7 @@ Expr* div2(Expr* x, Expr* y, void (*f)(mpz_t, const mpz_t, const mpz_t)) {
 	return rat(tag, r);
 }
 
-Expr* comp(Tag tag, Expr** v, size_t n) {
+Expr* compc(Tag tag, Expr** v, size_t n) {
 	// TODO: other simplifications e.g. x+0, x*1
 	switch (tag) {
 	case Tag::add:
@@ -212,9 +232,6 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		if (constNum(x) && constNum(y)) return op2(x, y, mpz_add, mpq_add);
 		break;
 	}
-	case Tag::and1:
-		if (!n) return bools + 1;
-		break;
 	case Tag::ceil:
 	{
 		assert(n == 1);
@@ -229,7 +246,7 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		assert(n == 2);
 		auto x = v[0];
 		auto y = v[1];
-		if (constFraction(x) && constFraction(y)) return op2(x, y, 0, mpq_div);
+		if (constNum(x) && constNum(y)) return op2(x, y, 0, mpq_div);
 		break;
 	}
 	case Tag::divEuclid:
@@ -326,9 +343,6 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		if (constNum(x) && constNum(y)) return op2(x, y, mpz_mul, mpq_mul);
 		break;
 	}
-	case Tag::or1:
-		if (!n) return bools;
-		break;
 	case Tag::remEuclid:
 	{
 		assert(n == 2);
@@ -409,24 +423,8 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 	return comps.intern(tag, v, n);
 }
 
-Expr* comp(Tag tag, Expr* a) {
-	return comp(tag, &a, 1);
-}
-
-Expr* comp(Tag tag, Expr* a, Expr* b) {
-	static Expr* v[2];
-	v[0] = a;
-	v[1] = b;
-	return comp(tag, v, 2);
-}
-
-Expr* comp(Tag tag, const Vec<Expr*>& v) {
+Expr* compc(Tag tag, const Vec<Expr*>& v) {
 	return comp(tag, v.data, v.n);
-}
-
-Expr* comp(Tag tag, vector<Expr*>& v) {
-	// TODO: sizeof void* consistently
-	return comp(tag, v.data(), v.size());
 }
 
 Type* type(Expr* a) {

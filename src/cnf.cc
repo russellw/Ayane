@@ -329,13 +329,13 @@ void literalsTerm(Expr* a) {
 	case Tag::exists:
 		unreachable;
 	case Tag::not1:
-		neg.add(at(a, 0));
+		neg.add(replace(at(a, 0), 0));
 		return;
 	case Tag::or1:
 		for (size_t i = 0; i < a->n; ++i) literalsTerm(at(a, i));
 		return;
 	}
-	pos.add(a);
+	pos.add(replace(a, 0));
 }
 
 bool hasNum(Expr* a) {

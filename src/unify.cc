@@ -95,12 +95,17 @@ bool unify(Expr* a, bool ax, Expr* b, bool bx) {
 }
 
 Expr* replace(Expr* a, bool ax) {
+	// Variable
 	if (a->tag == Tag::var) {
 		pair<Expr*, bool> r;
 		if (get(make_pair((Var*)a, ax), r, m)) return replace(r.first, r.second);
 	}
+
+	// Leaf
 	if (!a->n) return a;
+
+	// Composite
 	Vec<Expr*> v;
 	for (auto b: a) v.add(replace(b, ax));
-	return comp(a->tag, v);
+	return compc(a->tag, v);
 }
