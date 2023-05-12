@@ -1,7 +1,12 @@
+import argparse
 import os
 import re
 import subprocess
 import sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument("files", nargs="*")
+args = parser.parse_args()
 
 here = os.path.dirname(os.path.realpath(__file__))
 
@@ -50,11 +55,15 @@ else:
     subprocess.check_call("make")
 
 problems = []
-for root, dirs, files in os.walk(here):
-    for file in files:
-        ext = os.path.splitext(file)[1]
-        if ext in (".p", ".cnf"):
-            problems.append(os.path.join(root, file))
+if args.files:
+    for file in args.files:
+        problems.append(os.path.join(here, file))
+else:
+    for root, dirs, files in os.walk(here):
+        for file in files:
+            ext = os.path.splitext(file)[1]
+            if ext in (".p", ".cnf"):
+                problems.append(os.path.join(root, file))
 
 for file in problems:
     print(file)
