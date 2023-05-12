@@ -149,7 +149,7 @@ Expr* maybeRename(int pol, Expr* a) {
 	case Tag::all:
 	case Tag::exists:
 		v.add(maybeRename(pol, at(a, 0)));
-		for (size_t i = 2; i < a->n; ++i) v.add(at(a, i));
+		for (size_t i = 1; i < a->n; ++i) v.add(at(a, i));
 		break;
 
 	case Tag::not1:
@@ -194,7 +194,7 @@ Expr* nnf(bool pol, Expr* a, Vec<pair<Expr*, Expr*>>& m);
 Expr* all(int pol, Expr* a, Vec<pair<Expr*, Expr*>>& m) {
 	// TODO: does it actually need to be new variables, if the parser has in any case not been allowing variable shadowing, because of types?
 	auto o = m.n;
-	for (size_t i = 2; i < a->n; ++i) {
+	for (size_t i = 1; i < a->n; ++i) {
 		auto x = at(a, i);
 		assert(x->tag == Tag::var);
 		auto y = var(vars++, ((Var*)x)->ty);
@@ -215,7 +215,7 @@ Expr* exists(int pol, Expr* a, Vec<pair<Expr*, Expr*>>& m) {
 
 	// Make a replacement for each existentially quantified variable
 	auto o = m.n;
-	for (size_t i = 2; i < a->n; ++i) {
+	for (size_t i = 1; i < a->n; ++i) {
 		auto x = at(a, i);
 		assert(x->tag == Tag::var);
 		auto y = skolem(((Var*)x)->ty, args);
