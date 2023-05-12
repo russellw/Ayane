@@ -1,48 +1,53 @@
 import os
 import re
 import subprocess
+import sys
 
 here = os.path.dirname(os.path.realpath(__file__))
-src = os.path.join(here, "..", "src", "*.cc")
 
-# Build with two different compilers to get two opinions on error checking
-# first with clang, which has slightly better diagnostics
-cmd = (
-    "C:/Program Files/LLVM/bin/clang-cl",
-    "/DDBG",
-    "/Feayane",
-    "/IC:/mpir",
-    "/MTd",
-    "/WX",
-    "/Zi",
-    "/std:c++17",
-    "-Wimplicit-fallthrough",
-    "-Wno-deprecated-declarations",
-    "-Wno-switch",
-    "-ferror-limit=1",
-    src,
-    "C:/mpir/debug.lib",
-    "dbghelp.lib",
-)
-subprocess.check_call(cmd)
+if sys.platform == "win32":
+    src = os.path.join(here, "..", "src", "*.cc")
 
-# then with Microsoft C++
-cmd = (
-    "cl",
-    "/DDBG",
-    "/Feayane",
-    "/IC:/mpir",
-    "/MP",
-    "/MTd",
-    "/WX",
-    "/Zi",
-    "/std:c++17",
-    src,
-    "C:/mpir/debug.lib",
-    "dbghelp.lib",
-)
-subprocess.check_call(cmd)
-print()
+    # Build with two different compilers to get two opinions on error checking
+    # first with clang, which has slightly better diagnostics
+    cmd = (
+        "C:/Program Files/LLVM/bin/clang-cl",
+        "/DDBG",
+        "/Feayane",
+        "/IC:/mpir",
+        "/MTd",
+        "/WX",
+        "/Zi",
+        "/std:c++17",
+        "-Wimplicit-fallthrough",
+        "-Wno-deprecated-declarations",
+        "-Wno-switch",
+        "-ferror-limit=1",
+        src,
+        "C:/mpir/debug.lib",
+        "dbghelp.lib",
+    )
+    subprocess.check_call(cmd)
+
+    # then with Microsoft C++
+    cmd = (
+        "cl",
+        "/DDBG",
+        "/Feayane",
+        "/IC:/mpir",
+        "/MP",
+        "/MTd",
+        "/WX",
+        "/Zi",
+        "/std:c++17",
+        src,
+        "C:/mpir/debug.lib",
+        "dbghelp.lib",
+    )
+    subprocess.check_call(cmd)
+    print()
+else:
+    subprocess.check_call("make")
 
 problems = []
 for root, dirs, files in os.walk(here):
@@ -67,7 +72,7 @@ for file in problems:
             break
     assert e is not None
 
-    cmd = "ayane", "-t3", file
+    cmd = "./ayane", "-t3", file
     s = subprocess.check_output(cmd, encoding="utf-8")
     r = None
     if "unsat" in s:
