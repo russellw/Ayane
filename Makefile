@@ -1,5 +1,5 @@
 ayane: src/*
-	g++ -DDBG -Og -fmax-errors=1 -fno-exceptions -fsanitize=address -g3 -oayane -pipe -std=c++17 src/*.cc -lgmp
+	g++ -DDBG -Og -fmax-errors=1 -fno-exceptions -fsanitize=address,undefined -g3 -oayane -pipe -std=c++17 src/*.cc -lgmp
 
 prof:
 	g++ -fno-exceptions -oayane -pg -pipe -std=c++17 src/*.cc -lgmp
