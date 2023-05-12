@@ -34,7 +34,7 @@ Parser::Parser(const char* file): file(file) {
 			auto r = read(0, src + n, block);
 			if (r < 0) {
 				perror(file);
-				exit(1);
+				exit(errno);
 			}
 			n += r;
 			if (r != block) break;
@@ -45,13 +45,13 @@ Parser::Parser(const char* file): file(file) {
 		struct stat st;
 		if (f < 0 || fstat(f, &st)) {
 			perror(file);
-			exit(1);
+			exit(errno);
 		}
 		n = st.st_size;
 		src = (char*)malloc(n + 2);
 		if (read(f, src, n) != n) {
 			perror(file);
-			exit(1);
+			exit(errno);
 		}
 		close(f);
 	}

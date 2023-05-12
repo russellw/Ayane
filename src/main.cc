@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
 				auto seconds = strtod(s, 0);
 				if (errno) {
 					perror(argv[i]);
-					return 1;
+					return errno;
 				}
 
 #ifdef _WIN32
