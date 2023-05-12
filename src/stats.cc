@@ -73,7 +73,7 @@ void incTrace() {
 		DWORD displacement;
 		char* s;
 		if (SymGetLineFromAddr64(process, addr, &displacement, &loc)) {
-			snprintf(buf, sizeof buf, "%s:%u: %s", loc.FileName, loc.LineNumber, si->Name);
+			snprintf(buf, sizeof buf, "%s:%lu: %s", loc.FileName, loc.LineNumber, si->Name);
 			s = buf;
 		} else
 			s = si->Name;

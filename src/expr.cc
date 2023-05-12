@@ -94,7 +94,7 @@ struct CompCmp {
 	}
 
 	static Comp* make(Tag tag, Expr** v, size_t n) {
-		auto p = malloc(offsetof(Comp, v) + n * sizeof *v);
+		auto p = malloc(sizeof(Comp) + n * sizeof *v);
 		auto a = new (p) Comp(tag, n);
 		memcpy(a->v, v, n * sizeof *v);
 		return a;

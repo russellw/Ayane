@@ -5,6 +5,8 @@ import subprocess
 here = os.path.dirname(os.path.realpath(__file__))
 src = os.path.join(here, "..", "src", "*.cc")
 
+# Build with two different compilers to get two opinions on error checking
+# first with clang, which has slightly better diagnostics
 cmd = (
     "C:/Program Files/LLVM/bin/clang-cl",
     "/DDBG",
@@ -17,14 +19,14 @@ cmd = (
     "-Wimplicit-fallthrough",
     "-Wno-deprecated-declarations",
     "-Wno-switch",
-    "-ferror-limit=10",
+    "-ferror-limit=1",
     src,
     "C:/mpir/debug.lib",
     "dbghelp.lib",
 )
 subprocess.check_call(cmd)
-print()
 
+# then with Microsoft C++
 cmd = (
     "cl",
     "/DDBG",
