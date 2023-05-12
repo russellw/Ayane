@@ -4,7 +4,6 @@ Expr bools[2] = {{Tag::false1}, {Tag::true1}};
 
 // Numbers need to be interned, to preserve the property that equal terms have pointer equality
 
-// TODO: write test problems for integer division
 // Integers
 struct IntCmp {
 	static bool eq(Tag tag, mpz_t v, size_t n, Int* b) {
