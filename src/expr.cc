@@ -108,6 +108,15 @@ static void clear(Expr** a) {
 static Set<Tag, Expr**, Comp, CompCmp> comps;
 
 // TODO: static
+bool constFraction(Expr* a) {
+	switch (a->tag) {
+	case Tag::rat:
+	case Tag::real:
+		return 1;
+	}
+	return 0;
+}
+
 bool constNum(Expr* a) {
 	switch (a->tag) {
 	case Tag::integer:
@@ -221,7 +230,7 @@ Expr* comp(Tag tag, Expr** v, size_t n) {
 		assert(n == 2);
 		auto x = v[0];
 		auto y = v[1];
-		if (constNum(x) && constNum(y)) return op2(x, y, 0, mpq_div);
+		if (constFraction(x) && constFraction(y)) return op2(x, y, 0, mpq_div);
 		break;
 	}
 	case Tag::divEuclid:
