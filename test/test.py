@@ -87,8 +87,14 @@ for file in problems:
     assert e is not None
 
     cmd = "./ayane", "-t3", file
-    # TODO: print the output if there was an error
-    s = subprocess.check_output(cmd, encoding="utf-8")
+    p = subprocess.run(
+        cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf-8"
+    )
+    s = p.stdout
+
+    if p.returncode:
+        print(s, end="")
+        raise Exception(str(p.returncode))
     r = None
     if "unsat" in s:
         r = 0
