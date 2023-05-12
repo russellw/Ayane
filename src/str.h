@@ -1,4 +1,5 @@
 // Strings are interned for fast comparison, and fast access to associated types and values
+// TODO: Do they need to be null terminated?
 struct Str {
 	Fn* fn;
 	TypeName* ty;
