@@ -18,12 +18,7 @@ bool isNum(Type* ty) {
 
 TypeName* typeName(Str* s) {
 	if (s->ty) return s->ty;
-	// TODO: Worth using a constructor?
-	auto ty = (TypeName*)malloc(sizeof(TypeName));
-	ty->kind = Kind::name;
-	ty->n = 0;
-	ty->s = s->v;
-	return s->ty = ty;
+	return s->ty = new TypeName(s->v);
 }
 
 // Composite types

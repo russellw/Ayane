@@ -30,6 +30,9 @@ bool isNum(Type* ty);
 // In typed first-order logic, we can name a type, and then work with it without needing to know what it is made of
 struct TypeName: LeafType {
 	char* s;
+
+	TypeName(char* s): LeafType(Kind::name), s(s) {
+	}
 };
 
 TypeName* typeName(Str* s);
