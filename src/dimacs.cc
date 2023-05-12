@@ -56,11 +56,6 @@ struct Parser1: Parser {
 	}
 
 	// Top level
-	void add(const Vec<Expr*>& literals) {
-		// TODO: bypass cnf?
-		cnf(comp(Tag::or1, literals));
-	}
-
 	Parser1(const char* file): Parser(file) {
 		lex();
 		if (tok == 'p') {
@@ -76,22 +71,21 @@ struct Parser1: Parser {
 			if (tok != k_id) err("Expected count");
 			lex();
 		}
-		Vec<Expr*> literals;
 		for (;;) switch (tok) {
 			case '-':
 				lex();
-				literals.add(comp(Tag::not1, propVar()));
+				neg.add(propVar());
 				break;
 			case 0:
-				if (literals.n) add(literals);
+				if (neg.n + pos.n) clause();
 				return;
 			case k_id:
-				literals.add(propVar());
+				pos.add(propVar());
 				break;
 			case k_zero:
 				lex();
-				add(literals);
-				literals.n = 0;
+				clause();
+				neg.n = pos.n = 0;
 				break;
 			default:
 				err("Syntax error");
