@@ -70,7 +70,7 @@ for file in problems:
 
     e = None
     for s in open(file).readlines():
-        m = re.match(r"\S\s*sat\s+", s)
+        m = re.match(r"\S\s*err\s+", s)
         if m:
             e = -1
             break
