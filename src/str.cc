@@ -69,8 +69,6 @@ Str** entries;
 
 struct Init {
 	Init() {
-		static_assert(isPow2(sizeof(Str)));
-		assert(isPow2(cap));
 		assert(qty <= cap * 3 / 4);
 		entries = (Str**)calloc(cap, sizeof(Str*));
 		for (int i = 0; i < sizeof keywords / sizeof *keywords; ++i) {

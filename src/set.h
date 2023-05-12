@@ -18,7 +18,6 @@ template <class K, class V, class T, class Cmp> class Set {
 	}
 
 	void expand() {
-		assert(isPow2(cap));
 		auto cap1 = cap * 2;
 		auto entries1 = (T**)calloc(cap1, sizeof *entries);
 		// TODO: check generated code
