@@ -1,5 +1,6 @@
 import argparse
 
+import common
 import tptp
 
 parser = argparse.ArgumentParser()
@@ -26,5 +27,17 @@ if args.random:
 if args.number:
     problems = problems[0 : args.number]
 
+m = {}
 for file in problems:
-    print(os.path.basename(file), end="\t")
+    # print(os.path.basename(file), end="\t")
+    print(os.path.basename(file))
+
+    cmd = "./ayane", file
+    p = subprocess.run(
+        cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf-8"
+    )
+    code = p.returncode
+    if code >= 1 << 31:
+        code -= 1 << 32
+    common.inc(m, code)
+print(m)
