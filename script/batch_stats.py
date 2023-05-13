@@ -20,7 +20,7 @@ if args.seed is not None:
     args.random = 1
     random.seed(args.seed)
 
-problems=tptp.get_problems(args.files)
+problems = tptp.get_problems(args.files)
 if args.random:
     random.shuffle(problems)
 if args.number:

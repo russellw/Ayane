@@ -1,7 +1,8 @@
-import re
 import os
+import re
 
-def  get_problems(files):
+
+def get_problems(files):
     if not files:
         files = ["tptp_dir"]
 
