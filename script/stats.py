@@ -30,9 +30,6 @@ if args.number:
 
 m = {}
 for file in problems:
-    # print(os.path.basename(file), end="\t")
-    print(os.path.basename(file))
-
     cmd = "./ayane", file
     p = subprocess.run(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf-8"
@@ -41,4 +38,6 @@ for file in problems:
     if code >= 1 << 31:
         code -= 1 << 32
     m[code] = m.get(code, 0) + 1
+    if code:
+        print(os.path.basename(file), code)
 print(m)
