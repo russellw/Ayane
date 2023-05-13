@@ -1,4 +1,6 @@
 import argparse
+import os
+import subprocess
 
 import common
 import tptp

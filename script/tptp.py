@@ -4,7 +4,7 @@ import re
 
 def get_problems(files):
     if not files:
-        files = ["tptp_dir"]
+        files = ["tptp"]
 
     tptp_dir = os.getenv("TPTP")
     if not tptp_dir:
