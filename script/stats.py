@@ -2,7 +2,6 @@ import argparse
 import os
 import subprocess
 
-import common
 import tptp
 
 parser = argparse.ArgumentParser()
@@ -41,5 +40,5 @@ for file in problems:
     code = p.returncode
     if code >= 1 << 31:
         code -= 1 << 32
-    common.inc(m, code)
+    m[code] = m.get(code, 0) + 1
 print(m)

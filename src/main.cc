@@ -138,6 +138,8 @@ int main(int argc, char** argv) {
 		tptp(file);
 		break;
 	}
+	// TODO: temp
+	exit(0);
 
 	// Solve
 	superposn();
