@@ -26,4 +26,5 @@ if args.random:
 if args.number:
     problems = problems[0 : args.number]
 
-print(problems)
+for file in problems:
+    print(os.path.basename(file), end="\t")
