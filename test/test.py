@@ -21,6 +21,12 @@ else:
             if ext in (".p", ".cnf"):
                 problems.append(os.path.join(root, file))
 
+codes = {}
+for s in open(os.path.join(here, "..", "src", "etc.h")).readlines():
+    m = re.match(r"const int (\w+Error) = (-\d+);", s)
+    if m:
+        codes[int(m[2])] = m[1]
+
 
 def err():
     print(s, end="")
@@ -55,11 +61,12 @@ for file in problems:
     code = p.returncode
     if code >= 1 << 31:
         code -= 1 << 32
+    code = codes.get(code, code)
     s = p.stdout
-    if code not in (0, -1):
+    if code not in (0, "typeError"):
         err()
 
-    if code == -1:
+    if code == "typeError":
         r = -1
     elif "unsat" in s:
         r = 0

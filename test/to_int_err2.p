@@ -1,4 +1,4 @@
-%err
+%typeError
 
 fof(1,plain,
 

@@ -1,3 +1,3 @@
-%err
+%typeError
 
 fof(a,conjecture,?[X:$o]:p(X)).
