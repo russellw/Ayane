@@ -287,27 +287,30 @@ void Parser::typing(Expr* a, Type* ty) {
 	case Tag::call:
 	{
 		assert(a->n > 1);
-		auto fty = ((Fn*)at(a, 0))->ty;
-		if (!fty) err("Unspecified type", -1);
+		auto f = (Fn*)at(a, 0);
+		assert(f->tag == Tag::fn);
+		auto fty = f->ty;
+		if (fty) {
+			// Check for input like a(b) where a is just a constant
+			if (fty->kind != Kind::fn) err("Called a non-function", -1);
 
-		// Check for input like a(b) where a is just a constant
-		if (fty->kind != Kind::fn) err("Called a non-function", -1);
+			// Check for input like a(b) followed by a(b, c)
+			checkSize(a, fty->n);
 
-		// Check for input like a(b) followed by a(b, c)
-		checkSize(a, fty->n);
-
-		// The core of the check: Make sure the term is of the required type. At this point, could have rejoined the common logic,
-		// but call is by far the most common composite expression, so might as well keep it going on the fast track.
-		if (at(fty, 0) != ty) err("Type mismatch", -1);
+			// And of course, check return type
+			if (at(fty, 0) != ty) err("Type mismatch", -1);
+		} else {
+			// In TPTP, an undeclared function defaults to all parameters individual, and the return type individual or Boolean
+			// depending on context. Here, we allow a little more leeway. The return type defaults to whatever the context wanted.
+			Vec<Type*> v(1, ty);
+			for (size_t i = 1; i < a->n; ++i) v.add(&tindividual);
+			f->ty = fty = compType(v);
+		}
 
 		// And recur, based on the parameter types
 		for (size_t i = 1; i < fty->n; ++i) {
-			// TODO: does this check on parameter types need to be repeated here?
-			switch (at(fty, i)->kind) {
-			case Kind::boolean:
-			case Kind::fn:
-				err("Invalid type for function parameter", -1);
-			}
+			assert(at(fty, i)->kind != Kind::boolean);
+			assert(at(fty, i)->kind != Kind::fn);
 			typing(at(a, i), at(fty, i));
 		}
 		return;

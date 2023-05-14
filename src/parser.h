@@ -90,6 +90,6 @@ struct Parser {
 	Expr* fn(Str* s, Type* ty);
 
 	// Check the correctness of expressions, in context where error can report line number
-	void typing(Expr* a, size_t arity);
+	void checkSize(Expr* a, size_t arity);
 	void typing(Expr* a, Type* ty);
 };

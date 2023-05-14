@@ -23,29 +23,6 @@ Expr* distinctObj(Str* s) {
 	return a;
 }
 
-// If a term does not already have a type, assign it a specified one
-void defaultType(Expr* a, Type* ty) {
-	// A statement about the return type of a function call, can directly imply the type of the function. This generally does not
-	// apply to basic operators; in most cases, they already have a definite type. That is not entirely true of the arithmetic
-	// operators, but we don't try to do type inference to figure those out.
-	switch (a->tag) {
-	case Tag::call:
-	{
-		auto f = (Fn*)at(a, 0);
-		assert(f->tag == Tag::fn);
-		// TODO: might be some blank types in the arguments; is that okay, or do we need to error?
-		if (!f->ty) f->ty = compType(ty, begin(a) + 1, end(a));
-		break;
-	}
-	case Tag::fn:
-	{
-		auto a1 = (Fn*)a;
-		if (!a1->ty) a1->ty = ty;
-		break;
-	}
-	}
-}
-
 // TODO: Which types should use const?
 struct Select: unordered_set<const char*> {
 	bool all;
@@ -283,16 +260,20 @@ struct Parser1: Parser {
 		if (eat('(')) {
 			// TODO: does vec(n) mean n or cap?
 			Vec<Type*> v(1);
-			do v.add(atomicType());
-			while (eat('*'));
+			do {
+				auto ty = atomicType();
+				if (ty == &tbool) err("$o is not a valid parameter type");
+				v.add(ty);
+			} while (eat('*'));
 			expect(')');
 			expect('>');
 			v[0] = atomicType();
 			return compType(v);
 		}
 		auto ty = atomicType();
-		if (eat('>')) return compType(atomicType(), ty);
-		return ty;
+		if (!eat('>')) return ty;
+		if (ty == &tbool) err("$o is not a valid parameter type");
+		return compType(atomicType(), ty);
 	}
 
 	// Expressions
@@ -458,7 +439,7 @@ struct Parser1: Parser {
 			auto ty = &tindividual;
 			if (eat(':')) {
 				ty = atomicType();
-				if (ty == &tbool) err("Variable typed $o", -1);
+				if (ty == &tbool) err("$o is not a valid variable type", -1);
 			}
 			auto x = var(vars.n, ty);
 			vars.add(make_pair(s, x));
