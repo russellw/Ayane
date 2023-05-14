@@ -236,12 +236,23 @@ void Parser::checkSize(Expr* a, size_t n) {
 }
 
 static Type* typeOrIndividual(Expr* a) {
-	if (a->tag != Tag::call) return type(a);
-	auto f = (Fn*)at(a, 0);
-	assert(f->tag == Tag::fn);
-	auto ty = f->ty;
-	if (!ty) return &tindividual;
-	return at(f->ty, 0);
+	switch (a->tag) {
+	case Tag::call:
+	{
+		auto f = (Fn*)at(a, 0);
+		assert(f->tag == Tag::fn);
+		auto ty = f->ty;
+		if (!ty) return &tindividual;
+		return at(f->ty, 0);
+	}
+	case Tag::fn:
+	{
+		auto ty = ((Fn*)a)->ty;
+		if (!ty) return &tindividual;
+		return ty;
+	}
+	}
+	return type(a);
 }
 
 void Parser::typing(Expr* a, Type* ty) {
@@ -282,7 +293,7 @@ void Parser::typing(Expr* a, Type* ty) {
 		// Connective
 		// TODO: does SMT-LIB need to check arity here?
 		if (&tbool != ty) err("Type mismatch", -1);
-		for (size_t i = 0; i < a->n; ++i) typing(at(a, i), &tbool);
+		for (size_t i = 0; i < a->n; ++i) typing(at(a, i), ty);
 		return;
 	case Tag::call:
 	{
