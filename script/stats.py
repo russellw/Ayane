@@ -2,6 +2,7 @@ import argparse
 import os
 import re
 import subprocess
+import time
 
 import tptp
 
@@ -39,6 +40,7 @@ if args.number:
 m = {}
 for file in problems:
     cmd = "./ayane", file
+    start = time.time()
     p = subprocess.run(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf-8"
     )
@@ -47,6 +49,5 @@ for file in problems:
         code -= 1 << 32
     code = codes.get(code, code)
     m[code] = m.get(code, 0) + 1
-    if code and code != "inappropriateError":
-        print(os.path.basename(file), code)
+    print("%s\t%s\t%0.3f" % (os.path.basename(file), code, time.time() - start))
 print(m)
