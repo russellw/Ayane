@@ -328,7 +328,6 @@ struct Parser1: Parser {
 			{
 				Vec<Expr*> v;
 				args(v);
-				for (auto& a: v) defaultType(a, &tindividual);
 				Vec<Expr*> inequalities;
 				for (auto i = v.begin(), e = v.end(); i < e; ++i)
 					for (auto j = v.begin(); j != i; ++j) inequalities.add(comp(Tag::not1, comp(Tag::eq, *i, *j)));
@@ -416,13 +415,6 @@ struct Parser1: Parser {
 			// Function is being called, so gather the function and arguments
 			Vec<Expr*> v(1, a);
 			args(v);
-
-			// By the TPTP specification, symbols can be assumed Boolean or individual, if not previously specified otherwise.
-			// First-order logic does not allow functions to take Boolean arguments, so the arguments can default to individual. But
-			// we cannot yet make any assumption about the function return type. For all we know here, it could still be Boolean.
-			// Leave it to the caller, which will know from context whether that is the case.
-			for (size_t i = 1; i < v.n; ++i) defaultType(v[i], &tindividual);
-
 			return comp(Tag::call, v);
 		}
 		case k_num:
@@ -444,23 +436,12 @@ struct Parser1: Parser {
 		auto a = atomicTerm();
 		switch (tok) {
 		case '=':
-		{
 			lex();
-			auto b = atomicTerm();
-			defaultType(a, &tindividual);
-			defaultType(b, &tindividual);
-			return comp(Tag::eq, a, b);
-		}
+			return comp(Tag::eq, a, atomicTerm());
 		case k_ne:
-		{
 			lex();
-			auto b = atomicTerm();
-			defaultType(a, &tindividual);
-			defaultType(b, &tindividual);
-			return comp(Tag::not1, comp(Tag::eq, a, b));
+			return comp(Tag::not1, comp(Tag::eq, a, atomicTerm()));
 		}
-		}
-		defaultType(a, &tbool);
 		return a;
 	}
 
@@ -474,8 +455,11 @@ struct Parser1: Parser {
 			if (tok != k_var) err("Expected variable");
 			auto s = str;
 			lex();
-			LeafType* ty = &tindividual;
-			if (eat(':')) ty = atomicType();
+			auto ty = &tindividual;
+			if (eat(':')) {
+				ty = atomicType();
+				if (ty == &tbool) err("Variable typed $o", -1);
+			}
 			auto x = var(vars.n, ty);
 			vars.add(make_pair(s, x));
 			v.add(x);
@@ -594,6 +578,7 @@ struct Parser1: Parser {
 				cnfMode = 1;
 				auto a = quantify(logicFormula());
 				vars.n = 0;
+				typing(a, &tbool);
 
 				// Select
 				if (select.count(name)) cnf(a);
@@ -632,7 +617,7 @@ struct Parser1: Parser {
 				cnfMode = 0;
 				auto a = logicFormula();
 				assert(!vars.n);
-				check(a, &tbool);
+				typing(a, &tbool);
 
 				// Select
 				if (!select.count(name)) break;

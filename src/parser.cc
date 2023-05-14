@@ -228,27 +228,64 @@ Expr* Parser::fn(Str* s, Type* ty) {
 	return s->fn = a;
 }
 
-void Parser::check(Expr* a, size_t n) {
+void Parser::checkSize(Expr* a, size_t n) {
 	if (a->n == n) return;
 	if (a->tag == Tag::call) --n;
 	sprintf(buf, "Expected %zu args", n);
 	err(buf, -1);
 }
 
-void Parser::check(Expr* a, Type* ty) {
-	// All symbols used in a formula must have specified types by the time this check is run. Otherwise, there would be no way of
-	// knowing whether the types they will be given in the future, would have passed the check.
-	// TODO: can a type still be unspecified by the time we get this far?
-	if (!ty) err("Unspecified type", -1);
+static Type* typeOrIndividual(Expr* a) {
+	if (a->tag != Tag::call) return type(a);
+	auto f = (Fn*)at(a, 0);
+	assert(f->tag == Tag::fn);
+	auto ty = f->ty;
+	if (!ty) return &tindividual;
+	return at(f->ty, 0);
+}
+
+void Parser::typing(Expr* a, Type* ty) {
+	assert(ty);
 
 	// In first-order logic, a function cannot return a function, nor can a variable store one. (That would be higher-order logic.)
 	// The code should be written so that neither the top-level callers nor the recursive calls, can ever ask for a function to be
 	// returned.
 	assert(ty->kind != Kind::fn);
 
-	// Need to handle call before checking the type of this term, because the type of a call is only well-defined if the type of the
-	// function is well-defined
-	if (a->tag == Tag::call) {
+	switch (a->tag) {
+	case Tag::add:
+	case Tag::divEuclid:
+	case Tag::divFloor:
+	case Tag::divTrunc:
+	case Tag::mul:
+	case Tag::remEuclid:
+	case Tag::remFloor:
+	case Tag::remTrunc:
+	case Tag::sub:
+		// Arithmetic of arity 2, type passes straight through
+		// TODO: would it be better to specialize to addInt etc?
+		checkSize(a, 2);
+		if (!isNum(ty)) err("Invalid type for arithmetic", -1);
+		typing(at(a, 0), ty);
+		typing(at(a, 1), ty);
+		return;
+	case Tag::all:
+	case Tag::exists:
+		// Quantifier
+		// TODO: does SMT-LIB need to check a Boolean was wanted here?
+		typing(at(a, 0), &tbool);
+		return;
+	case Tag::and1:
+	case Tag::eqv:
+	case Tag::not1:
+	case Tag::or1:
+		// Connective
+		// TODO: does SMT-LIB need to check arity here?
+		if (&tbool != ty) err("Type mismatch", -1);
+		for (size_t i = 0; i < a->n; ++i) typing(at(a, i), &tbool);
+		return;
+	case Tag::call:
+	{
 		assert(a->n > 1);
 		auto fty = ((Fn*)at(a, 0))->ty;
 		if (!fty) err("Unspecified type", -1);
@@ -257,7 +294,7 @@ void Parser::check(Expr* a, Type* ty) {
 		if (fty->kind != Kind::fn) err("Called a non-function", -1);
 
 		// Check for input like a(b) followed by a(b, c)
-		check(a, fty->n);
+		checkSize(a, fty->n);
 
 		// The core of the check: Make sure the term is of the required type. At this point, could have rejoined the common logic,
 		// but call is by far the most common composite expression, so might as well keep it going on the fast track.
@@ -271,56 +308,19 @@ void Parser::check(Expr* a, Type* ty) {
 			case Kind::fn:
 				err("Invalid type for function parameter", -1);
 			}
-			check(at(a, i), at(fty, i));
+			typing(at(a, i), at(fty, i));
 		}
 		return;
 	}
-
-	// The core of the check: Make sure the term is of the required type
-	if (type(a) != ty) err("Type mismatch", -1);
-
-	// Further checks can be done depending on operator. For example, arithmetic operators should have matching numeric arguments.
-	// In each case, the first step is to check the number of arguments, where applicable and necessary, and the last is to
-	// recursively check the argument expressions.
-	switch (a->tag) {
-	case Tag::add:
-	case Tag::divEuclid:
-	case Tag::divFloor:
-	case Tag::divTrunc:
-	case Tag::mul:
-	case Tag::remEuclid:
-	case Tag::remFloor:
-	case Tag::remTrunc:
-	case Tag::sub:
-		check(a, 2);
-		if (!isNum(ty)) err("Invalid type for arithmetic", -1);
-		check(at(a, 0), ty);
-		check(at(a, 1), ty);
-		return;
-	case Tag::all:
-	case Tag::exists:
-		check(at(a, 0), &tbool);
-		return;
-	case Tag::and1:
-	case Tag::eqv:
-	case Tag::not1:
-	case Tag::or1:
-		for (size_t i = 0; i < a->n; ++i) check(at(a, i), &tbool);
-		return;
 	case Tag::ceil:
 	case Tag::floor:
-	case Tag::isInt:
-	case Tag::isRat:
 	case Tag::minus:
 	case Tag::round:
-	case Tag::toInt:
-	case Tag::toRat:
-	case Tag::toReal:
 	case Tag::trunc:
-		check(a, 1);
-		ty = type(at(a, 0));
+		// Arithmetic of arity 1, type passes straight through
+		checkSize(a, 1);
 		if (!isNum(ty)) err("Invalid type for arithmetic", -1);
-		check(at(a, 0), ty);
+		typing(at(a, 0), ty);
 		return;
 	case Tag::distinctObj:
 	case Tag::false1:
@@ -329,10 +329,16 @@ void Parser::check(Expr* a, Type* ty) {
 	case Tag::rat:
 	case Tag::real:
 	case Tag::true1:
+	case Tag::var:
+		// Leaf
 		assert(!a->n);
+
+		// Safe to call type(a) because there are no subterms
+		if (type(a) != ty) err("Type mismatch", -1);
 		return;
 	case Tag::div:
-		check(a, 2);
+		// Arithmetic of arity 2, type passes straight through, but fractions only
+		checkSize(a, 2);
 		switch (ty->kind) {
 		case Kind::rat:
 		case Kind::real:
@@ -340,31 +346,52 @@ void Parser::check(Expr* a, Type* ty) {
 		default:
 			err("Invalid type for division", -1);
 		}
-		check(at(a, 0), ty);
-		check(at(a, 1), ty);
+		typing(at(a, 0), ty);
+		typing(at(a, 1), ty);
 		return;
 	case Tag::eq:
-		ty = type(at(a, 0));
+		// Eq is always a special case
+		ty = typeOrIndividual(at(a, 0));
 		switch (ty->kind) {
 		case Kind::boolean:
 		case Kind::fn:
 			err("Invalid type for equality", -1);
 		}
-		check(at(a, 0), ty);
-		check(at(a, 1), ty);
+		typing(at(a, 0), ty);
+		typing(at(a, 1), ty);
+		return;
+	case Tag::isInt:
+	case Tag::isRat:
+	case Tag::toInt:
+	case Tag::toRat:
+	case Tag::toReal:
+		// Type converter of arity 1
+		checkSize(a, 1);
+
+		// Safe to call type(a) because it will stop at this tag
+		if (type(a) != ty) err("Type mismatch", -1);
+
+		// But that means the argument may have a different type
+		ty = typeOrIndividual(at(a, 0));
+
+		if (!isNum(ty)) err("Invalid type for arithmetic", -1);
+		typing(at(a, 0), ty);
 		return;
 	case Tag::lt:
-		check(a, 2);
-		ty = type(at(a, 0));
+		// Type converter of arity 2
+		checkSize(a, 2);
+
+		// Safe to call type(a) because it will stop at this tag
+		if (type(a) != ty) err("Type mismatch", -1);
+
+		// But that means the argument may have a different type
+		ty = typeOrIndividual(at(a, 0));
+
 		if (!isNum(ty)) err("Invalid type for comparison", -1);
-		check(at(a, 0), ty);
-		check(at(a, 1), ty);
-		return;
-	case Tag::var:
-		// A function would also be an invalid type for a variable, but we already checked for that
-		// TODO: does this need to be dynamically checked here?
-		if (ty == &tbool) err("Invalid type for variable", -1);
+		typing(at(a, 0), ty);
+		typing(at(a, 1), ty);
 		return;
 	}
+	// TODO: worth having compile time exhaustiveness check for this case?
 	unreachable;
 }
