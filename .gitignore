@@ -3,6 +3,7 @@
 *.log
 *.lst
 *.obj
+*.out
 *.pdb
 *.png
 __pycache__/
