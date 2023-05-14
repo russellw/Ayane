@@ -47,6 +47,6 @@ for file in problems:
         code -= 1 << 32
     code = codes.get(code, code)
     m[code] = m.get(code, 0) + 1
-    if code:
+    if code and code != "inappropriateError":
         print(os.path.basename(file), code)
 print(m)

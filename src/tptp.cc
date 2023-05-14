@@ -224,6 +224,14 @@ struct Parser1: Parser {
 		err(buf);
 	}
 
+	bool eatDollarWord(size_t i) {
+		if (tok == k_dollarWord && str == keywords + i) {
+			lex();
+			return 1;
+		}
+		return 0;
+	}
+
 	// Types
 	LeafType* atomicType() {
 		auto k = tok;
@@ -262,7 +270,7 @@ struct Parser1: Parser {
 			Vec<Type*> v(1);
 			do {
 				auto ty = atomicType();
-				if (ty == &tbool) err("$o is not a valid parameter type");
+				if (ty == &tbool) err("$o is not a valid parameter type", inappropriateError);
 				v.add(ty);
 			} while (eat('*'));
 			expect(')');
@@ -272,7 +280,7 @@ struct Parser1: Parser {
 		}
 		auto ty = atomicType();
 		if (!eat('>')) return ty;
-		if (ty == &tbool) err("$o is not a valid parameter type");
+		if (ty == &tbool) err("$o is not a valid parameter type", inappropriateError);
 		return compType(atomicType(), ty);
 	}
 
@@ -582,10 +590,11 @@ struct Parser1: Parser {
 
 					auto s = wordOrDigits();
 					expect(':');
-					if (tok == k_dollarWord && str == keywords + s_tType) {
+					if (eatDollarWord(s_tType)) {
+						if (eat('>')) err("Type constructors not supported", inappropriateError);
+
 						// The symbol will be used as the name of a type. No particular action is required at this point, so accept
 						// this and move on.
-						lex();
 					} else {
 						// The symbol is the name of a function with the specified type. Make sure it has this type.
 						fn(s, topLevelType());
@@ -647,7 +656,7 @@ struct Parser1: Parser {
 				break;
 			}
 			default:
-				err("Unknown language");
+				err("Unknown language", inappropriateError);
 			}
 			if (tok == ',') do
 					ignore();
