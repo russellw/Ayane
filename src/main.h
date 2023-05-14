@@ -51,6 +51,9 @@ struct Var;
 #include "clause.h"
 
 // Parsers
+// TODO: move
+#include "etc.h"
+
 #include "str.h"
 
 #include "parser.h"
@@ -60,7 +63,6 @@ struct Var;
 
 // Algorithms
 #include "cnf.h"
-#include "etc.h"
 #include "subsume.h"
 #include "superposn.h"
 #include "unify.h"

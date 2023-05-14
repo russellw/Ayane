@@ -68,7 +68,7 @@ struct Parser {
 	~Parser();
 
 	// Report an error with line number, and exit
-	[[noreturn]] void err(const char* msg, int code = -2);
+	[[noreturn]] void err(const char* msg, int code = syntaxError);
 
 	// Lex an unquoted word, tok = k_id, str = the word
 	void word();

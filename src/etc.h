@@ -1,3 +1,13 @@
+// Exit codes specified by this program have small negative numbers to avoid overlap with those specified by POSIX or Windows.
+// Increasingly negative numbers are assigned roughly in order from 'things that can reasonably happen even when the input is not
+// actually incorrect' (e.g. problem contains higher order logic that the system does not understand, 'inappropriate' in SZS
+// terminology) to 'things that can only happen if there is an error in the input' (e.g. syntax error) to 'things that can only
+// happen if there is a bug in the code' (e.g. assert failure).
+const int inappropriateError = -1;
+const int typeError = -2;
+const int syntaxError = -3;
+const int assertError = -4;
+
 extern char buf[5000];
 
 // SORT
