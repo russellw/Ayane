@@ -54,6 +54,7 @@ enum {
 	s_true,
 	s_truncate,
 	s_type,
+	s_tcf,
 	s_uminus,
 	nkeywords
 };

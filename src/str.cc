@@ -43,6 +43,7 @@ Str keywords[] = {
 	{0, 0, "true"},
 	{0, 0, "truncate"},
 	{0, 0, "type"},
+	{0, 0, "tcf"},
 	{0, 0, "uminus"},
 	// clang-format on
 };

@@ -45,6 +45,7 @@ words = [
     "true",
     "truncate",
     "type",
+    "tcf",
     "uminus",
 ]
 

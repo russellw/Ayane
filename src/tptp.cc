@@ -566,6 +566,7 @@ struct Parser1: Parser {
 				break;
 			}
 			case s_fof:
+			case s_tcf:
 			case s_tff:
 			{
 				expect(',');
