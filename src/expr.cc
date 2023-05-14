@@ -148,16 +148,14 @@ bool constant(Expr* a) {
 
 // Factor out common calculation patterns
 Expr* op1(Expr* x, void (*f)(mpz_t, const mpz_t, const mpz_t)) {
-	auto tag = x->tag;
-
-	if (tag == Tag::integer) return x;
+	if (type(x) == &tinteger) return x;
 
 	auto x1 = (Rat*)x;
 
 	mpq_t r;
 	mpq_init(r);
 	f(mpq_numref(r), mpq_numref(x1->v), mpq_denref(x1->v));
-	return rat(tag, r);
+	return rat(x->tag, r);
 }
 
 Rat* toRat(Expr* x, Tag tag) {
@@ -232,8 +230,6 @@ Expr* compc(Tag tag, Expr** v, size_t n) {
 	{
 		assert(n == 1);
 		auto x = v[0];
-		// Could do type-based simplification in cases like this, e.g. if x is an integer, then ceil(x) = x. But the value of that
-		// is questionable. Is anyone going to write ceil(x) where x is an integer, in the first place?
 		if (constant(x)) return op1(x, mpz_cdiv_q);
 		break;
 	}
@@ -289,6 +285,7 @@ Expr* compc(Tag tag, Expr** v, size_t n) {
 	{
 		assert(n == 1);
 		auto x = v[0];
+		if (type(x) == &tinteger) return bools + 1;
 		if (constant(x)) return bools + (mpz_cmp_ui(mpq_denref(((Rat*)x)->v), 1) == 0);
 		break;
 	}
@@ -382,6 +379,7 @@ Expr* compc(Tag tag, Expr** v, size_t n) {
 	{
 		assert(n == 1);
 		auto x = v[0];
+		if (type(x) == &tinteger) return x;
 		if (constant(x)) {
 			auto x1 = (Rat*)x;
 			mpz_t r;

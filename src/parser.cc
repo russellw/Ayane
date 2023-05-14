@@ -376,12 +376,12 @@ void Parser::typing(Expr* a, Type* ty) {
 	case Tag::fn:
 	{
 		assert(!a->n);
-		auto f = (Fn*)a;
-		if (!f->ty) {
-			f->ty = ty;
+		auto a1 = (Fn*)a;
+		if (!a1->ty) {
+			a1->ty = ty;
 			return;
 		}
-		if (f->ty != ty) err("Type mismatch", -1);
+		if (a1->ty != ty) err("Type mismatch", -1);
 		return;
 	}
 	case Tag::isInt:
