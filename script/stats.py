@@ -1,5 +1,6 @@
 import argparse
 import os
+import re
 import subprocess
 
 import tptp
@@ -22,6 +23,13 @@ if args.seed is not None:
     args.random = 1
     random.seed(args.seed)
 
+here = os.path.dirname(os.path.realpath(__file__))
+codes = {}
+for s in open(os.path.join(here, "..", "src", "etc.h")).readlines():
+    m = re.match(r"const int (\w+Error) = (-\d+);", s)
+    if m:
+        codes[int(m[2])] = m[1]
+
 problems = tptp.get_problems(args.files)
 if args.random:
     random.shuffle(problems)
@@ -37,6 +45,7 @@ for file in problems:
     code = p.returncode
     if code >= 1 << 31:
         code -= 1 << 32
+    code = codes.get(code, code)
     m[code] = m.get(code, 0) + 1
     if code:
         print(os.path.basename(file), code)
