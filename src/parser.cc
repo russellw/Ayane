@@ -338,7 +338,6 @@ void Parser::typing(Expr* a, Type* ty) {
 		return;
 	case Tag::distinctObj:
 	case Tag::false1:
-	case Tag::fn:
 	case Tag::integer:
 	case Tag::rat:
 	case Tag::real:
@@ -374,6 +373,17 @@ void Parser::typing(Expr* a, Type* ty) {
 		typing(at(a, 0), ty);
 		typing(at(a, 1), ty);
 		return;
+	case Tag::fn:
+	{
+		assert(!a->n);
+		auto f = (Fn*)a;
+		if (!f->ty) {
+			f->ty = ty;
+			return;
+		}
+		if (f->ty != ty) err("Type mismatch", -1);
+		return;
+	}
 	case Tag::isInt:
 	case Tag::isRat:
 	case Tag::toInt:
