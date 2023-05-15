@@ -3,16 +3,35 @@
 char buf[5000];
 
 // SORT
-size_t fnv(const void* p, size_t bytes) {
+size_t fnv(const void* p, size_t n) {
 	// Fowler-Noll-Vo-1a is slower than more sophisticated hash algorithms for large chunks of data, but faster for tiny ones, so it
 	// still sees use
 	auto q = (const unsigned char*)p;
 	size_t h = 2166136261u;
-	while (bytes--) {
+	while (n--) {
 		h ^= *q++;
 		h *= 16777619;
 	}
 	return h;
+}
+
+void* ialloc(size_t n) {
+	// For data to be kept for the full duration of the process, an irreversible allocator avoids the time and memory overhead of
+	// keeping track of individual allocations
+	n = roundUp(n, 8);
+	static char* p;
+	static char* end;
+	if (end - p < n) {
+		auto block = max(n, (size_t)10000);
+		p = (char*)malloc(block);
+		end = p + block;
+	}
+	auto r = p;
+#ifdef DEBUG
+	memset(r, 0xcc, n);
+#endif
+	p += n;
+	return r;
 }
 
 void mpz_ediv_q(mpz_t q, const mpz_t n, const mpz_t d) {

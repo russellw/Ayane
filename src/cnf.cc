@@ -83,8 +83,8 @@ size_t ncsApprox(int pol, Expr* a) {
 
 // Skolem functions replace existentially quantified variables, also formulas that are renamed to avoid exponential expansion
 Expr* skolem(Type* rty, Vec<Expr*>& args) {
-	if (!args.n) return new Fn(0, rty);
-	Vec<Expr*> v(1, new Fn(0, compType(rty, args.begin(), args.end())));
+	if (!args.n) return new (ialloc(sizeof(Fn))) Fn(0, rty);
+	Vec<Expr*> v(1, new (ialloc(sizeof(Fn))) Fn(0, compType(rty, args.begin(), args.end())));
 	// TODO: single call instead of loop?
 	for (auto b: args) v.add(b);
 	return comp(Tag::call, v);

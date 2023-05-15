@@ -18,8 +18,7 @@ struct Cmp {
 	}
 
 	static CompType* make(Kind kind, Type** v, size_t n) {
-		auto p = malloc(sizeof(CompType) + n * sizeof *v);
-		auto a = new (p) CompType(kind, n);
+		auto a = new (ialloc(sizeof(CompType) + n * sizeof *v)) CompType(kind, n);
 		memcpy(a->v, v, n * sizeof *v);
 		return a;
 	}

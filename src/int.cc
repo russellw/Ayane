@@ -17,7 +17,7 @@ struct IntCmp {
 	}
 
 	static Int* make(Tag tag, mpz_t v, size_t n) {
-		return new Int(v);
+		return new (ialloc(sizeof(Int))) Int(v);
 	}
 };
 

@@ -17,7 +17,7 @@ struct RatCmp {
 	}
 
 	static Rat* make(Tag tag, mpq_t v, size_t n) {
-		return new Rat(tag, v);
+		return new (ialloc(sizeof(Rat))) Rat(tag, v);
 	}
 };
 

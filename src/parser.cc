@@ -224,7 +224,7 @@ Expr* Parser::fn(Str* s, Type* ty) {
 		setType(a, ty);
 		return a;
 	}
-	auto a = new Fn(s->v, ty);
+	auto a = new (ialloc(sizeof(Fn))) Fn(s->v, ty);
 	return s->fn = a;
 }
 
