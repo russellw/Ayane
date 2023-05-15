@@ -6,13 +6,16 @@ import tempfile
 
 def build(src):
     cmd = (
-        "cl",
-        "/Fa",
-        "/IC:\mpir",
-        "/MP",
-        "/O2",
-        "/c",
-        "/std:c++17",
+        "C:/Program Files/LLVM/bin/clang-cl",
+        "-Fa",
+        "-IC:/mpir",
+        "-O2",
+        "-Wimplicit-fallthrough",
+        "-Wno-assume",
+        "-Wno-deprecated-declarations",
+        "-Wno-switch",
+        "-c",
+        "-std:c++17",
         src,
     )
     subprocess.check_call(cmd)
@@ -23,9 +26,6 @@ def count_lines(file):
 
 
 here = os.path.dirname(os.path.realpath(__file__))
-
-# first use clang to check for errors, as its diagnostics are slightly better
-subprocess.check_call(os.path.join(here, "build_debug_clang.bat"))
 
 # get the current list of source files
 v = []
@@ -43,6 +43,10 @@ for s in v:
 build(os.path.join(tempfile.gettempdir(), "0", "*.cc"))
 for s in v:
     os.replace(s + ".asm", s + "0.asm")
+
+# get the object files out of the way
+for s in v:
+    os.remove(s + ".obj")
 
 # compare the assembly output
 for s in v:
