@@ -2,7 +2,7 @@
 // TODO: Do they need to be null terminated?
 struct Str {
 	Fn* fn;
-	TypeName* ty;
+	OpaqueType* ty;
 
 	// Although the allocated size of dynamically allocated strings will vary according to the number of characters needed, the
 	// declared size of the character array needs to be positive for the statically allocated array of known strings (keywords). It

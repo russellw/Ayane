@@ -258,7 +258,7 @@ struct Parser1: Parser {
 			}
 			break;
 		case k_id:
-			return typeName(s);
+			return opaqueType(s);
 		}
 		err("Expected type");
 	}

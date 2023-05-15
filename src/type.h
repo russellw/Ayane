@@ -28,14 +28,14 @@ extern LeafType treal;
 bool isNum(Type* ty);
 
 // In typed first-order logic, we can name a type, and then work with it without needing to know what it is made of
-struct TypeName: LeafType {
+struct OpaqueType: LeafType {
 	char* s;
 
-	TypeName(char* s): LeafType(Kind::name), s(s) {
+	OpaqueType(char* s): LeafType(Kind::opaque), s(s) {
 	}
 };
 
-TypeName* typeName(Str* s);
+OpaqueType* opaqueType(Str* s);
 
 // At the moment, the only composite types understood by the system, are functions specified by parameters and return type. These
 // are represented with the return type as v[0]. This does not match the convention the system otherwise tries to follow from logic

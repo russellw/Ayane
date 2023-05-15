@@ -16,9 +16,9 @@ bool isNum(Type* ty) {
 	return 0;
 }
 
-TypeName* typeName(Str* s) {
+OpaqueType* opaqueType(Str* s) {
 	if (s->ty) return s->ty;
-	return s->ty = new TypeName(s->v);
+	return s->ty = new OpaqueType(s->v);
 }
 
 // Composite types
@@ -97,8 +97,8 @@ void print(Type* ty) {
 		}
 		putchar(')');
 		return;
-	case Kind::name:
-		print(((TypeName*)ty)->s);
+	case Kind::opaque:
+		print(((OpaqueType*)ty)->s);
 		return;
 	}
 	print(ty->kind);

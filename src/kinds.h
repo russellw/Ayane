@@ -2,7 +2,7 @@ _(boolean)
 _(fn)
 _(individual)
 _(integer)
-_(name)
+_(opaque)
 _(rat)
 _(real)
 
