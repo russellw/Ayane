@@ -7,7 +7,7 @@ struct Str {
 	// Although the allocated size of dynamically allocated strings will vary according to the number of characters needed, the
 	// declared size of the character array needs to be positive for the statically allocated array of known strings (keywords). It
 	// needs to be large enough to accommodate the longest keyword plus null terminator. And the size of the whole structure should
-	// be a power of 2 because keyword() needs to divide by that size.
+	// be a power of 2 because keyword lookup needs to divide by that size.
 	char v[32 - 2 * sizeof(void*)];
 };
 
