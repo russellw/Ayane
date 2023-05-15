@@ -29,7 +29,6 @@ cmd = (
 )
 subprocess.check_call(cmd)
 
-
 # get the current list of source files
 v = []
 for f in glob.glob(src):
@@ -50,11 +49,6 @@ for f in v:
 
 if args.save:
     exit(0)
-
-
-# get the object files out of the way
-for s in v:
-    os.remove(s + ".obj")
 
 # compare the assembly output
 for f in v:
