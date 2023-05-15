@@ -33,11 +33,12 @@ using std::vector;
 // Clang-format sorts headers in a block, which is good. However, some headers define things needed by others that would come before
 // them in alphabetical order, so they are placed in separate blocks separated by blank lines.
 #include "dbg.h"
-
-#include "base.h"
+#include "etc.h"
 #include "set.h"
 #include "stats.h"
 #include "vec.h"
+
+#include "cartproduct.h"
 
 // Logic
 // TODO: reorganize
@@ -69,9 +70,6 @@ struct Var;
 #include "subsume.h"
 
 // Parsers
-// TODO: move
-#include "etc.h"
-
 #include "str.h"
 
 #include "parser.h"

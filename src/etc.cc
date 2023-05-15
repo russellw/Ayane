@@ -3,6 +3,18 @@
 char buf[5000];
 
 // SORT
+size_t fnv(const void* p, size_t bytes) {
+	// Fowler-Noll-Vo-1a is slower than more sophisticated hash algorithms for large chunks of data, but faster for tiny ones, so it
+	// still sees use
+	auto q = (const unsigned char*)p;
+	size_t h = 2166136261u;
+	while (bytes--) {
+		h ^= *q++;
+		h *= 16777619;
+	}
+	return h;
+}
+
 void mpz_ediv_q(mpz_t q, const mpz_t n, const mpz_t d) {
 	mpz_t r;
 	mpz_init(r);

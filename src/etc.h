@@ -1,3 +1,117 @@
+// TODO: separate file?
+// TODO: change to use pointers?
+struct Range: pair<size_t, size_t> {
+	struct iterator {
+		size_t i;
+
+		iterator(size_t i): i(i) {
+		}
+
+		size_t operator*() {
+			return i;
+		}
+
+		iterator& operator++() {
+			++i;
+			return *this;
+		}
+
+		bool operator!=(iterator x) {
+			return i != x.i;
+		}
+	};
+
+	Range() {
+	}
+	Range(size_t first, size_t second): pair(first, second) {
+	}
+
+	iterator begin() {
+		return first;
+	}
+	iterator end() {
+		return second;
+	}
+};
+
+// SORT
+size_t fnv(const void* p, size_t bytes);
+///
+
+// For debugging purposes, define print functions for all the data types being used
+inline void print(char c) {
+	putchar(c);
+}
+
+inline void print(int n) {
+	printf("%d", n);
+}
+
+inline void print(uint32_t n) {
+	printf("%" PRIu32, n);
+}
+
+inline void print(uint64_t n) {
+	printf("%" PRIu64, n);
+}
+
+inline void print(const char* s) {
+	printf("%s", s);
+}
+
+inline void print(const void* p) {
+	printf("%p", p);
+}
+
+template <class K, class T> void print(const pair<K, T>& p) {
+	putchar('<');
+	print(p.first);
+	print(", ");
+	print(p.second);
+	putchar('>');
+}
+
+template <class T> void print(const vector<T>& v) {
+	putchar('[');
+	bool more = 0;
+	for (auto& a: v) {
+		if (more) print(", ");
+		more = 1;
+		print(a);
+	}
+	putchar(']');
+}
+
+// SORT
+inline size_t divUp(size_t n, size_t alignment) {
+	return (n + alignment - 1) / alignment;
+}
+
+inline size_t hashCombine(size_t a, size_t b) {
+	return a ^ b + 0x9e3779b9u + (a << 6) + (a >> 2);
+}
+
+inline size_t roundUp(size_t n, size_t alignment) {
+	return (n + alignment - 1) & ~(alignment - 1);
+}
+///
+
+// Set and map containers are based on hash tables, so in general we need to be able to hash everything. The standard library uses a
+// more complex protocol based on 'template <> struct hash<...>' classes in namespace std, but since we have homebrew containers,
+// there is no particular requirement to follow the standard library protocol.
+// TODO: eliminate?
+inline size_t hash(const void* p) {
+	return fnv(&p, sizeof p);
+}
+
+inline size_t hash(size_t n) {
+	return n;
+}
+
+template <class T, class U> size_t hash(const pair<T, U>& p) {
+	return hashCombine(hash(p.first), hash(p.second));
+}
+
 // Exit codes specified by this program have small negative numbers to avoid overlap with those specified by POSIX or Windows.
 // Increasingly negative numbers are assigned roughly in order from 'things that can reasonably happen even when the input is not
 // actually incorrect' (e.g. problem contains higher order logic that the system does not understand, 'inappropriate' in SZS
@@ -15,21 +129,3 @@ void mpz_ediv_q(mpz_t q, const mpz_t n, const mpz_t d);
 void mpz_ediv_r(mpz_t r, const mpz_t n, const mpz_t d);
 void mpz_round(mpz_t q, const mpz_t n, const mpz_t d);
 ///
-
-template <class T> void cartProduct(const vector<vector<T>>& vs, size_t i, Vec<size_t>& js, vector<vector<T>>& rs) {
-	if (i == js.n) {
-		vector<T> r;
-		for (size_t i = 0; i < vs.size(); ++i) r.push_back(vs[i][js[i]]);
-		rs.push_back(r);
-		return;
-	}
-	for (js[i] = 0; js[i] != vs[i].size(); ++js[i]) cartProduct(vs, i + 1, js, rs);
-}
-
-template <class T> vector<vector<T>> cartProduct(const vector<vector<T>>& vs) {
-	Vec<size_t> js;
-	for (auto& v: vs) js.add(0);
-	vector<vector<T>> rs;
-	cartProduct(vs, 0, js, rs);
-	return rs;
-}
