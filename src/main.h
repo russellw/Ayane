@@ -54,6 +54,9 @@ struct Var;
 // Expressions
 #include "expr.h"
 
+#include "fn.h"
+#include "var.h"
+
 // Clauses
 #include "clause.h"
 

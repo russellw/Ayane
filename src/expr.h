@@ -20,26 +20,6 @@ extern Expr bools[2];
 
 Type* type(Expr* a);
 
-// a predicate is a function with Boolean return type. A first-order constant (or propositional variable) is a function of arity
-// zero.
-struct Fn: Expr {
-	char* s;
-	Type* ty;
-
-	Fn(char* s, Type* ty): Expr(Tag::fn), s(s), ty(ty) {
-	}
-};
-
-// First-order variables must be of non-Boolean leaf types
-struct Var: Expr {
-	LeafType* ty;
-
-	Var(LeafType* ty): Expr(Tag::var), ty(ty) {
-	}
-};
-
-Expr* var(size_t i, LeafType* ty);
-
 // Arbitrary precision integers
 struct Int: Expr {
 	mpz_t v;

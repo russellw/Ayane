@@ -67,14 +67,6 @@ Rat* rat(Tag tag, mpq_t v) {
 	return rats.intern(tag, v, 0);
 }
 
-// Variables
-Expr* var(size_t i, LeafType* ty) {
-	// TODO: optimize
-	while (ty->vars.n <= i) ty->vars.add(0);
-	if (!ty->vars[i]) ty->vars[i] = new Var(ty);
-	return ty->vars[i];
-}
-
 // Composite expressions
 Expr* comp(Tag tag, Expr** v, size_t n) {
 	auto a = (Comp*)malloc(sizeof(Comp) + n * sizeof *v);
