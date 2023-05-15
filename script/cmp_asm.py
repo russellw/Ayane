@@ -22,22 +22,25 @@ def count_lines(file):
     return len(open(file).readlines())
 
 
+here = os.path.dirname(os.path.realpath(__file__))
+
 v = []
-for s in glob.glob(os.path.join(tempfile.gettempdir(), "0", "*.cc")):
+for s in glob.glob(os.path.join(here, "..", "src", "*.cc")):
     s = os.path.basename(s)
     s = os.path.splitext(s)[0]
     v.append(s)
+
+build(os.path.join(here, "..", "src", "*.cc"))
+for s in v:
+    os.replace(s + ".asm", s + "1.asm")
 
 build(os.path.join(tempfile.gettempdir(), "0", "*.cc"))
 for s in v:
     os.replace(s + ".asm", s + "0.asm")
 
-here = os.path.dirname(os.path.realpath(__file__))
-build(os.path.join(here, "..", "src", "*.cc"))
-
 for s in v:
     s0 = s + "0.asm"
-    s1 = s + ".asm"
+    s1 = s + "1.asm"
     n0 = count_lines(s0)
     n1 = count_lines(s1)
     if n0 != n1:

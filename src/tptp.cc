@@ -24,15 +24,15 @@ Expr* distinctObj(Str* s) {
 }
 
 // TODO: Which types should use const?
-struct Select: unordered_set<const char*> {
+struct Select: unordered_set<char*> {
 	bool all;
 
 	explicit Select(bool all): all(all) {
 	}
 
-	size_t count(const char* s) const {
+	size_t count(char* s) const {
 		if (all) return 1;
-		return unordered_set<const char*>::count(s);
+		return unordered_set<char*>::count(s);
 	}
 };
 
