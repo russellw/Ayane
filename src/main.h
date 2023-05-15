@@ -60,6 +60,7 @@ struct Var;
 #include "rat.h"
 #include "var.h"
 
+#include "freevars.h"
 #include "unify.h"
 
 // Clauses

@@ -11,7 +11,6 @@ const int assertError = -4;
 extern char buf[5000];
 
 // SORT
-void freeVars(Expr* a, Vec<Expr*>& freev);
 void mpz_ediv_q(mpz_t q, const mpz_t n, const mpz_t d);
 void mpz_ediv_r(mpz_t r, const mpz_t n, const mpz_t d);
 void mpz_round(mpz_t q, const mpz_t n, const mpz_t d);
