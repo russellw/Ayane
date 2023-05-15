@@ -44,10 +44,16 @@ struct Expr;
 struct Str;
 struct Var;
 
+// Types
 #include "type.h"
 
+// TODO: reorganize
+// #include "comptype.h" #include "typename.h".
+
+// Expressions
 #include "expr.h"
 
+// Clauses
 #include "clause.h"
 
 // Parsers
