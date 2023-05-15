@@ -346,7 +346,7 @@ bool hasNum(Expr* a) {
 	return 0;
 }
 
-bool hasNum(const Vec<Expr*>& v) {
+bool hasNum(Vec<Expr*>& v) {
 	for (auto a: v)
 		if (hasNum(a)) return 1;
 	return 0;

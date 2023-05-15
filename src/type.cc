@@ -65,7 +65,7 @@ Type* compType(Type* a, Type* b) {
 	return compType(v, 2);
 }
 
-Type* compType(const Vec<Type*>& v) {
+Type* compType(Vec<Type*>& v) {
 	return compType(v.data, v.n);
 }
 

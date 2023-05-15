@@ -95,7 +95,7 @@ Expr* comp(Tag tag, Expr* a, Expr* b) {
 	return comp(tag, v, 2);
 }
 
-Expr* comp(Tag tag, const Vec<Expr*>& v) {
+Expr* comp(Tag tag, Vec<Expr*>& v) {
 	return comp(tag, v.data, v.n);
 }
 
@@ -417,7 +417,7 @@ Expr* compc(Tag tag, Expr** v, size_t n) {
 	return comps.intern(tag, v, n);
 }
 
-Expr* compc(Tag tag, const Vec<Expr*>& v) {
+Expr* compc(Tag tag, Vec<Expr*>& v) {
 	return compc(tag, v.data, v.n);
 }
 

@@ -90,10 +90,10 @@ inline Expr* at(Expr* a, size_t i) {
 // TODO: test using a bump allocator
 Expr* comp(Tag tag, Expr* a);
 Expr* comp(Tag tag, Expr* a, Expr* b);
-Expr* comp(Tag tag, const Vec<Expr*>& v);
+Expr* comp(Tag tag, Vec<Expr*>& v);
 Expr* comp(Tag tag, vector<Expr*>& v);
 
-Expr* compc(Tag tag, const Vec<Expr*>& v);
+Expr* compc(Tag tag, Vec<Expr*>& v);
 
 // Equality can be represented in term form like any other binary operator, but there are also algorithms that need to pay
 // particular attention to equations, e.g. in order to apply them in both directions, enough that it is worth having a specific type

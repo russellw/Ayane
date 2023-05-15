@@ -182,7 +182,7 @@ template <class T> struct Vec {
 	}
 };
 
-template <class K, class T> bool get(K x, T& y, const Vec<pair<K, T>>& m) {
+template <class K, class T> bool get(K x, T& y, Vec<pair<K, T>>& m) {
 	for (auto xy: m)
 		if (xy.first == x) {
 			y = xy.second;
@@ -191,7 +191,7 @@ template <class K, class T> bool get(K x, T& y, const Vec<pair<K, T>>& m) {
 	return 0;
 }
 
-template <class T> void print(const Vec<T>& a) {
+template <class T> void print(Vec<T>& a) {
 	putchar('[');
 	bool more = 0;
 	for (auto& x: a) {
