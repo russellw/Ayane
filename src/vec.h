@@ -88,37 +88,6 @@ template <class T> struct Vec {
 		++n;
 	}
 
-	void insert(T* position, const T* first, const T* last) {
-		assert(begin() <= position && position <= end());
-		auto i = position - begin();
-
-		assert(first <= last);
-		auto o = last - first;
-
-		reserve(n + o);
-		position = begin() + i;
-		memmove(position + o, position, (n - i) * sizeof(T));
-		auto r = position;
-		for (auto p = first; p != last; ++p) new (r++) T(*p);
-		n += o;
-	}
-
-	void insert(T* position, const T& x) {
-		insert(position, &x, &x + 1);
-	}
-
-	void erase(T* first, T* last) {
-		assert(begin() <= first && first <= end());
-		assert(begin() <= last && last <= end());
-		assert(first <= last);
-		memmove(first, last, (end() - last) * sizeof(T));
-		n -= last - first;
-	}
-
-	void erase(T* position) {
-		erase(position, position + 1);
-	}
-
 	// Iterators
 	iterator begin() {
 		return data;
