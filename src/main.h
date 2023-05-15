@@ -40,13 +40,10 @@ using std::vector;
 
 #include "cartproduct.h"
 
-// Logic
-// TODO: reorganize
+// Types
 struct Expr;
 struct Str;
 struct Var;
-
-// Types
 #include "type.h"
 
 #include "comptype.h"
