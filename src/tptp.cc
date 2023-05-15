@@ -23,7 +23,6 @@ Expr* distinctObj(Str* s) {
 	return a;
 }
 
-// TODO: Which types should use const?
 struct Select: unordered_set<char*> {
 	bool all;
 

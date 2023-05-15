@@ -8,18 +8,18 @@ struct Clause {
 	bool dead;
 	Expr* v[];
 
-	Range neg() const {
+	Range neg() {
 		return Range(0, nn);
 	}
-	Range pos() const {
+	Range pos() {
 		return Range(nn, n);
 	}
 };
 
-inline Range::iterator begin(const Clause* c) {
+inline Range::iterator begin(Clause* c) {
 	return 0;
 }
-inline Range::iterator end(const Clause* c) {
+inline Range::iterator end(Clause* c) {
 	return c->n;
 }
 
