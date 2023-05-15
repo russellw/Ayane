@@ -85,15 +85,7 @@ template <class T> struct Vec {
 		return data;
 	}
 
-	const T* begin() const {
-		return data;
-	}
-
 	T* end() {
-		return begin() + n;
-	}
-
-	const T* end() const {
 		return begin() + n;
 	}
 
@@ -101,37 +93,14 @@ template <class T> struct Vec {
 		return reverse_iterator(end());
 	}
 
-	const_reverse_iterator rbegin() const {
-		return const_reverse_iterator(end());
-	}
-
 	reverse_iterator rend() {
 		return reverse_iterator(begin());
-	}
-
-	const_reverse_iterator rend() const {
-		return const_reverse_iterator(begin());
 	}
 
 	// Element access
 	T& operator[](size_t i) {
 		assert(i < n);
 		return begin()[i];
-	}
-
-	const T& operator[](size_t i) const {
-		assert(i < n);
-		return begin()[i];
-	}
-
-	T& back() {
-		assert(n);
-		return begin()[n - 1];
-	}
-
-	const T& back() const {
-		assert(n);
-		return begin()[n - 1];
 	}
 
 	// Etc
