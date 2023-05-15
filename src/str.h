@@ -62,7 +62,7 @@ enum {
 // And statically allocated for fast lookup
 extern Str keywords[];
 
-inline size_t keyword(const Str* s) {
+inline size_t keyword(Str* s) {
 	// Assign the difference to an unsigned variable and perform the division explicitly, because ptrdiff_t is a signed type, but
 	// unsigned division is slightly faster
 	size_t i = (char*)s - (char*)keywords;
@@ -74,6 +74,6 @@ inline Str* intern(const char* s) {
 	return intern(s, strlen(s));
 }
 
-inline void print(const Str* s) {
+inline void print(Str* s) {
 	print(s->v);
 }
