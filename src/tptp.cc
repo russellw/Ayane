@@ -245,7 +245,7 @@ struct Parser1: Parser {
 			return ty;
 		}
 		case k_dollarWord:
-			switch (keyword(s)) {
+			switch (s - keywords) {
 			case s_i:
 				return &tindividual;
 			case s_int:
@@ -308,7 +308,7 @@ struct Parser1: Parser {
 			return distinctObj(s);
 		case k_dollarWord:
 		{
-			switch (keyword(s)) {
+			switch (s - keywords) {
 			case s_ceiling:
 				return definedFunctor(Tag::ceil);
 			case s_difference:
@@ -551,7 +551,7 @@ struct Parser1: Parser {
 		lex();
 		while (tok) {
 			assert(!vars.n);
-			auto kw = keyword(wordOrDigits());
+			auto kw = wordOrDigits() - keywords;
 			expect('(');
 			auto name = wordOrDigits()->v;
 			switch (kw) {
@@ -580,7 +580,7 @@ struct Parser1: Parser {
 				expect(',');
 
 				// Role
-				auto role = keyword(wordOrDigits());
+				auto role = wordOrDigits() - keywords;
 				expect(',');
 
 				// Type

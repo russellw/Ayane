@@ -123,7 +123,7 @@ int main(int argc, char** argv) {
 		file = s;
 	}
 	if (!file) file = "stdin";
-	if (lang == Lang::none) switch (keyword(intern(ext(file)))) {
+	if (lang == Lang::none) switch (intern(ext(file)) - keywords) {
 		case s_cnf:
 			lang = Lang::dimacs;
 			break;

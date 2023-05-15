@@ -62,11 +62,6 @@ enum {
 // And statically allocated for fast lookup
 extern Str keywords[];
 
-inline size_t keyword(Str* s) {
-	auto i = (char*)s - (char*)keywords;
-	return i / sizeof(Str);
-}
-
 Str* intern(const char* s, size_t n);
 inline Str* intern(const char* s) {
 	return intern(s, strlen(s));
