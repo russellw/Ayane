@@ -50,12 +50,6 @@ template <class T> struct Vec {
 		for (auto j = first; j != last; ++j) new (i++) T(*j);
 	}
 
-	explicit Vec(std::initializer_list<T> b) {
-		init(b.size());
-		auto i = begin();
-		for (auto& x: b) new (i++) T(x);
-	}
-
 	~Vec() {
 		free(data);
 	}
