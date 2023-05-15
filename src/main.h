@@ -54,6 +54,7 @@ struct Var;
 // Expressions
 #include "expr.h"
 
+#include "comp.h"
 #include "fn.h"
 #include "int.h"
 #include "rat.h"
