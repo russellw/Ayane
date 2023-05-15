@@ -13,10 +13,8 @@
 // Anything which doesn't meet this requirement, should use std::vector instead
 template <class T> struct Vec {
 	// TODO: simplify
-	using iterator = T*;
-	using const_iterator = const T*;
-	using reverse_iterator = std::reverse_iterator<iterator>;
-	using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+	using reverse_iterator = std::reverse_iterator<T*>;
+	using const_reverse_iterator = std::reverse_iterator<const T*>;
 
 	uint32_t n, cap;
 	// TODO: optimize for small sizes
@@ -89,19 +87,19 @@ template <class T> struct Vec {
 	}
 
 	// Iterators
-	iterator begin() {
+	T* begin() {
 		return data;
 	}
 
-	const_iterator begin() const {
+	const T* begin() const {
 		return data;
 	}
 
-	iterator end() {
+	T* end() {
 		return begin() + n;
 	}
 
-	const_iterator end() const {
+	const T* end() const {
 		return begin() + n;
 	}
 
