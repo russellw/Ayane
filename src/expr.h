@@ -17,7 +17,13 @@ struct Expr {
 // respectively.
 extern Expr bools[2];
 
+// SORT
+void flatten(Tag tag, Expr* a, vector<Expr*>& r);
+Expr* imp(Expr* a, Expr* b);
+bool occurs(Expr* a, Expr* b);
+Expr* quantify(Expr* a);
 Type* type(Expr* a);
+///
 
 // Equality can be represented in term form like any other binary operator, but there are also algorithms that need to pay
 // particular attention to equations, e.g. in order to apply them in both directions, enough that it is worth having a specific type

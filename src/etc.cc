@@ -4,25 +4,6 @@ char buf[5000];
 static Vec<Expr*> boundv;
 
 // SORT
-Eqn::Eqn(Expr* a) {
-	// TODO: move to same module as the definition of the structure
-	if (a->tag == Tag::eq) {
-		first = at(a, 0);
-		second = at(a, 1);
-		return;
-	}
-	first = a;
-	second = bools + 1;
-}
-
-void flatten(Tag tag, Expr* a, vector<Expr*>& r) {
-	if (a->tag == tag) {
-		for (size_t i = 0; i < a->n; ++i) flatten(tag, at(a, i), r);
-		return;
-	}
-	r.push_back(a);
-}
-
 void freeVars(Expr* a, Vec<Expr*>& freev) {
 	switch (a->tag) {
 	case Tag::all:
@@ -40,10 +21,6 @@ void freeVars(Expr* a, Vec<Expr*>& freev) {
 		return;
 	}
 	for (size_t i = 0; i < a->n; ++i) freeVars(at(a, i), freev);
-}
-
-Expr* imp(Expr* a, Expr* b) {
-	return comp(Tag::or1, comp(Tag::not1, a), b);
 }
 
 void mpz_ediv_q(mpz_t q, const mpz_t n, const mpz_t d) {
@@ -94,25 +71,5 @@ void mpz_round(mpz_t q, const mpz_t n, const mpz_t d) {
 	mpz_add(q, n, d2);
 	mpz_clear(d2);
 	mpz_fdiv_q(q, q, d);
-}
-
-bool occurs(Expr* a, Expr* b) {
-	if (a == b) return 1;
-	for (size_t i = 0; i < b->n; ++i)
-		if (occurs(a, at(b, i))) return 1;
-	return 0;
-}
-
-Expr* quantify(Expr* a) {
-	assert(!boundv.n);
-	Vec<Expr*> vars;
-	freeVars(a, vars);
-
-	if (!vars.n) return a;
-
-	Vec<Expr*> v(1, a);
-	// TODO: add all at once
-	for (auto x: vars) v.add(x);
-	return comp(Tag::all, v);
 }
 ///

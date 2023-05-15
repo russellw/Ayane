@@ -2,6 +2,38 @@
 
 Expr bools[2] = {{Tag::false1}, {Tag::true1}};
 
+// SORT
+void flatten(Tag tag, Expr* a, vector<Expr*>& r) {
+	if (a->tag == tag) {
+		for (size_t i = 0; i < a->n; ++i) flatten(tag, at(a, i), r);
+		return;
+	}
+	r.push_back(a);
+}
+
+Expr* imp(Expr* a, Expr* b) {
+	return comp(Tag::or1, comp(Tag::not1, a), b);
+}
+
+bool occurs(Expr* a, Expr* b) {
+	if (a == b) return 1;
+	for (size_t i = 0; i < b->n; ++i)
+		if (occurs(a, at(b, i))) return 1;
+	return 0;
+}
+
+Expr* quantify(Expr* a) {
+	Vec<Expr*> vars;
+	freeVars(a, vars);
+
+	if (!vars.n) return a;
+
+	Vec<Expr*> v(1, a);
+	// TODO: add all at once
+	for (auto x: vars) v.add(x);
+	return comp(Tag::all, v);
+}
+
 Type* type(Expr* a) {
 	switch (a->tag) {
 	case Tag::add:
@@ -56,6 +88,17 @@ Type* type(Expr* a) {
 		return ((Var*)a)->ty;
 	}
 	unreachable;
+}
+///
+
+Eqn::Eqn(Expr* a) {
+	if (a->tag == Tag::eq) {
+		first = at(a, 0);
+		second = at(a, 1);
+		return;
+	}
+	first = a;
+	second = bools + 1;
 }
 
 #ifdef DBG
