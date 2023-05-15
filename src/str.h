@@ -63,9 +63,7 @@ enum {
 extern Str keywords[];
 
 inline size_t keyword(Str* s) {
-	// Assign the difference to an unsigned variable and perform the division explicitly, because ptrdiff_t is a signed type, but
-	// unsigned division is slightly faster
-	size_t i = (char*)s - (char*)keywords;
+	auto i = (char*)s - (char*)keywords;
 	return i / sizeof(Str);
 }
 
