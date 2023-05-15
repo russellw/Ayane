@@ -1,3 +1,4 @@
+import filecmp
 import glob
 import os
 import subprocess
@@ -21,8 +22,10 @@ def build(src):
     subprocess.check_call(cmd)
 
 
-def count_lines(file):
-    return len(open(file).readlines())
+def simplify(file):
+    cmd = "undname", file
+    s = subprocess.check_output(cmd, encoding="utf-8")
+    open(file, "w", newline="\n").write(s)
 
 
 here = os.path.dirname(os.path.realpath(__file__))
@@ -37,11 +40,13 @@ for s in glob.glob(os.path.join(here, "..", "src", "*.cc")):
 # compile the current version to assembly
 build(os.path.join(here, "..", "src", "*.cc"))
 for s in v:
+    simplify(s + ".asm")
     os.replace(s + ".asm", s + "1.asm")
 
 # compile the previous version to assembly
 build(os.path.join(tempfile.gettempdir(), "0", "*.cc"))
 for s in v:
+    simplify(s + ".asm")
     os.replace(s + ".asm", s + "0.asm")
 
 # get the object files out of the way
@@ -50,10 +55,8 @@ for s in v:
 
 # compare the assembly output
 for s in v:
-    s0 = s + "0.asm"
-    s1 = s + "1.asm"
-    n0 = count_lines(s0)
-    n1 = count_lines(s1)
-    if n0 != n1:
-        print(s, n0, n1)
-        os.system(f"fc {s0} {s1} > {s+'-diff.asm'}")
+    file0 = s + "0.asm"
+    file1 = s + "1.asm"
+    if not filecmp.cmp(file0, file1):
+        print(s)
+        os.system(f"fc {file0} {file1} > {s+'-diff.asm'}")
