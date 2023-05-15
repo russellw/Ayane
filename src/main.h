@@ -55,6 +55,8 @@ struct Var;
 #include "expr.h"
 
 #include "fn.h"
+#include "int.h"
+#include "rat.h"
 #include "var.h"
 
 // Clauses

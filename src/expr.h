@@ -20,30 +20,6 @@ extern Expr bools[2];
 
 Type* type(Expr* a);
 
-// Arbitrary precision integers
-struct Int: Expr {
-	mpz_t v;
-
-	Int(mpz_t v): Expr(Tag::integer) {
-		// TODO: check  sizeof
-		memcpy(this->v, v, sizeof this->v);
-	}
-};
-
-Int* integer(mpz_t v);
-
-// Arbitrary precision rationals. These also represent real numbers (well, the rational subset of the reals), distinguished (for the
-// sake of the type system) by tag.
-struct Rat: Expr {
-	mpq_t v;
-
-	Rat(Tag tag, mpq_t v): Expr(tag) {
-		memcpy(this->v, v, sizeof this->v);
-	}
-};
-
-Rat* rat(Tag tag, mpq_t v);
-
 // Composite expressions. Built-in operators like equality and addition are represented by tags. The most important variety of
 // composite expression is the function call, represented by Tag::call, with the function as v[0], so in that case the arguments
 // start at 1.
