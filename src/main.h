@@ -40,6 +40,7 @@ using std::vector;
 #include "vec.h"
 
 // Logic
+// TODO: reorganize
 struct Expr;
 struct Str;
 struct Var;
@@ -47,8 +48,8 @@ struct Var;
 // Types
 #include "type.h"
 
-// TODO: reorganize
-// #include "comptype.h" #include "typename.h".
+#include "comptype.h"
+#include "opaquetype.h"
 
 // Expressions
 #include "expr.h"
