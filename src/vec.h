@@ -14,7 +14,6 @@
 template <class T> struct Vec {
 	// TODO: simplify
 	using reverse_iterator = std::reverse_iterator<T*>;
-	using const_reverse_iterator = std::reverse_iterator<const T*>;
 
 	uint32_t n, cap;
 	// TODO: optimize for small sizes
