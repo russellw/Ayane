@@ -1,6 +1,7 @@
 import filecmp
 import glob
 import os
+import re
 import subprocess
 import tempfile
 
@@ -25,6 +26,7 @@ def build(src):
 def simplify(file):
     cmd = "undname", file
     s = subprocess.check_output(cmd, encoding="utf-8")
+    s = re.sub(r"A0x\w+", "_", s)
     open(file, "w", newline="\n").write(s)
 
 
