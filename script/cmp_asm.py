@@ -61,4 +61,4 @@ for s in v:
     file1 = s + "1.asm"
     if not filecmp.cmp(file0, file1):
         print(s)
-        os.system(f"fc {file0} {file1} > {s+'-diff.asm'}")
+        os.system(f"fc {file0} {file1} > {s+'.diff.asm'}")
