@@ -60,8 +60,12 @@ struct Var;
 #include "rat.h"
 #include "var.h"
 
+#include "unify.h"
+
 // Clauses
 #include "clause.h"
+#include "cnf.h"
+#include "subsume.h"
 
 // Parsers
 // TODO: move
@@ -74,8 +78,5 @@ struct Var;
 #include "dimacs.h"
 #include "tptp.h"
 
-// Algorithms
-#include "cnf.h"
-#include "subsume.h"
+// Solvers
 #include "superposn.h"
-#include "unify.h"

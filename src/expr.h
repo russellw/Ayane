@@ -3,7 +3,6 @@ enum class Tag {
 #include "tags.h"
 };
 
-// TODO: refactor source file organization
 // Expressions are the most important data structures in the system. Logic formulas are expressions of Boolean type; terms are
 // expressions of other types.
 struct Expr {
