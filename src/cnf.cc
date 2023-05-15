@@ -256,7 +256,6 @@ Expr* nnf(bool pol, Expr* a) {
 	case Tag::var:
 	{
 		// Variables are mapped to new variables or Skolem functions
-		// TODO: does assert need to work like that?
 		auto r = get(a, a, m);
 		assert(r);
 		return a;

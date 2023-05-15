@@ -1,7 +1,8 @@
 #include "main.h"
 
 Expr* comp(Tag tag, Expr** v, size_t n) {
-	auto a = (Comp*)malloc(sizeof(Comp) + n * sizeof *v);
+	// TODO: ctor?
+	auto a = (Comp*)aalloc(sizeof(Comp) + n * sizeof *v);
 	a->tag = tag;
 	a->n = n;
 	memcpy(a->v, v, n * sizeof *v);

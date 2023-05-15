@@ -549,8 +549,11 @@ struct Parser1: Parser {
 	Parser1(const char* file, const Select& select): Parser(file), select(select) {
 		lex();
 		while (tok) {
+			// SORT
+			aclear();
 			assert(!vars.n);
 			auto kw = wordOrDigits() - keywords;
+			///
 			expect('(');
 			auto name = wordOrDigits()->v;
 			switch (kw) {
