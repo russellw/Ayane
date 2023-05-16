@@ -1,3 +1,4 @@
+// Merge with buf
 const int arenaSize = 1000000;
 extern char arena[arenaSize];
 
