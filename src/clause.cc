@@ -17,6 +17,9 @@ size_t cost(Clause* c) {
 priority_queue<Clause*, vector<Clause*>, ClauseCompare> passive;
 
 void clause() {
+	for (auto a: neg) check(a);
+	for (auto a: pos) check(a);
+
 	// Redundancy
 	size_t i = 0;
 	for (auto a: neg)

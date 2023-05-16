@@ -102,6 +102,26 @@ Eqn::Eqn(Expr* a) {
 }
 
 #ifdef DBG
+void check(Expr* a) {
+	assert(size_t(a->tag) < size_t(Tag::COUNT));
+	switch (a->tag) {
+	case Tag::distinctObj:
+	case Tag::false1:
+	case Tag::fn:
+	case Tag::integer:
+	case Tag::rat:
+	case Tag::real:
+	case Tag::true1:
+	case Tag::var:
+		assert(!a->n);
+		break;
+	default:
+		assert(a->n);
+		for (auto b: a) check(b);
+		break;
+	}
+}
+
 void print(Tag tag) {
 	static const char* tagNames[] = {
 #define _(a) #a,
