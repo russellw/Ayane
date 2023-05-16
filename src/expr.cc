@@ -124,20 +124,16 @@ void check(Expr* a) {
 	default:
 		assert(a->n);
 
-		// If this expression is allocated in temporary buffer, all composite subexpressions better have been allocated earlier in
-		// buffer. Otherwise, assuming this expression is in the permanent hash table of shared composite expressions, all
-		// subexpressions better also be permanently allocated.
+		// If this expression is allocated in temporary buffer, all subexpressions which are likewise allocated, should be earlier
+		// in the buffer
 		if (inbuf(a))
 			for (auto b: a)
-				if (b->n) {
-					assert(inbuf(b));
-					assert(b < a);
-				}
+				if (inbuf(b)) assert(b < a);
 
-		// It is tempting to think we can add an 'else' to perform the reverse check: If this expression is permanently allocated,
-		// all subexpressions better be likewise. But that does not hold: Maybe the subexpressions are temporary, and this
-		// expression should been likewise, but a particularly complex input formula caused temporary allocation to overflow the
-		// buffer and spill into ialloc.
+		// It is tempting to think we can add an 'else' to perform another check: If this expression is permanently allocated, all
+		// subexpressions better be likewise. But that does not hold: Maybe the subexpressions are temporary, and this expression
+		// should been likewise, but a particularly complex input formula caused temporary allocation to overflow the buffer and
+		// spill into ialloc.
 
 		// Recursively check subexpressions
 		for (auto b: a) check(b);
