@@ -25,14 +25,6 @@ Expr* equate(Expr* a, Expr* b) {
 // breaking completeness.
 // TODO: fixup to take into account 0 vs 1 arg start
 // TODO: compare with KBO
-
-// The greater-than test is supposed to be called on complete terms, which can include constant symbols (zero arity), or calls of
-// function symbols (positive arity) with arguments. Make sure it's not being called on an isolated function symbol.
-void check(Expr* a) {
-	// TODO: is this still valid?
-	assert(a->n);
-}
-
 size_t sym(Expr* a) {
 	if (a->tag == Tag::call) return (size_t)at(a, 0);
 	return (size_t)a->tag;
@@ -51,9 +43,6 @@ bool ge(Expr* a, Expr* b) {
 // arbitrary choices can be made; to avoid breaking completeness of the calculus, the criteria are much stricter, and when in doubt,
 // we return false.
 bool gt(Expr* a, Expr* b) {
-	check(a);
-	check(b);
-
 	// Fast equality test
 	if (a == b) return 0;
 
