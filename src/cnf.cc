@@ -370,23 +370,33 @@ void clausesTerm(Expr* a) {
 } // namespace
 
 void cnf(Expr* a) {
+	check(a);
+
 	// First run the input formula through the full process: Rename subformulas where necessary to avoid exponential expansion, then
 	// convert to negation normal form, distribute OR into AND, and convert to clauses
 	a = maybeRename(1, a);
+	check(a);
+
 	assert(!m.n);
 	vars = 0;
 	a = nnf(1, a);
+	check(a);
 	a = distribute(a);
+	check(a);
 	clausesTerm(a);
 
 	// Then convert all the definitions created by the renaming process. That process works by bottom-up recursion, which means each
 	// renamed subformula is simple, so there is no need to put the definitions through the renaming process again; they just need
 	// to go through the rest of the conversion steps.
 	for (auto a: defs) {
+		check(a);
+
 		assert(!m.n);
 		vars = 0;
 		a = nnf(1, a);
+		check(a);
 		a = distribute(a);
+		check(a);
 		clausesTerm(a);
 	}
 }

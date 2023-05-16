@@ -102,13 +102,13 @@ Eqn::Eqn(Expr* a) {
 }
 
 #ifdef DBG
-void check(Expr* a) {
-	// This check is meant to be run on expressions that have been promoted out of the temporary buffer into the hash table of
-	// shared composite expressions. Make sure this is actually the case, to avoid the possibility of overwritten expressions later
-	// generating mysterious errors.
-	auto a1 = (char*)a;
-	assert(!(buf <= a1 && a1 < buf + bufSize));
+static bool inbuf(void* p0) {
+	auto p = (char*)p0;
+	assert(!(bufp <= p && p < buf + bufSize));
+	return buf <= p && p < bufp;
+}
 
+void check(Expr* a) {
 	assert(size_t(a->tag) < size_t(Tag::COUNT));
 	switch (a->tag) {
 	case Tag::distinctObj:
@@ -123,6 +123,19 @@ void check(Expr* a) {
 		break;
 	default:
 		assert(a->n);
+
+		// If this expression is allocated in temporary buffer, all composite subexpressions better have been allocated earlier in
+		// buffer. Otherwise, assuming this expression is in the permanent hash table of shared composite expressions, all
+		// subexpressions better also be permanently allocated.
+		if (inbuf(a))
+			for (auto b: a) {
+				if (b->n) {
+					assert(inbuf(b));
+					assert(b < a);
+				}
+			}
+		else
+			for (auto b: a) assert(!inbuf(b));
 		for (auto b: a) check(b);
 		break;
 	}

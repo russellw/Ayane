@@ -4,10 +4,10 @@
 size_t fnv(const void* p, size_t n) {
 	// Fowler-Noll-Vo-1a is slower than more sophisticated hash algorithms for large chunks of data, but faster for tiny ones, so it
 	// still sees use
-	auto q = (const unsigned char*)p;
+	auto p1 = (const unsigned char*)p;
 	size_t h = 2166136261u;
 	while (n--) {
-		h ^= *q++;
+		h ^= *p1++;
 		h *= 16777619;
 	}
 	return h;
