@@ -637,7 +637,7 @@ struct Parser1: Parser {
 				if (!dir) err("TPTP environment variable not set");
 
 				// File
-				snprintf(buf, sizeof buf, "%s/%s", dir, name);
+				snprintf(buf, bufSize, "%s/%s", dir, name);
 				auto file1 = strdup(buf);
 
 				// Select and read

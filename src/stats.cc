@@ -13,7 +13,7 @@
 namespace {
 void printItem(size_t n, const char* caption) {
 	char buf[32];
-	auto s = buf + sizeof buf - 1;
+	auto s = buf + bufSize - 1;
 	*s = 0;
 	size_t i = 0;
 	do {
@@ -73,7 +73,7 @@ void incTrace() {
 		DWORD displacement;
 		char* s;
 		if (SymGetLineFromAddr64(process, addr, &displacement, &loc)) {
-			snprintf(buf, sizeof buf, "%s:%lu: %s", loc.FileName, loc.LineNumber, si->Name);
+			snprintf(buf, bufSize, "%s:%lu: %s", loc.FileName, loc.LineNumber, si->Name);
 			s = buf;
 		} else
 			s = si->Name;
