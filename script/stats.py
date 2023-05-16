@@ -48,4 +48,6 @@ for file in problems:
     code = codes.get(code, code)
     m[code] = m.get(code, 0) + 1
     print("%s\t%s\t%0.3f" % (os.path.basename(file), code, time.time() - start))
+    if code not in (0, "inappropriateError"):
+        raise Exception(code)
 print(m)
