@@ -3,7 +3,7 @@
 namespace {
 const size_t many = 50;
 
-// How many clauses a term will expand into, for the purpose of deciding when subformulas need to be renamed. The answer could
+// How many clauses a formula will expand into, for the purpose of deciding when subformulas need to be renamed. The answer could
 // exceed the range of a fixed-size integer, but then we don't actually need the number, we only need to know whether it went over
 // the threshold.
 size_t ncs(bool pol, Expr* a);
@@ -320,8 +320,8 @@ Expr* distribute(Expr* a) {
 	return comp(Tag::and1, r);
 }
 
-// Convert a suitably rearranged term into actual clauses
-void literalsTerm(Expr* a) {
+// Convert a suitably rearranged formula to actual clauses
+void literals(Expr* a) {
 	switch (a->tag) {
 	case Tag::all:
 	case Tag::and1:
@@ -332,7 +332,7 @@ void literalsTerm(Expr* a) {
 		neg.add(replace(at(a, 0), 0));
 		return;
 	case Tag::or1:
-		for (size_t i = 0; i < a->n; ++i) literalsTerm(at(a, i));
+		for (size_t i = 0; i < a->n; ++i) literals(at(a, i));
 		return;
 	}
 	pos.add(replace(a, 0));
@@ -351,14 +351,14 @@ bool hasNum(Vec<Expr*>& v) {
 	return 0;
 }
 
-void clausesTerm(Expr* a) {
+void clauses(Expr* a) {
 	if (a->tag == Tag::and1) {
-		for (size_t i = 0; i < a->n; ++i) clausesTerm(at(a, i));
+		for (size_t i = 0; i < a->n; ++i) clauses(at(a, i));
 		return;
 	}
 
 	neg.n = pos.n = 0;
-	literalsTerm(a);
+	literals(a);
 
 	// First-order logic is not complete on arithmetic. The conservative approach to this is that if any clause contains terms of
 	// numeric type, we mark the proof search incomplete, so that failure to derive a contradiction, means the result is
@@ -384,7 +384,7 @@ void cnf(Expr* a) {
 	check(a);
 	a = distribute(a);
 	check(a);
-	clausesTerm(a);
+	clauses(a);
 
 	// Then convert all the definitions created by the renaming process. That process works by bottom-up recursion, which means each
 	// renamed subformula is simple, so there is no need to put the definitions through the renaming process again; they just need
@@ -398,6 +398,6 @@ void cnf(Expr* a) {
 		check(a);
 		a = distribute(a);
 		check(a);
-		clausesTerm(a);
+		clauses(a);
 	}
 }

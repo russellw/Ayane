@@ -1,6 +1,6 @@
 #include "main.h"
 
-// Numbers need to be interned, to preserve the property that equal terms have pointer equality
+// Numbers need to be interned, to preserve the property that equal expressions have pointer equality
 struct IntCmp {
 	static bool eq(Tag tag, mpz_t v, size_t n, Int* b) {
 		return mpz_cmp(v, b->v) == 0;

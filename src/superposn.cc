@@ -3,7 +3,7 @@
 namespace {
 // First-order logic usually takes the view that equality is a special case, but superposition calculus takes the view that equality
 // is the general case. Non-equality predicates are considered to be equations 'p=true'; this is a special exemption from the usual
-// rule that equality is not allowed on Boolean terms.
+// rule that equality is not allowed on formulas.
 bool equatable(Expr* a, Expr* b) {
 	if (type(a) != type(b)) return 0;
 	if (type(a) == &tbool) return a == bools + 1 || b == bools + 1;
@@ -21,8 +21,8 @@ Expr* equate(Expr* a, Expr* b) {
 }
 
 // Equality tends to generate a large number of clauses. Superposition calculus is designed to moderate the profusion of clauses
-// using an ordering on terms, that tries to apply equations in one direction only; the difficulty, of course, is doing this without
-// breaking completeness.
+// using an ordering on expressions, that tries to apply equations in one direction only; the difficulty, of course, is doing this
+// without breaking completeness.
 // TODO: fixup to take into account 0 vs 1 arg start
 // TODO: compare with KBO
 size_t sym(Expr* a) {
@@ -39,14 +39,14 @@ bool ge(Expr* a, Expr* b) {
 // TODO: some analysis on the operators used in the clauses, to figure out what order is
 // Likely to be best. For now, just use an arbitrary order.
 
-// Check whether one term is unambiguously greater than another. This is much more delicate than comparison for e.g. sorting, where
-// arbitrary choices can be made; to avoid breaking completeness of the calculus, the criteria are much stricter, and when in doubt,
-// we return false.
+// Check whether one expression is unambiguously greater than another. This is much more delicate than comparison for e.g. sorting,
+// where arbitrary choices can be made; to avoid breaking completeness of the calculus, the criteria are much stricter, and when in
+// doubt, we return false.
 bool gt(Expr* a, Expr* b) {
 	// Fast equality test
 	if (a == b) return 0;
 
-	// Variables are unordered unless contained in other term
+	// Variables are unordered unless contained in the other expression
 	// TODO: check how that relates to variable identity between clauses
 	if (a->tag == Tag::var) return 0;
 	if (b->tag == Tag::var) return occurs(b, a);
@@ -60,13 +60,13 @@ bool gt(Expr* a, Expr* b) {
 	for (size_t i = 0; i < b->n; ++i)
 		if (!gt(a, at(b, i))) return 0;
 
-	// Different functions. Comparison has the required property that true is considered smaller than any other term (except false,
-	// which does not occur during superposition proof search).
+	// Different functions. Comparison has the required property that true is considered smaller than any other expression (except
+	// false, which does not occur during superposition proof search).
 	auto af = sym(a);
 	auto bf = sym(b);
 	if (af != bf) return af > bf;
 
-	// Same functions should mean similar terms
+	// Same functions should mean similar expressions
 	assert(a->tag == b->tag);
 	assert(a->n == b->n);
 	assert(at(a, 0) == at(b, 0));
@@ -77,7 +77,8 @@ bool gt(Expr* a, Expr* b) {
 		if (at(a, i) != at(b, i)) return 0;
 	}
 
-	// Having found no differences, the terms must be equal, but we already checked for that first thing, so something is wrong
+	// Having found no differences, the expressions must be equal, but we already checked for that first thing, so something is
+	// wrong
 	unreachable;
 }
 
@@ -135,7 +136,7 @@ where
 
 // Make new clause
 void factorc() {
-	// If these two terms are not equatable (for which the types must match, and predicates can only be equated with true),
+	// If these two expressions are not equatable (for which the types must match, and formulas can only be equated with true),
 	// replacing variables with expressions would not make them become so
 	if (!equatable(c1, d1)) return;
 

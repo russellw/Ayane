@@ -237,6 +237,8 @@ struct Parser1: Parser {
 		auto s = str;
 		lex();
 		switch (k) {
+		case '!':
+			err("Type constructors not supported", inappropriateError);
 		case '(':
 		{
 			auto ty = atomicType();

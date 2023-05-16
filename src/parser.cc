@@ -346,7 +346,7 @@ void Parser::typing(Expr* a, Type* ty) {
 		// Leaf
 		assert(!a->n);
 
-		// Safe to call type(a) because there are no subterms
+		// Safe to call type(a) because there are no subexpressions
 		if (type(a) != ty) err("Type mismatch", typeError);
 		return;
 	case Tag::div:
