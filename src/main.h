@@ -42,7 +42,6 @@ using std::vector;
 #include "cartproduct.h"
 
 // Types
-struct Expr;
 struct Str;
 struct Var;
 #include "type.h"

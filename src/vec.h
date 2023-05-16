@@ -11,11 +11,14 @@
 // improves performance in some cases.
 
 // Anything which doesn't meet this requirement, should use std::vector instead
-template <class T> struct Vec {
+template <class T> class Vec {
+	uint32_t cap;
+
+public:
 	// TODO: simplify
 	using reverse_iterator = std::reverse_iterator<T*>;
 
-	uint32_t n, cap;
+	uint32_t n;
 	// TODO: optimize for small sizes
 	T* data;
 
@@ -25,22 +28,18 @@ template <class T> struct Vec {
 	// Initialize the vector, only for use in constructors; assumes in particular that the pointer to allocated memory is not yet
 	// initialized
 	void init(size_t o) {
-		// TODO: if o == 0, default to some more predictive capacity?
 		cap = o;
 		n = o;
 		data = (T*)malloc(cap * sizeof(T));
 	}
 
-	// Constructors use placement new to initialize elements where necessary with copies of source elements
-	// TODO: constructor that takes estimated initial capacity
 	explicit Vec(size_t o = 0) {
 		init(o);
-		for (auto i = begin(), e = end(); i < e; ++i) new (i) T;
 	}
 
-	explicit Vec(size_t o, const T& b) {
+	explicit Vec(size_t o, T a) {
 		init(o);
-		for (auto i = begin(), e = end(); i < e; ++i) new (i) T(b);
+		*data = a;
 	}
 
 	~Vec() {

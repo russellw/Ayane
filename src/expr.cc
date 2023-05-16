@@ -28,9 +28,8 @@ Expr* quantify(Expr* a) {
 
 	if (!vars.n) return a;
 
-	Vec<Expr*> v(1, a);
-	// TODO: add all at once
-	for (auto x: vars) v.add(x);
+	Vec<Expr*> v(1 + vars.n, a);
+	memcpy(v.data + 1, vars.data, vars.n * sizeof(void*));
 	return comp(Tag::all, v);
 }
 

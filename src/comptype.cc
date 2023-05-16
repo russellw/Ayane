@@ -45,11 +45,3 @@ Type* compType(Type* a, Type* b) {
 Type* compType(Vec<Type*>& v) {
 	return compType(v.data, v.n);
 }
-
-Type* compType(Type* rty, Expr** first, Expr** last) {
-	if (first == last) return rty;
-	Vec<Type*> v(1, rty);
-	// TODO: add in one op
-	for (auto i = first; i < last; ++i) v.add(type(*i));
-	return compType(v);
-}

@@ -97,6 +97,7 @@ void printStats() {
 
 	if (numStats.size()) {
 		Vec<size_t> v;
+		// TODO: optimize
 		for (auto p: numStats) v.add(p.first);
 		sort(v.begin(), v.end());
 		uint64_t totQty = 0;

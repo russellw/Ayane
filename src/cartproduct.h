@@ -9,6 +9,7 @@ template <class T> void cartProduct(const vector<vector<T>>& vs, size_t i, Vec<s
 }
 
 template <class T> vector<vector<T>> cartProduct(const vector<vector<T>>& vs) {
+	// TODO: optimize
 	Vec<size_t> js;
 	for (auto& v: vs) js.add(0);
 	vector<vector<T>> rs;

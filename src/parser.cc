@@ -313,8 +313,8 @@ void Parser::typing(Expr* a, Type* ty) {
 		} else {
 			// In TPTP, an undeclared function defaults to all parameters individual, and the return type individual or Boolean
 			// depending on context. Here, we allow a little more leeway. The return type defaults to whatever the context wanted.
-			Vec<Type*> v(1, ty);
-			for (size_t i = 1; i < a->n; ++i) v.add(&tindividual);
+			Vec<Type*> v(a->n, ty);
+			for (size_t i = 1; i < a->n; ++i) v[i] = &tindividual;
 			f->ty = fty = compType(v);
 		}
 

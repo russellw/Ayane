@@ -82,11 +82,17 @@ size_t ncsApprox(int pol, Expr* a) {
 }
 
 // Skolem functions replace existentially quantified variables, also formulas that are renamed to avoid exponential expansion
+Type* compType(Type* rty, Vec<Expr*>& args) {
+	assert(args.n);
+	Vec<Type*> v(1 + args.n, rty);
+	for (size_t i = 0; i < args.n; ++i) v[i + 1] = type(args[i]);
+	return compType(v);
+}
+
 Expr* skolem(Type* rty, Vec<Expr*>& args) {
 	if (!args.n) return new (ialloc(sizeof(Fn))) Fn(0, rty);
-	Vec<Expr*> v(1, new (ialloc(sizeof(Fn))) Fn(0, compType(rty, args.begin(), args.end())));
-	// TODO: single call instead of loop?
-	for (auto b: args) v.add(b);
+	Vec<Expr*> v(1 + args.n, new (ialloc(sizeof(Fn))) Fn(0, compType(rty, args)));
+	memcpy(v.data + 1, args.data, args.n * sizeof(void*));
 	return comp(Tag::call, v);
 }
 
@@ -281,6 +287,7 @@ Expr* nnf(bool pol, Expr* a) {
 	}
 	// TODO: should this be more cases instead?
 	if (a->n) {
+		// TODO: optimize
 		for (size_t i = 0; i < a->n; ++i) v.add(nnf(1, at(a, i)));
 		a = comp(tag, v);
 	}
@@ -293,6 +300,7 @@ Expr* distribute(Expr* a) {
 	Vec<Expr*> r;
 	switch (a->tag) {
 	case Tag::and1:
+		// TODO: optimize
 		for (size_t i = 0; i < a->n; ++i) r.add(distribute(at(a, i)));
 		break;
 	case Tag::or1:

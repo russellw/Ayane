@@ -269,7 +269,6 @@ struct Parser1: Parser {
 
 	Type* topLevelType() {
 		if (eat('(')) {
-			// TODO: does vec(n) mean n or cap?
 			Vec<Type*> v(1);
 			do {
 				auto ty = atomicType();
@@ -323,6 +322,7 @@ struct Parser1: Parser {
 				Vec<Expr*> v;
 				args(v);
 				Vec<Expr*> inequalities;
+				// TODO: optimize
 				for (auto i = v.begin(), e = v.end(); i < e; ++i)
 					for (auto j = v.begin(); j != i; ++j) inequalities.add(comp(Tag::not1, comp(Tag::eq, *i, *j)));
 				return comp(Tag::and1, inequalities);
@@ -444,8 +444,7 @@ struct Parser1: Parser {
 	Expr* quant(Tag tag) {
 		lex();
 		expect('[');
-		// TODO: check generated code
-		Vec<Expr*> v(1, 0);
+		Vec<Expr*> v(1);
 		auto o = vars.n;
 		do {
 			if (tok != k_var) err("Expected variable");

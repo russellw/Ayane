@@ -106,6 +106,7 @@ Expr* replace(Expr* a, bool ax) {
 
 	// Composite
 	Vec<Expr*> v;
+	// TODO: optimize
 	for (auto b: a) v.add(replace(b, ax));
 	return compc(a->tag, v);
 }

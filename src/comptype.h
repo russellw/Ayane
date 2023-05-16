@@ -17,5 +17,3 @@ inline Type* at(Type* a, size_t i) {
 
 Type* compType(Type* a, Type* b);
 Type* compType(Vec<Type*>& v);
-// TODO: rename params
-Type* compType(Type* rty, Expr** first, Expr** last);
