@@ -128,12 +128,11 @@ void check(Expr* a) {
 		// buffer. Otherwise, assuming this expression is in the permanent hash table of shared composite expressions, all
 		// subexpressions better also be permanently allocated.
 		if (inbuf(a))
-			for (auto b: a) {
+			for (auto b: a)
 				if (b->n) {
 					assert(inbuf(b));
 					assert(b < a);
 				}
-			}
 
 		// It is tempting to think we can add an 'else' to perform the reverse check: If this expression is permanently allocated,
 		// all subexpressions better be likewise. But that does not hold: Maybe the subexpressions are temporary, and this
