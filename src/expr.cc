@@ -134,8 +134,13 @@ void check(Expr* a) {
 					assert(b < a);
 				}
 			}
-		else
-			for (auto b: a) assert(!inbuf(b));
+
+		// It is tempting to think we can add an 'else' to perform the reverse check: If this expression is permanently allocated,
+		// all subexpressions better be likewise. But that does not hold: Maybe the subexpressions are temporary, and this
+		// expression should been likewise, but a particularly complex input formula caused temporary allocation to overflow the
+		// buffer and spill into ialloc.
+
+		// Recursively check subexpressions
 		for (auto b: a) check(b);
 		break;
 	}
