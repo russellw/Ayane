@@ -374,6 +374,7 @@ void cnf(Expr* a) {
 
 	// First run the input formula through the full process: Rename subformulas where necessary to avoid exponential expansion, then
 	// convert to negation normal form, distribute OR into AND, and convert to clauses
+	defs.n = 0;
 	a = maybeRename(1, a);
 	check(a);
 
