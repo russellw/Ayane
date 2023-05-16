@@ -307,6 +307,8 @@ struct Parser1: Parser {
 		auto num1 = num;
 		lex();
 		switch (k) {
+		case '(':
+			err("Formula not supported as expression", inappropriateError);
 		case k_distinctObj:
 			return distinctObj(s);
 		case k_dollarWord:
