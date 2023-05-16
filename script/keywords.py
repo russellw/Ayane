@@ -7,6 +7,7 @@ words = [
     "ax",
     "ite",
     "bool",
+    "thf",
     "ceiling",
     "cnf",
     "conjecture",

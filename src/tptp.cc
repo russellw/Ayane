@@ -665,8 +665,10 @@ struct Parser1: Parser {
 				}
 				break;
 			}
+			case s_thf:
+				err("thf not supported", inappropriateError);
 			default:
-				err("Unknown language", inappropriateError);
+				err("Unknown language");
 			}
 			if (tok == ',') do
 					ignore();

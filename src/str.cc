@@ -5,6 +5,7 @@ Str keywords[] = {
 	{0, 0, "ax"},
 	{0, 0, "ite"},
 	{0, 0, "bool"},
+	{0, 0, "thf"},
 	{0, 0, "ceiling"},
 	{0, 0, "cnf"},
 	{0, 0, "conjecture"},
