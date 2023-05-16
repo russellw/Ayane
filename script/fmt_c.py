@@ -62,6 +62,7 @@ def is_sentence_end(s):
         return 1
     if s.endswith("?"):
         return 1
+    # TODO: this should not be the case
     if s.endswith(":"):
         return 1
 
