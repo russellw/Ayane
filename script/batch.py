@@ -89,10 +89,11 @@ try:
 
         t = time.time()
         cmd = "R:/ayane.exe", "-t", str(args.time), file
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-        out, err = p.communicate()
-        out = str(out, "utf-8")
+        p = subprocess.run(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf-8"
+        )
         t = time.time() - t
+        out = p.stdout
 
         print(out, end="")
         print("%0.3f" % t + " seconds")

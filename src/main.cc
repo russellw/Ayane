@@ -11,6 +11,7 @@ LONG WINAPI handler(_EXCEPTION_POINTERS* ExceptionInfo) {
 	else {
 		printf("Exception code %lx\n", ExceptionInfo->ExceptionRecord->ExceptionCode);
 		stackTrace();
+		fflush(stdout);
 	}
 	ExitProcess(ExceptionInfo->ExceptionRecord->ExceptionCode);
 }
