@@ -103,6 +103,12 @@ Eqn::Eqn(Expr* a) {
 
 #ifdef DBG
 void check(Expr* a) {
+	// This check is meant to be run on expressions that have been promoted out of the temporary arena into the hash table of shared
+	// composite expressions. Make sure this is actually the case, to avoid the possibility of overwritten expressions later
+	// generating mysterious errors.
+	auto a1 = (char*)a;
+	assert(!(arena <= a1 && a1 < arena + arenaSize));
+
 	assert(size_t(a->tag) < size_t(Tag::COUNT));
 	switch (a->tag) {
 	case Tag::distinctObj:
