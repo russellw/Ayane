@@ -43,12 +43,6 @@ template <class T> struct Vec {
 		for (auto i = begin(), e = end(); i < e; ++i) new (i) T(b);
 	}
 
-	explicit Vec(T* first, T* last) {
-		init(last - first);
-		auto i = begin();
-		for (auto j = first; j != last; ++j) new (i++) T(*j);
-	}
-
 	~Vec() {
 		free(data);
 	}
@@ -103,10 +97,9 @@ template <class T> struct Vec {
 	}
 
 	// Etc
-	// TODO: use this
 	bool has(const T& x) {
 		for (auto& y: *this)
-			if (y == x) return 1;
+			if (x == y) return 1;
 		return 0;
 	}
 };

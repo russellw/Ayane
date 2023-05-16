@@ -32,13 +32,10 @@ void clause() {
 	pos.n = i;
 
 	// Tautology
+	if (neg.has(bools)) return;
+	if (pos.has(bools + 1)) return;
 	for (auto a: neg)
-		if (a == bools) return;
-	for (auto a: pos)
-		if (a == bools + 1) return;
-	for (auto a: neg)
-		for (auto b: pos)
-			if (a == b) return;
+		if (pos.has(a)) return;
 
 	// Make clause
 	size_t nn = neg.n;
