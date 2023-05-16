@@ -22,7 +22,7 @@ bool match(Expr* a, Expr* b) {
 	// Different operators
 	if (a->tag != b->tag) return 0;
 
-	// If nonvariable atoms could match, they would already have tested equal
+	// If nonvariable leaves could match, they would already have tested equal
 	// TODO: check generated code
 	auto n = a->n;
 	if (!n) return 0;

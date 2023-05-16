@@ -24,7 +24,7 @@ bool eq(Expr* a, bool ax, Expr* b, bool bx) {
 	// so here we just give the conservative answer that they are not equal
 	if (a->n) return 0;
 
-	// Non-variable leaves do not have associated subscripts, so given that they are syntactically equal, they must be logically
+	// Nonvariable leaves do not have associated subscripts, so given that they are syntactically equal, they must be logically
 	// equal
 	return 1;
 }
@@ -77,7 +77,7 @@ bool unify1(Expr* a, bool ax, Expr* b, bool bx) {
 	// Different operators
 	if (a->tag != b->tag) return 0;
 
-	// If nonvariable atoms could unify, they would already have tested equal
+	// If nonvariable leaves could unify, they would already have tested equal
 	auto n = a->n;
 	if (!n) return 0;
 
