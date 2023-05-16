@@ -5,12 +5,12 @@
 // with subscripts indicating which side they are on. This simplifies the data (representation of clauses) at the cost of making
 // matching, unification and adjacent code more complex, which is usually a good trade.
 
-// In particular, we cannot directly compare terms for equality (which in the normal course of events would indicate that two terms
-// trivially unify) because two syntactically identical terms could be, or contain, the same variable names but with different
-// associated subscripts
+// In particular, we cannot directly compare expressions for equality (which in the normal course of events would indicate that two
+// expressions trivially unify) because two syntactically identical expressions could be, or contain, the same variable names but
+// with different associated subscripts
 // TODO: update terminology in comments
 bool eq(Expr* a, bool ax, Expr* b, bool bx) {
-	// If the terms are not syntactically equal then we definitely do not have logical equality
+	// If the expressions are not syntactically equal then we definitely do not have logical equality
 	if (a != b) return 0;
 
 	// If they are syntactically equal and on the same side then we definitely do have logical equality
@@ -19,9 +19,9 @@ bool eq(Expr* a, bool ax, Expr* b, bool bx) {
 	// Two variables on different sides, are not equal
 	if (a->tag == Tag::var) return 0;
 
-	// Composite terms on opposite sides, even though syntactically equal, could contain variables, which would make them logically
-	// unequal; to find out for sure, we would need to recur through subterms, but that is the job of match/unify, so here we just
-	// give the conservative answer that they are not equal
+	// Composite expressions on opposite sides, even though syntactically equal, could contain variables, which would make them
+	// logically unequal; to find out for sure, we would need to recur through subexpressions, but that is the job of match/unify,
+	// so here we just give the conservative answer that they are not equal
 	if (a->n) return 0;
 
 	// Non-variable leaves do not have associated subscripts, so given that they are syntactically equal, they must be logically

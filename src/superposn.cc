@@ -219,10 +219,10 @@ Expr* splice(Expr* a, size_t i, Expr* b) {
 
 // Make new clause
 void superposnc() {
-	// To calculate d0(c1), we first perform the replacement of variables with substitute values, on the component terms, then
-	// splice them together. This is necessary because the component terms are from different clauses, therefore have different
-	// logical variable names. The composition would not be valid if we were replacing arbitrary terms, but is valid because we are
-	// only replacing variables.
+	// To calculate d0(c1), we first perform the replacement of variables with substitute values, on the component expressions, then
+	// splice them together. This is necessary because the component expressions are from different clauses, therefore have
+	// different logical variable names. The composition would not be valid if we were replacing arbitrary expressions, but is valid
+	// because we are only replacing variables.
 	auto d0c1 = splice(replace(d0, 1), 0, replace(c1, 0));
 	auto d1_ = replace(d1, 1);
 	if (!equatable(d0c1, d1_)) return;
@@ -244,7 +244,7 @@ void superposnc() {
 	clause();
 }
 
-// Descend into subterms
+// Descend into subexpressions
 void descend(Expr* a) {
 	// It is never necessary to paramodulate into variables
 	if (a->tag == Tag::var) return;
