@@ -39,15 +39,21 @@ if args.number:
 
 m = {}
 for file in problems:
+    print(os.path.basename(file), end="\t")
+
     cmd = "./ayane", file
     start = time.time()
     p = subprocess.run(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf-8"
     )
+    print("%0.3f" % (time.time() - start), end="\t")
+
     code = p.returncode
     code = codes.get(code, code)
-    m[code] = m.get(code, 0) + 1
-    print("%s\t%s\t%0.3f" % (os.path.basename(file), code, time.time() - start))
+    print(code, end="")
     if code not in (0, "inappropriateError"):
         raise Exception(code)
+    m[code] = m.get(code, 0) + 1
+
+    print()
 print(m)
