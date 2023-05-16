@@ -96,15 +96,15 @@ inline size_t roundUp(size_t n, size_t alignment) {
 }
 ///
 
-// Exit codes specified by this program have small negative numbers to avoid overlap with those specified by POSIX or Windows.
-// Increasingly negative numbers are assigned roughly in order from 'things that can reasonably happen even when the input is not
-// actually incorrect' (e.g. problem contains higher order logic that the system does not understand, 'inappropriate' in SZS
-// terminology) to 'things that can only happen if there is an error in the input' (e.g. syntax error) to 'things that can only
-// happen if there is a bug in the code' (e.g. assert failure).
-const int inappropriateError = -1;
-const int typeError = -2;
-const int syntaxError = -3;
-const int assertError = -4;
+// Error codes specified by this program have numbers starting at 200 to avoid overlap with those specified by POSIX or Windows.
+// Numbers are assigned roughly in order from 'things that can reasonably happen even when the input is not actually incorrect'
+// (e.g. problem contains higher order logic that the system does not understand, 'inappropriate' in SZS terminology) to 'things
+// that can only happen if there is an error in the input' (e.g. syntax error) to 'things that can only happen if there is a bug in
+// the code' (e.g. assert failure).
+const int inappropriateError = 200;
+const int typeError = 201;
+const int syntaxError = 202;
+const int assertError = 203;
 
 extern char buf[5000];
 

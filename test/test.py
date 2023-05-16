@@ -23,7 +23,7 @@ else:
 
 codes = {}
 for s in open(os.path.join(here, "..", "src", "etc.h")).readlines():
-    m = re.match(r"const int (\w+Error) = (-\d+);", s)
+    m = re.match(r"const int (\w+Error) = (\d+);", s)
     if m:
         codes[int(m[2])] = m[1]
 
@@ -64,8 +64,6 @@ for file in problems:
         cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf-8"
     )
     code = p.returncode
-    if code >= 1 << 31:
-        code -= 1 << 32
     code = codes.get(code, code)
     s = p.stdout
 
