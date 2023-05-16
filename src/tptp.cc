@@ -353,6 +353,8 @@ struct Parser1: Parser {
 				return definedFunctor(Tag::isInt);
 			case s_is_rat:
 				return definedFunctor(Tag::isRat);
+			case s_ite:
+				err("$ite not supported", inappropriateError);
 			case s_less:
 				return definedFunctor(Tag::lt);
 			case s_lesseq:

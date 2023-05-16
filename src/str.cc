@@ -3,6 +3,7 @@
 Str keywords[] = {
 	// clang-format off
 	{0, 0, "ax"},
+	{0, 0, "ite"},
 	{0, 0, "bool"},
 	{0, 0, "ceiling"},
 	{0, 0, "cnf"},

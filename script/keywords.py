@@ -5,6 +5,7 @@ src = os.path.join(here, "..", "src")
 
 words = [
     "ax",
+    "ite",
     "bool",
     "ceiling",
     "cnf",
