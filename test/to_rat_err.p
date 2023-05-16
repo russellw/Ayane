@@ -1,4 +1,4 @@
-%unsat
+%typeError
 
 fof(1,conjecture,
 

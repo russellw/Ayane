@@ -139,7 +139,7 @@ int main(int argc, char** argv) {
 		break;
 	}
 	// TODO: temp
-	exit(0);
+	// Exit(0);
 
 	// Solve
 	superposn();

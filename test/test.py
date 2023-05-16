@@ -38,9 +38,14 @@ for file in problems:
 
     e = None
     for s in open(file).readlines():
-        m = re.match(r"\S\s*typeError\s+", s)
+        m = re.match(r"\S\s*(inappropriateError)\s+", s)
         if m:
-            e = -1
+            e = m[1]
+            break
+
+        m = re.match(r"\S\s*(typeError)\s+", s)
+        if m:
+            e = m[1]
             break
 
         m = re.match(r"\S\s*unsat\s+", s)
@@ -63,11 +68,11 @@ for file in problems:
         code -= 1 << 32
     code = codes.get(code, code)
     s = p.stdout
-    if code not in (0, "typeError"):
-        err()
 
-    if code == "typeError":
-        r = -1
+    if code in ("inappropriateError", "typeError"):
+        r = code
+    elif code:
+        err()
     elif "unsat" in s:
         r = 0
     elif "sat" in s:
