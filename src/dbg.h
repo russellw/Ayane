@@ -36,7 +36,9 @@ void stackTrace();
 #define indent()
 #define dbg(a)
 
-#define stackTrace()
+inline void stackTrace() {
+}
+
 #ifdef _MSC_VER
 #define assert(a) __assume(a)
 #define unreachable __assume(0)
