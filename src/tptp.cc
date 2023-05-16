@@ -255,6 +255,8 @@ struct Parser1: Parser {
 				return &trat;
 			case s_real:
 				return &treal;
+			case s_tType:
+				err("Type constructors not supported", inappropriateError);
 			}
 			break;
 		case k_id:
