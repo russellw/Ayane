@@ -102,8 +102,6 @@ const int typeError = 201;
 const int syntaxError = 202;
 const int assertError = 203;
 
-extern char buf[5000];
-
 // SORT
 void* ialloc(size_t n);
 void mpz_ediv_q(mpz_t q, const mpz_t n, const mpz_t d);

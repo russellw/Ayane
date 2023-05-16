@@ -32,7 +32,7 @@ using std::vector;
 
 // Clang-format sorts headers in a block, which is good. However, some headers define things needed by others that would come before
 // them in alphabetical order, so they are placed in separate blocks separated by blank lines.
-#include "arena.h"
+#include "buf.h"
 #include "dbg.h"
 #include "etc.h"
 #include "set.h"

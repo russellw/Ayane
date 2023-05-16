@@ -2,7 +2,7 @@
 
 Expr* comp(Tag tag, Expr** v, size_t n) {
 	// TODO: ctor?
-	auto a = (Comp*)aalloc(sizeof(Comp) + n * sizeof *v);
+	auto a = (Comp*)balloc(sizeof(Comp) + n * sizeof *v);
 	a->tag = tag;
 	a->n = n;
 	memcpy(a->v, v, n * sizeof *v);

@@ -550,8 +550,8 @@ struct Parser1: Parser {
 		lex();
 		while (tok) {
 			// SORT
-			aclear();
 			assert(!vars.n);
+			bufp = buf;
 			auto kw = wordOrDigits() - keywords;
 			///
 			expect('(');
