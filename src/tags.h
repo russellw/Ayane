@@ -1,12 +1,9 @@
-// TODO: True needs to be early in the list, but does False need any particular order?
-_(false1)
+// True needs the lowest tag value, for ordering equations in the superposition calculus
 _(true1)
 
-// TODO: use everywhere or nowhere?
+// Expressions that occur in clauses during inference
 // SORT
 _(add)
-_(all)
-_(and1)
 _(call)
 _(ceil)
 _(distinctObj)
@@ -15,8 +12,6 @@ _(divEuclid)
 _(divFloor)
 _(divTrunc)
 _(eq)
-_(eqv)
-_(exists)
 _(floor)
 _(fn)
 _(integer)
@@ -25,8 +20,6 @@ _(isRat)
 _(lt)
 _(minus)
 _(mul)
-_(not1)
-_(or1)
 _(rat)
 _(real)
 _(remEuclid)
@@ -39,6 +32,17 @@ _(toRat)
 _(toReal)
 _(trunc)
 _(var)
+///
+
+// Expressions that only occur in input formulas
+// SORT
+_(all)
+_(and1)
+_(eqv)
+_(exists)
+_(false1)
+_(not1)
+_(or1)
 ///
 
 #undef _
