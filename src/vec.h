@@ -10,6 +10,16 @@ template <class T, int small = 4> class Vec {
 		}
 	}
 
+	void reserve(size_t cap1) {
+		if (cap1 <= cap) return;
+		cap = max(cap1, (size_t)cap * 2);
+		if (data == fixed) {
+			data = (T*)malloc(cap * sizeof(T));
+			memcpy(data, fixed, n * sizeof(T));
+		} else
+			data = (T*)realloc(data, cap * sizeof(T));
+	}
+
 public:
 	// TODO: simplify
 	using reverse_iterator = std::reverse_iterator<T*>;
@@ -33,26 +43,10 @@ public:
 		if (data != fixed) free(data);
 	}
 
-	void reserve(size_t cap1) {
-		if (cap1 <= cap) return;
-		cap = max(cap1, (size_t)cap * 2);
-		if (data == fixed) {
-			data = (T*)malloc(cap * sizeof(T));
-			memcpy(data, fixed, n * sizeof(T));
-		} else
-			data = (T*)realloc(data, cap * sizeof(T));
-	}
-
-	void add(T a) {
-		reserve(n + 1);
-		data[n++] = a;
-	}
-
 	// Iterators
 	T* begin() {
 		return data;
 	}
-
 	T* end() {
 		return begin() + n;
 	}
@@ -60,18 +54,21 @@ public:
 	reverse_iterator rbegin() {
 		return reverse_iterator(end());
 	}
-
 	reverse_iterator rend() {
 		return reverse_iterator(begin());
 	}
 
-	// Element access
+	// Etc
 	T& operator[](size_t i) {
 		assert(i < n);
 		return begin()[i];
 	}
 
-	// Etc
+	void add(T a) {
+		reserve(n + 1);
+		data[n++] = a;
+	}
+
 	bool has(const T& x) {
 		for (auto& y: *this)
 			if (x == y) return 1;
