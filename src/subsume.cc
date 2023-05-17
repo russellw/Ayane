@@ -53,7 +53,7 @@ Clause* d;
 Range ds;
 
 // Multiset avoids breaking completeness when factoring is used
-Vec<bool> used;
+bool used[100];
 
 bool subsume(int ci) {
 	if (ci == cs.second) return 1;
@@ -79,13 +79,14 @@ bool subsumes(Clause* c0, Clause* d0) {
 	if (c0->nn > d0->nn) return 0;
 	if (c0->np() > d0->np()) return 0;
 
+	// It's okay to use a fixed-size array here, because beyond a certain length, subsumption checking is unlikely to be useful.
+	// Indeed, beyond a certain length, generating clauses is unlikely to be useful.
+	if (sizeof used < d0->n) return 0;
+
 	c = c0;
 	d = d0;
 	m.n = 0;
-
-	used.reserve(d->n);
-	used.n = d->n;
-	memset(used.data, 0, used.n);
+	memset(used, 0, d->n);
 
 	cs = c->neg();
 	ds = d->neg();
