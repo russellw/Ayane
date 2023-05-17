@@ -573,14 +573,27 @@ struct Parser1: Parser {
 				expect(',');
 
 				// Literals
+				size_t parens = 0;
+				while (eat('(')) ++parens;
 				cnfMode = 1;
-				auto a = quantify(logicFormula());
+				neg.n = pos.n = 0;
+				do {
+					auto no = eat('~');
+					auto parens = eat('(');
+					auto a = infixUnary();
+					if (parens) expect(')');
+					if (a->tag == Tag::not1) {
+						a = at(a, 0);
+						no = no ^ 1;
+					}
+					typing(a, &tbool);
+					(no ? neg : pos).add(a);
+				} while (eat('|'));
+				while (parens) expect(')');
 				vars.n = 0;
-				typing(a, &tbool);
 
 				// Select
-				// TODO: is it necessary to feed this through the CNF conversion process?
-				if (select.count(name)) cnf(a);
+				if (select.count(name)) clause();
 				break;
 			}
 			case s_fof:
