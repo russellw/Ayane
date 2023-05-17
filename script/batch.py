@@ -89,6 +89,7 @@ try:
 
         t = time.time()
         cmd = "R:/ayane.exe", "-t", str(args.time), file
+        # TODO: test in particular for sanitize output
         p = subprocess.run(
             cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf-8"
         )
