@@ -21,7 +21,6 @@ inline Expr* at(Expr* a, size_t i) {
 	return ((Comp*)a)->v[i];
 }
 
-// TODO: test using a bump allocator
 Expr* comp(Tag tag, Expr* a);
 Expr* comp(Tag tag, Expr* a, Expr* b);
 Expr* comp(Tag tag, Vec<Expr*>& v);
