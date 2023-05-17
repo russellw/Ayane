@@ -579,6 +579,7 @@ struct Parser1: Parser {
 				typing(a, &tbool);
 
 				// Select
+				// TODO: is it necessary to feed this through the CNF conversion process?
 				if (select.count(name)) cnf(a);
 				break;
 			}
