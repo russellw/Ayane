@@ -105,8 +105,8 @@ Expr* replace(Expr* a, bool ax) {
 	if (!a->n) return a;
 
 	// Composite
-	Vec<Expr*> v;
-	// TODO: optimize
-	for (auto b: a) v.add(replace(b, ax));
+	Vec<Expr*> v(a->n);
+	// TODO: should n be cached?
+	for (size_t i = 0; i < v.n; ++i) v[i] = replace(at(a, i), ax);
 	return compc(a->tag, v);
 }
