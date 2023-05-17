@@ -322,9 +322,8 @@ struct Parser1: Parser {
 				Vec<Expr*> v;
 				args(v);
 				Vec<Expr*> inequalities;
-				// TODO: optimize
 				for (auto i = v.begin(), e = v.end(); i < e; ++i)
-					for (auto j = v.begin(); j != i; ++j) inequalities.add(comp(Tag::not1, comp(Tag::eq, *i, *j)));
+					for (auto j = v.begin(); j < i; ++j) inequalities.add(comp(Tag::not1, comp(Tag::eq, *i, *j)));
 				return comp(Tag::and1, inequalities);
 			}
 			case s_false:
