@@ -3,6 +3,7 @@
 #pragma warning(disable : 4530)
 #endif
 
+#include <ctype.h>
 #include <errno.h>
 #include <inttypes.h>
 #include <stddef.h>

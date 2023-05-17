@@ -1,2 +1,1 @@
-cl /Feayane /IC:\mpir /O2 /std:c++17 %~dp0..\src\*.cc C:\mpir\release.lib
-rem TODO: directory layout
+cl /Feayane /IC:\mpir /J /O2 /std:c++17 %~dp0..\src\*.cc C:\mpir\release.lib

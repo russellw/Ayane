@@ -1,39 +1,3 @@
-// Compared to the versions in ctype.h, these functions generate shorter code, and have defined behavior for all input values. They
-// are of course not for use on natural-language text, only for ASCII-based file formats. These versions are branch-heavy, but in
-// one test, were measured at 6 CPU cycles per character, identical to an alternative algorithm with fewer branches.
-// TODO: test speed against current standard library implementations
-inline bool isSpace(int c) {
-	return 0 < c && c <= ' ';
-}
-
-inline bool isPrint(int c) {
-	return ' ' < c && c < 127;
-}
-
-inline bool isUpper(int c) {
-	return 'A' <= c && c <= 'Z';
-}
-
-inline bool isLower(int c) {
-	return 'a' <= c && c <= 'z';
-}
-
-inline bool isAlpha(int c) {
-	return isLower(c) || isUpper(c);
-}
-
-inline bool isDigit(int c) {
-	return '0' <= c && c <= '9';
-}
-
-inline bool isAlnum(int c) {
-	return isAlpha(c) || isDigit(c);
-}
-
-inline bool isWord(int c) {
-	return isAlnum(c) || c == '_';
-}
-
 // This, and its effective sub-enums in specific parsers, are not enum classes because enumerated tokens will be freely mixed with
 // literal characters
 enum {

@@ -76,7 +76,7 @@ void Parser::err(const char* msg, int code) {
 
 void Parser::word() {
 	auto s = src;
-	while (isWord(*s)) ++s;
+	while (isalnum(*s) || *s == '_') ++s;
 	str = intern(src, s - src);
 	src = s;
 	tok = k_id;
@@ -97,7 +97,7 @@ void Parser::quote() {
 
 void Parser::digits() {
 	auto s = src;
-	while (isDigit(*s)) ++s;
+	while (isdigit(*s)) ++s;
 	src = s;
 }
 
@@ -165,7 +165,7 @@ void Parser::number() {
 		auto s = src;
 
 		// The integer parsing function would otherwise accept a sign here, but that would not make sense
-		if (!isDigit(*s)) err("Expected digit");
+		if (!isdigit(*s)) err("Expected digit");
 
 		mpz_t decimal;
 		lexInt(decimal);
