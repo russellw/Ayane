@@ -11,25 +11,6 @@
 #include <map>
 
 namespace {
-void printItem(size_t n, const char* caption) {
-	char buf[32];
-	auto s = buf + bufSize - 1;
-	*s = 0;
-	size_t i = 0;
-	do {
-		// Extract a digit
-		*--s = '0' + n % 10;
-		n /= 10;
-
-		// Track how many digits we have extracted
-		++i;
-
-		// So that we can punctuate them in groups of 3
-		if (i % 3 == 0 && n) *--s = ',';
-	} while (n);
-	printf("%16s  %s\n", s, caption);
-}
-
 unordered_map<const char*, uint64_t> strStats;
 unordered_map<size_t, uint64_t> numStats;
 // TODO: does this map need to be ordered?
@@ -85,40 +66,33 @@ void incTrace() {
 }
 
 void printStats() {
-	putchar('\n');
-
 	if (strStats.size()) {
 		Vec<const char*> v;
-		for (auto p: strStats) v.add(p.first);
+		for (auto sy: strStats) v.add(sy.first);
 		sort(v.begin(), v.end(), [=](const char* a, const char* b) { return strcmp(a, b) < 0; });
-		for (auto k: v) printItem(strStats[k], k);
-		putchar('\n');
+		for (auto s: v) printf(";%s\t%zu\n", s, strStats[s]);
 	}
-
 	if (numStats.size()) {
 		Vec<size_t> v;
 		// TODO: optimize
-		for (auto p: numStats) v.add(p.first);
+		for (auto xn: numStats) v.add(xn.first);
 		sort(v.begin(), v.end());
-		uint64_t totQty = 0;
-		uint64_t totVal = 0;
-		for (auto val: v) {
-			sprintf(buf, "%zu", val);
-			auto qty = numStats[val];
-			printItem(qty, buf);
-			totQty += qty;
-			totVal += val * qty;
+		size_t tot = 0;
+		size_t totn = 0;
+		for (auto x: v) {
+			auto n = numStats[x];
+			printf(";%zu\t%zu\n", x, n);
+			tot += x * n;
+			totn += n;
 		}
-		printItem(totQty, "qty");
-		printf("%16.3f  avg", totVal / double(totQty));
-		putchar('\n');
+		printf(";tot\t%zu\n", totn);
+		printf(";avg\t%.3f", tot / (double)totn);
 	}
-
-	for (auto& kv: traces) {
-		print(kv.second);
+	for (auto& xy: traces) {
 		putchar('\n');
-		for (auto s: kv.first) printf("\t%s\n", s);
+		print(xy.second);
 		putchar('\n');
+		for (auto s: xy.first) printf("\t%s\n", s);
 	}
 }
 #endif
