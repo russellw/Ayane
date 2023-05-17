@@ -8,6 +8,10 @@ struct Clause {
 	bool dead;
 	Expr* v[];
 
+	size_t np() {
+		return n - nn;
+	}
+
 	Range neg() {
 		return Range(0, nn);
 	}

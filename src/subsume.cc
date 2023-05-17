@@ -75,7 +75,9 @@ bool subsume(int ci) {
 } // namespace
 
 bool subsumes(Clause* c0, Clause* d0) {
-	if (c0->n > d0->n) return 0;
+	// It is impossible for a longer clause to subsume a shorter one
+	if (c0->nn > d0->nn) return 0;
+	if (c0->np() > d0->np()) return 0;
 
 	c = c0;
 	d = d0;
