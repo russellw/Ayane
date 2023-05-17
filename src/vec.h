@@ -21,7 +21,6 @@ public:
 	Vec& operator=(const Vec&) = delete;
 
 	explicit Vec(size_t o = 0) {
-		// TODO: make sure the generated code is efficient when it is statically known that o<small
 		init(o);
 	}
 
