@@ -21,7 +21,6 @@ template <class T, int small = 4> class Vec {
 	}
 
 public:
-	// TODO: simplify
 	using reverse_iterator = std::reverse_iterator<T*>;
 
 	uint32_t n;
@@ -58,7 +57,7 @@ public:
 		return reverse_iterator(begin());
 	}
 
-	// Etc
+	// SORT
 	T& operator[](size_t i) {
 		assert(i < n);
 		return begin()[i];
@@ -74,6 +73,7 @@ public:
 			if (x == y) return 1;
 		return 0;
 	}
+	///
 };
 
 template <class K, class T> bool get(K x, T& y, Vec<pair<K, T>>& m) {
