@@ -222,32 +222,12 @@ Expr* nnf(bool pol, Expr* a) {
 	Vec<Expr*> v;
 	auto tag = a->tag;
 	switch (tag) {
-	case Tag::false1:
-		// Boolean constants and operators can be inverted by downward-sinking NOTs
-		return bools + !pol;
-	case Tag::true1:
-		return bools + pol;
-	case Tag::not1:
-		return nnf(!pol, at(a, 0));
-	case Tag::or1:
-		if (!pol) tag = Tag::and1;
-		for (size_t i = 0; i < a->n; ++i) v.add(nnf(pol, at(a, i)));
-		return comp(tag, v);
+	case Tag::all:
+		return pol ? all(pol, a) : exists(pol, a);
 	case Tag::and1:
 		if (!pol) tag = Tag::or1;
 		for (size_t i = 0; i < a->n; ++i) v.add(nnf(pol, at(a, i)));
 		return comp(tag, v);
-	case Tag::var:
-	{
-		// Variables are mapped to new variables or Skolem functions
-		auto r = get(a, a, m);
-		assert(r);
-		return a;
-	}
-	case Tag::all:
-		return pol ? all(pol, a) : exists(pol, a);
-	case Tag::exists:
-		return pol ? exists(pol, a) : all(pol, a);
 	case Tag::eqv:
 	{
 		// Equivalence is the most difficult operator to deal with
@@ -259,6 +239,26 @@ Expr* nnf(bool pol, Expr* a) {
 		auto y1 = nnf(1, y);
 		return pol ? comp(Tag::and1, comp(Tag::or1, x0, y1), comp(Tag::or1, x1, y0))
 				   : comp(Tag::and1, comp(Tag::or1, x0, y0), comp(Tag::or1, x1, y1));
+	}
+	case Tag::exists:
+		return pol ? exists(pol, a) : all(pol, a);
+	case Tag::false1:
+		// Boolean constants and operators can be inverted by downward-sinking NOTs
+		return bools + !pol;
+	case Tag::not1:
+		return nnf(!pol, at(a, 0));
+	case Tag::or1:
+		if (!pol) tag = Tag::and1;
+		for (size_t i = 0; i < a->n; ++i) v.add(nnf(pol, at(a, i)));
+		return comp(tag, v);
+	case Tag::true1:
+		return bools + pol;
+	case Tag::var:
+	{
+		// Variables are mapped to new variables or Skolem functions
+		auto r = get(a, a, m);
+		assert(r);
+		return a;
 	}
 	}
 	// TODO: should this be more cases instead?
