@@ -1,6 +1,6 @@
 #include "main.h"
 
-struct RatCmp {
+struct RatElement {
 	// TODO: can we now remove the Cmp class?
 	static bool eq(Tag tag, mpq_t v, size_t n, Rat* b) {
 		return tag == b->tag && mpq_equal(v, b->v);
@@ -16,16 +16,16 @@ struct RatCmp {
 		return hash(a->tag, ((Rat*)a)->v, 0);
 	}
 
+	static void clear(mpq_t v) {
+		mpq_clear(v);
+	}
+
 	static Rat* make(Tag tag, mpq_t v, size_t n) {
 		return new (ialloc(sizeof(Rat))) Rat(tag, v);
 	}
 };
 
-void clear(mpq_t v) {
-	mpq_clear(v);
-}
-
-static Set<Tag, mpq_t, Rat, RatCmp> rats;
+static Set<Tag, mpq_t, Rat, RatElement> rats;
 
 Rat* rat(Tag tag, mpq_t v) {
 	return rats.intern(tag, v, 0);

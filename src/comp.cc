@@ -26,7 +26,7 @@ Expr* comp(Tag tag, vector<Expr*>& v) {
 	return comp(tag, v.data(), v.size());
 }
 
-struct CompCmp {
+struct CompElement {
 	static bool eq(Tag tag, Expr** a, size_t n, Comp* b) {
 		assert(a);
 		return tag == b->tag && n == b->n && memcmp(a, b->v, n * sizeof(void*)) == 0;
@@ -43,6 +43,9 @@ struct CompCmp {
 		return hash(a->tag, a->v, a->n);
 	}
 
+	static void clear(Expr** a) {
+	}
+
 	static Comp* make(Tag tag, Expr** v, size_t n) {
 		auto a = new (ialloc(sizeof(Comp) + n * sizeof(void*))) Comp(tag, n);
 		memcpy(a->v, v, n * sizeof(void*));
@@ -50,10 +53,7 @@ struct CompCmp {
 	}
 };
 
-static void clear(Expr** a) {
-}
-
-static Set<Tag, Expr**, Comp, CompCmp> comps;
+static Set<Tag, Expr**, Comp, CompElement> comps;
 
 // TODO: static
 bool constant(Expr* a) {

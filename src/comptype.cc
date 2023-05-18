@@ -1,7 +1,6 @@
 #include "main.h"
 
-struct Cmp {
-	// TODO: if this ends up also needing allocator, rename to something like compElement?
+struct Element {
 	static bool eq(Kind kind, Type** a, size_t n, CompType* b) {
 		return n == b->n && memcmp(a, b->v, n * sizeof(void*)) == 0;
 	}
@@ -17,6 +16,9 @@ struct Cmp {
 		return hash(a->kind, a->v, a->n);
 	}
 
+	static void clear(Type** a) {
+	}
+
 	static CompType* make(Kind kind, Type** v, size_t n) {
 		auto a = new (ialloc(sizeof(CompType) + n * sizeof(void*))) CompType(kind, n);
 		memcpy(a->v, v, n * sizeof(void*));
@@ -24,10 +26,7 @@ struct Cmp {
 	}
 };
 
-static void clear(Type** a) {
-}
-
-static Set<Kind, Type**, CompType, Cmp> compTypes;
+static Set<Kind, Type**, CompType, Element> compTypes;
 
 Type* compType(Type** v, size_t n) {
 	assert(n);

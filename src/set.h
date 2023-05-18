@@ -1,18 +1,18 @@
-template <class K, class V, class T, class Cmp> class Set {
+template <class K, class V, class T, class Element> class Set {
 	size_t cap = 4;
 	size_t qty;
 	T** entries = (T**)calloc(cap, sizeof(void*));
 
 	static size_t slot(T** entries, size_t cap, K tag, V v, size_t n) {
 		size_t mask = cap - 1;
-		auto i = Cmp::hash(tag, v, n) & mask;
-		while (entries[i] && !Cmp::eq(tag, v, n, entries[i])) i = (i + 1) & mask;
+		auto i = Element::hash(tag, v, n) & mask;
+		while (entries[i] && !Element::eq(tag, v, n, entries[i])) i = (i + 1) & mask;
 		return i;
 	}
 	static size_t slot(T** entries, size_t cap, T* a) {
 		size_t mask = cap - 1;
-		auto i = Cmp::hash(a) & mask;
-		while (entries[i] && !Cmp::eq(a, entries[i])) i = (i + 1) & mask;
+		auto i = Element::hash(a) & mask;
+		while (entries[i] && !Element::eq(a, entries[i])) i = (i + 1) & mask;
 		return i;
 	}
 
@@ -36,7 +36,7 @@ public:
 		// If we have seen this before, return the existing object
 		auto a = entries[i];
 		if (a) {
-			clear(v);
+			Element::clear(v);
 			return a;
 		}
 
@@ -48,6 +48,6 @@ public:
 		}
 
 		// Make a new object and add to hash table
-		return entries[i] = Cmp::make(tag, v, n);
+		return entries[i] = Element::make(tag, v, n);
 	}
 };
