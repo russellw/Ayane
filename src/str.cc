@@ -50,7 +50,6 @@ Str keywords[] = {
 	// clang-format on
 };
 
-// TODO: factor to  set
 namespace {
 // Compare a counted string with a null terminated one
 bool eq(const char* s, size_t n, const char* z) {
@@ -59,70 +58,57 @@ bool eq(const char* s, size_t n, const char* z) {
 	return !*z;
 }
 
-size_t slot(Str** entries, size_t cap, const char* s, size_t n) {
-	size_t mask = cap - 1;
-	auto i = fnv(s, n) & mask;
-	while (entries[i] && !eq(s, n, entries[i]->v)) i = (i + 1) & mask;
-	return i;
+bool eq(int tag, char* a, size_t n, Str* b) {
+	auto z = b->v;
+	while (n--)
+		if (*a++ != *z++) return 0;
+	return !*z;
+}
+bool eq(Str* a, Str* b) {
+	return strcmp(a->v, b->v) == 0;
 }
 
-size_t cap = 0x100;
-size_t qty = nkeywords;
-Str** entries;
+size_t hash(int tag, char* a, size_t n) {
+	return fnv(a, n);
+}
+size_t hash(Str* a) {
+	return fnv(a->v);
+}
+
+void clear(char* a) {
+}
+
+Str* make(int tag, char* v, size_t n) {
+	auto a = (Str*)ialloc(offsetof(Str, v) + n + 1);
+	a->fn = 0;
+	a->ty = 0;
+	memcpy(a->v, v, n);
+	a->v[n] = 0;
+	return a;
+}
+
+Set<int, char*, Str, 0x100> strs;
 
 struct Init {
 	Init() {
-		assert(qty <= cap * 3 / 4);
-		entries = (Str**)calloc(cap, sizeof(Str*));
 		for (int i = 0; i < sizeof keywords / sizeof *keywords; ++i) {
 			auto s = keywords + i;
 			auto n = strlen(s->v);
 
 			// C++ allows the edge case where a string literal exactly fills an array, leaving no room for a null terminator. This
 			// is sometimes useful, but would not be appropriate here, so make sure it's not the case.
-			assert(n < sizeof keywords[0].v);
-
-			// Make sure there are no duplicate keywords
-			assert(!entries[slot(entries, cap, s->v, n)]);
+			assert(n < sizeof keywords->v);
 
 			// Add to hash table
-			entries[slot(entries, cap, s->v, n)] = s;
+			auto r = strs.intern(0, s->v, n);
+
+			// Make sure there are no duplicate keywords
+			assert(r == s);
 		}
 	}
 } init;
-
-void expand() {
-	auto cap1 = cap * 2;
-	auto entries1 = (Str**)calloc(cap1, sizeof(Str*));
-	for (size_t i = 0; i < cap; ++i) {
-		auto s = entries[i];
-		if (s) entries1[slot(entries1, cap1, s->v, strlen(s->v))] = s;
-	}
-	free(entries);
-	cap = cap1;
-	entries = entries1;
-}
 } // namespace
 
 Str* intern(const char* s, size_t n) {
-	auto i = slot(entries, cap, s, n);
-
-	// If we have seen this string before, return the existing string
-	if (entries[i]) return entries[i];
-
-	// Expand the hash table if necessary
-	if (++qty > cap * 3 / 4) {
-		expand();
-		i = slot(entries, cap, s, n);
-		assert(!entries[i]);
-	}
-
-	// Make a new string
-	auto r = (Str*)malloc(offsetof(Str, v) + n + 1);
-	memset(r, 0, offsetof(Str, v));
-	memcpy(r->v, s, n);
-	r->v[n] = 0;
-
-	// Add to hash table
-	return entries[i] = r;
+	return strs.intern(0, s, n);
 }

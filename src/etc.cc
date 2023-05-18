@@ -1,6 +1,16 @@
 #include "main.h"
 
 // SORT
+size_t fnv(const char* s) {
+	auto p = (const unsigned char*)s;
+	size_t h = 2166136261u;
+	while (*p) {
+		h ^= *p++;
+		h *= 16777619;
+	}
+	return h;
+}
+
 size_t fnv(const void* p, size_t n) {
 	// Fowler-Noll-Vo-1a is slower than more sophisticated hash algorithms for large chunks of data, but faster for tiny ones, so it
 	// still sees use

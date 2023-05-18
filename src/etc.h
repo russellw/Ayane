@@ -34,8 +34,10 @@ struct Range: pair<size_t, size_t> {
 	}
 };
 
+// TODO: this is not sorting
 // SORT
 size_t fnv(const void* p, size_t n);
+size_t fnv(const char* s);
 ///
 
 // For debugging purposes, define print functions for all the data types being used
