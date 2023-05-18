@@ -43,15 +43,15 @@ bool match(Eqn a, Eqn b) {
 }
 
 Clause* c;
-Range<size_t> cs;
+Range cs;
 
 Clause* d;
-Range<size_t> ds;
+Range ds;
 
 // Multiset avoids breaking completeness when factoring is used
 bool used[100];
 
-bool subsume(int ci) {
+bool subsume(size_t ci) {
 	if (ci == cs.second) return 1;
 	auto a = at(c, ci++);
 	for (auto di: ds) {

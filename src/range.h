@@ -1,19 +1,18 @@
-// TODO: change to use pointers?
-template <class T> struct Range {
-	T first, second;
+struct Range {
+	size_t first, second;
 
 	Range() {
 	}
-	Range(T first, T second): first(first), second(second) {
+	Range(size_t first, size_t second): first(first), second(second) {
 	}
 
 	struct iterator {
-		T i;
+		size_t i;
 
-		iterator(T i): i(i) {
+		iterator(size_t i): i(i) {
 		}
 
-		T operator*() {
+		size_t operator*() {
 			return i;
 		}
 

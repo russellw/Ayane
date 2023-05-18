@@ -12,18 +12,18 @@ struct Clause {
 		return n - nn;
 	}
 
-	Range<size_t> neg() {
-		return Range<size_t>(0, nn);
+	Range neg() {
+		return Range(0, nn);
 	}
-	Range<size_t> pos() {
-		return Range<size_t>(nn, n);
+	Range pos() {
+		return Range(nn, n);
 	}
 };
 
-inline Range<size_t>::iterator begin(Clause* c) {
+inline Range::iterator begin(Clause* c) {
 	return 0;
 }
-inline Range<size_t>::iterator end(Clause* c) {
+inline Range::iterator end(Clause* c) {
 	return c->n;
 }
 
