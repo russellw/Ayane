@@ -287,6 +287,7 @@ Expr* nnf(bool pol, Expr* a) {
 // Distribute OR down into AND, completing the layering of the operators for CNF. This is the second place where exponential
 // expansion would occur, had selected formulas not already been renamed.
 Expr* distribute(Expr* a) {
+	// TODO: .clang-format AfterCaseLabel
 	switch (a->tag) {
 	case Tag::and1:
 	{
