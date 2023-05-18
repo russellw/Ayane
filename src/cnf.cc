@@ -228,6 +228,13 @@ Expr* nnf(bool pol, Expr* a) {
 		if (!pol) tag = Tag::or1;
 		for (size_t i = 0; i < a->n; ++i) v.add(nnf(pol, at(a, i)));
 		return comp(tag, v);
+	case Tag::distinctObj:
+	case Tag::fn:
+	case Tag::integer:
+	case Tag::rat:
+	case Tag::real:
+		assert(!a->n);
+		break;
 	case Tag::eqv:
 	{
 		// Equivalence is the most difficult operator to deal with
@@ -260,12 +267,12 @@ Expr* nnf(bool pol, Expr* a) {
 		assert(r);
 		return a;
 	}
-	}
-	// TODO: should this be more cases instead?
-	if (a->n) {
+	default:
+		assert(a->n);
 		// TODO: optimize
 		for (size_t i = 0; i < a->n; ++i) v.add(nnf(1, at(a, i)));
 		a = comp(tag, v);
+		break;
 	}
 	return pol ? a : comp(Tag::not1, a);
 }
