@@ -2,9 +2,7 @@
 
 Expr* comp(Tag tag, Expr** v, size_t n) {
 	// TODO: ctor?
-	auto a = (Comp*)balloc(sizeof(Comp) + n * sizeof(void*));
-	a->tag = tag;
-	a->n = n;
+	auto a = new (balloc(sizeof(Comp) + n * sizeof(void*))) Comp(tag, n);
 	memcpy(a->v, v, n * sizeof(void*));
 	return a;
 }
