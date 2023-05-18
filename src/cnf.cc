@@ -6,12 +6,12 @@ const size_t many = 50;
 // How many clauses a formula will expand into, for the purpose of deciding when subformulas need to be renamed. The answer could
 // exceed the range of a fixed-size integer, but then we don't actually need the number, we only need to know whether it went over
 // the threshold.
-size_t ncs(bool pol, Expr* a);
+size_t nclauses(bool pol, Expr* a);
 
 size_t ncsMul(bool pol, Expr* a) {
 	size_t n = 1;
 	for (size_t i = 0; i < a->n; ++i) {
-		n *= ncs(pol, at(a, i));
+		n *= nclauses(pol, at(a, i));
 		if (n >= many) return many;
 	}
 	return n;
@@ -20,28 +20,19 @@ size_t ncsMul(bool pol, Expr* a) {
 size_t ncsAdd(bool pol, Expr* a) {
 	size_t n = 0;
 	for (size_t i = 0; i < a->n; ++i) {
-		n += ncs(pol, at(a, i));
+		n += nclauses(pol, at(a, i));
 		if (n >= many) return many;
 	}
 	return n;
 }
 
-size_t ncs(bool pol, Expr* a) {
-	// TODO: really want NO_SORT?
-	// NO_SORT
+size_t nclauses(bool pol, Expr* a) {
 	switch (a->tag) {
 	case Tag::all:
 	case Tag::exists:
-		return ncs(pol, at(a, 0));
-
-	case Tag::not1:
-		return ncs(!pol, at(a, 0));
-
-	case Tag::or1:
-		return pol ? ncsMul(pol, a) : ncsAdd(pol, a);
+		return nclauses(pol, at(a, 0));
 	case Tag::and1:
 		return pol ? ncsAdd(pol, a) : ncsMul(pol, a);
-
 	case Tag::eqv:
 	{
 		auto x = at(a, 0);
@@ -52,16 +43,20 @@ size_t ncs(bool pol, Expr* a) {
 		// is becoming large.
 		size_t n;
 		if (pol) {
-			n = ncs(0, x) * ncs(1, y);
+			n = nclauses(0, x) * nclauses(1, y);
 			if (n >= many) return many;
-			n += ncs(1, x) * ncs(0, y);
+			n += nclauses(1, x) * nclauses(0, y);
 		} else {
-			n = ncs(0, x) * ncs(0, y);
+			n = nclauses(0, x) * nclauses(0, y);
 			if (n >= many) return many;
-			n += ncs(1, x) * ncs(1, y);
+			n += nclauses(1, x) * nclauses(1, y);
 		}
 		return min(n, many);
 	}
+	case Tag::not1:
+		return nclauses(!pol, at(a, 0));
+	case Tag::or1:
+		return pol ? ncsMul(pol, a) : ncsAdd(pol, a);
 	}
 	return 1;
 }
@@ -74,10 +69,10 @@ size_t ncs(bool pol, Expr* a) {
 // context that is both positive and negative, we add the two values for the number of clauses; this doesn't have a clear
 // mathematical justification, but seems as reasonable as anything else, and simple enough that there are hopefully few ways it can
 // go wrong.
-size_t ncsApprox(int pol, Expr* a) {
+size_t nclausesApprox(int pol, Expr* a) {
 	size_t n = 0;
-	if (pol >= 0) n += ncs(1, a);
-	if (pol <= 0) n += ncs(0, a);
+	if (pol >= 0) n += nclauses(1, a);
+	if (pol <= 0) n += nclauses(0, a);
 	return n;
 }
 
@@ -134,10 +129,10 @@ void maybeRename(int pol, Vec<Expr*>& v) {
 	// Sorting the arguments doesn't change the meaning of the formula, because AND and OR are commutative. The effect is that if
 	// only some of them are to be renamed, we will leave the simple ones alone and end up renaming the complicated ones, which is
 	// probably what we want.
-	sort(v.begin(), v.end(), [=](Expr* a, Expr* b) { return ncsApprox(pol, a) < ncsApprox(pol, b); });
+	sort(v.begin(), v.end(), [=](Expr* a, Expr* b) { return nclausesApprox(pol, a) < nclausesApprox(pol, b); });
 	size_t n = 1;
 	for (size_t i = 0; i < v.n; ++i) {
-		auto m = ncsApprox(pol, v[i]);
+		auto m = nclausesApprox(pol, v[i]);
 		if (n * m < many) n *= m;
 		else
 			v[i] = rename(pol, v[i]);
@@ -181,8 +176,8 @@ Expr* maybeRename(int pol, Expr* a) {
 	{
 		auto x = maybeRename(0, at(a, 0));
 		auto y = maybeRename(0, at(a, 1));
-		if (ncsApprox(0, x) >= many) x = rename(0, x);
-		if (ncsApprox(0, y) >= many) y = rename(0, y);
+		if (nclausesApprox(0, x) >= many) x = rename(0, x);
+		if (nclausesApprox(0, y) >= many) y = rename(0, y);
 		return comp(Tag::eqv, x, y);
 	}
 
