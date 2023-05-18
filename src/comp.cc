@@ -2,10 +2,10 @@
 
 Expr* comp(Tag tag, Expr** v, size_t n) {
 	// TODO: ctor?
-	auto a = (Comp*)balloc(sizeof(Comp) + n * sizeof *v);
+	auto a = (Comp*)balloc(sizeof(Comp) + n * sizeof(void*));
 	a->tag = tag;
 	a->n = n;
-	memcpy(a->v, v, n * sizeof *v);
+	memcpy(a->v, v, n * sizeof(void*));
 	return a;
 }
 
@@ -25,14 +25,13 @@ Expr* comp(Tag tag, Vec<Expr*>& v) {
 }
 
 Expr* comp(Tag tag, vector<Expr*>& v) {
-	// TODO: sizeof void* consistently
 	return comp(tag, v.data(), v.size());
 }
 
 struct CompCmp {
 	static bool eq(Tag tag, Expr** a, size_t n, Comp* b) {
 		assert(a);
-		return tag == b->tag && n == b->n && memcmp(a, b->v, n * sizeof *a) == 0;
+		return tag == b->tag && n == b->n && memcmp(a, b->v, n * sizeof(void*)) == 0;
 	}
 	static bool eq(Comp* a, Comp* b) {
 		return eq(a->tag, a->v, a->n, b);
@@ -40,15 +39,15 @@ struct CompCmp {
 
 	static size_t hash(Tag tag, Expr** a, size_t n) {
 		// TODO: hashCombine?
-		return fnv(a, n * sizeof *a);
+		return fnv(a, n * sizeof(void*));
 	}
 	static size_t hash(Comp* a) {
 		return hash(a->tag, a->v, a->n);
 	}
 
 	static Comp* make(Tag tag, Expr** v, size_t n) {
-		auto a = new (ialloc(sizeof(Comp) + n * sizeof *v)) Comp(tag, n);
-		memcpy(a->v, v, n * sizeof *v);
+		auto a = new (ialloc(sizeof(Comp) + n * sizeof(void*))) Comp(tag, n);
+		memcpy(a->v, v, n * sizeof(void*));
 		return a;
 	}
 };

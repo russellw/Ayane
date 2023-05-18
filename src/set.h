@@ -2,7 +2,7 @@
 template <class K, class V, class T, class Cmp> class Set {
 	size_t cap = 4;
 	size_t qty;
-	T** entries = (T**)calloc(cap, sizeof *entries);
+	T** entries = (T**)calloc(cap, sizeof(void*));
 
 	static size_t slot(T** entries, size_t cap, K tag, V v, size_t n) {
 		size_t mask = cap - 1;
@@ -19,7 +19,7 @@ template <class K, class V, class T, class Cmp> class Set {
 
 	void expand() {
 		auto cap1 = cap * 2;
-		auto entries1 = (T**)calloc(cap1, sizeof *entries);
+		auto entries1 = (T**)calloc(cap1, sizeof(void*));
 		// TODO: check generated code
 		for (auto i = entries, e = entries + cap; i < e; ++i) {
 			auto a = *i;

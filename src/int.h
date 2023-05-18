@@ -2,7 +2,7 @@ struct Int: Expr {
 	mpz_t v;
 
 	Int(mpz_t v): Expr(Tag::integer) {
-		memcpy(this->v, v, sizeof(mpz_t));
+		memcpy(this->v, v, sizeof this->v);
 	}
 };
 
