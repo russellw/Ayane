@@ -1,5 +1,5 @@
-template <class K, class V, class T> class Set {
-	size_t cap = 4;
+template <class K, class V, class T, int initCap = 4> class Set {
+	size_t cap = initCap;
 	size_t qty;
 	T** entries = (T**)calloc(cap, sizeof(void*));
 

@@ -21,9 +21,11 @@ inline Expr* at(Expr* a, size_t i) {
 	return ((Comp*)a)->v[i];
 }
 
+// Temporary composite expressions (for input data before converting to clauses) use the bump allocator in temporary buffer
 Expr* comp(Tag tag, Expr* a);
 Expr* comp(Tag tag, Expr* a, Expr* b);
 Expr* comp(Tag tag, Vec<Expr*>& v);
 Expr* comp(Tag tag, vector<Expr*>& v);
 
+// Permanent composite expressions are in canonical form: Simplified and interned
 Expr* compc(Tag tag, Vec<Expr*>& v);

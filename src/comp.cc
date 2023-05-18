@@ -1,6 +1,5 @@
 #include "main.h"
 
-// Temporary composite expressions (for input data before converting to clauses) use the bump allocator in temporary buffer
 Expr* comp(Tag tag, Expr** v, size_t n) {
 	// TODO: ctor?
 	auto a = new (balloc(sizeof(Comp) + n * sizeof(void*))) Comp(tag, n);
@@ -27,7 +26,6 @@ Expr* comp(Tag tag, vector<Expr*>& v) {
 	return comp(tag, v.data(), v.size());
 }
 
-// Permanent composite expressions are in canonical form: simplified and interned
 namespace {
 bool eq(Tag tag, Expr** a, size_t n, Comp* b) {
 	assert(a);
@@ -54,7 +52,7 @@ Comp* make(Tag tag, Expr** v, size_t n) {
 	return a;
 }
 
-Set<Tag, Expr**, Comp> comps;
+Set<Tag, Expr**, Comp, 0x1000> comps;
 
 bool constant(Expr* a) {
 	switch (a->tag) {
