@@ -102,16 +102,15 @@ Expr* rename(int pol, Expr* a) {
 	Vec<Expr*> vars;
 	freeVars(a, vars);
 	auto b = skolem(type(a), vars);
-	if (pol < 0) {
+	if (pol < 0)
 		// If this formula is only being used with negative polarity, the new name only needs to be implied by the original formula
 		a = imp(a, b);
-	} else if (pol > 0) {
+	else if (pol > 0)
 		// If this formula is only being used with positive polarity, the new name only needs to imply the original formula
 		a = imp(b, a);
-	} else {
+	else
 		// In the general case, full equivalence is needed; the new name implies and is implied by the original formula
 		a = comp(Tag::and1, imp(b, a), imp(a, b));
-	}
 	defs.add(quantify(a));
 	return b;
 }
@@ -139,24 +138,11 @@ void maybeRename(int pol, Vec<Expr*>& v) {
 // formulas in the TPTP), so this is probably not worth doing.
 Expr* maybeRename(int pol, Expr* a) {
 	Vec<Expr*> v;
-	// NO_SORT
 	switch (a->tag) {
 	case Tag::all:
 	case Tag::exists:
 		v.add(maybeRename(pol, at(a, 0)));
 		v.add(begin(a) + 1, a->n - 1);
-		break;
-
-	case Tag::not1:
-		return comp(Tag::not1, maybeRename(-pol, at(a, 0)));
-
-	case Tag::or1:
-		for (size_t i = 0; i < a->n; ++i) v.add(maybeRename(pol, at(a, i)));
-
-		// If this formula will be used with positive polarity (including the case where it will be used both ways), we are looking
-		// at OR over possible ANDs, which would produce exponential expansion at the distribution stage, so may need to rename some
-		// of the arguments
-		if (pol >= 0) maybeRename(pol, v);
 		break;
 	case Tag::and1:
 		for (size_t i = 0; i < a->n; ++i) v.add(maybeRename(pol, at(a, i)));
@@ -164,7 +150,6 @@ Expr* maybeRename(int pol, Expr* a) {
 		// NOT-AND yields OR, so mirror the OR case
 		if (pol <= 0) maybeRename(pol, v);
 		break;
-
 	case Tag::eqv:
 	{
 		auto x = maybeRename(0, at(a, 0));
@@ -173,7 +158,16 @@ Expr* maybeRename(int pol, Expr* a) {
 		if (nclausesApprox(0, y) >= many) y = rename(0, y);
 		return comp(Tag::eqv, x, y);
 	}
+	case Tag::not1:
+		return comp(Tag::not1, maybeRename(-pol, at(a, 0)));
+	case Tag::or1:
+		for (size_t i = 0; i < a->n; ++i) v.add(maybeRename(pol, at(a, i)));
 
+		// If this formula will be used with positive polarity (including the case where it will be used both ways), we are looking
+		// at OR over possible ANDs, which would produce exponential expansion at the distribution stage, so may need to rename some
+		// of the arguments
+		if (pol >= 0) maybeRename(pol, v);
+		break;
 	default:
 		return a;
 	}
@@ -227,17 +221,14 @@ Expr* exists(int pol, Expr* a) {
 Expr* nnf(bool pol, Expr* a) {
 	Vec<Expr*> v;
 	auto tag = a->tag;
-	// NO_SORT
 	switch (tag) {
 	case Tag::false1:
 		// Boolean constants and operators can be inverted by downward-sinking NOTs
 		return bools + !pol;
 	case Tag::true1:
 		return bools + pol;
-
 	case Tag::not1:
 		return nnf(!pol, at(a, 0));
-
 	case Tag::or1:
 		if (!pol) tag = Tag::and1;
 		for (size_t i = 0; i < a->n; ++i) v.add(nnf(pol, at(a, i)));
@@ -246,7 +237,6 @@ Expr* nnf(bool pol, Expr* a) {
 		if (!pol) tag = Tag::or1;
 		for (size_t i = 0; i < a->n; ++i) v.add(nnf(pol, at(a, i)));
 		return comp(tag, v);
-
 	case Tag::var:
 	{
 		// Variables are mapped to new variables or Skolem functions
@@ -254,12 +244,10 @@ Expr* nnf(bool pol, Expr* a) {
 		assert(r);
 		return a;
 	}
-
 	case Tag::all:
 		return pol ? all(pol, a) : exists(pol, a);
 	case Tag::exists:
 		return pol ? exists(pol, a) : all(pol, a);
-
 	case Tag::eqv:
 	{
 		// Equivalence is the most difficult operator to deal with

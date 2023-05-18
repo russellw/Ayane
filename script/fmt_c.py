@@ -45,7 +45,7 @@ def special(s):
     s = bare_comment(s)
     if len(s) <= 1:
         return 1
-    if s in ("namespace", "SORT", "NO_SORT"):
+    if s in ("namespace", "SORT"):
         return 1
     if s.startswith("clang-format off") or s.startswith("clang-format on"):
         return 1
@@ -150,11 +150,6 @@ def comments():
                 i += 1
                 continue
 
-            if re.match(r"\s*//NO_SORT$", lines[i]):
-                lines[i] = m[1] + "// NO_SORT"
-                i += 1
-                continue
-
             s = bare_comment(lines[i])
             if s.lower().startswith("todo:"):
                 s = s[5:]
@@ -227,9 +222,6 @@ def sort_case_blocks():
     for i in range(len(lines)):
         m = re.match(r"(\s*)switch \(.*\) {", lines[i])
         if m:
-            m1 = re.match(r"\s*// NO_SORT", lines[i - 1])
-            if m1:
-                continue
             sort_cases(i + 1, m[1])
 
 
