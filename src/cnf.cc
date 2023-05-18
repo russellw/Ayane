@@ -288,6 +288,7 @@ Expr* nnf(bool pol, Expr* a) {
 // expansion would occur, had selected formulas not already been renamed.
 Expr* distribute(Expr* a) {
 	// TODO: .clang-format AfterCaseLabel
+	// TODO: .clang-format AllowShortFunctionsOnASingleLine
 	switch (a->tag) {
 	case Tag::and1:
 	{
