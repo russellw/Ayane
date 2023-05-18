@@ -1,4 +1,3 @@
-// TODO: document rationale
 template <class K, class V, class T, class Cmp> class Set {
 	size_t cap = 4;
 	size_t qty;
