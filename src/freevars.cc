@@ -8,8 +8,7 @@ void freeVars(Expr* a, Vec<Expr*>& freev) {
 	case Tag::exists:
 	{
 		auto o = boundv.n;
-		// TODO: batch add
-		for (size_t i = 1; i < a->n; ++i) boundv.add(at(a, i));
+		boundv.add(begin(a) + 1, a->n - 1);
 		freeVars(at(a, 0), freev);
 		boundv.n = o;
 		return;

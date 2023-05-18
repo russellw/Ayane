@@ -156,7 +156,7 @@ Expr* maybeRename(int pol, Expr* a) {
 	case Tag::all:
 	case Tag::exists:
 		v.add(maybeRename(pol, at(a, 0)));
-		for (size_t i = 1; i < a->n; ++i) v.add(at(a, i));
+		v.add(begin(a) + 1, a->n - 1);
 		break;
 
 	case Tag::not1:

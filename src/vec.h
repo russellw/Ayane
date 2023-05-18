@@ -68,6 +68,12 @@ public:
 		data[n++] = a;
 	}
 
+	void add(T* v, size_t o) {
+		reserve(n + o);
+		memcpy(data + n, v, o * sizeof(T));
+		n += o;
+	}
+
 	bool has(const T& x) {
 		for (auto& y: *this)
 			if (x == y) return 1;
