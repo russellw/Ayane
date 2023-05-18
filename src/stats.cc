@@ -18,8 +18,7 @@ std::map<vector<const char*>, uint64_t> traces;
 } // namespace
 
 void incStat(const char* s, uint64_t n) {
-	// TODO: intern s, though first check 0-terminated string perf
-	strStats[s] += n;
+	strStats[intern(s)->v] += n;
 }
 
 void incStat(size_t s, uint64_t n) {
