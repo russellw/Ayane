@@ -1,18 +1,18 @@
-template <class K, class V, class T, class Element> class Set {
+template <class K, class V, class T> class Set {
 	size_t cap = 4;
 	size_t qty;
 	T** entries = (T**)calloc(cap, sizeof(void*));
 
 	static size_t slot(T** entries, size_t cap, K tag, V v, size_t n) {
 		size_t mask = cap - 1;
-		auto i = Element::hash(tag, v, n) & mask;
-		while (entries[i] && !Element::eq(tag, v, n, entries[i])) i = (i + 1) & mask;
+		auto i = hash(tag, v, n) & mask;
+		while (entries[i] && !eq(tag, v, n, entries[i])) i = (i + 1) & mask;
 		return i;
 	}
 	static size_t slot(T** entries, size_t cap, T* a) {
 		size_t mask = cap - 1;
-		auto i = Element::hash(a) & mask;
-		while (entries[i] && !Element::eq(a, entries[i])) i = (i + 1) & mask;
+		auto i = hash(a) & mask;
+		while (entries[i] && !eq(a, entries[i])) i = (i + 1) & mask;
 		return i;
 	}
 
@@ -36,7 +36,7 @@ public:
 		// If we have seen this before, return the existing object
 		auto a = entries[i];
 		if (a) {
-			Element::clear(v);
+			clear(v);
 			return a;
 		}
 
@@ -48,6 +48,6 @@ public:
 		}
 
 		// Make a new object and add to hash table
-		return entries[i] = Element::make(tag, v, n);
+		return entries[i] = make(tag, v, n);
 	}
 };

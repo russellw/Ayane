@@ -1,5 +1,6 @@
 #include "main.h"
 
+// Temporary composite expressions (for input data before converting to clauses) use the bump allocator in temporary buffer
 Expr* comp(Tag tag, Expr** v, size_t n) {
 	// TODO: ctor?
 	auto a = new (balloc(sizeof(Comp) + n * sizeof(void*))) Comp(tag, n);
@@ -26,36 +27,35 @@ Expr* comp(Tag tag, vector<Expr*>& v) {
 	return comp(tag, v.data(), v.size());
 }
 
-struct CompElement {
-	static bool eq(Tag tag, Expr** a, size_t n, Comp* b) {
-		assert(a);
-		return tag == b->tag && n == b->n && memcmp(a, b->v, n * sizeof(void*)) == 0;
-	}
-	static bool eq(Comp* a, Comp* b) {
-		return eq(a->tag, a->v, a->n, b);
-	}
+// Permanent composite expressions are in canonical form: simplified and interned
+namespace {
+bool eq(Tag tag, Expr** a, size_t n, Comp* b) {
+	assert(a);
+	return tag == b->tag && n == b->n && memcmp(a, b->v, n * sizeof(void*)) == 0;
+}
+bool eq(Comp* a, Comp* b) {
+	return eq(a->tag, a->v, a->n, b);
+}
 
-	static size_t hash(Tag tag, Expr** a, size_t n) {
-		// TODO: hashCombine?
-		return fnv(a, n * sizeof(void*));
-	}
-	static size_t hash(Comp* a) {
-		return hash(a->tag, a->v, a->n);
-	}
+size_t hash(Tag tag, Expr** a, size_t n) {
+	// TODO: hashCombine?
+	return fnv(a, n * sizeof(void*));
+}
+size_t hash(Comp* a) {
+	return hash(a->tag, a->v, a->n);
+}
 
-	static void clear(Expr** a) {
-	}
+void clear(Expr** a) {
+}
 
-	static Comp* make(Tag tag, Expr** v, size_t n) {
-		auto a = new (ialloc(sizeof(Comp) + n * sizeof(void*))) Comp(tag, n);
-		memcpy(a->v, v, n * sizeof(void*));
-		return a;
-	}
-};
+Comp* make(Tag tag, Expr** v, size_t n) {
+	auto a = new (ialloc(sizeof(Comp) + n * sizeof(void*))) Comp(tag, n);
+	memcpy(a->v, v, n * sizeof(void*));
+	return a;
+}
 
-static Set<Tag, Expr**, Comp, CompElement> comps;
+Set<Tag, Expr**, Comp> comps;
 
-// TODO: static
 bool constant(Expr* a) {
 	switch (a->tag) {
 	case Tag::distinctObj:
@@ -337,6 +337,7 @@ Expr* compc(Tag tag, Expr** v, size_t n) {
 	}
 	return comps.intern(tag, v, n);
 }
+} // namespace
 
 Expr* compc(Tag tag, Vec<Expr*>& v) {
 	return compc(tag, v.data, v.n);
