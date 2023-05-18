@@ -102,19 +102,18 @@ Expr* rename(int pol, Expr* a) {
 	Vec<Expr*> vars;
 	freeVars(a, vars);
 	auto b = skolem(type(a), vars);
-	// NO_SORT
 	switch (pol) {
-	case 1:
-		// If this formula is only being used with positive polarity, the new name only needs to imply the original formula
-		a = imp(b, a);
-		break;
 	case -1:
-		// And the reverse for negative polarity
+		// If this formula is only being used with negative polarity, the new name only needs to be implied by the original formula
 		a = imp(a, b);
 		break;
 	case 0:
 		// In the general case, full equivalence is needed; the new name implies and is implied by the original formula
 		a = comp(Tag::and1, imp(b, a), imp(a, b));
+		break;
+	case 1:
+		// If this formula is only being used with positive polarity, the new name only needs to imply the original formula
+		a = imp(b, a);
 		break;
 	default:
 		unreachable;
