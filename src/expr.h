@@ -1,7 +1,6 @@
 enum class Tag {
 #define _(a) a,
 #include "tags.h"
-	COUNT
 };
 
 // Expressions are the most important data structures in the system. Logic formulas are expressions of Boolean type; terms are

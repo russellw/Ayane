@@ -251,8 +251,9 @@ static Type* typeOrIndividual(Expr* a) {
 		if (!ty) return &tindividual;
 		return ty;
 	}
+	default:
+		return type(a);
 	}
-	return type(a);
 }
 
 void Parser::typing(Expr* a, Type* ty) {
@@ -279,13 +280,13 @@ void Parser::typing(Expr* a, Type* ty) {
 		if (!isNum(ty)) err("Invalid type for arithmetic", typeError);
 		typing(at(a, 0), ty);
 		typing(at(a, 1), ty);
-		return;
+		break;
 	case Tag::all:
 	case Tag::exists:
 		// Quantifier
 		// TODO: does SMT-LIB need to check a Boolean was wanted here?
 		typing(at(a, 0), &tbool);
-		return;
+		break;
 	case Tag::and1:
 	case Tag::eqv:
 	case Tag::not1:
@@ -294,7 +295,7 @@ void Parser::typing(Expr* a, Type* ty) {
 		// TODO: does SMT-LIB need to check arity here?
 		if (&tbool != ty) err("Type mismatch", typeError);
 		for (size_t i = 0; i < a->n; ++i) typing(at(a, i), ty);
-		return;
+		break;
 	case Tag::call:
 	{
 		assert(a->n > 1);
@@ -324,7 +325,7 @@ void Parser::typing(Expr* a, Type* ty) {
 			assert(at(fty, i)->kind != Kind::fn);
 			typing(at(a, i), at(fty, i));
 		}
-		return;
+		break;
 	}
 	case Tag::ceil:
 	case Tag::floor:
@@ -335,7 +336,7 @@ void Parser::typing(Expr* a, Type* ty) {
 		checkSize(a, 1);
 		if (!isNum(ty)) err("Invalid type for arithmetic", typeError);
 		typing(at(a, 0), ty);
-		return;
+		break;
 	case Tag::distinctObj:
 	case Tag::false1:
 	case Tag::integer:
@@ -348,7 +349,7 @@ void Parser::typing(Expr* a, Type* ty) {
 
 		// Safe to call type(a) because there are no subexpressions
 		if (type(a) != ty) err("Type mismatch", typeError);
-		return;
+		break;
 	case Tag::div:
 		// Arithmetic of arity 2, type passes straight through, but fractions only
 		checkSize(a, 2);
@@ -361,7 +362,7 @@ void Parser::typing(Expr* a, Type* ty) {
 		}
 		typing(at(a, 0), ty);
 		typing(at(a, 1), ty);
-		return;
+		break;
 	case Tag::eq:
 		// Eq is always a special case
 		ty = typeOrIndividual(at(a, 0));
@@ -369,20 +370,22 @@ void Parser::typing(Expr* a, Type* ty) {
 		case Kind::boolean:
 		case Kind::fn:
 			err("Invalid type for equality", typeError);
+		default:
+			break;
 		}
 		typing(at(a, 0), ty);
 		typing(at(a, 1), ty);
-		return;
+		break;
 	case Tag::fn:
 	{
 		assert(!a->n);
 		auto a1 = (Fn*)a;
 		if (!a1->ty) {
 			a1->ty = ty;
-			return;
+			break;
 		}
 		if (a1->ty != ty) err("Type mismatch", typeError);
-		return;
+		break;
 	}
 	case Tag::isInt:
 	case Tag::isRat:
@@ -400,7 +403,7 @@ void Parser::typing(Expr* a, Type* ty) {
 
 		if (!isNum(ty)) err("Invalid type for arithmetic", typeError);
 		typing(at(a, 0), ty);
-		return;
+		break;
 	case Tag::lt:
 		// Type converter of arity 2
 		checkSize(a, 2);
@@ -414,8 +417,6 @@ void Parser::typing(Expr* a, Type* ty) {
 		if (!isNum(ty)) err("Invalid type for comparison", typeError);
 		typing(at(a, 0), ty);
 		typing(at(a, 1), ty);
-		return;
+		break;
 	}
-	// TODO: worth having compile time exhaustiveness check for this case?
-	unreachable;
 }

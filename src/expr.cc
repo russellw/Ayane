@@ -108,7 +108,7 @@ static bool inbuf(void* p0) {
 }
 
 void check(Expr* a) {
-	assert(size_t(a->tag) < size_t(Tag::COUNT));
+	assert(size_t(a->tag) <= size_t(Tag::or1));
 	switch (a->tag) {
 	case Tag::distinctObj:
 	case Tag::false1:
@@ -158,33 +158,35 @@ void print(Expr* a) {
 			print(at(a, i));
 		}
 		putchar(')');
-		return;
+		break;
 	case Tag::fn:
 	{
 		auto s = ((Fn*)a)->s;
 		if (s) print(s);
 		else
 			printf("_%p", a);
-		return;
+		break;
 	}
 	case Tag::integer:
 		mpz_out_str(stdout, 10, ((Int*)a)->v);
-		return;
+		break;
 	case Tag::rat:
 	case Tag::real:
 		mpq_out_str(stdout, 10, ((Rat*)a)->v);
-		return;
+		break;
 	case Tag::var:
 		printf("%p", a);
-		return;
+		break;
+	default:
+		print(a->tag);
+		if (!a->n) break;
+		putchar('(');
+		for (size_t i = 0; i < a->n; ++i) {
+			if (i) print(", ");
+			print(at(a, i));
+		}
+		putchar(')');
+		break;
 	}
-	print(a->tag);
-	if (!a->n) return;
-	putchar('(');
-	for (size_t i = 0; i < a->n; ++i) {
-		if (i) print(", ");
-		print(at(a, i));
-	}
-	putchar(')');
 }
 #endif

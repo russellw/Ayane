@@ -60,8 +60,9 @@ bool constant(Expr* a) {
 	case Tag::rat:
 	case Tag::real:
 		return 1;
+	default:
+		return 0;
 	}
-	return 0;
 }
 
 // Factor out common calculation patterns
@@ -302,6 +303,7 @@ Expr* compc(Tag tag, Expr** v, size_t n) {
 			auto x1 = (Rat*)x;
 			mpz_t r;
 			mpz_init(r);
+			// TODO: should fmt put blank line before comment?
 			// Different languages have different conventions on the default rounding mode for converting fractions to integers.
 			// TPTP defines it as floor, so that is used here. To use a different rounding mode, explicity round the rational number
 			// first, and then convert to integer.
@@ -331,6 +333,8 @@ Expr* compc(Tag tag, Expr** v, size_t n) {
 		if (constant(x)) return op1(x, mpz_tdiv_q);
 		break;
 	}
+	default:
+		break;
 	}
 	return comps.intern(tag, v, n);
 }
