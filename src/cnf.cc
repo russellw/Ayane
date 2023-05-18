@@ -308,8 +308,7 @@ Expr* distribute(Expr* a) {
 		}
 
 		// OR distributes over AND by Cartesian product
-		// TODO: can this be done by reference?
-		for (auto v: cartProduct(ands)) r.add(comp(Tag::or1, v));
+		for (auto& v: cartProduct(ands)) r.add(comp(Tag::or1, v));
 		break;
 	}
 	default:
