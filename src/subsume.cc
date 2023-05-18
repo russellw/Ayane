@@ -11,9 +11,7 @@ bool match(Expr* a, Expr* b) {
 	if (type(a) != type(b)) return 0;
 
 	// Variable
-	// TODO: check variables more efficiently
 	if (a->tag == Tag::var) {
-		// TODO: check generated code
 		if (get(a, a, m)) return a == b;
 		m.add(make_pair(a, b));
 		return 1;
