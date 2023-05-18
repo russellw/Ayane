@@ -167,8 +167,7 @@ Expr* maybeRename(int pol, Expr* a) {
 	return comp(a->tag, v);
 }
 
-// TODO: Should that be pair<Var*, Expr*>?
-Vec<pair<Expr*, Expr*>> m;
+Vec<pair<Var*, Expr*>> m;
 Expr* nnf(bool pol, Expr* a);
 
 // For-all doesn't need much work to convert. Clauses contain variables with implied for-all. The tricky part is that quantifier
@@ -178,7 +177,7 @@ Expr* all(int pol, Expr* a) {
 	// TODO: does it actually need to be new variables, if the parser has in any case not been allowing variable shadowing, because of types?
 	auto o = m.n;
 	for (size_t i = 1; i < a->n; ++i) {
-		auto x = at(a, i);
+		auto x = (Var*)at(a, i);
 		assert(x->tag == Tag::var);
 		auto y = var(vars++, ((Var*)x)->ty);
 		m.add(make_pair(x, y));
@@ -199,7 +198,7 @@ Expr* exists(int pol, Expr* a) {
 	// Make a replacement for each existentially quantified variable
 	auto o = m.n;
 	for (size_t i = 1; i < a->n; ++i) {
-		auto x = at(a, i);
+		auto x = (Var*)at(a, i);
 		assert(x->tag == Tag::var);
 		auto y = skolem(((Var*)x)->ty, args);
 		m.add(make_pair(x, y));
@@ -261,9 +260,10 @@ Expr* nnf(bool pol, Expr* a) {
 	case Tag::var:
 	{
 		// Variables are mapped to new variables or Skolem functions
-		auto r = get(a, a, m);
+		Expr* b;
+		auto r = get((Var*)a, b, m);
 		assert(r);
-		return a;
+		return b;
 	}
 	default:
 	{
