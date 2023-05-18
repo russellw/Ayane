@@ -287,12 +287,13 @@ Expr* nnf(bool pol, Expr* a) {
 // Distribute OR down into AND, completing the layering of the operators for CNF. This is the second place where exponential
 // expansion would occur, had selected formulas not already been renamed.
 Expr* distribute(Expr* a) {
-	Vec<Expr*> r;
 	switch (a->tag) {
 	case Tag::and1:
-		// TODO: optimize
-		for (size_t i = 0; i < a->n; ++i) r.add(distribute(at(a, i)));
-		break;
+	{
+		Vec<Expr*> v(a->n);
+		for (size_t i = 0; i < a->n; ++i) v[i] = distribute(at(a, i));
+		return comp(Tag::and1, v);
+	}
 	case Tag::or1:
 	{
 		// Arguments can be taken without loss of generality as ANDs
@@ -308,13 +309,14 @@ Expr* distribute(Expr* a) {
 		}
 
 		// OR distributes over AND by Cartesian product
-		for (auto& v: cartProduct(ands)) r.add(comp(Tag::or1, v));
-		break;
+		auto p = cartProduct(ands);
+		Vec<Expr*> v(p.size());
+		for (size_t i = 0; i < v.n; ++i) v[i] = comp(Tag::or1, p[i]);
+		return comp(Tag::and1, v);
 	}
 	default:
 		return a;
 	}
-	return comp(Tag::and1, r);
 }
 
 // Convert a suitably rearranged formula to actual clauses
