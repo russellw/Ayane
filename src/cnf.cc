@@ -117,8 +117,8 @@ void maybeRename(int pol, Vec<Expr*>& v) {
 	sort(v.begin(), v.end(), [=](Expr* a, Expr* b) { return nclausesApprox(pol, a) < nclausesApprox(pol, b); });
 	size_t n = 1;
 	for (size_t i = 0; i < v.n; ++i) {
-		auto m = nclausesApprox(pol, v[i]);
-		if (n * m < many) n *= m;
+		auto o = nclausesApprox(pol, v[i]);
+		if (n * o < many) n *= o;
 		else
 			v[i] = rename(pol, v[i]);
 	}
