@@ -1,39 +1,3 @@
-// TODO: separate file?
-// TODO: change to use pointers?
-struct Range: pair<size_t, size_t> {
-	struct iterator {
-		size_t i;
-
-		iterator(size_t i): i(i) {
-		}
-
-		size_t operator*() {
-			return i;
-		}
-
-		iterator& operator++() {
-			++i;
-			return *this;
-		}
-
-		bool operator!=(iterator x) {
-			return i != x.i;
-		}
-	};
-
-	Range() {
-	}
-	Range(size_t first, size_t second): pair(first, second) {
-	}
-
-	iterator begin() {
-		return first;
-	}
-	iterator end() {
-		return second;
-	}
-};
-
 // TODO: this is not sorting
 // SORT
 size_t fnv(const void* p, size_t n);

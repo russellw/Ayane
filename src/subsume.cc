@@ -43,10 +43,10 @@ bool match(Eqn a, Eqn b) {
 }
 
 Clause* c;
-Range cs;
+Range<size_t> cs;
 
 Clause* d;
-Range ds;
+Range<size_t> ds;
 
 // Multiset avoids breaking completeness when factoring is used
 bool used[100];
