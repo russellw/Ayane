@@ -11,8 +11,7 @@ Expr* comp(Tag tag, Expr* a) {
 }
 
 Expr* comp(Tag tag, Expr* a, Expr* b) {
-	// TODO: should this be static?
-	static Expr* v[2];
+	Expr* v[2];
 	v[0] = a;
 	v[1] = b;
 	return comp(tag, v, 2);
