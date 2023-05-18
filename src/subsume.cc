@@ -21,13 +21,11 @@ bool match(Expr* a, Expr* b) {
 	if (a->tag != b->tag) return 0;
 
 	// If nonvariable leaves could match, they would already have tested equal
-	// TODO: check generated code
-	auto n = a->n;
-	if (!n) return 0;
+	if (!a->n) return 0;
 
 	// Recur
-	if (b->n != n) return 0;
-	for (size_t i = 0; i < n; ++i)
+	if (a->n != b->n) return 0;
+	for (size_t i = 0; i < a->n; ++i)
 		if (!match(at(a, i), at(b, i))) return 0;
 	return 1;
 }

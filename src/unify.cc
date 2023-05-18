@@ -77,12 +77,11 @@ bool unify1(Expr* a, bool ax, Expr* b, bool bx) {
 	if (a->tag != b->tag) return 0;
 
 	// If nonvariable leaves could unify, they would already have tested equal
-	auto n = a->n;
-	if (!n) return 0;
+	if (!a->n) return 0;
 
 	// Recur
-	if (b->n != n) return 0;
-	for (size_t i = 0; i < n; ++i)
+	if (a->n != b->n) return 0;
+	for (size_t i = 0; i < a->n; ++i)
 		if (!unify1(at(a, i), ax, at(b, i), bx)) return 0;
 	return 1;
 }

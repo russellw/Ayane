@@ -56,4 +56,5 @@ for f in v:
     file1 = f + "1.asm"
     if not filecmp.cmp(file0, file1):
         print(f)
+        os.remove(f + ".asm")
         os.system(f"fc {file0} {file1} > {f+'.diff.asm'}")
