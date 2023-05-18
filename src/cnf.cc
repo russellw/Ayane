@@ -219,15 +219,17 @@ Expr* exists(int pol, Expr* a) {
 // Negation normal form consists of several transformations that are as easy to do at the same time: Move NOTs inward to the literal
 // layer, flipping things around on the way, while simultaneously resolving quantifiers
 Expr* nnf(bool pol, Expr* a) {
-	Vec<Expr*> v;
 	auto tag = a->tag;
 	switch (tag) {
 	case Tag::all:
 		return pol ? all(pol, a) : exists(pol, a);
 	case Tag::and1:
+	{
 		if (!pol) tag = Tag::or1;
-		for (size_t i = 0; i < a->n; ++i) v.add(nnf(pol, at(a, i)));
+		Vec<Expr*> v(a->n);
+		for (size_t i = 0; i < a->n; ++i) v[i] = nnf(pol, at(a, i));
 		return comp(tag, v);
+	}
 	case Tag::distinctObj:
 	case Tag::fn:
 	case Tag::integer:
@@ -255,9 +257,12 @@ Expr* nnf(bool pol, Expr* a) {
 	case Tag::not1:
 		return nnf(!pol, at(a, 0));
 	case Tag::or1:
+	{
 		if (!pol) tag = Tag::and1;
-		for (size_t i = 0; i < a->n; ++i) v.add(nnf(pol, at(a, i)));
+		Vec<Expr*> v(a->n);
+		for (size_t i = 0; i < a->n; ++i) v[i] = nnf(pol, at(a, i));
 		return comp(tag, v);
+	}
 	case Tag::true1:
 		return bools + pol;
 	case Tag::var:
@@ -268,11 +273,13 @@ Expr* nnf(bool pol, Expr* a) {
 		return a;
 	}
 	default:
+	{
 		assert(a->n);
-		// TODO: optimize
-		for (size_t i = 0; i < a->n; ++i) v.add(nnf(1, at(a, i)));
+		Vec<Expr*> v(a->n);
+		for (size_t i = 0; i < a->n; ++i) v[i] = nnf(1, at(a, i));
 		a = comp(tag, v);
 		break;
+	}
 	}
 	return pol ? a : comp(Tag::not1, a);
 }
