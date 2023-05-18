@@ -1,4 +1,4 @@
-template <class K, class V, class T, int initCap = 4> class Set {
+template <class K, class V, class T, int initCap = 4> struct Set {
 	size_t cap = initCap;
 	size_t qty;
 	T** entries = (T**)calloc(cap, sizeof(void*));
@@ -29,7 +29,6 @@ template <class K, class V, class T, int initCap = 4> class Set {
 		entries = entries1;
 	}
 
-public:
 	T* intern(K tag, V v, size_t n) {
 		auto i = slot(entries, cap, tag, v, n);
 

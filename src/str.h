@@ -63,9 +63,9 @@ enum {
 // And statically allocated for fast lookup
 extern Str keywords[];
 
-Str* intern(const char* s, size_t n);
+Str* intern(char* s, size_t n);
 inline Str* intern(const char* s) {
-	return intern(s, strlen(s));
+	return intern((char*)s, strlen(s));
 }
 
 inline void print(Str* s) {

@@ -87,28 +87,32 @@ Str* make(int tag, char* v, size_t n) {
 	return a;
 }
 
-Set<int, char*, Str, 0x100> strs;
+const int initCap = 0x100;
+Set<int, char*, Str, initCap> strs;
 
 struct Init {
 	Init() {
-		for (int i = 0; i < sizeof keywords / sizeof *keywords; ++i) {
-			auto s = keywords + i;
-			auto n = strlen(s->v);
-
+		const int qty = sizeof keywords / sizeof *keywords;
+		static_assert(qty <= initCap * 3 / 4);
+		strs.qty = qty;
+		for (auto a = keywords; a < keywords + qty; ++a) {
 			// C++ allows the edge case where a string literal exactly fills an array, leaving no room for a null terminator. This
 			// is sometimes useful, but would not be appropriate here, so make sure it's not the case.
-			assert(n < sizeof keywords->v);
+			assert(strlen(a->v) < sizeof a->v);
 
-			// Add to hash table
-			auto r = strs.intern(0, s->v, n);
+			// Where in the hash table does this keyword belong?
+			auto i = strs.slot(strs.entries, strs.cap, a);
 
 			// Make sure there are no duplicate keywords
-			assert(r == s);
+			assert(!strs.entries[i]);
+
+			// Add to hash table
+			strs.entries[i] = a;
 		}
 	}
 } init;
 } // namespace
 
-Str* intern(const char* s, size_t n) {
+Str* intern(char* s, size_t n) {
 	return strs.intern(0, s, n);
 }
