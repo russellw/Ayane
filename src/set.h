@@ -19,7 +19,6 @@ template <class K, class V, class T, int initCap = 4> struct Set {
 	void expand() {
 		auto cap1 = cap * 2;
 		auto entries1 = (T**)calloc(cap1, sizeof(void*));
-		// TODO: check generated code
 		for (auto i = entries, e = entries + cap; i < e; ++i) {
 			auto a = *i;
 			if (a) entries1[slot(entries1, cap1, a)] = a;
