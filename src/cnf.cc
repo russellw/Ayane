@@ -131,19 +131,23 @@ void maybeRenameAnds(int pol, Vec<Expr*>& v) {
 // rename on a global basis, but in practice, nontrivial subformulas are rarely duplicated (e.g. less than 1% of the nontrivial
 // formulas in the TPTP), so this is probably not worth doing.
 Expr* maybeRename(int pol, Expr* a) {
-	Vec<Expr*> v;
 	switch (a->tag) {
 	case Tag::all:
 	case Tag::exists:
-		v.add(maybeRename(pol, at(a, 0)));
-		v.add(begin(a) + 1, a->n - 1);
-		break;
+	{
+		Vec<Expr*> v(a->n, maybeRename(pol, at(a, 0)));
+		memcpy(v.data + 1, begin(a) + 1, (a->n - 1) * sizeof(void*));
+		return comp(a->tag, v);
+	}
 	case Tag::and1:
-		for (size_t i = 0; i < a->n; ++i) v.add(maybeRename(pol, at(a, i)));
+	{
+		Vec<Expr*> v(a->n);
+		for (size_t i = 0; i < a->n; ++i) v[i] = maybeRename(pol, at(a, i));
 
 		// NOT-AND yields OR, so mirror the OR case
 		if (pol <= 0) maybeRenameAnds(pol, v);
-		break;
+		return comp(a->tag, v);
+	}
 	case Tag::eqv:
 	{
 		auto x = maybeRename(0, at(a, 0));
@@ -155,17 +159,19 @@ Expr* maybeRename(int pol, Expr* a) {
 	case Tag::not1:
 		return comp(Tag::not1, maybeRename(-pol, at(a, 0)));
 	case Tag::or1:
-		for (size_t i = 0; i < a->n; ++i) v.add(maybeRename(pol, at(a, i)));
+	{
+		Vec<Expr*> v(a->n);
+		for (size_t i = 0; i < a->n; ++i) v[i] = maybeRename(pol, at(a, i));
 
 		// If this formula will be used with positive polarity (including the case where it will be used both ways), we are looking
 		// at OR over possible ANDs, which would produce exponential expansion at the distribution stage, so may need to rename some
 		// of the arguments
 		if (pol >= 0) maybeRenameAnds(pol, v);
-		break;
+		return comp(a->tag, v);
+	}
 	default:
 		return a;
 	}
-	return comp(a->tag, v);
 }
 
 Vec<pair<Var*, Expr*>> m;
