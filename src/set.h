@@ -34,10 +34,10 @@ public:
 		auto i = slot(entries, cap, tag, v, n);
 
 		// If we have seen this before, return the existing object
-		if (entries[i]) {
-			// TODO: cache result in local?
+		auto a = entries[i];
+		if (a) {
 			clear(v);
-			return entries[i];
+			return a;
 		}
 
 		// Expand the hash table if necessary
