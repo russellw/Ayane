@@ -8,7 +8,7 @@ const size_t many = 50;
 // the threshold.
 size_t nclauses(bool pol, Expr* a);
 
-size_t ncsMul(bool pol, Expr* a) {
+size_t nclausesMul(bool pol, Expr* a) {
 	size_t n = 1;
 	for (size_t i = 0; i < a->n; ++i) {
 		n *= nclauses(pol, at(a, i));
@@ -17,7 +17,7 @@ size_t ncsMul(bool pol, Expr* a) {
 	return n;
 }
 
-size_t ncsAdd(bool pol, Expr* a) {
+size_t nclausesAdd(bool pol, Expr* a) {
 	size_t n = 0;
 	for (size_t i = 0; i < a->n; ++i) {
 		n += nclauses(pol, at(a, i));
@@ -32,7 +32,7 @@ size_t nclauses(bool pol, Expr* a) {
 	case Tag::exists:
 		return nclauses(pol, at(a, 0));
 	case Tag::and1:
-		return pol ? ncsAdd(pol, a) : ncsMul(pol, a);
+		return pol ? nclausesAdd(pol, a) : nclausesMul(pol, a);
 	case Tag::eqv:
 	{
 		auto x = at(a, 0);
@@ -56,7 +56,7 @@ size_t nclauses(bool pol, Expr* a) {
 	case Tag::not1:
 		return nclauses(!pol, at(a, 0));
 	case Tag::or1:
-		return pol ? ncsMul(pol, a) : ncsAdd(pol, a);
+		return pol ? nclausesMul(pol, a) : nclausesAdd(pol, a);
 	}
 	return 1;
 }
