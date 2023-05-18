@@ -73,7 +73,6 @@ void printStats() {
 	}
 	if (numStats.size()) {
 		Vec<size_t> v;
-		// TODO: optimize
 		for (auto xn: numStats) v.add(xn.first);
 		sort(v.begin(), v.end());
 		size_t tot = 0;
