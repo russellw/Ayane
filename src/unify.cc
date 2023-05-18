@@ -8,7 +8,6 @@
 // In particular, we cannot directly compare expressions for equality (which in the normal course of events would indicate that two
 // expressions trivially unify) because two syntactically identical expressions could be, or contain, the same variable names but
 // with different associated subscripts
-// TODO: update terminology in comments
 bool eq(Expr* a, bool ax, Expr* b, bool bx) {
 	// If the expressions are not syntactically equal then we definitely do not have logical equality
 	if (a != b) return 0;
