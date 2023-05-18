@@ -1,7 +1,6 @@
 #include "main.h"
 
 Expr* comp(Tag tag, Expr** v, size_t n) {
-	// TODO: ctor?
 	auto a = new (balloc(sizeof(Comp) + n * sizeof(void*))) Comp(tag, n);
 	memcpy(a->v, v, n * sizeof(void*));
 	return a;
