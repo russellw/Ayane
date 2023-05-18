@@ -111,7 +111,7 @@ Expr* rename(int pol, Expr* a) {
 
 // Maybe rename some of the arguments to an OR-over-AND (taking polarity into account), where the number of clauses generated would
 // be the product of the arguments
-void maybeRename(int pol, Vec<Expr*>& v) {
+void maybeRenameAnds(int pol, Vec<Expr*>& v) {
 	// Sorting the arguments doesn't change the meaning of the formula, because AND and OR are commutative. The effect is that if
 	// only some of them are to be renamed, we will leave the simple ones alone and end up renaming the complicated ones, which is
 	// probably what we want.
@@ -142,7 +142,7 @@ Expr* maybeRename(int pol, Expr* a) {
 		for (size_t i = 0; i < a->n; ++i) v.add(maybeRename(pol, at(a, i)));
 
 		// NOT-AND yields OR, so mirror the OR case
-		if (pol <= 0) maybeRename(pol, v);
+		if (pol <= 0) maybeRenameAnds(pol, v);
 		break;
 	case Tag::eqv:
 	{
@@ -160,7 +160,7 @@ Expr* maybeRename(int pol, Expr* a) {
 		// If this formula will be used with positive polarity (including the case where it will be used both ways), we are looking
 		// at OR over possible ANDs, which would produce exponential expansion at the distribution stage, so may need to rename some
 		// of the arguments
-		if (pol >= 0) maybeRename(pol, v);
+		if (pol >= 0) maybeRenameAnds(pol, v);
 		break;
 	default:
 		return a;
