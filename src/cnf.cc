@@ -92,6 +92,7 @@ size_t vars = 0;
 // Rename formulas to avoid exponential expansion. It's tricky to do this while in the middle of doing other things, easier to be
 // sure of the logic if it's done as a separate pass first.
 Expr* rename(int pol, Expr* a) {
+	// TODO: should this be static?
 	Vec<Expr*> vars;
 	freeVars(a, vars);
 	auto b = skolem(type(a), vars);
