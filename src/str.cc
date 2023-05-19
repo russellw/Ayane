@@ -51,13 +51,6 @@ Str keywords[] = {
 };
 
 namespace {
-// Compare a counted string with a null terminated one
-bool eq(const char* s, size_t n, const char* z) {
-	while (n--)
-		if (*s++ != *z++) return 0;
-	return !*z;
-}
-
 bool eq(int tag, char* a, size_t n, Str* b) {
 	auto z = b->v;
 	while (n--)
