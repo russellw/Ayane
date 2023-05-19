@@ -20,6 +20,7 @@ hardest = {}
 
 try:
     for file in problems:
+        print(file)
         tptp.print_header(file)
         expected = tptp.get_expected(file)
 
