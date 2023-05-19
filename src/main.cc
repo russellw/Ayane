@@ -19,7 +19,7 @@ LONG WINAPI handler(_EXCEPTION_POINTERS* ExceptionInfo) {
 
 VOID CALLBACK timeout(PVOID a, BOOLEAN b) {
 	// Same exit code as on Linux
-	ExitProcess(142);
+	ExitProcess(-14);
 }
 } // namespace
 #else
