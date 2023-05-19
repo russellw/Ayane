@@ -2,7 +2,8 @@ import os
 import re
 
 
-def get_problems(files):
+def get_problems(args):
+    files = args.files
     if not files:
         files = ["tptp"]
 
@@ -34,4 +35,47 @@ def get_problems(files):
                     problems.append(s.rstrip())
             continue
         problems.append(arg)
+
+    if args.random:
+        random.shuffle(problems)
+    if args.number:
+        problems = problems[0 : args.number]
     return problems
+
+
+def print_header(file):
+    for s in open(file):
+        s = s.rstrip()
+        if s and not s.startswith("%"):
+            break
+        print(s)
+
+
+def get_expected(file):
+    for s in open(file):
+        s = s.rstrip()
+        if s and not s.startswith("%"):
+            break
+        m = re.match(r"% Status\s*:\s*(\w+)", s)
+        if m:
+            return m[1]
+    raise Exception(file)
+
+
+def check(r, expected):
+    if not r:
+        return
+
+    if r == "sat":
+        r = "Satisfiable"
+    elif r == "unsat":
+        r = "Unsatisfiable"
+
+    if r == expected:
+        return
+    if r == "Satisfiable" and expected == "CounterSatisfiable":
+        return
+    if r == "Unsatisfiable" and expected in ("Theorem", "ContradictoryAxioms"):
+        return
+
+    raise Exception(r + " != " + expected)
