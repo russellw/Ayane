@@ -24,6 +24,7 @@ Int* make(Tag tag, mpz_t v, size_t n) {
 	return new (ialloc(sizeof(Int))) Int(v);
 }
 
+#include "set.h"
 Set<Tag, mpz_t, Int> integers;
 } // namespace
 

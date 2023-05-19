@@ -23,6 +23,7 @@ Rat* make(Tag tag, mpq_t v, size_t n) {
 	return new (ialloc(sizeof(Rat))) Rat(tag, v);
 }
 
+#include "set.h"
 Set<Tag, mpq_t, Rat> rats;
 } // namespace
 

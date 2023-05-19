@@ -80,6 +80,7 @@ Str* make(int tag, char* v, size_t n) {
 	return a;
 }
 
+#include "set.h"
 const int initCap = 0x100;
 Set<int, char*, Str, initCap> strs;
 

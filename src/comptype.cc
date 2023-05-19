@@ -25,6 +25,7 @@ CompType* make(Kind kind, Type** v, size_t n) {
 	return a;
 }
 
+#include "set.h"
 Set<Kind, Type**, CompType> compTypes;
 } // namespace
 

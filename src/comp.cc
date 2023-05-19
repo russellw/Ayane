@@ -51,6 +51,7 @@ Comp* make(Tag tag, Expr** v, size_t n) {
 	return a;
 }
 
+#include "set.h"
 Set<Tag, Expr**, Comp, 0x1000> comps;
 
 bool constant(Expr* a) {

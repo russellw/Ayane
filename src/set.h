@@ -1,3 +1,5 @@
+// When a template depends on ambient functions, GCC requires the functions to be declared before the template, so this header
+// should be included in each source file that uses it, after the relevant function declarations
 template <class K, class V, class T, int initCap = 4> struct Set {
 	size_t cap = initCap;
 	size_t qty;
