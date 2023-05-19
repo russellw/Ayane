@@ -24,7 +24,6 @@ try:
         expected = tptp.get_expected(file)
 
         cmd = "./ayane", "-t", str(args.time), file
-        # TODO: test in particular for sanitize output
         t = time.time()
         p = subprocess.run(
             cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf-8"
