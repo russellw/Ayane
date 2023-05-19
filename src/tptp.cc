@@ -586,7 +586,7 @@ struct Parser1: Parser {
 						no = no ^ 1;
 					}
 					typing(a, &tbool);
-					(no ? neg : pos).add(a);
+					(no ? neg : pos).add(replace(a, 0));
 				} while (eat('|'));
 				while (parens--) expect(')');
 				vars.n = 0;
