@@ -17,7 +17,7 @@ Expr* equate(Expr* a, Expr* b) {
 	if (b == bools + 1) return a;
 	assert(type(a) != &tbool);
 	assert(type(b) != &tbool);
-	return comp(Tag::eq, a, b);
+	return compc(Tag::eq, a, b);
 }
 
 // Equality tends to generate a large number of clauses. Superposition calculus is designed to moderate the profusion of clauses
@@ -214,7 +214,7 @@ Expr* splice(Expr* a, size_t i, Expr* b) {
 		v[j] = at(a, j);
 		if (j == posn[i]) v[j] = splice(v[j], i + 1, b);
 	}
-	return comp(a->tag, v);
+	return compc(a->tag, v);
 }
 
 // Make new clause
