@@ -1,3 +1,2 @@
-bool eq(Expr* a, bool ax, Expr* b, bool bx);
-bool unify(Expr* a, bool ax, Expr* b, bool bx);
-Expr* replace(Expr* a, bool ax);
+bool unify(Expr* a, Expr* b);
+Expr* replace(Expr* a);

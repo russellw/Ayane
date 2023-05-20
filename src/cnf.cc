@@ -331,13 +331,13 @@ void literals(Expr* a) {
 	case Tag::exists:
 		unreachable;
 	case Tag::not1:
-		neg.add(replace(at(a, 0), 0));
+		neg.add(at(a, 0));
 		break;
 	case Tag::or1:
 		for (size_t i = 0; i < a->n; ++i) literals(at(a, i));
 		break;
 	default:
-		pos.add(replace(a, 0));
+		pos.add(a);
 		break;
 	}
 }

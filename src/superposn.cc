@@ -106,10 +106,10 @@ where
 void resolve1() {
 	neg.n = 0;
 	for (auto i: c->neg())
-		if (i != ci) neg.add(replace(at(c, i), 0));
+		if (i != ci) neg.add(replace(at(c, i)));
 
 	pos.n = 0;
-	for (auto i: c->pos()) pos.add(replace(at(c, i), 0));
+	for (auto i: c->pos()) pos.add(replace(at(c, i)));
 
 	clause();
 }
@@ -118,7 +118,7 @@ void resolve1() {
 void resolve() {
 	for (auto i: c->neg()) {
 		auto e = Eqn(at(c, i));
-		if (unify(e.first, 0, e.second, 0)) {
+		if (unify(e.first, e.second)) {
 			ci = i;
 			resolve1();
 		}
@@ -143,15 +143,15 @@ void factorc() {
 	// The first expression of the second equation is called 'd0' because in the superposition rule, below, it will be an equation
 	// in the second clause. Here, however, it is still a second equation in the first clause, so unification is done with the same
 	// variable subscript on both sides.
-	if (!unify(c0, 0, d0, 0)) return;
+	if (!unify(c0, d0)) return;
 
 	neg.n = 0;
-	for (auto i: c->neg()) neg.add(replace(at(c, i), 0));
-	neg.add(equate(replace(c1, 0), replace(d1, 0)));
+	for (auto i: c->neg()) neg.add(replace(at(c, i)));
+	neg.add(equate(replace(c1), replace(d1)));
 
 	pos.n = 0;
 	for (auto i: c->pos())
-		if (i != di) pos.add(replace(at(c, i), 0));
+		if (i != di) pos.add(replace(at(c, i)));
 
 	clause();
 }
@@ -223,20 +223,20 @@ void superposnc() {
 	// splice them together. This is necessary because the component expressions are from different clauses, therefore have
 	// different logical variable names. The composition would not be valid if we were replacing arbitrary expressions, but is valid
 	// because we are only replacing variables.
-	auto d0c1 = splice(replace(d0, 1), 0, replace(c1, 0));
-	auto d1_ = replace(d1, 1);
+	auto d0c1 = splice(replace(d0), 0, replace(c1));
+	auto d1_ = replace(d1);
 	if (!equatable(d0c1, d1_)) return;
 
 	neg.n = 0;
-	for (auto i: c->neg()) neg.add(replace(at(c, i), 0));
+	for (auto i: c->neg()) neg.add(replace(at(c, i)));
 	for (auto i: d->neg())
-		if (i != di) neg.add(replace(at(d, i), 1));
+		if (i != di) neg.add(replace(at(d, i)));
 
 	pos.n = 0;
 	for (auto i: c->pos())
-		if (i != ci) pos.add(replace(at(c, i), 0));
+		if (i != ci) pos.add(replace(at(c, i)));
 	for (auto i: d->pos())
-		if (i != di) pos.add(replace(at(d, i), 1));
+		if (i != di) pos.add(replace(at(d, i)));
 
 	auto& v = di < d->nn ? neg : pos;
 	v.add(equate(d0c1, d1_));
@@ -250,7 +250,7 @@ void descend(Expr* a) {
 	if (a->tag == Tag::var) return;
 
 	// a is a subexpression of d, so its variables are subscripted 1
-	if (unify(c0, 0, a, 1)) superposnc();
+	if (unify(c0, a)) superposnc();
 
 	// TODO: Call -> start at 1
 	// c0 could unify with a, some subexpression of a, or both
