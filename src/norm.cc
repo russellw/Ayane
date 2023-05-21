@@ -1,5 +1,11 @@
 #include "main.h"
 
+static Vec<pair<Type*, size_t>> m;
+
+void initNorm() {
+	m.n = 0;
+}
+
 namespace {
 bool constant(Expr* a) {
 	switch (a->tag) {

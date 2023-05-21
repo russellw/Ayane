@@ -20,7 +20,8 @@ void clause() {
 	for (auto a: neg) check(a);
 	for (auto a: pos) check(a);
 
-	// Evaluate ground terms
+	// Normalize atoms
+	initNorm();
 	for (auto& a: neg) a = norm(a);
 	for (auto& a: pos) a = norm(a);
 
