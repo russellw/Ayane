@@ -15,6 +15,10 @@ struct LeafType: Type {
 	// In first-order logic, variables can only have leaf types
 	Vec<Var*> vars;
 
+	// Matching or unification between two clauses, assumes the clauses have distinct variable names. The simplest way to ensure
+	// this is to rename the variables in one clause, to an alternate set.
+	Vec<Var*> alts;
+
 	LeafType(Kind kind): Type(kind) {
 	}
 };

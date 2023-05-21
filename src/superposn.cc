@@ -7,7 +7,12 @@ Expr* altVars(Expr* a) {
 		for (size_t i = 0; i < a->n; ++i) v[i] = altVars(at(a, i));
 		return comp(a->tag, v);
 	}
-	if (a->tag == Tag::var) {}
+	if (a->tag == Tag::var) {
+		auto a1 = (Var*)a;
+		auto b = a1->ty->alts[a1->i];
+		assert(a != b);
+		return b;
+	}
 	return a;
 }
 
@@ -341,16 +346,18 @@ void superposn() {
 			return;
 		}
 
-		// This is the Discount loop (in which only active clauses participate in subsumption checks); in tests, it performed
-		// slightly better than the alternative Otter loop (in which passive clauses also participate)
+		// The normal and alternate versions of g are logically the same but algorithmically distinct. It is important to keep track
+		// of both of them during this iteration. After that, g will be kept, and g1 will be discarded.
+		bufp = buf;
+		auto g1 = altVars(g);
 
 		// Forward subsumption
 		for (auto h: active)
-			if (!h->dead && subsumes(h, g)) goto loop;
+			if (!h->dead && subsumes(h, g1)) goto loop;
 
 		// Backward subsumption
 		for (auto h: active)
-			if (!h->dead && subsumes(g, h)) h->dead = 1;
+			if (!h->dead && subsumes(g1, h)) h->dead = 1;
 
 		// Add g to active clauses before inference, because we will sometimes need to combine g with itself
 		active.add(g);
@@ -363,10 +370,10 @@ void superposn() {
 			if (h->dead) continue;
 
 			c = h;
-			d = g;
+			d = g1;
 			superposn1();
 
-			c = g;
+			c = g1;
 			d = h;
 			superposn1();
 		}
