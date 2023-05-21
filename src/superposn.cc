@@ -163,8 +163,7 @@ void factorc() {
 	if (!equatable(c1, d1)) return;
 
 	// The first expression of the second equation is called 'd0' because in the superposition rule, below, it will be an equation
-	// in the second clause. Here, however, it is still a second equation in the first clause, so unification is done with the same
-	// variable subscript on both sides.
+	// in the second clause. Here, however, it is still a second equation in the first clause.
 	if (!unify(c0, d0)) return;
 
 	neg.n = 0;
@@ -182,8 +181,8 @@ void factorc() {
 void factor1() {
 	for (auto i: c->pos()) {
 		if (i == ci) continue;
-		di = i;
 		auto e = Eqn(at(c, i));
+		di = i;
 
 		d0 = e.first;
 		d1 = e.second;
@@ -224,7 +223,6 @@ where
 // The literature describes negative and positive superposition as separate inference rules; the only difference between them is
 // whether they consider negative or positive equations in the second clause, so to avoid copy-pasting a significant chunk of
 // nontrivial and almost identical code, we specify here a single inference rule
-
 Vec<size_t> posn;
 
 Expr* splice(Expr* a, size_t i, Expr* b) {
@@ -271,12 +269,9 @@ void descend(Expr* a) {
 	// It is never necessary to paramodulate into variables
 	if (a->tag == Tag::var) return;
 
-	// a is a subexpression of d, so its variables are subscripted 1
-	if (unify(c0, a)) superposnc();
-
-	// TODO: Call -> start at 1
 	// c0 could unify with a, some subexpression of a, or both
-	for (size_t i = 0; i < a->n; ++i) {
+	if (unify(c0, a)) superposnc();
+	for (size_t i = a->tag == Tag::call; i < a->n; ++i) {
 		posn.add(i);
 		descend(at(a, i));
 		--posn.n;
