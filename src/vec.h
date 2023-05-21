@@ -74,8 +74,8 @@ public:
 		n += o;
 	}
 
-	bool has(const T& x) {
-		for (auto& y: *this)
+	bool has(T x) {
+		for (auto y: *this)
 			if (x == y) return 1;
 		return 0;
 	}
