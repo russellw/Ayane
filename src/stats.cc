@@ -67,20 +67,20 @@ void incTrace() {
 void printStats() {
 	if (strStats.size()) {
 		Vec<const char*> v;
-		for (auto sy: strStats) v.add(sy.first);
+		for (auto ab: strStats) v.add(ab.first);
 		sort(v.begin(), v.end(), [=](const char* a, const char* b) { return strcmp(a, b) < 0; });
 		for (auto s: v) printf(";%s\t%zu\n", s, strStats[s]);
 	}
 	if (numStats.size()) {
 		Vec<size_t> v;
-		for (auto xn: numStats) v.add(xn.first);
+		for (auto ab: numStats) v.add(ab.first);
 		sort(v.begin(), v.end());
 		size_t tot = 0;
 		size_t totn = 0;
-		for (auto x: v) {
-			auto n = numStats[x];
-			printf(";%zu\t%zu\n", x, n);
-			tot += x * n;
+		for (auto a: v) {
+			auto n = numStats[a];
+			printf(";%zu\t%zu\n", a, n);
+			tot += a * n;
 			totn += n;
 		}
 		printf(";tot\t%zu\n", totn);

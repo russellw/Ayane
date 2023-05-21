@@ -420,9 +420,9 @@ struct Parser1: Parser {
 			for (auto i = vars.rbegin(), e = vars.rend(); i != e; ++i)
 				if (i->first == s) return i->second;
 			if (!cnfMode) err("Unknown variable");
-			auto x = var(vars.n, &tindividual);
-			vars.add(make_pair(s, x));
-			return x;
+			auto a = var(vars.n, &tindividual);
+			vars.add(make_pair(s, a));
+			return a;
 		}
 		}
 		err("Expected expression");
@@ -455,9 +455,9 @@ struct Parser1: Parser {
 				ty = atomicType();
 				if (ty == &tbool) err("$o is not a valid variable type", inappropriateError);
 			}
-			auto x = var(vars.n, ty);
-			vars.add(make_pair(s, x));
-			v.add(x);
+			auto a = var(vars.n, ty);
+			vars.add(make_pair(s, a));
+			v.add(a);
 		} while (eat(','));
 		expect(']');
 		expect(':');
