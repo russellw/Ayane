@@ -346,8 +346,8 @@ void superposn() {
 			return;
 		}
 
-		// The normal and alternate versions of g are logically the same but algorithmically distinct. It is important to keep track
-		// of both of them during this iteration. After that, g will be kept, and g1 will be discarded.
+		// The normal and alternate-variable versions of g are logically the same but algorithmically distinct. It is important to
+		// keep track of both of them during this iteration. After that, g will be kept, and g1 will be discarded.
 		bufp = buf;
 		auto g1 = altVars(g);
 
