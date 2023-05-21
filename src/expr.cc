@@ -108,7 +108,7 @@ static bool inbuf(void* p0) {
 }
 
 void check(Expr* a) {
-	assert(size_t(a->tag) <= size_t(Tag::or1));
+	assert(size_t(a->tag) <= size_t(Tag::var));
 	switch (a->tag) {
 	case Tag::distinctObj:
 	case Tag::false1:
