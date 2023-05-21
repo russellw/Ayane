@@ -209,5 +209,5 @@ Expr* norm(Expr* a) {
 	default:
 		break;
 	}
-	return compc(a->tag, v);
+	return compi(a->tag, v);
 }

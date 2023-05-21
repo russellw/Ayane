@@ -55,6 +55,6 @@ Comp* make(Tag tag, Expr** v, size_t n) {
 Set<Tag, Expr**, Comp, 0x1000> comps;
 } // namespace
 
-Expr* compc(Tag tag, Vec<Expr*>& v) {
+Expr* compi(Tag tag, Vec<Expr*>& v) {
 	return comps.intern(tag, v.data, v.n);
 }

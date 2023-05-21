@@ -77,5 +77,5 @@ Expr* replace(Expr* a) {
 	// Composite
 	Vec<Expr*> v(a->n);
 	for (size_t i = 0; i < a->n; ++i) v[i] = replace(at(a, i));
-	return compc(a->tag, v);
+	return comp(a->tag, v);
 }
