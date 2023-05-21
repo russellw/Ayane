@@ -40,7 +40,7 @@ try:
         if code == "inappropriateError":
             print(code)
             continue
-        if code == -14:
+        if code in (-14, 4294967282):
             continue
         if code:
             raise Exception(code)
