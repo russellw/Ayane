@@ -2,14 +2,6 @@
 
 Vec<Expr*> neg, pos;
 
-static void checkPermanent(Expr* a) {
-#ifdef DBG
-	auto p = (char*)a;
-	assert(!(buf <= p && p < buf + bufSize));
-	for (auto b: a) checkPermanent(b);
-#endif
-}
-
 static size_t cost(Expr* a) {
 	size_t n = 1;
 	for (size_t i = 0; i < a->n; ++i) n += cost(at(a, i));
@@ -25,14 +17,12 @@ size_t cost(Clause* c) {
 priority_queue<Clause*, vector<Clause*>, ClauseCompare> passive;
 
 void clause() {
-	for (auto a: neg) {
-		check(a);
-		checkPermanent(a);
-	}
-	for (auto a: pos) {
-		check(a);
-		checkPermanent(a);
-	}
+	for (auto a: neg) check(a);
+	for (auto a: pos) check(a);
+
+	// Evaluate ground terms
+	for (auto& a: neg) a = norm(a);
+	for (auto& a: pos) a = norm(a);
 
 	// Redundancy
 	size_t i = 0;
