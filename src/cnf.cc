@@ -367,6 +367,7 @@ void clauses(Expr* a) {
 	// First-order logic is not complete on arithmetic. The conservative approach to this is that if any clause contains terms of
 	// numeric type, we mark the proof search incomplete, so that failure to derive a contradiction, means the result is
 	// inconclusive rather than satisfiable.
+	// TODO: do something about the possibility of TPTP cnf bypassing this check
 	if (result == 1 && (hasNum(neg) || hasNum(pos))) result = -1;
 
 	clause();
