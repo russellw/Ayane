@@ -65,17 +65,14 @@ bool unify(Expr* a, Expr* b) {
 }
 
 Expr* replace(Expr* a) {
-	// Variable
+	if (a->n) {
+		Vec<Expr*> v(a->n);
+		for (size_t i = 0; i < a->n; ++i) v[i] = replace(at(a, i));
+		return comp(a->tag, v);
+	}
 	if (a->tag == Tag::var) {
 		Expr* am;
 		if (get((Var*)a, am, m)) return replace(am);
 	}
-
-	// Leaf
-	if (!a->n) return a;
-
-	// Composite
-	Vec<Expr*> v(a->n);
-	for (size_t i = 0; i < a->n; ++i) v[i] = replace(at(a, i));
-	return comp(a->tag, v);
+	return a;
 }

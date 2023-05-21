@@ -1,6 +1,23 @@
 #include "main.h"
 
 namespace {
+Expr* altVars(Expr* a) {
+	if (a->n) {
+		Vec<Expr*> v(a->n);
+		for (size_t i = 0; i < a->n; ++i) v[i] = altVars(at(a, i));
+		return comp(a->tag, v);
+	}
+	if (a->tag == Tag::var) {}
+	return a;
+}
+
+Clause* altVars(Clause* c) {
+	size_t n = c->n;
+	auto d = new (balloc(offsetof(Clause, v) + n * sizeof(void*))) Clause(c->nn, n);
+	for (size_t i = 0; i < n; ++i) d->v[i] = altVars(at(c, i));
+	return d;
+}
+
 // First-order logic usually takes the view that equality is a special case, but superposition calculus takes the view that equality
 // is the general case. Non-equality predicates are considered to be equations 'p=true'; this is a special exemption from the usual
 // rule that equality is not allowed on formulas.

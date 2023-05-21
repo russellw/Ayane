@@ -45,10 +45,7 @@ void clause() {
 	// Make clause
 	size_t nn = neg.n;
 	size_t n = nn + pos.n;
-	auto c = (Clause*)malloc(offsetof(Clause, v) + n * sizeof(void*));
-	c->nn = nn;
-	c->n = n;
-	c->dead = 0;
+	auto c = new (ialloc(offsetof(Clause, v) + n * sizeof(void*))) Clause(nn, n);
 	memcpy(c->v, neg.data, nn * sizeof(void*));
 	memcpy(c->v + nn, pos.data, pos.n * sizeof(void*));
 

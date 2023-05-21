@@ -5,8 +5,11 @@
 // So we represent them as bags (or lists, ignoring the order) and let the algorithms that prefer sets, discard duplicate literals
 struct Clause {
 	uint16_t nn, n;
-	bool dead;
+	bool dead = 0;
 	Expr* v[];
+
+	Clause(size_t nn, size_t n): nn(nn), n(n) {
+	}
 
 	size_t np() {
 		return n - nn;
