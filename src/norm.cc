@@ -87,82 +87,47 @@ Expr* norm(Expr* a) {
 		if (a->tag == Tag::var) {}
 		return a;
 	}
+
 	Vec<Expr*> v(a->n);
 	for (size_t i = 0; i < a->n; ++i) v[i] = norm(at(a, i));
+	auto x = v[0];
+	Expr* y;
+	if (a->n > 1) y = v[1];
 	// TODO: other simplifications e.g. x+0, x*1
 	switch (a->tag) {
 	case Tag::add:
-	{
-		auto x = v[0];
-		auto y = v[1];
 		if (constant(x) && constant(y)) return op2(x, y, mpz_add, mpq_add);
 		break;
-	}
 	case Tag::ceil:
-	{
-		auto x = v[0];
 		if (constant(x)) return op1(x, mpz_cdiv_q);
 		break;
-	}
 	case Tag::div:
-	{
-		auto x = v[0];
-		auto y = v[1];
 		if (constant(x) && constant(y)) return op2(x, y, 0, mpq_div);
 		break;
-	}
 	case Tag::divEuclid:
-	{
-		auto x = v[0];
-		auto y = v[1];
 		if (constant(x) && constant(y)) return div2(x, y, mpz_ediv_q);
 		break;
-	}
 	case Tag::divFloor:
-	{
-		auto x = v[0];
-		auto y = v[1];
 		if (constant(x) && constant(y)) return div2(x, y, mpz_fdiv_q);
 		break;
-	}
 	case Tag::divTrunc:
-	{
-		auto x = v[0];
-		auto y = v[1];
 		if (constant(x) && constant(y)) return div2(x, y, mpz_tdiv_q);
 		break;
-	}
 	case Tag::eq:
-	{
-		auto x = v[0];
-		auto y = v[1];
 		if (x == y) return bools + 1;
 		if (constant(x) && constant(y)) return bools;
 		break;
-	}
 	case Tag::floor:
-	{
-		auto x = v[0];
 		if (constant(x)) return op1(x, mpz_fdiv_q);
 		break;
-	}
 	case Tag::isInt:
-	{
-		auto x = v[0];
 		if (type(x) == &tinteger) return bools + 1;
 		if (constant(x)) return bools + (mpz_cmp_ui(mpq_denref(((Rat*)x)->v), 1) == 0);
 		break;
-	}
 	case Tag::isRat:
-	{
-		auto x = v[0];
 		if (constant(x)) return bools + 1;
 		break;
-	}
 	case Tag::lt:
-	{
-		auto x = v[0];
-		auto y = v[1];
 		if (constant(x) && constant(y)) {
 			auto tag = x->tag;
 			assert(tag == y->tag);
@@ -170,10 +135,7 @@ Expr* norm(Expr* a) {
 			return bools + (mpq_cmp(((Rat*)x)->v, ((Rat*)y)->v) < 0);
 		}
 		break;
-	}
 	case Tag::minus:
-	{
-		auto x = v[0];
 		if (constant(x)) {
 			auto tag = x->tag;
 			if (tag == Tag::integer) {
@@ -188,51 +150,25 @@ Expr* norm(Expr* a) {
 			return rat(tag, r);
 		}
 		break;
-	}
 	case Tag::mul:
-	{
-		auto x = v[0];
-		auto y = v[1];
 		if (constant(x) && constant(y)) return op2(x, y, mpz_mul, mpq_mul);
 		break;
-	}
 	case Tag::remEuclid:
-	{
-		auto x = v[0];
-		auto y = v[1];
 		if (constant(x) && constant(y)) return div2(x, y, mpz_ediv_r);
 		break;
-	}
 	case Tag::remFloor:
-	{
-		auto x = v[0];
-		auto y = v[1];
 		if (constant(x) && constant(y)) return div2(x, y, mpz_fdiv_r);
 		break;
-	}
 	case Tag::remTrunc:
-	{
-		auto x = v[0];
-		auto y = v[1];
 		if (constant(x) && constant(y)) return div2(x, y, mpz_tdiv_r);
 		break;
-	}
 	case Tag::round:
-	{
-		auto x = v[0];
 		if (constant(x)) return op1(x, mpz_round);
 		break;
-	}
 	case Tag::sub:
-	{
-		auto x = v[0];
-		auto y = v[1];
 		if (constant(x) && constant(y)) return op2(x, y, mpz_sub, mpq_sub);
 		break;
-	}
 	case Tag::toInt:
-	{
-		auto x = v[0];
 		if (type(x) == &tinteger) return x;
 		if (constant(x)) {
 			auto x1 = (Rat*)x;
@@ -246,25 +182,15 @@ Expr* norm(Expr* a) {
 			return integer(r);
 		}
 		break;
-	}
 	case Tag::toRat:
-	{
-		auto x = v[0];
 		if (constant(x)) return toRat(x, Tag::rat);
 		break;
-	}
 	case Tag::toReal:
-	{
-		auto x = v[0];
 		if (constant(x)) return toRat(x, Tag::real);
 		break;
-	}
 	case Tag::trunc:
-	{
-		auto x = v[0];
 		if (constant(x)) return op1(x, mpz_tdiv_q);
 		break;
-	}
 	default:
 		break;
 	}
