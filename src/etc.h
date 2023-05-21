@@ -29,11 +29,11 @@ inline void print(const void* p) {
 	printf("%p", p);
 }
 
-template <class K, class T> void print(const pair<K, T>& xy) {
+template <class K, class T> void print(const pair<K, T>& ab) {
 	putchar('<');
-	print(xy.first);
+	print(ab.first);
 	print(", ");
-	print(xy.second);
+	print(ab.second);
 	putchar('>');
 }
 

@@ -200,8 +200,8 @@ Expr* all(int pol, Expr* a) {
 Expr* exists(int pol, Expr* a) {
 	// Get the surrounding universally quantified variables that will be arguments to the Skolem functions
 	Vec<Expr*> args;
-	for (auto& xy: m)
-		if (xy.second->tag == Tag::var) args.add(xy.second);
+	for (auto& ab: m)
+		if (ab.second->tag == Tag::var) args.add(ab.second);
 
 	// Make a replacement for each existentially quantified variable
 	auto o = m.n;
@@ -268,10 +268,10 @@ Expr* nnf(bool pol, Expr* a) {
 	case Tag::var:
 	{
 		// Variables are mapped to new variables or Skolem functions
-		Expr* y;
-		auto found = get((Var*)a, y, m);
+		Expr* b;
+		auto found = get((Var*)a, b, m);
 		assert(found);
-		return y;
+		return b;
 	}
 	default:
 	{

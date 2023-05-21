@@ -4,8 +4,8 @@ namespace {
 Vec<pair<Type*, size_t>> m;
 
 Var* freshVar(LeafType* ty) {
-	for (auto& xy: m)
-		if (xy.first == ty) return var(++xy.second, ty);
+	for (auto& ab: m)
+		if (ab.first == ty) return var(++ab.second, ty);
 	m.add(make_pair(ty, 0));
 	return var(0, ty);
 }

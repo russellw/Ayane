@@ -86,11 +86,11 @@ void printStats() {
 		printf(";tot\t%zu\n", totn);
 		printf(";avg\t%.3f", tot / (double)totn);
 	}
-	for (auto& xy: traces) {
+	for (auto& ab: traces) {
 		putchar('\n');
-		print(xy.second);
+		print(ab.second);
 		putchar('\n');
-		for (auto s: xy.first) printf("\t%s\n", s);
+		for (auto s: ab.first) printf("\t%s\n", s);
 	}
 }
 #endif

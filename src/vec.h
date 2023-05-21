@@ -74,30 +74,30 @@ public:
 		n += o;
 	}
 
-	bool has(T x) {
-		for (auto y: *this)
-			if (x == y) return 1;
+	bool has(T a) {
+		for (auto b: *this)
+			if (a == b) return 1;
 		return 0;
 	}
 	///
 };
 
-template <class K, class T> bool get(K x, T& y, Vec<pair<K, T>>& m) {
-	for (auto xy: m)
-		if (xy.first == x) {
-			y = xy.second;
+template <class K, class T> bool get(K a, T& b, Vec<pair<K, T>>& m) {
+	for (auto ab: m)
+		if (ab.first == a) {
+			b = ab.second;
 			return 1;
 		}
 	return 0;
 }
 
-template <class T> void print(Vec<T>& a) {
+template <class T> void print(Vec<T>& v) {
 	putchar('[');
 	bool more = 0;
-	for (auto& x: a) {
+	for (auto& a: v) {
 		if (more) print(", ");
 		more = 1;
-		print(x);
+		print(a);
 	}
 	putchar(']');
 }
