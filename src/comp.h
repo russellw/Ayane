@@ -29,5 +29,4 @@ Expr* comp(Tag tag, vector<Expr*>& v);
 
 // Permanent composite expressions are in canonical form: Simplified and interned
 // TODO: check name
-Expr* compc(Tag tag, Expr* a, Expr* b);
 Expr* compc(Tag tag, Vec<Expr*>& v);
