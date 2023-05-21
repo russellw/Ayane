@@ -70,9 +70,7 @@ Expr* replace(Expr* a) {
 		for (size_t i = 0; i < a->n; ++i) v[i] = replace(at(a, i));
 		return comp(a->tag, v);
 	}
-	if (a->tag == Tag::var) {
-		Expr* am;
-		if (get((Var*)a, am, m)) return replace(am);
-	}
+	Expr* am;
+	if (a->tag == Tag::var && get((Var*)a, am, m)) return replace(am);
 	return a;
 }
