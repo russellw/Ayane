@@ -83,6 +83,12 @@ Expr* div2(Expr* x, Expr* y, void (*f)(mpz_t, const mpz_t, const mpz_t)) {
 } // namespace
 
 Expr* norm(Expr* a) {
+	if (!a->n) {
+		if (a->tag == Tag::var) {}
+		return a;
+	}
+	Vec<Expr*> v(a->n);
+	for (size_t i = 0; i < a->n; ++i) v[i] = norm(at(a, i));
 	// TODO: other simplifications e.g. x+0, x*1
 	switch (a->tag) {
 	case Tag::add:
@@ -262,5 +268,5 @@ Expr* norm(Expr* a) {
 	default:
 		break;
 	}
-	return comps.intern(tag, v, n);
+	return compc(a->tag, v);
 }

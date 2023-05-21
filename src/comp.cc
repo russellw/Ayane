@@ -59,9 +59,9 @@ Expr* compc(Tag tag, Expr* a, Expr* b) {
 	Expr* v[2];
 	v[0] = a;
 	v[1] = b;
-	return compc(tag, v, 2);
+	return comps.intern(tag, v, 2);
 }
 
 Expr* compc(Tag tag, Vec<Expr*>& v) {
-	return compc(tag, v.data, v.n);
+	return comps.intern(tag, v.data, v.n);
 }
