@@ -269,8 +269,8 @@ Expr* nnf(bool pol, Expr* a) {
 	{
 		// Variables are mapped to new variables or Skolem functions
 		Expr* b;
-		auto r = get((Var*)a, b, m);
-		assert(r);
+		auto found = get((Var*)a, b, m);
+		assert(found);
 		return b;
 	}
 	default:

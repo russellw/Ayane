@@ -7,8 +7,8 @@ bool occurs(Var* a, Expr* b) {
 	assert(a->tag == Tag::var);
 	if (b->tag == Tag::var) {
 		if (a == b) return 1;
-		Expr* r;
-		if (get((Var*)b, r, m)) return occurs(a, r);
+		Expr* bm;
+		if (get((Var*)b, bm, m)) return occurs(a, bm);
 	}
 	for (auto bi: b)
 		if (occurs(a, bi)) return 1;
@@ -22,9 +22,9 @@ bool unifyVar(Var* a, Expr* b) {
 	assert(type(a) == type(b));
 
 	// Existing mappings
-	Expr* r;
-	if (get(a, r, m)) return unify1(r, b);
-	if (b->tag == Tag::var && get((Var*)b, r, m)) return unify1(a, r);
+	Expr* y;
+	if (get(a, y, m)) return unify1(y, b);
+	if (b->tag == Tag::var && get((Var*)b, y, m)) return unify1(a, y);
 
 	// Occurs check
 	if (occurs(a, b)) return 0;
@@ -67,8 +67,8 @@ bool unify(Expr* a, Expr* b) {
 Expr* replace(Expr* a) {
 	// Variable
 	if (a->tag == Tag::var) {
-		Expr* r;
-		if (get((Var*)a, r, m)) return replace(r);
+		Expr* am;
+		if (get((Var*)a, am, m)) return replace(am);
 	}
 
 	// Leaf

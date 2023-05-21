@@ -82,7 +82,6 @@ public:
 	///
 };
 
-// TODO: would it be more efficient to just return a single value or 0?
 template <class K, class T> bool get(K x, T& y, Vec<pair<K, T>>& m) {
 	for (auto xy: m)
 		if (xy.first == x) {
