@@ -7,8 +7,8 @@ bool occurs(Var* a, Expr* b) {
 	assert(a->tag == Tag::var);
 	if (b->tag == Tag::var) {
 		if (a == b) return 1;
-		Expr* bm;
-		if (get((Var*)b, bm, m)) return occurs(a, bm);
+		Expr* y;
+		if (get((Var*)b, y, m)) return occurs(a, y);
 	}
 	for (auto bi: b)
 		if (occurs(a, bi)) return 1;
@@ -70,7 +70,7 @@ Expr* replace(Expr* a) {
 		for (size_t i = 0; i < a->n; ++i) v[i] = replace(at(a, i));
 		return comp(a->tag, v);
 	}
-	Expr* am;
-	if (a->tag == Tag::var && get((Var*)a, am, m)) return replace(am);
+	Expr* y;
+	if (a->tag == Tag::var && get((Var*)a, y, m)) return replace(y);
 	return a;
 }

@@ -12,8 +12,8 @@ bool match(Expr* a, Expr* b) {
 
 	// Variable
 	if (a->tag == Tag::var) {
-		Expr* am;
-		if (get(a, am, m)) return am == b;
+		Expr* y;
+		if (get(a, y, m)) return y == b;
 		m.add(make_pair(a, b));
 		return 1;
 	}

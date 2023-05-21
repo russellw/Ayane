@@ -268,10 +268,10 @@ Expr* nnf(bool pol, Expr* a) {
 	case Tag::var:
 	{
 		// Variables are mapped to new variables or Skolem functions
-		Expr* b;
-		auto found = get((Var*)a, b, m);
+		Expr* y;
+		auto found = get((Var*)a, y, m);
 		assert(found);
-		return b;
+		return y;
 	}
 	default:
 	{
