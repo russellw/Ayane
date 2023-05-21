@@ -6,4 +6,4 @@ struct Var: Expr {
 	}
 };
 
-Expr* var(size_t i, LeafType* ty);
+Var* var(size_t i, LeafType* ty);

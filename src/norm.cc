@@ -1,6 +1,15 @@
 #include "main.h"
 
-static Vec<pair<Type*, size_t>> m;
+namespace {
+Vec<pair<Type*, size_t>> m;
+
+Var* freshVar(LeafType* ty) {
+	for (auto& xy: m)
+		if (xy.first == ty) return var(++xy.second, ty);
+	m.add(make_pair(ty, 0));
+	return var(0, ty);
+}
+} // namespace
 
 void initNorm() {
 	m.n = 0;
@@ -90,7 +99,7 @@ Expr* div2(Expr* x, Expr* y, void (*f)(mpz_t, const mpz_t, const mpz_t)) {
 
 Expr* norm(Expr* a) {
 	if (!a->n) {
-		if (a->tag == Tag::var) {}
+		if (a->tag == Tag::var) return freshVar(((Var*)a)->ty);
 		return a;
 	}
 
