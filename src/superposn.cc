@@ -231,6 +231,7 @@ Expr* splice(Expr* a, size_t i, Expr* b) {
 	assert(a->n);
 	Vec<Expr*> v(a->n);
 	for (size_t j = 0; j < a->n; ++j) {
+		// TODO: optimize
 		v[j] = at(a, j);
 		if (j == posn[i]) v[j] = splice(v[j], i + 1, b);
 	}
@@ -239,13 +240,8 @@ Expr* splice(Expr* a, size_t i, Expr* b) {
 
 // Make new clause
 void superposnc() {
-	// To calculate d0(c1), we first perform the replacement of variables with substitute values, on the component expressions, then
-	// splice them together. This is necessary because the component expressions are from different clauses, therefore have
-	// different logical variable names. The composition would not be valid if we were replacing arbitrary expressions, but is valid
-	// because we are only replacing variables.
-	auto d0c1 = splice(replace(d0), 0, replace(c1));
-	auto d1_ = replace(d1);
-	if (!equatable(d0c1, d1_)) return;
+	auto d0c1 = splice(d0, 0, c1);
+	if (!equatable(d0c1, d1)) return;
 
 	neg.n = 0;
 	for (auto i: c->neg()) neg.add(replace(at(c, i)));
@@ -259,7 +255,7 @@ void superposnc() {
 		if (i != di) pos.add(replace(at(d, i)));
 
 	auto& v = di < d->nn ? neg : pos;
-	v.add(equate(d0c1, d1_));
+	v.add(equate(replace(d0c1), replace(d1)));
 
 	clause();
 }
