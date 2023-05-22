@@ -74,6 +74,7 @@ struct Var;
 #include "parser.h"
 
 #include "dimacs.h"
+#include "smtlib.h"
 #include "tptp.h"
 
 // Solvers
