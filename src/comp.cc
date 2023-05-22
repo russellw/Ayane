@@ -1,6 +1,7 @@
 #include "main.h"
 
 static Expr* comp(Tag tag, Expr** v, size_t n) {
+	// TODO: check generated code
 	auto a = new (balloc(sizeof(Comp) + n * sizeof(void*))) Comp(tag, n);
 	memcpy(a->v, v, n * sizeof(void*));
 	return a;
