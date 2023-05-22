@@ -24,6 +24,8 @@ struct Parser1: Parser {
 		case '%':
 		case '&':
 		case '*':
+		case '+':
+		case '-':
 		case '.':
 		case '/':
 		case '<':
@@ -88,7 +90,6 @@ struct Parser1: Parser {
 		case '~':
 		{
 			// TODO: the order of cases is weird
-			// TODO: .9 allowed?
 			auto s = src;
 			while (isword[*(unsigned char*)s]) ++s;
 			str = intern(src, s - src);
@@ -96,8 +97,49 @@ struct Parser1: Parser {
 			tok = k_id;
 			return;
 		}
-		case '+':
-		case '-':
+		case '#':
+		{
+			auto r = s + 2;
+			char c;
+			mpz_t z;
+			switch (s[1]) {
+			case 'b':
+			{
+				s = r;
+				while (*s == '0' || *s == '1') ++s;
+
+				// mpz_init_set_str doesn't like trailing junk, so give it a cleanly null-terminated string
+				c = *s;
+				*s = 0;
+
+				// At least one digit is required
+				if (mpz_init_set_str(z, r, 2)) err("Expected binary digit");
+			}
+			case 'x':
+			{
+				s = r;
+				// TODO: unsigned char?
+				while (isxdigit(*s)) ++s;
+
+				// mpz_init_set_str doesn't like trailing junk, so give it a cleanly null-terminated string
+				c = *s;
+				*s = 0;
+
+				// At least one digit is required
+				if (mpz_init_set_str(z, r, 16)) err("Expected hex digit");
+			}
+			default:
+				err("Stray '#'");
+			}
+
+			// The following byte might be important, so put it back
+			*s = c;
+
+			src = s;
+			num = integer(z);
+			tok = k_num;
+			return;
+		}
 		case '0':
 		case '1':
 		case '2':
@@ -108,7 +150,6 @@ struct Parser1: Parser {
 		case '7':
 		case '8':
 		case '9':
-			// TODO: +, - also word
 			number();
 			return;
 		case ';':
