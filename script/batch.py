@@ -37,10 +37,7 @@ try:
         print()
 
         code = codes.get(p.returncode, p.returncode)
-        if code == "inappropriateError":
-            print(code)
-            continue
-        if code in (-14, 4294967282):
+        if code in ("inappropriateError", -14, 4294967282):
             continue
         if code:
             raise Exception(code)
