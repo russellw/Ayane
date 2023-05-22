@@ -1,18 +1,28 @@
 #include "main.h"
 
 namespace {
-Vec<pair<Type*, size_t>> m;
+Vec<pair<Type*, size_t>> freshVars;
+Vec<pair<Var*, Var*>> normVars;
 
 Var* freshVar(LeafType* ty) {
-	for (auto& ab: m)
+	for (auto& ab: freshVars)
 		if (ab.first == ty) return var(++ab.second, ty);
-	m.add(make_pair(ty, 0));
+	freshVars.add(make_pair(ty, 0));
 	return var(0, ty);
+}
+
+Var* normVar(Var* a) {
+	for (auto& ab: normVars)
+		if (ab.first == a) return ab.second;
+	auto b = freshVar(a->ty);
+	normVars.add(make_pair(a, b));
+	return b;
 }
 } // namespace
 
 void initNorm() {
-	m.n = 0;
+	freshVars.n = 0;
+	normVars.n = 0;
 }
 
 namespace {
@@ -99,7 +109,7 @@ Expr* div2(Expr* x, Expr* y, void (*f)(mpz_t, const mpz_t, const mpz_t)) {
 
 Expr* norm(Expr* a) {
 	if (!a->n) {
-		if (a->tag == Tag::var) return freshVar(((Var*)a)->ty);
+		if (a->tag == Tag::var) return normVar((Var*)a);
 		return a;
 	}
 
