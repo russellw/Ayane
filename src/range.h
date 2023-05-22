@@ -1,3 +1,4 @@
+// TODO: inherit from pair?
 struct Range {
 	size_t first, second;
 

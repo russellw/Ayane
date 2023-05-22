@@ -9,8 +9,12 @@ inline void print(char c) {
 	putchar(c);
 }
 
-inline void print(int n) {
-	printf("%d", n);
+inline void print(int32_t n) {
+	printf("%" PRId32, n);
+}
+
+inline void print(int64_t n) {
+	printf("%" PRId64, n);
 }
 
 inline void print(uint32_t n) {

@@ -48,3 +48,7 @@ struct ClauseCompare {
 
 extern priority_queue<Clause*, vector<Clause*>, ClauseCompare> passive;
 void clause();
+
+#ifdef DBG
+void print(Clause* c);
+#endif

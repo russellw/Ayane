@@ -52,3 +52,18 @@ void clause() {
 	// Add to priority queue
 	passive.push(c);
 }
+
+#ifdef DBG
+void printAtoms(Clause* c, Range r) {
+	for (auto i: r) {
+		if (i > r.first) print(" | ");
+		print(at(c, i));
+	}
+}
+
+void print(Clause* c) {
+	printAtoms(c, c->neg());
+	print(" => ");
+	printAtoms(c, c->pos());
+}
+#endif
