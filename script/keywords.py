@@ -10,6 +10,7 @@ words = [
     "ax",
     "smt2",
     "ite",
+    "Int",
     "bool",
     "thf",
     "ceiling",

@@ -17,6 +17,7 @@ enum {
 	s_ax,
 	s_smt2,
 	s_ite,
+	s_Int,
 	s_bool,
 	s_thf,
 	s_ceiling,

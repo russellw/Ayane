@@ -82,9 +82,9 @@ void Parser::lexWord() {
 }
 
 void Parser::quote() {
+	auto q = *src++;
 	auto r = src;
 	auto s = src;
-	auto q = *s++;
 	while (*s != q) {
 		if (*s == '\\') ++s;
 		if (!*s) err("unclosed quote");

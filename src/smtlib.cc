@@ -156,6 +156,16 @@ struct Parser1: Parser {
 		return s;
 	}
 
+	// Types
+	LeafType* atomicType() {
+		switch (word() - keywords) {
+		case s_Int:
+			return &tinteger;
+		default:
+			err("unknown type");
+		}
+	}
+
 	// Top level
 	void skip() {
 		while (!eat(')'))
