@@ -9,6 +9,8 @@ words = [
     "bool",
     "thf",
     "ceiling",
+    "set-info",
+    "set-logic",
     "cnf",
     "conjecture",
     "difference",
@@ -67,6 +69,7 @@ def end(i):
 
 
 def san(s):
+    s = s.replace("-", "_")
     return s
 
 

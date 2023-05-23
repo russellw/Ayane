@@ -7,6 +7,8 @@ Str keywords[] = {
 	{0, 0, "bool"},
 	{0, 0, "thf"},
 	{0, 0, "ceiling"},
+	{0, 0, "set-info"},
+	{0, 0, "set-logic"},
 	{0, 0, "cnf"},
 	{0, 0, "conjecture"},
 	{0, 0, "difference"},

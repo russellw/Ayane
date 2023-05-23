@@ -150,6 +150,11 @@ struct Parser1: Parser {
 	}
 
 	// Top level
+	void skip() {
+		while (!eat(')'))
+			if (!tok) err("unclosed '('");
+	}
+
 	Parser1(const char* file): Parser(file) {
 		lex();
 		while (tok) {
@@ -157,6 +162,14 @@ struct Parser1: Parser {
 			if (tok != k_id) err("expected command");
 			auto kw = str - keywords;
 			lex();
+			switch (kw) {
+			case s_set_info:
+			case s_set_logic:
+				skip();
+				break;
+			default:
+				err("unknown command");
+			}
 		}
 	}
 };

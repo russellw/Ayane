@@ -17,6 +17,8 @@ enum {
 	s_bool,
 	s_thf,
 	s_ceiling,
+	s_set_info,
+	s_set_logic,
 	s_cnf,
 	s_conjecture,
 	s_difference,
