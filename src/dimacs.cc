@@ -88,7 +88,7 @@ struct Parser1: Parser {
 				neg.n = pos.n = 0;
 				break;
 			default:
-				err("Syntax error");
+				err("syntax error");
 			}
 	}
 };

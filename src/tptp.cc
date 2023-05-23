@@ -93,7 +93,7 @@ struct Parser1: Parser {
 			switch (s[1]) {
 			case '*':
 				for (s += 2; !(*s == '*' && s[1] == '/'); ++s)
-					if (!*s) err("Unclosed comment");
+					if (!*s) err("unclosed comment");
 				src = s + 2;
 				goto loop;
 			}
@@ -238,7 +238,7 @@ struct Parser1: Parser {
 		lex();
 		switch (k) {
 		case '!':
-			err("Type constructors not supported", inappropriateError);
+			err("type constructors not supported", inappropriateError);
 		case '(':
 		{
 			auto ty = atomicType();
@@ -258,7 +258,7 @@ struct Parser1: Parser {
 			case s_real:
 				return &treal;
 			case s_tType:
-				err("Type constructors not supported", inappropriateError);
+				err("type constructors not supported", inappropriateError);
 			}
 			break;
 		case k_id:
@@ -307,7 +307,7 @@ struct Parser1: Parser {
 		lex();
 		switch (k) {
 		case '(':
-			err("Formula not supported as expression", inappropriateError);
+			err("formula not supported as expression", inappropriateError);
 		case k_distinctObj:
 			return distinctObj(s);
 		case k_dollarWord:
@@ -419,7 +419,7 @@ struct Parser1: Parser {
 		{
 			for (auto i = vars.rbegin(), e = vars.rend(); i != e; ++i)
 				if (i->first == s) return i->second;
-			if (!cnfMode) err("Unknown variable");
+			if (!cnfMode) err("unknown variable");
 			auto a = var(vars.n, &tindividual);
 			vars.add(make_pair(s, a));
 			return a;
@@ -548,7 +548,7 @@ struct Parser1: Parser {
 			while (!eat(')')) ignore();
 			return;
 		case 0:
-			err("Too many '('s");
+			err("too many '('s");
 		}
 		lex();
 	}
@@ -614,7 +614,7 @@ struct Parser1: Parser {
 					auto s = wordOrDigits();
 					expect(':');
 					if (eatDollarWord(s_tType)) {
-						if (eat('>')) err("Type constructors not supported", inappropriateError);
+						if (eat('>')) err("type constructors not supported", inappropriateError);
 
 						// The symbol will be used as the name of a type. No particular action is required at this point, so accept
 						// this and move on.
@@ -643,7 +643,7 @@ struct Parser1: Parser {
 					// reject the problem as ambiguous and require it to be restated with the conjectures folded into one, using
 					// explicit conjunction or disjunction
 					static bool conjecture;
-					if (conjecture) err("Multiple conjectures not supported");
+					if (conjecture) err("multiple conjectures not supported");
 					a = comp(Tag::not1, a);
 					conjecture = 1;
 				}
@@ -681,7 +681,7 @@ struct Parser1: Parser {
 			case s_thf:
 				err("thf not supported", inappropriateError);
 			default:
-				err("Unknown language");
+				err("unknown language");
 			}
 			if (tok == ',') do
 					ignore();

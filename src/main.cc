@@ -9,7 +9,7 @@ LONG WINAPI handler(_EXCEPTION_POINTERS* ExceptionInfo) {
 	if (ExceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_STACK_OVERFLOW)
 		WriteFile(GetStdHandle(STD_OUTPUT_HANDLE), "Stack overflow\n", 15, 0, 0);
 	else {
-		printf("Exception code %lx\n", ExceptionInfo->ExceptionRecord->ExceptionCode);
+		printf("exception code %lx\n", ExceptionInfo->ExceptionRecord->ExceptionCode);
 		stackTrace();
 		fflush(stdout);
 	}
@@ -59,11 +59,11 @@ int main(int argc, char** argv) {
 				lang = Lang::dimacs;
 				continue;
 			case 'h':
-				printf("-h Show help\n"
-					   "-V Show version\n"
+				printf("-h show help\n"
+					   "-V show version\n"
 					   "-d DIMACS input\n"
 					   "-t seconds\n"
-					   "   Time limit\n");
+					   "   time limit\n");
 				return 0;
 			case 't':
 			{
@@ -114,7 +114,7 @@ int main(int argc, char** argv) {
 				// quietly accept it
 				continue;
 			}
-			fprintf(stderr, "%s: Unknown option\n", argv[i]);
+			fprintf(stderr, "%s: unknown option\n", argv[i]);
 			return syntaxError;
 		}
 		if (file) {

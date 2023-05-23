@@ -98,9 +98,9 @@ struct Parser1: Parser {
 			return;
 		}
 		case '"':
-			err("Strings not supported", inappropriateError);
+			err("strings not supported", inappropriateError);
 		case '#':
-			err("Bit vectors not supported", inappropriateError);
+			err("bit vectors not supported", inappropriateError);
 		case '0':
 		case '1':
 		case '2':
