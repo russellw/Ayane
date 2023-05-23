@@ -35,6 +35,7 @@ struct Parser1: Parser {
 		case '7':
 		case '8':
 		case '9':
+			// In DIMACS format, a digit sequence is actually a word, not a number
 			word();
 			return;
 		case 'c':
@@ -65,10 +66,10 @@ struct Parser1: Parser {
 			src += 3;
 			lex();
 
-			if (tok != k_id) err("expected count");
+			if (tok != k_word) err("expected count");
 			lex();
 
-			if (tok != k_id) err("expected count");
+			if (tok != k_word) err("expected count");
 			lex();
 		}
 		for (;;) switch (tok) {
@@ -79,7 +80,7 @@ struct Parser1: Parser {
 			case 0:
 				if (neg.n + pos.n) clause();
 				return;
-			case k_id:
+			case k_word:
 				pos.add(propVar());
 				break;
 			case k_zero:

@@ -127,7 +127,7 @@ struct Parser1: Parser {
 			}
 			break;
 		case '\'':
-			tok = k_id;
+			tok = k_word;
 			quote();
 			return;
 		case '_':
@@ -261,7 +261,7 @@ struct Parser1: Parser {
 				err("type constructors not supported", inappropriateError);
 			}
 			break;
-		case k_id:
+		case k_word:
 			return opaqueType(s);
 		}
 		err("expected type");
@@ -401,18 +401,6 @@ struct Parser1: Parser {
 			}
 			break;
 		}
-		case k_id:
-		{
-			auto a = fn(s, 0);
-
-			// Not a function call
-			if (tok != '(') return a;
-
-			// Function is being called, so gather the function and arguments
-			Vec<Expr*> v(1, a);
-			args(v);
-			return comp(Tag::call, v);
-		}
 		case k_num:
 			return num1;
 		case k_var:
@@ -423,6 +411,18 @@ struct Parser1: Parser {
 			auto a = var(vars.n, &tindividual);
 			vars.add(make_pair(s, a));
 			return a;
+		}
+		case k_word:
+		{
+			auto a = fn(s, 0);
+
+			// Not a function call
+			if (tok != '(') return a;
+
+			// Function is being called, so gather the function and arguments
+			Vec<Expr*> v(1, a);
+			args(v);
+			return comp(Tag::call, v);
 		}
 		}
 		err("expected expression");
@@ -525,15 +525,15 @@ struct Parser1: Parser {
 	// Top level
 	Str* wordOrDigits() {
 		switch (tok) {
-		case k_id:
-		{
-			auto r = str;
-			lex();
-			return r;
-		}
 		case k_num:
 		{
 			auto r = intern(srck, src - srck);
+			lex();
+			return r;
+		}
+		case k_word:
+		{
+			auto r = str;
 			lex();
 			return r;
 		}

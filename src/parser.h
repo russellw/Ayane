@@ -1,8 +1,8 @@
 // This, and its effective sub-enums in specific parsers, are not enum classes because enumerated tokens will be freely mixed with
 // literal characters
 enum {
-	k_id = 0x100,
-	k_num,
+	k_num = 0x100,
+	k_word,
 	ntoks
 };
 

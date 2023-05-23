@@ -94,7 +94,7 @@ struct Parser1: Parser {
 			while (issym[*(unsigned char*)s]) ++s;
 			str = intern(src, s - src);
 			src = s;
-			tok = k_id;
+			tok = k_word;
 			return;
 		}
 		case '"':
@@ -120,13 +120,13 @@ struct Parser1: Parser {
 
 			// We don't use the actual keyword
 			src = s;
-			tok = k_id;
+			tok = k_word;
 			return;
 		case ';':
 			src = strchr(s, '\n');
 			goto loop;
 		case '|':
-			tok = k_id;
+			tok = k_word;
 			quote();
 			return;
 		}
@@ -159,7 +159,7 @@ struct Parser1: Parser {
 		lex();
 		while (tok) {
 			expect('(');
-			if (tok != k_id) err("expected command");
+			if (tok != k_word) err("expected command");
 			auto kw = str - keywords;
 			lex();
 			switch (kw) {
@@ -168,6 +168,8 @@ struct Parser1: Parser {
 			case s_set_info:
 			case s_set_logic:
 				skip();
+				break;
+			case s_declare_fun:
 				break;
 			default:
 				err("unknown command");

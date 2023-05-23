@@ -79,7 +79,7 @@ void Parser::word() {
 	while (isalnum(*(unsigned char*)s) || *s == '_') ++s;
 	str = intern(src, s - src);
 	src = s;
-	tok = k_id;
+	tok = k_word;
 }
 
 void Parser::quote() {
