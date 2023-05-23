@@ -217,6 +217,11 @@ void Parser::setType(Fn* a, Type* ty) {
 }
 
 Expr* Parser::fn(Str* s, Type* ty) {
+	if (ty && ty->kind == Kind::fn) {
+		auto ty1 = (CompType*)ty;
+		for (size_t i = 1; i < ty1->n; ++i)
+			if (at(ty, i) == &tbool) err("Bool parameter not supported", inappropriateError);
+	}
 	if (s->fn) {
 		auto a = s->fn;
 		assert(a->s == s->v);

@@ -172,12 +172,8 @@ struct Parser1: Parser {
 		if (eat(')')) return atomicType();
 
 		Vec<Type*> v(1);
-		do {
-			auto ty = atomicType();
-			// TODO: centralize this check
-			if (ty == &tbool) err("Bool is not a valid parameter type", inappropriateError);
-			v.add(ty);
-		} while (!eat(')'));
+		do v.add(atomicType());
+		while (!eat(')'));
 		v[0] = atomicType();
 		return compType(v);
 	}

@@ -270,11 +270,8 @@ struct Parser1: Parser {
 	Type* topLevelType() {
 		if (eat('(')) {
 			Vec<Type*> v(1);
-			do {
-				auto ty = atomicType();
-				if (ty == &tbool) err("$o is not a valid parameter type", inappropriateError);
-				v.add(ty);
-			} while (eat('*'));
+			do v.add(atomicType());
+			while (eat('*'));
 			expect(')');
 			expect('>');
 			v[0] = atomicType();
@@ -282,7 +279,6 @@ struct Parser1: Parser {
 		}
 		auto ty = atomicType();
 		if (!eat('>')) return ty;
-		if (ty == &tbool) err("$o is not a valid parameter type", inappropriateError);
 		return compType(atomicType(), ty);
 	}
 
