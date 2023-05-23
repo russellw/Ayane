@@ -772,16 +772,23 @@ satlib_problems = (
 )
 
 
+def is_header(s):
+    if s.startswith("c"):
+        return 1
+    if s.startswith("p"):
+        return 1
+
+
 def print_header(file):
     for s in open(file):
-        if not s.startswith("c") and not s.startswith("p"):
+        if not is_header(s):
             break
         print(s, end="")
 
 
 def get_expected(file):
     for s in open(file):
-        if not s.startswith("c"):
+        if not is_header(s):
             break
         if "UNSAT" in s:
             return "unsat"
