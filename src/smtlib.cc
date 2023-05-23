@@ -2,10 +2,10 @@
 
 namespace {
 enum {
-	k_zero = ntoks,
+	k_keyword = ntoks,
 };
 
-char isword[0x100];
+char issym[0x100];
 
 struct Parser1: Parser {
 	// Tokenizer
@@ -91,12 +91,14 @@ struct Parser1: Parser {
 		{
 			// TODO: the order of cases is weird
 			auto s = src;
-			while (isword[*(unsigned char*)s]) ++s;
+			while (issym[*(unsigned char*)s]) ++s;
 			str = intern(src, s - src);
 			src = s;
 			tok = k_id;
 			return;
 		}
+		case '"':
+			err("Strings not supported", inappropriateError);
 		case '#':
 		{
 			auto r = s + 2;
@@ -113,6 +115,7 @@ struct Parser1: Parser {
 				*s = 0;
 
 				// At least one digit is required
+				// TODO: Which end is the most significant bit or the beginning or end of a sequence will depend on the definition of the logic.
 				if (mpz_init_set_str(z, r, 2)) err("Expected binary digit");
 			}
 			case 'x':
@@ -126,6 +129,7 @@ struct Parser1: Parser {
 				*s = 0;
 
 				// At least one digit is required
+				// TODO: Though an interpretation as a bit sequence or an integer is reasonable, the actual interpretation depends on the logic being used.
 				if (mpz_init_set_str(z, r, 16)) err("Expected hex digit");
 			}
 			default:
@@ -150,11 +154,24 @@ struct Parser1: Parser {
 		case '7':
 		case '8':
 		case '9':
+			// TODO: Although the various kinds of literals have some conventional, intuitive meanings, their semantics is actually determined by the definition of the logic being used. <decimal>s might represent rationals in one logic and reals in another; <binary>s might be bit sequences in one logic and integers in another; even <string>s might be interpretable as integers or sequences.
 			number();
+			return;
+		case ':':
+			do ++s;
+			while (issym[*(unsigned char*)s]);
+
+			// We don't use the actual keyword
+			src = s;
+			tok = k_id;
 			return;
 		case ';':
 			src = strchr(s, '\n');
 			goto loop;
+		case '|':
+			tok = k_id;
+			quote();
+			return;
 		}
 		src = s + 1;
 		tok = *s;
@@ -184,25 +201,25 @@ struct Parser1: Parser {
 } // namespace
 
 void smtlib(const char* file) {
-	isword['!'] = 1;
-	isword['$'] = 1;
-	isword['%'] = 1;
-	isword['&'] = 1;
-	isword['*'] = 1;
-	isword['+'] = 1;
-	isword['-'] = 1;
-	isword['.'] = 1;
-	isword['/'] = 1;
-	isword['<'] = 1;
-	isword['='] = 1;
-	isword['>'] = 1;
-	isword['?'] = 1;
-	isword['@'] = 1;
-	isword['^'] = 1;
-	isword['_'] = 1;
-	isword['~'] = 1;
-	memset(isword + '0', 1, 10);
-	memset(isword + 'A', 1, 26);
-	memset(isword + 'a', 1, 26);
+	issym['!'] = 1;
+	issym['$'] = 1;
+	issym['%'] = 1;
+	issym['&'] = 1;
+	issym['*'] = 1;
+	issym['+'] = 1;
+	issym['-'] = 1;
+	issym['.'] = 1;
+	issym['/'] = 1;
+	issym['<'] = 1;
+	issym['='] = 1;
+	issym['>'] = 1;
+	issym['?'] = 1;
+	issym['@'] = 1;
+	issym['^'] = 1;
+	issym['_'] = 1;
+	issym['~'] = 1;
+	memset(issym + '0', 1, 10);
+	memset(issym + 'A', 1, 26);
+	memset(issym + 'a', 1, 26);
 	Parser1 parser(file);
 }

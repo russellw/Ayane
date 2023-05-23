@@ -88,7 +88,7 @@ void Parser::quote() {
 	auto q = *s++;
 	while (*s != q) {
 		if (*s == '\\') ++s;
-		if (*s < ' ') err("Unclosed quote");
+		if (!*s) err("Unclosed quote");
 		*r++ = *s++;
 	}
 	str = intern(src, r - src);
