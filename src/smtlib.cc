@@ -178,6 +178,28 @@ struct Parser1: Parser {
 		return compType(v);
 	}
 
+	// Expressions
+	Expr* expr() {
+		auto k = tok;
+		auto s = str;
+		auto num1 = num;
+		lex();
+		switch (k) {
+		case '(':
+		case k_num:
+			return num1;
+		case k_word:
+			switch (s - keywords) {
+			case s_false:
+				return bools;
+			case s_true:
+				return bools + 1;
+			}
+			return fn(s, 0);
+		}
+		err("expected expression");
+	}
+
 	// Top level
 	void skip() {
 		while (!eat(')'))
@@ -189,6 +211,14 @@ struct Parser1: Parser {
 		while (tok) {
 			expect('(');
 			switch (word() - keywords) {
+			case s_assert:
+			{
+				auto a = expr();
+				expect(')');
+				typing(a, &tbool);
+				cnf(a);
+				break;
+			}
 			case s_check_sat:
 			case s_exit:
 			case s_set_info:
