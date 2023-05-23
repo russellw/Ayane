@@ -37,6 +37,9 @@ class Dimacs:
 
 
 files = read_lines(args.list_file)
+for i in range(len(files)):
+    if "/" not in files[i] and "\\" not in files[i]:
+        files[i] = "C:/satlib/" + files[i]
 problems = [Dimacs(s) for s in files]
 problems.sort(key=lambda p: p.variables * 100 + p.clauses)
 files = [p.filename for p in problems]
