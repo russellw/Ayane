@@ -166,6 +166,19 @@ struct Parser1: Parser {
 		}
 	}
 
+	Type* topLevelType() {
+		expect('(');
+		if (eat(')')) return atomicType();
+		Vec<Type*> v(1);
+		do {
+			auto ty = atomicType();
+			if (ty == &tbool) err("Bool is not a valid parameter type", inappropriateError);
+			v.add(ty);
+		} while (!eat(')'));
+		v[0] = atomicType();
+		return compType(v);
+	}
+
 	// Top level
 	void skip() {
 		while (!eat(')'))
@@ -184,7 +197,12 @@ struct Parser1: Parser {
 				skip();
 				break;
 			case s_declare_fun:
+			{
+				auto s = word();
+				fn(s, topLevelType());
+				expect(')');
 				break;
+			}
 			default:
 				err("unknown command");
 			}
