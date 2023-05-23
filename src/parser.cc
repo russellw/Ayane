@@ -12,8 +12,7 @@
 Parser::Parser(const char* file): file(file) {
 	// Read all the input in one go before beginning parsing, to make the parsers simpler and faster. Testing indicates
 	// memory-mapped files are not really faster for this case, so the input data is read-write so parsers can scribble over it if
-	// that makes their job easier. The only thing parsers are not allowed change is the number of linefeed characters up to the
-	// start of current token, because err() counts those linefeed characters to report line number.
+	// that makes their job easier.
 	size_t n;
 	if (strcmp(file, "stdin") == 0) {
 #ifdef _WIN32
