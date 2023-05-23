@@ -8,6 +8,7 @@ words = [
     "declare-fun",
     "assert",
     "ax",
+    "smt2",
     "ite",
     "bool",
     "thf",

@@ -35,7 +35,7 @@ struct Parser {
 	[[noreturn]] void err(const char* msg, int code = syntaxError);
 
 	// Lex an unquoted word, tok = k_id, str = the word
-	void word();
+	void lexWord();
 
 	// Lex a quoted string, leave tok unset (because different kinds of quotes can mean different things depending on language), str
 	// = the string, minus quotes and escapes

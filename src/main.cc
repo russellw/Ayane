@@ -32,6 +32,7 @@ enum class Lang {
 	none,
 
 	dimacs,
+	smtlib,
 	tptp,
 };
 
@@ -62,9 +63,13 @@ int main(int argc, char** argv) {
 				printf("-h show help\n"
 					   "-V show version\n"
 					   "-d DIMACS input\n"
+					   "-s SMT-LIB input\n"
 					   "-t seconds\n"
 					   "   time limit\n");
 				return 0;
+			case 's':
+				lang = Lang::smtlib;
+				continue;
 			case 't':
 			{
 				do ++s;
@@ -128,12 +133,18 @@ int main(int argc, char** argv) {
 		case s_cnf:
 			lang = Lang::dimacs;
 			break;
+		case s_smt2:
+			lang = Lang::smtlib;
+			break;
 		}
 
 	// Parse
 	switch (lang) {
 	case Lang::dimacs:
 		dimacs(file);
+		break;
+	case Lang::smtlib:
+		smtlib(file);
 		break;
 	default:
 		tptp(file);

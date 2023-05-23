@@ -15,6 +15,7 @@ enum {
 	s_declare_fun,
 	s_assert,
 	s_ax,
+	s_smt2,
 	s_ite,
 	s_bool,
 	s_thf,

@@ -149,6 +149,13 @@ struct Parser1: Parser {
 		err(buf);
 	}
 
+	Str* word() {
+		if (tok != k_word) err("expected word");
+		auto s = str;
+		lex();
+		return s;
+	}
+
 	// Top level
 	void skip() {
 		while (!eat(')'))
@@ -159,10 +166,7 @@ struct Parser1: Parser {
 		lex();
 		while (tok) {
 			expect('(');
-			if (tok != k_word) err("expected command");
-			auto kw = str - keywords;
-			lex();
-			switch (kw) {
+			switch (word() - keywords) {
 			case s_check_sat:
 			case s_exit:
 			case s_set_info:

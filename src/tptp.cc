@@ -69,7 +69,7 @@ struct Parser1: Parser {
 			return;
 		case '$':
 			src = s + 1;
-			word();
+			lexWord();
 			tok = k_dollarWord;
 			return;
 		case '%':
@@ -157,7 +157,7 @@ struct Parser1: Parser {
 		case 'X':
 		case 'Y':
 		case 'Z':
-			word();
+			lexWord();
 			tok = k_var;
 			return;
 		case 'a':
@@ -186,7 +186,7 @@ struct Parser1: Parser {
 		case 'x':
 		case 'y':
 		case 'z':
-			word();
+			lexWord();
 			return;
 		case '~':
 			switch (s[1]) {

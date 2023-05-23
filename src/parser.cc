@@ -73,7 +73,7 @@ void Parser::err(const char* msg, int code) {
 	exit(code);
 }
 
-void Parser::word() {
+void Parser::lexWord() {
 	auto s = src;
 	while (isalnum(*(unsigned char*)s) || *s == '_') ++s;
 	str = intern(src, s - src);

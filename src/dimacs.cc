@@ -36,7 +36,7 @@ struct Parser1: Parser {
 		case '8':
 		case '9':
 			// In DIMACS format, a digit sequence is actually a word, not a number
-			word();
+			lexWord();
 			return;
 		case 'c':
 			src = strchr(s, '\n');
