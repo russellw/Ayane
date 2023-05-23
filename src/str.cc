@@ -2,6 +2,8 @@
 
 Str keywords[] = {
 	// clang-format off
+	{0, 0, "declare-fun"},
+	{0, 0, "assert"},
 	{0, 0, "ax"},
 	{0, 0, "ite"},
 	{0, 0, "bool"},
@@ -49,6 +51,8 @@ Str keywords[] = {
 	{0, 0, "type"},
 	{0, 0, "tcf"},
 	{0, 0, "uminus"},
+	{0, 0, "check-sat"},
+	{0, 0, "exit"},
 	// clang-format on
 };
 

@@ -3,7 +3,10 @@ import os
 here = os.path.dirname(os.path.realpath(__file__))
 src = os.path.join(here, "..", "src")
 
+# TODO: sort
 words = [
+    "declare-fun",
+    "assert",
     "ax",
     "ite",
     "bool",
@@ -51,6 +54,8 @@ words = [
     "type",
     "tcf",
     "uminus",
+    "check-sat",
+    "exit",
 ]
 
 

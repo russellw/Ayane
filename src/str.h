@@ -12,6 +12,8 @@ struct Str {
 
 // Keywords are strings that are known to be important
 enum {
+	s_declare_fun,
+	s_assert,
 	s_ax,
 	s_ite,
 	s_bool,
@@ -59,6 +61,8 @@ enum {
 	s_type,
 	s_tcf,
 	s_uminus,
+	s_check_sat,
+	s_exit,
 	nkeywords
 };
 

@@ -163,6 +163,8 @@ struct Parser1: Parser {
 			auto kw = str - keywords;
 			lex();
 			switch (kw) {
+			case s_check_sat:
+			case s_exit:
 			case s_set_info:
 			case s_set_logic:
 				skip();
