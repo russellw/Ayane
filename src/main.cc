@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
 				case 0:
 					++i;
 					if (i == argc) {
-						fprintf(stderr, "%s: Expected arg\n", argv[i]);
+						fprintf(stderr, "%s: expected arg\n", argv[i]);
 						return syntaxError;
 					}
 					s = argv[i];

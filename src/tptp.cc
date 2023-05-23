@@ -115,7 +115,7 @@ struct Parser1: Parser {
 					tok = k_xor;
 					return;
 				}
-				err("Expected '>'");
+				err("expected '>'");
 			}
 			break;
 		case '=':
@@ -219,7 +219,7 @@ struct Parser1: Parser {
 
 	void expect(char k) {
 		if (eat(k)) return;
-		sprintf(buf, "Expected '%c'", k);
+		sprintf(buf, "expected '%c'", k);
 		err(buf);
 	}
 
@@ -264,7 +264,7 @@ struct Parser1: Parser {
 		case k_id:
 			return opaqueType(s);
 		}
-		err("Expected type");
+		err("expected type");
 	}
 
 	Type* topLevelType() {
@@ -425,7 +425,7 @@ struct Parser1: Parser {
 			return a;
 		}
 		}
-		err("Expected expression");
+		err("expected expression");
 	}
 
 	Expr* infixUnary() {
@@ -447,7 +447,7 @@ struct Parser1: Parser {
 		Vec<Expr*> v(1);
 		auto o = vars.n;
 		do {
-			if (tok != k_var) err("Expected variable");
+			if (tok != k_var) err("expected variable");
 			auto s = str;
 			lex();
 			auto ty = &tindividual;
@@ -538,7 +538,7 @@ struct Parser1: Parser {
 			return r;
 		}
 		}
-		err("Expected name");
+		err("expected name");
 	}
 
 	void ignore() {

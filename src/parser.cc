@@ -119,7 +119,7 @@ void Parser::lexInt(mpz_t z) {
 	*src = 0;
 
 	// At least one digit is required
-	if (mpz_init_set_str(z, s, 10)) err("Expected number");
+	if (mpz_init_set_str(z, s, 10)) err("expected number");
 
 	// The following byte might be important, so put it back
 	*src = c;
@@ -165,7 +165,7 @@ void Parser::number() {
 		auto s = src;
 
 		// The integer parsing function would otherwise accept a sign here, but that would not make sense
-		if (!isdigit(*(unsigned char*)s)) err("Expected digit");
+		if (!isdigit(*(unsigned char*)s)) err("expected digit");
 
 		mpz_t decimal;
 		lexInt(decimal);
@@ -231,7 +231,7 @@ Expr* Parser::fn(Str* s, Type* ty) {
 void Parser::checkSize(Expr* a, size_t n) {
 	if (a->n == n) return;
 	if (a->tag == Tag::call) --n;
-	sprintf(buf, "Expected %zu args", n);
+	sprintf(buf, "expected %zu args", n);
 	err(buf, typeError);
 }
 

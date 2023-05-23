@@ -61,14 +61,14 @@ struct Parser1: Parser {
 		if (tok == 'p') {
 			while (isspace(*(unsigned char*)src)) ++src;
 
-			if (!(src[0] == 'c' && src[1] == 'n' && src[2] == 'f')) err("Expected 'cnf'");
+			if (!(src[0] == 'c' && src[1] == 'n' && src[2] == 'f')) err("expected 'cnf'");
 			src += 3;
 			lex();
 
-			if (tok != k_id) err("Expected count");
+			if (tok != k_id) err("expected count");
 			lex();
 
-			if (tok != k_id) err("Expected count");
+			if (tok != k_id) err("expected count");
 			lex();
 		}
 		for (;;) switch (tok) {

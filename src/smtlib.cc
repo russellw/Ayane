@@ -145,14 +145,19 @@ struct Parser1: Parser {
 
 	void expect(char k) {
 		if (eat(k)) return;
-		sprintf(buf, "Expected '%c'", k);
+		sprintf(buf, "expected '%c'", k);
 		err(buf);
 	}
 
 	// Top level
 	Parser1(const char* file): Parser(file) {
 		lex();
-		while (tok) { expect('('); }
+		while (tok) {
+			expect('(');
+			if (tok != k_id) err("expected command");
+			auto kw = str - keywords;
+			lex();
+		}
 	}
 };
 } // namespace
