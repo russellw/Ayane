@@ -20,7 +20,7 @@ struct Parser1: Parser {
 			src = s + 1;
 			goto loop;
 		case '0':
-			if (!isdigit(s[1])) {
+			if (!isdigit(((unsigned char*)s)[1])) {
 				src = s + 1;
 				tok = k_zero;
 				return;
@@ -59,7 +59,7 @@ struct Parser1: Parser {
 	Parser1(const char* file): Parser(file) {
 		lex();
 		if (tok == 'p') {
-			while (isspace(*src)) ++src;
+			while (isspace(*(unsigned char*)src)) ++src;
 
 			if (!(src[0] == 'c' && src[1] == 'n' && src[2] == 'f')) err("Expected 'cnf'");
 			src += 3;

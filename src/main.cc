@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
 			case 't':
 			{
 				do ++s;
-				while (isalpha(*s));
+				while (isalpha(*(unsigned char*)s));
 
 				switch (*s) {
 				case ':':
