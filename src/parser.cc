@@ -293,10 +293,8 @@ void Parser::typing(Expr* a, Type* ty) {
 		break;
 	case Tag::and1:
 	case Tag::eqv:
-	case Tag::not1:
 	case Tag::or1:
 		// Connective
-		// TODO: does SMT-LIB need to check arity here?
 		if (&tbool != ty) err("type mismatch", typeError);
 		for (size_t i = 0; i < a->n; ++i) typing(at(a, i), ty);
 		break;
@@ -421,6 +419,12 @@ void Parser::typing(Expr* a, Type* ty) {
 		if (!isNum(ty)) err("invalid type for comparison", typeError);
 		typing(at(a, 0), ty);
 		typing(at(a, 1), ty);
+		break;
+	case Tag::not1:
+		// Connective of arity 1
+		checkSize(a, 1);
+		if (&tbool != ty) err("type mismatch", typeError);
+		typing(at(a, 0), &tbool);
 		break;
 	}
 }

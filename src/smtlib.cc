@@ -179,6 +179,15 @@ struct Parser1: Parser {
 	}
 
 	// Expressions
+	Expr* expr(Tag tag) {
+		if (tok == ')') err("expected args");
+
+		Vec<Expr*> v;
+		do v.add(expr());
+		while (!eat(')'));
+		return comp(tag, v);
+	}
+
 	Expr* expr() {
 		auto k = tok;
 		auto s = str;
@@ -186,6 +195,24 @@ struct Parser1: Parser {
 		lex();
 		switch (k) {
 		case '(':
+		{
+			s = word();
+			switch (s - keywords) {
+			case s_and:
+				return expr(Tag::and1);
+			case s_not:
+				return expr(Tag::not1);
+			case s_or:
+				return expr(Tag::or1);
+			case s_xor:
+			{
+				auto a = expr();
+				auto b = expr();
+				expect(')');
+				return comp(Tag::not1(Tag::eqv, a, b));
+			}
+			}
+		}
 		case k_num:
 			return num1;
 		case k_word:
