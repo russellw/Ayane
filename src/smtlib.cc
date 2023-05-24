@@ -200,6 +200,20 @@ struct Parser1: Parser {
 			switch (s - keywords) {
 			case s_and:
 				return expr(Tag::and1);
+			case s_ge:
+			{
+				auto a = expr();
+				auto b = expr();
+				expect(')');
+				return comp(Tag::or1, comp(Tag::eq, b, a), comp(Tag::lt, b, a));
+			}
+			case s_gt:
+			{
+				auto a = expr();
+				auto b = expr();
+				expect(')');
+				return comp(Tag::lt, b, a);
+			}
 			case s_imp:
 			{
 				auto a = expr();
@@ -207,10 +221,32 @@ struct Parser1: Parser {
 				expect(')');
 				return imp(a, b);
 			}
+			case s_le:
+			{
+				auto a = expr();
+				auto b = expr();
+				expect(')');
+				return comp(Tag::or1, comp(Tag::eq, a, b), comp(Tag::lt, a, b));
+			}
+			case s_lt:
+			{
+				auto a = expr();
+				auto b = expr();
+				expect(')');
+				return comp(Tag::lt, a, b);
+			}
+			case s_minus:
+				return expr(Tag::sub);
 			case s_not:
 				return expr(Tag::not1);
 			case s_or:
 				return expr(Tag::or1);
+			case s_plus:
+				return expr(Tag::add);
+			case s_slash:
+				return expr(Tag::div);
+			case s_star:
+				return expr(Tag::mul);
 			case s_xor:
 			{
 				auto a = expr();

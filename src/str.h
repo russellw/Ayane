@@ -69,7 +69,16 @@ enum {
 	s_type,
 	s_uminus,
 	s_xor,
+	s_star,
+	s_plus,
+	s_minus,
+	s_slash,
+	s_lt,
+	s_le,
+	s_eq,
 	s_imp,
+	s_gt,
+	s_ge,
 };
 
 // And statically allocated for fast lookup
