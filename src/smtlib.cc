@@ -244,6 +244,7 @@ struct Parser1: Parser {
 			case s_plus:
 				return expr(Tag::add);
 			case s_slash:
+				// TODO: check types for integer division
 				return expr(Tag::div);
 			case s_star:
 				return expr(Tag::mul);
