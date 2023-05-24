@@ -3,7 +3,7 @@ import os
 here = os.path.dirname(os.path.realpath(__file__))
 src = os.path.join(here, "..", "src")
 
-words = [
+words = (
     # SORT
     "Int",
     "and",
@@ -62,8 +62,9 @@ words = [
     "type",
     "uminus",
     "xor",
+    ("=>", "imp")
     #
-]
+)
 
 
 def find(s):
@@ -93,6 +94,8 @@ j = end(i)
 
 v = []
 for s in words:
+    if isinstance(s, tuple):
+        s = s[1]
     v.append(f"s_%s,\n" % san(s))
 
 u[i:j] = v
@@ -106,6 +109,8 @@ j = end(i)
 v = []
 v.append("// clang-format off\n")
 for s in words:
+    if isinstance(s, tuple):
+        s = s[0]
     v.append('\t{0, 0, "%s"},\n' % s)
 v.append("// clang-format on\n")
 
