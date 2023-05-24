@@ -10,7 +10,7 @@ def end(i):
 
 
 here = os.path.dirname(os.path.realpath(__file__))
-for root, dirs, files in os.walk(arg):
+for root, dirs, files in os.walk(here):
     for file in files:
         ext = os.path.splitext(file)[1]
         if ext in (".cc", ".h"):
