@@ -200,6 +200,13 @@ struct Parser1: Parser {
 			switch (s - keywords) {
 			case s_and:
 				return expr(Tag::and1);
+			case s_imp:
+			{
+				auto a = expr();
+				auto b = expr();
+				expect(')');
+				return imp(a, b);
+			}
 			case s_not:
 				return expr(Tag::not1);
 			case s_or:
