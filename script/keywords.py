@@ -65,16 +65,17 @@ words = [
 ]
 
 
-def find(x):
-    for i in range(len(xs)):
-        if xs[i].startswith(x):
-            return i
-    raise Exception(x)
+def find(s):
+    for i in range(len(u)):
+        if u[i].startswith(s):
+            assert "{" in u[i]
+            return i + 1
+    raise Exception(s)
 
 
 def end(i):
-    for j in range(i, len(xs)):
-        if xs[j].startswith("}"):
+    for j in range(i, len(u)):
+        if u[j].startswith("}"):
             return j
     raise Exception()
 
@@ -84,23 +85,28 @@ def san(s):
     return s
 
 
-xs = open(os.path.join(src, "str.h")).readlines()
-i = find("enum") + 1
+# declare
+u = open(os.path.join(src, "str.h")).readlines()
+i = find("enum")
 j = end(i)
-ys = []
-for y in words:
-    ys.append(f"\ts_{san(y)},\n")
-ys.append("\tnkeywords\n")
-xs[i:j] = ys
-open(os.path.join(src, "str.h"), "w", newline="\n").writelines(xs)
 
-xs = open(os.path.join(src, "str.cc")).readlines()
-i = find("Str keywords") + 1
+v = []
+for s in words:
+    v.append(f"s_%s,\n" % san(s))
+
+u[i:j] = v
+open(os.path.join(src, "str.h"), "w", newline="\n").writelines(u)
+
+# define
+u = open(os.path.join(src, "str.cc")).readlines()
+i = find("Str keywords")
 j = end(i)
-ys = []
-ys.append("// clang-format off\n")
-for y in words:
-    ys.append('\t{0, 0, "%s"},\n' % y)
-ys.append("// clang-format on\n")
-xs[i:j] = ys
-open(os.path.join(src, "str.cc"), "w", newline="\n").writelines(xs)
+
+v = []
+v.append("// clang-format off\n")
+for s in words:
+    v.append('\t{0, 0, "%s"},\n' % s)
+v.append("// clang-format on\n")
+
+u[i:j] = v
+open(os.path.join(src, "str.cc"), "w", newline="\n").writelines(u)

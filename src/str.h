@@ -69,7 +69,6 @@ enum {
 	s_uminus,
 	s_check_sat,
 	s_exit,
-	nkeywords
 };
 
 // And statically allocated for fast lookup

@@ -209,7 +209,7 @@ struct Parser1: Parser {
 				auto a = expr();
 				auto b = expr();
 				expect(')');
-				return comp(Tag::not1(Tag::eqv, a, b));
+				return comp(Tag::not1, comp(Tag::eqv, a, b));
 			}
 			}
 		}
