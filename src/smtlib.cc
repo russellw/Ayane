@@ -258,6 +258,7 @@ struct Parser1: Parser {
 			}
 		}
 		case k_num:
+			// TODO: this is not quite correct; in the reals theory, integer literals actually have real type
 			return num1;
 		case k_word:
 			switch (s - keywords) {
