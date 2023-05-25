@@ -274,8 +274,10 @@ struct Parser1: Parser {
 
 	// Top level
 	void skip() {
-		while (!eat(')'))
+		while (!eat(')')) {
 			if (!tok) err("unclosed '('");
+			lex();
+		}
 	}
 
 	Parser1(const char* file): Parser(file) {
@@ -292,7 +294,6 @@ struct Parser1: Parser {
 				break;
 			}
 			case s_check_sat:
-			case s_exit:
 			case s_set_info:
 			case s_set_logic:
 				skip();

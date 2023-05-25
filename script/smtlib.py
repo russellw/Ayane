@@ -41,16 +41,9 @@ def get_problems(args):
     return problems
 
 
-def is_header(s):
-    if s.startswith("(set"):
-        return 1
-    if not s.startswith("("):
-        return 1
-
-
 def print_header(file):
     for s in open(file):
-        if not is_header(s):
+        if s.startswith("(declare-fun"):
             break
         print(s, end="")
 
@@ -59,20 +52,15 @@ def get_logic(file):
     for s in open(file):
         m = re.match(r"\(set-logic (\w+)\)", s)
         if m:
-            a = m[1]
-            # if a not in supported_logics and a not in unsupported_logics:
-            #    raise Exception(a)
-            return a
+            return m[1]
     raise Exception(file)
 
 
 def get_expected(file):
     for s in open(file):
-        s = s.rstrip()
-        if s == "(set-info :status unsat)":
-            return "unsat"
-        if s == "(set-info :status sat)":
-            return "sat"
+        m = re.match(r"\(set-info :status (\w+)\)", s)
+        if m:
+            return m[1]
     raise Exception(file)
 
 
