@@ -89,15 +89,12 @@ struct Parser1: Parser {
 		case 'y':
 		case 'z':
 		case '~':
-		{
-			auto s = src;
 			do ++s;
 			while (issym[(unsigned char)*s]);
 			str = intern(src, s - src);
 			src = s;
 			tok = k_word;
 			return;
-		}
 		case '"':
 		{
 			++src;
