@@ -1,3 +1,22 @@
+import os
+import random
+
+
+def get_problems(args):
+    problems = []
+    for root, dirs, files in os.walk("C:\\smtlib"):
+        for file in files:
+            ext = os.path.splitext(file)[1]
+            if ext == ".smt2":
+                problems.append(os.path.join(root, file))
+
+    if args.random:
+        random.shuffle(problems)
+    if args.number:
+        problems = problems[0 : args.number]
+    return problems
+
+
 def is_header(s):
     if s.startswith("(set"):
         return 1
