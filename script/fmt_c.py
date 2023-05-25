@@ -214,7 +214,7 @@ def sort_cases(i, dent):
     j, cs = cases(i, dent)
     for c in cs:
         sort_case(c)
-    cs = sorted(cs, key=lambda xs: (xs[0].lower(), xs[0]))
+    cs = sorted(cs)
     lines[i:j] = flatten(cs)
 
 

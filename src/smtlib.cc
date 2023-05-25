@@ -90,7 +90,6 @@ struct Parser1: Parser {
 		case 'z':
 		case '~':
 		{
-			// TODO: the order of cases is weird
 			auto s = src;
 			do ++s;
 			while (issym[*(unsigned char*)s]);

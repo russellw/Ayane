@@ -56,6 +56,15 @@ int main(int argc, char** argv) {
 			while (*s == '-');
 
 			switch (*s) {
+			case 'V':
+			case 'v':
+				printf("Ayane " version);
+				if (sizeof(void*) == 4) printf(", 32 bits");
+#ifdef DBG
+				printf(", debug build");
+#endif
+				putchar('\n');
+				return 0;
 			case 'd':
 				lang = Lang::dimacs;
 				continue;
@@ -105,15 +114,6 @@ int main(int argc, char** argv) {
 #endif
 				continue;
 			}
-			case 'V':
-			case 'v':
-				printf("Ayane " version);
-				if (sizeof(void*) == 4) printf(", 32 bits");
-#ifdef DBG
-				printf(", debug build");
-#endif
-				putchar('\n');
-				return 0;
 			case 0:
 				// An unadorned '-' means read from standard input, but that's the default anyway if no file is specified, so
 				// quietly accept it
