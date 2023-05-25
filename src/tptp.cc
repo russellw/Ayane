@@ -143,7 +143,6 @@ struct Parser1: Parser {
 			tok = k_word;
 			quote();
 			return;
-		case '_':
 		case 'A':
 		case 'B':
 		case 'C':
@@ -170,6 +169,7 @@ struct Parser1: Parser {
 		case 'X':
 		case 'Y':
 		case 'Z':
+		case '_':
 			lexWord();
 			tok = k_var;
 			return;

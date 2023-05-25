@@ -207,7 +207,7 @@ def sort_case(c):
     i = 0
     while re.match(r"\s*(case .*|default):$", c[i]):
         i += 1
-    c[:i] = sorted(c[:i], key=lambda s: (s.lower(), s))
+    c[:i] = sorted(c[:i])
 
 
 def sort_cases(i, dent):
