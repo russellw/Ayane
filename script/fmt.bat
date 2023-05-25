@@ -4,6 +4,9 @@ if %errorlevel% neq 0 goto :eof
 isort %~dp0..
 if %errorlevel% neq 0 goto :eof
 
+python %~dp0python_sort.py %~dp0keywords.py
+if %errorlevel% neq 0 goto :eof
+
 "C:\Program Files\LLVM\bin\clang-format" -i -style=file %~dp0..\src\*.cc %~dp0..\src\*.h
 if %errorlevel% neq 0 goto :eof
 

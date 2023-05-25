@@ -42,6 +42,7 @@ enum {
 	s_or,
 	s_p,
 	s_product,
+	s_push,
 	s_quotient,
 	s_quotient_e,
 	s_quotient_f,

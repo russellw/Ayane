@@ -327,6 +327,7 @@ struct Parser1: Parser {
 				expect(')');
 				break;
 			}
+			case s_push:
 			case s_set_info:
 			case s_set_logic:
 				skip();

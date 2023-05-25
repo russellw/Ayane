@@ -35,6 +35,7 @@ words = (
     "or",
     "p",
     "product",
+    "push",
     "quotient",
     "quotient_e",
     "quotient_f",

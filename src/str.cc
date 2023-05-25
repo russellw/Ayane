@@ -32,6 +32,7 @@ Str keywords[] = {
 	{0, 0, "or"},
 	{0, 0, "p"},
 	{0, 0, "product"},
+	{0, 0, "push"},
 	{0, 0, "quotient"},
 	{0, 0, "quotient_e"},
 	{0, 0, "quotient_f"},
