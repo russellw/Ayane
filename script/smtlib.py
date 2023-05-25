@@ -1,5 +1,27 @@
 import os
 import random
+import re
+
+supported_logics = (
+    "QF_UF",
+    "QF_LIA",
+    "QF_NIA",
+    "QF_LRA",
+    "LRA",
+    "QF_IDL",
+    "QF_RDL",
+    "QF_UFIDL",
+)
+unsupported_logics = (
+    "QF_AUFLIA",
+    "AUFLIA",
+    "AUFLIRA",
+    "AUFNIRA",
+    "QF_BV",
+    "QF_AX",
+    "QF_ABV",
+    "QF_AUFBV",
+)
 
 
 def get_problems(args):
@@ -29,6 +51,18 @@ def print_header(file):
         if not is_header(s):
             break
         print(s, end="")
+
+
+def get_logic(file):
+    for s in open(file):
+        if not is_header(s):
+            break
+        m = re.match(r"\(set-logic (\w+)\)", s)
+        if m:
+            a = m[1]
+            assert a in supported_logics or a in unsupported_logics
+            return a
+    raise Exception(file)
 
 
 def get_expected(file):
