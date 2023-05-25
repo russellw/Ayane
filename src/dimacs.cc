@@ -20,7 +20,7 @@ struct Parser1: Parser {
 			src = s + 1;
 			goto loop;
 		case '0':
-			if (isdigit(((unsigned char*)s)[1])) err("leading 0 is ambiguous");
+			if (isdigit((unsigned char)s[1])) err("leading 0 is ambiguous");
 			src = s + 1;
 			tok = k_zero;
 			return;
