@@ -43,6 +43,19 @@ struct Parser1: Parser {
 	///
 
 	// Tokenizer
+	void quote() {
+		auto q = *src++;
+		auto r = src;
+		auto s = src;
+		while (*s != q) {
+			if (*s == '\\') ++s;
+			if (*s < ' ') err("unclosed quote");
+			*r++ = *s++;
+		}
+		str = intern(src, r - src);
+		src = s + 1;
+	}
+
 	void lex() {
 	loop:
 		auto s = srck = src;

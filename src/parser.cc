@@ -81,19 +81,6 @@ void Parser::lexWord() {
 	tok = k_word;
 }
 
-void Parser::quote() {
-	auto q = *src++;
-	auto r = src;
-	auto s = src;
-	while (*s != q) {
-		if (*s == '\\') ++s;
-		if (!*s) err("unclosed quote");
-		*r++ = *s++;
-	}
-	str = intern(src, r - src);
-	src = s + 1;
-}
-
 void Parser::digits() {
 	auto s = src;
 	while (isdigit(*(unsigned char*)s)) ++s;

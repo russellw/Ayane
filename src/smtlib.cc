@@ -3,6 +3,7 @@
 namespace {
 enum {
 	k_keyword = ntoks,
+	k_string,
 };
 
 char issym[0x100];
@@ -91,14 +92,31 @@ struct Parser1: Parser {
 		{
 			// TODO: the order of cases is weird
 			auto s = src;
-			while (issym[*(unsigned char*)s]) ++s;
+			do ++s;
+			while (issym[*(unsigned char*)s]);
 			str = intern(src, s - src);
 			src = s;
 			tok = k_word;
 			return;
 		}
 		case '"':
-			err("strings not supported", inappropriateError);
+		{
+			++src;
+			auto r = src;
+			auto s = src;
+			for (;;) {
+				if (*s == '"') {
+					if (s[1] != '"') break;
+					++s;
+				}
+				if (!*s) err("unclosed '\"'");
+				*r++ = *s++;
+			}
+			str = intern(src, r - src);
+			src = s + 1;
+			tok = k_string;
+			return;
+		}
 		case '#':
 			err("bit vectors not supported", inappropriateError);
 		case '0':
@@ -126,9 +144,19 @@ struct Parser1: Parser {
 			src = strchr(s, '\n');
 			goto loop;
 		case '|':
+		{
+			++src;
+			auto r = src;
+			auto s = src;
+			while (*s != '|') {
+				if (!*s) err("unclosed '|'");
+				*r++ = *s++;
+			}
+			str = intern(src, r - src);
+			src = s + 1;
 			tok = k_word;
-			quote();
 			return;
+		}
 		}
 		src = s + 1;
 		tok = *s;
@@ -294,10 +322,7 @@ struct Parser1: Parser {
 				break;
 			}
 			case s_check_sat:
-			case s_set_info:
-			case s_set_logic:
-				skip();
-				break;
+				return;
 			case s_declare_fun:
 			{
 				auto s = word();
@@ -305,6 +330,10 @@ struct Parser1: Parser {
 				expect(')');
 				break;
 			}
+			case s_set_info:
+			case s_set_logic:
+				skip();
+				break;
 			default:
 				err("unknown command");
 			}

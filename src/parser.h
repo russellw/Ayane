@@ -37,10 +37,6 @@ struct Parser {
 	// Lex an unquoted word, tok = k_id, str = the word
 	void lexWord();
 
-	// Lex a quoted string, leave tok unset (because different kinds of quotes can mean different things depending on language), str
-	// = the string, minus quotes and escapes
-	void quote();
-
 	// Helper functions
 	void digits();
 	void lexInt(mpz_t z);
