@@ -57,8 +57,6 @@ def print_header(file):
 
 def get_logic(file):
     for s in open(file):
-        if not is_header(s):
-            break
         m = re.match(r"\(set-logic (\w+)\)", s)
         if m:
             a = m[1]
@@ -70,8 +68,6 @@ def get_logic(file):
 
 def get_expected(file):
     for s in open(file):
-        if not is_header(s):
-            break
         s = s.rstrip()
         if s == "(set-info :status unsat)":
             return "unsat"
