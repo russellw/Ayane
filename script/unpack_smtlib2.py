@@ -22,4 +22,4 @@ for arg in args.files:
                 file = os.path.join(root, file)
                 print(file)
                 cmd = "7z", "x", file
-                subprocess.check_call(cmd)
+                subprocess.call(cmd)
