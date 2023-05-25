@@ -43,6 +43,13 @@ struct Parser1: Parser {
 	///
 
 	// Tokenizer
+	void lexWord() {
+		auto s = src;
+		while (isalnum(*(unsigned char*)s) || *s == '_') ++s;
+		str = intern(src, s - src);
+		src = s;
+	}
+
 	void quote() {
 		auto q = *src++;
 		auto r = src;
@@ -82,8 +89,8 @@ struct Parser1: Parser {
 			return;
 		case '$':
 			src = s + 1;
-			lexWord();
 			tok = k_dollarWord;
+			lexWord();
 			return;
 		case '%':
 			src = strchr(s, '\n');
@@ -166,8 +173,8 @@ struct Parser1: Parser {
 		case 'Y':
 		case 'Z':
 		case '_':
-			lexWord();
 			tok = k_var;
+			lexWord();
 			return;
 		case '\'':
 			tok = k_word;
@@ -199,6 +206,7 @@ struct Parser1: Parser {
 		case 'x':
 		case 'y':
 		case 'z':
+			tok = k_word;
 			lexWord();
 			return;
 		case '~':

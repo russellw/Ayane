@@ -73,14 +73,6 @@ void Parser::err(const char* msg, int code) {
 	exit(code);
 }
 
-void Parser::lexWord() {
-	auto s = src;
-	while (isalnum(*(unsigned char*)s) || *s == '_') ++s;
-	str = intern(src, s - src);
-	src = s;
-	tok = k_word;
-}
-
 void Parser::digits() {
 	auto s = src;
 	while (isdigit(*(unsigned char*)s)) ++s;
