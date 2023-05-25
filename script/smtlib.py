@@ -21,6 +21,8 @@ unsupported_logics = (
     "QF_AX",
     "QF_ABV",
     "QF_AUFBV",
+    "ABVFP",
+    "ALIA",
 )
 
 
@@ -60,7 +62,8 @@ def get_logic(file):
         m = re.match(r"\(set-logic (\w+)\)", s)
         if m:
             a = m[1]
-            assert a in supported_logics or a in unsupported_logics
+            # if a not in supported_logics and a not in unsupported_logics:
+            #    raise Exception(a)
             return a
     raise Exception(file)
 

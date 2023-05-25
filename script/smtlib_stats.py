@@ -10,4 +10,5 @@ d = {}
 for file in problems:
     L = smtlib.get_logic(file)
     d[L] = d.get(L, 0) + 1
-print(d)
+common.print_table(d)
+print(len(d))

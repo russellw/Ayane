@@ -41,3 +41,9 @@ def args_files():
     parser.add_argument("files", nargs="+")
     args = parser.parse_args()
     return args
+
+
+def print_table(d):
+    for a in d:
+        print(a, end="\t")
+        print(d[a])
