@@ -92,7 +92,7 @@ struct Parser1: Parser {
 		{
 			auto s = src;
 			do ++s;
-			while (issym[*(unsigned char*)s]);
+			while (issym[(unsigned char)*s]);
 			str = intern(src, s - src);
 			src = s;
 			tok = k_word;
@@ -133,7 +133,7 @@ struct Parser1: Parser {
 			return;
 		case ':':
 			do ++s;
-			while (issym[*(unsigned char*)s]);
+			while (issym[(unsigned char)*s]);
 
 			// We don't use the actual keyword
 			src = s;

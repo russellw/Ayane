@@ -75,7 +75,7 @@ void Parser::err(const char* msg, int code) {
 
 void Parser::digits() {
 	auto s = src;
-	while (isdigit(*(unsigned char*)s)) ++s;
+	while (isdigit((unsigned char)*s)) ++s;
 	src = s;
 }
 
@@ -143,7 +143,7 @@ void Parser::number() {
 		auto s = src;
 
 		// The integer parsing function would otherwise accept a sign here, but that would not make sense
-		if (!isdigit(*(unsigned char*)s)) err("expected digit");
+		if (!isdigit((unsigned char)*s)) err("expected digit");
 
 		mpz_t decimal;
 		lexInt(decimal);

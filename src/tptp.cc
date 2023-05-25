@@ -45,7 +45,7 @@ struct Parser1: Parser {
 	// Tokenizer
 	void lexWord() {
 		auto s = src;
-		while (isalnum(*(unsigned char*)s) || *s == '_') ++s;
+		while (isalnum((unsigned char)*s) || *s == '_') ++s;
 		str = intern(src, s - src);
 		src = s;
 	}

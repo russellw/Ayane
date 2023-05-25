@@ -59,7 +59,7 @@ struct Parser1: Parser {
 	Parser1(const char* file): Parser(file) {
 		lex();
 		if (tok == 'p') {
-			while (isspace(*(unsigned char*)src)) ++src;
+			while (isspace((unsigned char)*src)) ++src;
 
 			if (!(src[0] == 'c' && src[1] == 'n' && src[2] == 'f')) err("expected 'cnf'");
 			src += 3;
