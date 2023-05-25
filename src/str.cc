@@ -14,7 +14,6 @@ Str keywords[] = {
 	{0, 0, "declare-fun"},
 	{0, 0, "difference"},
 	{0, 0, "distinct"},
-	{0, 0, "exit"},
 	{0, 0, "false"},
 	{0, 0, "floor"},
 	{0, 0, "fof"},

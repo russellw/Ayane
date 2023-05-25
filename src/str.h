@@ -24,7 +24,6 @@ enum {
 	s_declare_fun,
 	s_difference,
 	s_distinct,
-	s_exit,
 	s_false,
 	s_floor,
 	s_fof,

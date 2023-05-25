@@ -17,7 +17,6 @@ words = (
     "declare-fun",
     "difference",
     "distinct",
-    "exit",
     "false",
     "floor",
     "fof",
