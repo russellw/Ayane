@@ -17,11 +17,11 @@ struct Parser1: Parser {
 		case '\r':
 		case '\t':
 		case '\v':
-			src = s + 1;
+			++src;
 			goto loop;
 		case '0':
 			if (isdigit((unsigned char)s[1])) err("leading 0 is ambiguous");
-			src = s + 1;
+			++src;
 			tok = k_zero;
 			return;
 		case '1':
@@ -44,7 +44,7 @@ struct Parser1: Parser {
 			tok = 0;
 			return;
 		}
-		src = s + 1;
+		++src;
 		tok = *s;
 	}
 

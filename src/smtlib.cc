@@ -18,7 +18,7 @@ struct Parser1: Parser {
 		case '\n':
 		case '\r':
 		case '\t':
-			src = s + 1;
+			++src;
 			goto loop;
 		case '!':
 		case '$':
@@ -154,7 +154,7 @@ struct Parser1: Parser {
 			return;
 		}
 		}
-		src = s + 1;
+		++src;
 		tok = *s;
 	}
 
@@ -182,6 +182,7 @@ struct Parser1: Parser {
 
 	// Types
 	LeafType* atomicType() {
+		if (tok != k_word) err("composite types not supported", inappropriateError);
 		switch (word() - keywords) {
 		case s_Int:
 			return &tinteger;

@@ -73,7 +73,7 @@ struct Parser1: Parser {
 		case '\r':
 		case '\t':
 		case '\v':
-			src = s + 1;
+			++src;
 			goto loop;
 		case '!':
 			switch (s[1]) {
@@ -88,7 +88,7 @@ struct Parser1: Parser {
 			quote();
 			return;
 		case '$':
-			src = s + 1;
+			++src;
 			tok = k_dollarWord;
 			lexWord();
 			return;
@@ -225,7 +225,7 @@ struct Parser1: Parser {
 			tok = 0;
 			return;
 		}
-		src = s + 1;
+		++src;
 		tok = *s;
 	}
 
