@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 import common
 import smtlib
@@ -11,12 +12,6 @@ def want(file):
     ext = os.path.splitext(file)[1]
     if ext != ".zip":
         return
-
-    file = file.upper()
-    for s in smtlib.unsupported_logics:
-        if file.startswith(s):
-            return
-
     return 1
 
 
@@ -26,3 +21,5 @@ for arg in args.files:
             if want(file):
                 file = os.path.join(root, file)
                 print(file)
+                cmd = "7z", "x", file
+                subprocess.check_call(cmd)
