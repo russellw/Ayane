@@ -6,11 +6,9 @@ enum {
 	k_string,
 };
 
-// TODO: should this be static?
 char issym[0x100];
 
 struct Parser1: Parser {
-	// TODO: should this be static?
 	Vec<pair<Str*, Var*>> vars;
 
 	// Tokenizer
