@@ -93,6 +93,8 @@ inline Str* intern(const char* s) {
 	return intern((char*)s, strlen(s));
 }
 
+#ifdef DBG
 inline void dbgPrint(Str* s) {
 	dbgPrint(s->v);
 }
+#endif

@@ -304,6 +304,8 @@ void Parser::typing(Type* ty, Expr* a) {
 					err("boolean parameters not supported", inappropriateError);
 				case Kind::fn:
 					err("higher-order functions not supported", inappropriateError);
+				default:
+					break;
 				}
 
 			// And of course, check return type
