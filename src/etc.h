@@ -67,6 +67,7 @@ inline size_t roundUp(size_t n, size_t alignment) {
 // (e.g. problem contains higher order logic that the system does not understand, 'inappropriate' in SZS terminology) to 'things
 // that can only happen if there is an error in the input' (e.g. syntax error) to 'things that can only happen if there is a bug in
 // the code' (e.g. assert failure).
+// TODO: fold 201-202
 const int inappropriateError = 200;
 const int typeError = 201;
 const int syntaxError = 202;

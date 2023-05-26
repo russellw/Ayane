@@ -297,7 +297,9 @@ struct Parser1: Parser {
 			case s_true:
 				return bools + 1;
 			}
-			return fn(s, 0);
+			if (s->fn) return s->fn;
+			snprintf(buf, bufSize, "'%s': not found", s->v);
+			err(buf);
 		}
 		err("expected expression");
 	}
@@ -329,7 +331,8 @@ struct Parser1: Parser {
 			case s_declare_fun:
 			{
 				auto s = word();
-				fn(s, topLevelType());
+				if (s->fn) err("function already declared", typeError);
+				s->fn = new (ialloc(sizeof(Fn))) Fn(s->v, topLevelType());
 				expect(')');
 				break;
 			}

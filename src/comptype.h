@@ -2,6 +2,7 @@
 // are represented with the return type as v[0]. This does not match the convention the system otherwise tries to follow from logic
 // notation where the type is written after an expression, but does match the representation of function calls, that starts with the
 // function.
+// TODO: should types come first?
 struct CompType: Type {
 	Type* v[];
 
