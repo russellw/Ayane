@@ -54,7 +54,7 @@ void clause() {
 }
 
 #ifdef DBG
-void printAtoms(Clause* c, Range r) {
+void dbgPrintAtoms(Clause* c, Range r) {
 	for (auto i: r) {
 		if (i > r.first) dbgPrint(" | ");
 		dbgPrint(at(c, i));
@@ -62,8 +62,8 @@ void printAtoms(Clause* c, Range r) {
 }
 
 void dbgPrint(Clause* c) {
-	printAtoms(c, c->neg());
+	dbgPrintAtoms(c, c->neg());
 	dbgPrint(" => ");
-	printAtoms(c, c->pos());
+	dbgPrintAtoms(c, c->pos());
 }
 #endif
