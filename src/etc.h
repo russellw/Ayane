@@ -4,54 +4,6 @@ size_t fnv(const void* p, size_t n);
 size_t fnv(const char* s);
 ///
 
-// For debugging purposes, define print functions for all the data types being used
-inline void print(char c) {
-	putchar(c);
-}
-
-inline void print(int32_t n) {
-	printf("%" PRId32, n);
-}
-
-inline void print(int64_t n) {
-	printf("%" PRId64, n);
-}
-
-inline void print(uint32_t n) {
-	printf("%" PRIu32, n);
-}
-
-inline void print(uint64_t n) {
-	printf("%" PRIu64, n);
-}
-
-inline void print(const char* s) {
-	printf("%s", s);
-}
-
-inline void print(const void* p) {
-	printf("%p", p);
-}
-
-template <class K, class T> void print(const pair<K, T>& ab) {
-	putchar('<');
-	print(ab.first);
-	print(", ");
-	print(ab.second);
-	putchar('>');
-}
-
-template <class T> void print(const vector<T>& v) {
-	putchar('[');
-	bool more = 0;
-	for (auto& a: v) {
-		if (more) print(", ");
-		more = 1;
-		print(a);
-	}
-	putchar(']');
-}
-
 // SORT
 inline size_t hashCombine(size_t a, size_t b) {
 	return a ^ b + 0x9e3779b9u + (a << 6) + (a >> 2);
