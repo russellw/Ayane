@@ -435,7 +435,7 @@ struct Parser1: Parser {
 			for (auto i = vars.rbegin(), e = vars.rend(); i != e; ++i)
 				if (i->first == s) return i->second;
 			if (!cnfMode) err("unknown variable");
-			auto a = var(vars.n, &tindividual);
+			auto a = var(&tindividual, vars.n);
 			vars.add(make_pair(s, a));
 			return a;
 		}
@@ -482,7 +482,7 @@ struct Parser1: Parser {
 				ty = atomicType();
 				if (ty == &tbool) err("$o variables not supported", inappropriateError);
 			}
-			auto a = var(vars.n, ty);
+			auto a = var(ty, vars.n);
 			vars.add(make_pair(s, a));
 			v.add(a);
 		} while (eat(','));

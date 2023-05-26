@@ -1,10 +1,10 @@
 // First-order variables must be of non-Boolean leaf types
 struct Var: Expr {
-	size_t i;
 	LeafType* ty;
+	size_t i;
 
-	Var(size_t i, LeafType* ty): Expr(Tag::var), i(i), ty(ty) {
+	Var(LeafType* ty, size_t i): Expr(Tag::var), ty(ty), i(i) {
 	}
 };
 
-Var* var(size_t i, LeafType* ty);
+Var* var(LeafType* ty, size_t i);

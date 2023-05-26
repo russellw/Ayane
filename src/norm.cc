@@ -6,9 +6,9 @@ Vec<pair<Var*, Var*>> normVars;
 
 Var* freshVar(LeafType* ty) {
 	for (auto& ab: freshVars)
-		if (ab.first == ty) return var(++ab.second, ty);
+		if (ab.first == ty) return var(ty, ++ab.second);
 	freshVars.add(make_pair(ty, 0));
-	return var(0, ty);
+	return var(ty, 0);
 }
 
 Var* normVar(Var* a) {

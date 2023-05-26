@@ -215,7 +215,7 @@ Expr* Parser::fn(Type* ty, Str* s) {
 	return s->fn = a;
 }
 
-void Parser::checkSize(Expr* a, size_t n) {
+void Parser::checkSize(size_t n, Expr* a) {
 	if (a->n == n) return;
 	if (a->tag == Tag::call) --n;
 	sprintf(buf, "expected %zu args", n);
@@ -264,7 +264,7 @@ void Parser::typing(Type* ty, Expr* a) {
 	case Tag::sub:
 		// Arithmetic of arity 2, type passes straight through
 		// TODO: would it be better to specialize to addInt etc?
-		checkSize(a, 2);
+		checkSize(2, a);
 		if (!isNum(ty)) err("invalid type for arithmetic");
 		typing(ty, at(a, 0));
 		typing(ty, at(a, 1));
@@ -296,7 +296,7 @@ void Parser::typing(Type* ty, Expr* a) {
 			if (fty->kind != Kind::fn) err("called a non-function");
 
 			// Check for input like a(b) followed by a(b, c)
-			checkSize(a, fty->n);
+			checkSize(fty->n, a);
 
 			// Check for inappropriate parameter types
 			for (size_t i = 1; i < fty->n; ++i) switch (at(fty, i)->kind) {
@@ -326,7 +326,7 @@ void Parser::typing(Type* ty, Expr* a) {
 	case Tag::round:
 	case Tag::trunc:
 		// Arithmetic of arity 1, type passes straight through
-		checkSize(a, 1);
+		checkSize(1, a);
 		if (!isNum(ty)) err("invalid type for arithmetic");
 		typing(ty, at(a, 0));
 		break;
@@ -345,7 +345,7 @@ void Parser::typing(Type* ty, Expr* a) {
 		break;
 	case Tag::div:
 		// Arithmetic of arity 2, type passes straight through, but fractions only
-		checkSize(a, 2);
+		checkSize(2, a);
 		switch (ty->kind) {
 		case Kind::rat:
 		case Kind::real:
@@ -386,7 +386,7 @@ void Parser::typing(Type* ty, Expr* a) {
 	case Tag::toRat:
 	case Tag::toReal:
 		// Type converter of arity 1
-		checkSize(a, 1);
+		checkSize(1, a);
 
 		// Safe to call type(a) because it will stop at this tag
 		if (type(a) != ty) err("type mismatch");
@@ -399,7 +399,7 @@ void Parser::typing(Type* ty, Expr* a) {
 		break;
 	case Tag::lt:
 		// Type converter of arity 2
-		checkSize(a, 2);
+		checkSize(2, a);
 
 		// Safe to call type(a) because it will stop at this tag
 		if (type(a) != ty) err("type mismatch");
@@ -413,7 +413,7 @@ void Parser::typing(Type* ty, Expr* a) {
 		break;
 	case Tag::not1:
 		// Connective of arity 1
-		checkSize(a, 1);
+		checkSize(1, a);
 		if (&tbool != ty) err("type mismatch");
 		typing(&tbool, at(a, 0));
 		break;

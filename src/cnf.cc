@@ -187,7 +187,7 @@ Expr* all(int pol, Expr* a) {
 	for (size_t i = 1; i < a->n; ++i) {
 		auto x = (Var*)at(a, i);
 		assert(x->tag == Tag::var);
-		auto y = var(vars++, ((Var*)x)->ty);
+		auto y = var(((Var*)x)->ty, vars++);
 		m.add(make_pair(x, y));
 	}
 	a = nnf(pol, at(a, 0));
