@@ -340,7 +340,7 @@ struct Parser1: Parser {
 			{
 				auto s = word();
 				if (s->fn) err("function already declared");
-				s->fn = new (ialloc(sizeof(Fn))) Fn(s->v, topLevelType());
+				s->fn = new (ialloc(sizeof(Fn))) Fn(topLevelType(), s->v);
 				expect(')');
 				break;
 			}

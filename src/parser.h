@@ -44,7 +44,7 @@ struct Parser {
 
 	// Type a function, in context where error can report line number. For languages like TPTP where definitions can be implied on
 	// the fly, but must be consistent with previous usage.
-	Expr* fn(Str* s, Type* ty);
+	Expr* fn(Type* ty, Str* s);
 
 	// Check the correctness of expressions, in context where error can report line number
 	void checkSize(Expr* a, size_t arity);

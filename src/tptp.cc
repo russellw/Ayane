@@ -441,7 +441,7 @@ struct Parser1: Parser {
 		}
 		case k_word:
 		{
-			auto a = fn(s, 0);
+			auto a = fn(0, s);
 
 			// Not a function call
 			if (tok != '(') return a;
@@ -647,7 +647,7 @@ struct Parser1: Parser {
 						// this and move on.
 					} else {
 						// The symbol is the name of a function with the specified type. Make sure it has this type.
-						fn(s, topLevelType());
+						fn(topLevelType(), s);
 					}
 
 					while (parens--) expect(')');

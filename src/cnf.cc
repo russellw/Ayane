@@ -79,8 +79,8 @@ Type* compType(Type* rty, Vec<Expr*>& args) {
 }
 
 Expr* skolem(Type* rty, Vec<Expr*>& args) {
-	if (!args.n) return new (ialloc(sizeof(Fn))) Fn(0, rty);
-	Vec<Expr*> v(1 + args.n, new (ialloc(sizeof(Fn))) Fn(0, compType(rty, args)));
+	if (!args.n) return new (ialloc(sizeof(Fn))) Fn(rty, 0);
+	Vec<Expr*> v(1 + args.n, new (ialloc(sizeof(Fn))) Fn(compType(rty, args), 0));
 	memcpy(v.data + 1, args.data, args.n * sizeof(void*));
 	return comp(Tag::call, v);
 }

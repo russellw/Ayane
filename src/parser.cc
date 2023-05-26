@@ -185,7 +185,7 @@ void Parser::number() {
 	num = rat(Tag::real, q);
 }
 
-Expr* Parser::fn(Str* s, Type* ty) {
+Expr* Parser::fn(Type* ty, Str* s) {
 	// For languages like TPTP where it's okay to repeat declarations, provided they agree with each other
 	if (s->fn) {
 		auto a = s->fn;
@@ -211,7 +211,7 @@ Expr* Parser::fn(Str* s, Type* ty) {
 	}
 
 	// Making a new function is the simple case
-	auto a = new (ialloc(sizeof(Fn))) Fn(s->v, ty);
+	auto a = new (ialloc(sizeof(Fn))) Fn(ty, s->v);
 	return s->fn = a;
 }
 
