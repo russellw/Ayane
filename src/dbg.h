@@ -1,10 +1,10 @@
 #ifdef DBG
 
-// Print the value of an expression, along with where it is. Assumes a print function has been defined for the type.
+// Print the value of an expression, along with where it is. Assumes a dbgPrint function has been defined for the type.
 #define dbg(a) \
 	do { \
 		printf("%s:%d: %s: %s: ", __FILE__, __LINE__, __func__, #a); \
-		print(a); \
+		dbgPrint(a); \
 		putchar('\n'); \
 	} while (0)
 
@@ -17,49 +17,49 @@ void stackTrace();
 #define unreachable assert(0)
 
 // SORT
-inline void print(char c) {
+inline void dbgPrint(char c) {
 	putchar(c);
 }
 
-inline void print(const char* s) {
+inline void dbgPrint(const char* s) {
 	printf("%s", s);
 }
 
-inline void print(const void* p) {
+inline void dbgPrint(const void* p) {
 	printf("%p", p);
 }
 
-inline void print(int32_t n) {
+inline void dbgPrint(int32_t n) {
 	printf("%" PRId32, n);
 }
 
-inline void print(int64_t n) {
+inline void dbgPrint(int64_t n) {
 	printf("%" PRId64, n);
 }
 
-inline void print(uint32_t n) {
+inline void dbgPrint(uint32_t n) {
 	printf("%" PRIu32, n);
 }
 
-inline void print(uint64_t n) {
+inline void dbgPrint(uint64_t n) {
 	printf("%" PRIu64, n);
 }
 
-template <class K, class T> void print(const pair<K, T>& ab) {
+template <class K, class T> void dbgPrint(const pair<K, T>& ab) {
 	putchar('<');
-	print(ab.first);
-	print(", ");
-	print(ab.second);
+	dbgPrint(ab.first);
+	dbgPrint(", ");
+	dbgPrint(ab.second);
 	putchar('>');
 }
 
-template <class T> void print(const vector<T>& v) {
+template <class T> void dbgPrint(const vector<T>& v) {
 	putchar('[');
 	bool more = 0;
 	for (auto& a: v) {
-		if (more) print(", ");
+		if (more) dbgPrint(", ");
 		more = 1;
-		print(a);
+		dbgPrint(a);
 	}
 	putchar(']');
 }

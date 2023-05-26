@@ -18,30 +18,30 @@ bool isNum(Type* ty) {
 }
 
 #ifdef DBG
-void print(Kind kind) {
+void dbgPrint(Kind kind) {
 	static const char* kindNames[] = {
 #define _(a) #a,
 #include "kinds.h"
 	};
-	print(kindNames[(int)kind]);
+	dbgPrint(kindNames[(int)kind]);
 }
 
-void print(Type* ty) {
+void dbgPrint(Type* ty) {
 	switch (ty->kind) {
 	case Kind::fn:
-		print(at(ty, 0));
+		dbgPrint(at(ty, 0));
 		putchar('(');
 		for (size_t i = 1; i < ty->n; ++i) {
-			if (i > 1) print(", ");
-			print(at(ty, i));
+			if (i > 1) dbgPrint(", ");
+			dbgPrint(at(ty, i));
 		}
 		putchar(')');
 		break;
 	case Kind::opaque:
-		print(((OpaqueType*)ty)->s);
+		dbgPrint(((OpaqueType*)ty)->s);
 		break;
 	default:
-		print(ty->kind);
+		dbgPrint(ty->kind);
 		break;
 	}
 }

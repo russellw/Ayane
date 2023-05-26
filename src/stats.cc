@@ -88,7 +88,7 @@ void printStats() {
 	}
 	for (auto& ab: traces) {
 		putchar('\n');
-		print(ab.second);
+		dbgPrint(ab.second);
 		putchar('\n');
 		for (auto s: ab.first) printf("\t%s\n", s);
 	}

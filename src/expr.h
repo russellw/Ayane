@@ -35,8 +35,8 @@ struct Eqn: pair<Expr*, Expr*> {
 #ifdef DBG
 void check(Expr* a);
 
-void print(Tag tag);
-void print(Expr* a);
+void dbgPrint(Tag tag);
+void dbgPrint(Expr* a);
 #else
 inline void check(Expr* a) {
 }

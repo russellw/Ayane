@@ -140,29 +140,29 @@ void check(Expr* a) {
 	}
 }
 
-void print(Tag tag) {
+void dbgPrint(Tag tag) {
 	static const char* tagNames[] = {
 #define _(a) #a,
 #include "tags.h"
 	};
-	print(tagNames[(int)tag]);
+	dbgPrint(tagNames[(int)tag]);
 }
 
-void print(Expr* a) {
+void dbgPrint(Expr* a) {
 	switch (a->tag) {
 	case Tag::call:
-		print(at(a, 0));
+		dbgPrint(at(a, 0));
 		putchar('(');
 		for (size_t i = 1; i < a->n; ++i) {
-			if (i > 1) print(", ");
-			print(at(a, i));
+			if (i > 1) dbgPrint(", ");
+			dbgPrint(at(a, i));
 		}
 		putchar(')');
 		break;
 	case Tag::fn:
 	{
 		auto s = ((Fn*)a)->s;
-		if (s) print(s);
+		if (s) dbgPrint(s);
 		else
 			printf("_%p", a);
 		break;
@@ -178,12 +178,12 @@ void print(Expr* a) {
 		printf("%p", a);
 		break;
 	default:
-		print(a->tag);
+		dbgPrint(a->tag);
 		if (!a->n) break;
 		putchar('(');
 		for (size_t i = 0; i < a->n; ++i) {
-			if (i) print(", ");
-			print(at(a, i));
+			if (i) dbgPrint(", ");
+			dbgPrint(at(a, i));
 		}
 		putchar(')');
 		break;

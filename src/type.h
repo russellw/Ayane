@@ -40,6 +40,6 @@ struct OpaqueType: LeafType {
 };
 
 #ifdef DBG
-void print(Kind kind);
-void print(Type* ty);
+void dbgPrint(Kind kind);
+void dbgPrint(Type* ty);
 #endif

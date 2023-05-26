@@ -91,13 +91,13 @@ template <class K, class T> bool get(K a, T& b, Vec<pair<K, T>>& m) {
 	return 0;
 }
 
-template <class T> void print(Vec<T>& v) {
+template <class T> void dbgPrint(Vec<T>& v) {
 	putchar('[');
 	bool more = 0;
 	for (auto& a: v) {
-		if (more) print(", ");
+		if (more) dbgPrint(", ");
 		more = 1;
-		print(a);
+		dbgPrint(a);
 	}
 	putchar(']');
 }

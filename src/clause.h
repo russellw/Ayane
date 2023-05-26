@@ -50,5 +50,5 @@ extern priority_queue<Clause*, vector<Clause*>, ClauseCompare> passive;
 void clause();
 
 #ifdef DBG
-void print(Clause* c);
+void dbgPrint(Clause* c);
 #endif

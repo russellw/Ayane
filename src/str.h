@@ -91,6 +91,6 @@ inline Str* intern(const char* s) {
 	return intern((char*)s, strlen(s));
 }
 
-inline void print(Str* s) {
-	print(s->v);
+inline void dbgPrint(Str* s) {
+	dbgPrint(s->v);
 }
