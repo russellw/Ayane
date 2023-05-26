@@ -1,6 +1,7 @@
 #include "main.h"
 
 #ifdef DBG
+
 #ifdef _WIN32
 #include <windows.h>
 
@@ -11,20 +12,6 @@ extern "C" const char* __asan_default_options() {
 	return "detect_leaks=0";
 }
 #endif
-
-static int level;
-
-Tracer::Tracer() {
-	++level;
-}
-
-Tracer::~Tracer() {
-	--level;
-}
-
-void indent() {
-	for (auto i = level; i--;) print("  ");
-}
 
 void stackTrace() {
 #ifdef _WIN32
@@ -62,4 +49,5 @@ bool assertFail(const char* file, int line, const char* func, const char* s) {
 	stackTrace();
 	exit(assertError);
 }
+
 #endif
