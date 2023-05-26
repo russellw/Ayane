@@ -36,6 +36,7 @@ words = (
     "ite",
     "less",
     "lesseq",
+    "let",
     "not",
     "o",
     "or",

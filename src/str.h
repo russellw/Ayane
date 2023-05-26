@@ -43,6 +43,7 @@ enum {
 	s_ite,
 	s_less,
 	s_lesseq,
+	s_let,
 	s_not,
 	s_o,
 	s_or,
