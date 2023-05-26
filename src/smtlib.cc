@@ -190,11 +190,15 @@ struct Parser1: Parser {
 		case k_word:
 			auto s = str;
 			lex();
+			if (s->ty) return s->ty;
 			switch (s - keywords) {
+			case s_Bool:
+				return &tbool;
 			case s_Int:
 				return &tinteger;
+			case s_Real:
+				return &treal;
 			}
-			if (s->ty) return s->ty;
 			err("unknown sort");
 		}
 		err("expected sort");
@@ -228,6 +232,7 @@ struct Parser1: Parser {
 			v.add(a);
 		} while (!eat(')'));
 		v[0] = expr();
+		expect(')');
 		vars.n = o;
 		return comp(tag, v);
 	}

@@ -12,7 +12,9 @@ struct Str {
 
 // Keywords are strings that are known to be important
 enum {
+	s_Bool,
 	s_Int,
+	s_Real,
 	s_and,
 	s_assert,
 	s_ax,

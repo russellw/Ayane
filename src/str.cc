@@ -2,7 +2,9 @@
 
 Str keywords[] = {
 	// clang-format off
+	{0, 0, "Bool"},
 	{0, 0, "Int"},
+	{0, 0, "Real"},
 	{0, 0, "and"},
 	{0, 0, "assert"},
 	{0, 0, "ax"},

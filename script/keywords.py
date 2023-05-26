@@ -5,7 +5,9 @@ src = os.path.join(here, "..", "src")
 
 words = (
     # SORT
+    "Bool",
     "Int",
+    "Real",
     "and",
     "assert",
     "ax",
