@@ -186,16 +186,6 @@ void Parser::number() {
 }
 
 Expr* Parser::fn(Str* s, Type* ty) {
-	// Check validity of the specified type
-	if (ty && ty->kind == Kind::fn) {
-		auto ty1 = (CompType*)ty;
-		for (size_t i = 1; i < ty1->n; ++i) {
-			auto param = at(ty, i);
-			assert(param->kind != Kind::fn);
-			if (param == &tbool) err("boolean parameter not supported", inappropriateError);
-		}
-	}
-
 	// For languages like TPTP where it's okay to repeat declarations, provided they agree with each other
 	if (s->fn) {
 		auto a = s->fn;
@@ -232,14 +222,14 @@ void Parser::checkSize(Expr* a, size_t n) {
 	err(buf, typeError);
 }
 
+// In TPTP, types that are not specified or otherwise implied by context, default to individual
 static Type* typeOrIndividual(Expr* a) {
 	switch (a->tag) {
 	case Tag::call:
 	{
 		auto f = (Fn*)at(a, 0);
 		assert(f->tag == Tag::fn);
-		auto ty = f->ty;
-		if (!ty) return &tindividual;
+		if (!f->ty) return &tindividual;
 		return at(f->ty, 0);
 	}
 	case Tag::fn:
@@ -261,6 +251,7 @@ void Parser::typing(Expr* a, Type* ty) {
 	// returned.
 	assert(ty->kind != Kind::fn);
 
+	// This switch should be exhaustive
 	switch (a->tag) {
 	case Tag::add:
 	case Tag::divEuclid:
@@ -293,9 +284,12 @@ void Parser::typing(Expr* a, Type* ty) {
 		break;
 	case Tag::call:
 	{
+		// Check consistency of data structures
 		assert(a->n > 1);
 		auto f = (Fn*)at(a, 0);
 		assert(f->tag == Tag::fn);
+
+		// The function may or may not already have a type; in TPTP, types can sometimes be inferred from context
 		auto fty = f->ty;
 		if (fty) {
 			// Check for input like a(b) where a is just a constant
@@ -303,6 +297,14 @@ void Parser::typing(Expr* a, Type* ty) {
 
 			// Check for input like a(b) followed by a(b, c)
 			checkSize(a, fty->n);
+
+			// Check for inappropriate parameter types
+			for (size_t i = 1; i < fty->n; ++i) switch (at(fty, i)->kind) {
+				case Kind::boolean:
+					err("boolean parameters not supported", inappropriateError);
+				case Kind::fn:
+					err("higher-order functions not supported", inappropriateError);
+				}
 
 			// And of course, check return type
 			if (at(fty, 0) != ty) err("type mismatch", typeError);

@@ -181,7 +181,7 @@ struct Parser1: Parser {
 	}
 
 	// Types
-	LeafType* type1() {
+	Type* type1() {
 		if (tok != k_word) err("composite types not supported", inappropriateError);
 		auto s = str;
 		lex();
@@ -189,9 +189,8 @@ struct Parser1: Parser {
 		case s_Int:
 			return &tinteger;
 		}
-		if (!s->ty) err("unknown type");
-		assert(s->ty->kind != Kind::fn);
-		return s->ty;
+		if (s->ty) return s->ty;
+		err("unknown type", typeError);
 	}
 
 	Type* topLevelType() {
@@ -208,8 +207,6 @@ struct Parser1: Parser {
 
 	// Expressions
 	Expr* expr(Tag tag) {
-		if (tok == ')') err("expected args");
-
 		Vec<Expr*> v;
 		do v.add(expr());
 		while (!eat(')'));
@@ -312,7 +309,8 @@ struct Parser1: Parser {
 		lex();
 		while (tok) {
 			expect('(');
-			switch (word() - keywords) {
+			auto s = word();
+			switch (s - keywords) {
 			case s_assert:
 			{
 				auto a = expr();
@@ -331,16 +329,21 @@ struct Parser1: Parser {
 				break;
 			}
 			case s_define_sort:
-				// TODO: opaqueType(word());
+			{
+				auto s = word();
+				if (s->ty) err("type already defined", typeError);
+				s->ty = topLevelType();
 				expect(')');
 				break;
+			}
 			case s_push:
 			case s_set_info:
 			case s_set_logic:
 				skip();
 				break;
 			default:
-				err("unknown command");
+				snprintf(buf, bufSize, "'%s': unknown command", s->v);
+				err(buf);
 			}
 		}
 	}

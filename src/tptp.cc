@@ -470,7 +470,7 @@ struct Parser1: Parser {
 			auto ty = &tindividual;
 			if (eat(':')) {
 				ty = atomicType();
-				if (ty == &tbool) err("$o is not a valid variable type", inappropriateError);
+				if (ty == &tbool) err("$o variables not supported", inappropriateError);
 			}
 			auto a = var(vars.n, ty);
 			vars.add(make_pair(s, a));
