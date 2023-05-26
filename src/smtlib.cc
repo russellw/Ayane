@@ -231,6 +231,7 @@ struct Parser1: Parser {
 		vars.n = o;
 		return comp(tag, v);
 	}
+
 	Expr* expr(Tag tag) {
 		Vec<Expr*> v;
 		do v.add(expr());
@@ -370,6 +371,7 @@ struct Parser1: Parser {
 			switch (s - keywords) {
 			case s_assert:
 			{
+				bufp = buf;
 				auto a = expr();
 				typing(&tbool, a);
 				expect(')');
