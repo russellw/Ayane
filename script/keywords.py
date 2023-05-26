@@ -15,6 +15,7 @@ words = (
     "cnf",
     "conjecture",
     "declare-fun",
+    "define-sort",
     "difference",
     "distinct",
     "false",

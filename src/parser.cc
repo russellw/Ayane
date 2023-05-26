@@ -185,28 +185,42 @@ void Parser::number() {
 	num = rat(Tag::real, q);
 }
 
-void Parser::setType(Fn* a, Type* ty) {
-	assert(a->tag == Tag::fn);
-	if (a->ty == ty) return;
-	if (!a->ty) {
-		a->ty = ty;
-		return;
-	}
-	if (ty) err("type mismatch", typeError);
-}
-
 Expr* Parser::fn(Str* s, Type* ty) {
+	// Check validity of the specified type
 	if (ty && ty->kind == Kind::fn) {
 		auto ty1 = (CompType*)ty;
-		for (size_t i = 1; i < ty1->n; ++i)
-			if (at(ty, i) == &tbool) err("Bool parameter not supported", inappropriateError);
+		for (size_t i = 1; i < ty1->n; ++i) {
+			auto param = at(ty, i);
+			assert(param->kind != Kind::fn);
+			if (param == &tbool) err("boolean parameter not supported", inappropriateError);
+		}
 	}
+
+	// For languages like TPTP where it's okay to repeat declarations, provided they agree with each other
 	if (s->fn) {
 		auto a = s->fn;
+
+		// Check consistency of data structures
+		assert(a->tag == Tag::fn);
 		assert(a->s == s->v);
-		setType(a, ty);
-		return a;
+
+		// If no type is specified, done
+		if (!ty) return a;
+
+		// If it already has the specified type, done
+		if (a->ty == ty) return a;
+
+		// If it doesn't already have a type, now it does
+		if (!a->ty) {
+			a->ty = ty;
+			return a;
+		}
+
+		// Specified type is not consistent with what we already have
+		err("type mismatch", typeError);
 	}
+
+	// Making a new function is the simple case
 	auto a = new (ialloc(sizeof(Fn))) Fn(s->v, ty);
 	return s->fn = a;
 }

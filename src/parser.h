@@ -42,8 +42,8 @@ struct Parser {
 	// Lex a number, tok = k_num, num = the number
 	void number();
 
-	// Type a function, in context where error can report line number
-	void setType(Fn* a, Type* ty);
+	// Type a function, in context where error can report line number. For use in languages like TPTP where definitions can be
+	// implied on the fly, but must be consistent with previous usage.
 	Expr* fn(Str* s, Type* ty);
 
 	// Check the correctness of expressions, in context where error can report line number

@@ -183,12 +183,14 @@ struct Parser1: Parser {
 	// Types
 	LeafType* atomicType() {
 		if (tok != k_word) err("composite types not supported", inappropriateError);
-		switch (word() - keywords) {
+		auto s = str;
+		lex();
+		switch (s - keywords) {
 		case s_Int:
 			return &tinteger;
-		default:
-			err("unknown type");
 		}
+		if (s->ty) return s->ty;
+		err("unknown type");
 	}
 
 	Type* topLevelType() {
@@ -327,6 +329,10 @@ struct Parser1: Parser {
 				expect(')');
 				break;
 			}
+			case s_define_sort:
+				opaqueType(word());
+				expect(')');
+				break;
 			case s_push:
 			case s_set_info:
 			case s_set_logic:
