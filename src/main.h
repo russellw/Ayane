@@ -48,7 +48,6 @@ struct Var;
 #include "type.h"
 
 #include "comptype.h"
-#include "opaquetype.h"
 
 // Expressions
 #include "expr.h"
