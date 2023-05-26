@@ -22,6 +22,7 @@ enum {
 	s_cnf,
 	s_conjecture,
 	s_declare_fun,
+	s_declare_sort,
 	s_define_sort,
 	s_difference,
 	s_distinct,

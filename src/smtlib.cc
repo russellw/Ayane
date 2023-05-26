@@ -182,15 +182,20 @@ struct Parser1: Parser {
 
 	// Types
 	Type* type1() {
-		if (tok != k_word) err("composite types not supported", inappropriateError);
-		auto s = str;
-		lex();
-		switch (s - keywords) {
-		case s_Int:
-			return &tinteger;
+		switch (tok) {
+		case '(':
+			err("composite sorts not supported", inappropriateError);
+		case k_word:
+			auto s = str;
+			lex();
+			switch (s - keywords) {
+			case s_Int:
+				return &tinteger;
+			}
+			if (s->ty) return s->ty;
+			err("unknown sort", typeError);
 		}
-		if (s->ty) return s->ty;
-		err("unknown type", typeError);
+		err("expected sort");
 	}
 
 	Type* topLevelType() {
@@ -328,10 +333,21 @@ struct Parser1: Parser {
 				expect(')');
 				break;
 			}
+			case s_declare_sort:
+			{
+				auto s = word();
+				if (s->ty) err("sort already declared", typeError);
+				if (tok != k_num || num->tag != Tag::integer) err("expected arity");
+				if (mpz_sgn(((Int*)num)->v)) err("sort parameters not supported", inappropriateError);
+				lex();
+				expect(')');
+				s->ty = new (ialloc(sizeof(OpaqueType))) OpaqueType(s->v);
+				break;
+			}
 			case s_define_sort:
 			{
 				auto s = word();
-				if (s->ty) err("type already defined", typeError);
+				if (s->ty) err("sort already defined", typeError);
 				s->ty = topLevelType();
 				expect(')');
 				break;

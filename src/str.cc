@@ -12,6 +12,7 @@ Str keywords[] = {
 	{0, 0, "cnf"},
 	{0, 0, "conjecture"},
 	{0, 0, "declare-fun"},
+	{0, 0, "declare-sort"},
 	{0, 0, "define-sort"},
 	{0, 0, "difference"},
 	{0, 0, "distinct"},
