@@ -243,7 +243,7 @@ static Type* typeOrIndividual(Expr* a) {
 	}
 }
 
-void Parser::typing(Expr* a, Type* ty) {
+void Parser::typing(Type* ty, Expr* a) {
 	assert(ty);
 
 	// In first-order logic, a function cannot return a function, nor can a variable store one. (That would be higher-order logic.)
@@ -266,21 +266,21 @@ void Parser::typing(Expr* a, Type* ty) {
 		// TODO: would it be better to specialize to addInt etc?
 		checkSize(a, 2);
 		if (!isNum(ty)) err("invalid type for arithmetic");
-		typing(at(a, 0), ty);
-		typing(at(a, 1), ty);
+		typing(ty, at(a, 0));
+		typing(ty, at(a, 1));
 		break;
 	case Tag::all:
 	case Tag::exists:
 		// Quantifier
 		// TODO: does SMT-LIB need to check a Boolean was wanted here?
-		typing(at(a, 0), &tbool);
+		typing(&tbool, at(a, 0));
 		break;
 	case Tag::and1:
 	case Tag::eqv:
 	case Tag::or1:
 		// Connective
 		if (&tbool != ty) err("type mismatch");
-		for (size_t i = 0; i < a->n; ++i) typing(at(a, i), ty);
+		for (size_t i = 0; i < a->n; ++i) typing(&tbool, at(a, i));
 		break;
 	case Tag::call:
 	{
@@ -317,11 +317,7 @@ void Parser::typing(Expr* a, Type* ty) {
 		}
 
 		// And recur, based on the parameter types
-		for (size_t i = 1; i < fty->n; ++i) {
-			assert(at(fty, i)->kind != Kind::boolean);
-			assert(at(fty, i)->kind != Kind::fn);
-			typing(at(a, i), at(fty, i));
-		}
+		for (size_t i = 1; i < fty->n; ++i) typing(at(fty, i), at(a, i));
 		break;
 	}
 	case Tag::ceil:
@@ -332,7 +328,7 @@ void Parser::typing(Expr* a, Type* ty) {
 		// Arithmetic of arity 1, type passes straight through
 		checkSize(a, 1);
 		if (!isNum(ty)) err("invalid type for arithmetic");
-		typing(at(a, 0), ty);
+		typing(ty, at(a, 0));
 		break;
 	case Tag::distinctObj:
 	case Tag::false1:
@@ -357,8 +353,8 @@ void Parser::typing(Expr* a, Type* ty) {
 		default:
 			err("invalid type for division");
 		}
-		typing(at(a, 0), ty);
-		typing(at(a, 1), ty);
+		typing(ty, at(a, 0));
+		typing(ty, at(a, 1));
 		break;
 	case Tag::eq:
 		// Eq is always a special case
@@ -370,8 +366,8 @@ void Parser::typing(Expr* a, Type* ty) {
 		default:
 			break;
 		}
-		typing(at(a, 0), ty);
-		typing(at(a, 1), ty);
+		typing(ty, at(a, 0));
+		typing(ty, at(a, 1));
 		break;
 	case Tag::fn:
 	{
@@ -399,7 +395,7 @@ void Parser::typing(Expr* a, Type* ty) {
 		ty = typeOrIndividual(at(a, 0));
 
 		if (!isNum(ty)) err("invalid type for arithmetic");
-		typing(at(a, 0), ty);
+		typing(ty, at(a, 0));
 		break;
 	case Tag::lt:
 		// Type converter of arity 2
@@ -412,14 +408,14 @@ void Parser::typing(Expr* a, Type* ty) {
 		ty = typeOrIndividual(at(a, 0));
 
 		if (!isNum(ty)) err("invalid type for comparison");
-		typing(at(a, 0), ty);
-		typing(at(a, 1), ty);
+		typing(ty, at(a, 0));
+		typing(ty, at(a, 1));
 		break;
 	case Tag::not1:
 		// Connective of arity 1
 		checkSize(a, 1);
 		if (&tbool != ty) err("type mismatch");
-		typing(at(a, 0), &tbool);
+		typing(&tbool, at(a, 0));
 		break;
 	}
 }

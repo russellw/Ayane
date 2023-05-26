@@ -613,7 +613,7 @@ struct Parser1: Parser {
 						a = at(a, 0);
 						no = no ^ 1;
 					}
-					typing(a, &tbool);
+					typing(&tbool, a);
 					(no ? neg : pos).add(a);
 				} while (eat('|'));
 				while (parens--) expect(')');
@@ -658,7 +658,7 @@ struct Parser1: Parser {
 				cnfMode = 0;
 				auto a = logicFormula();
 				assert(!vars.n);
-				typing(a, &tbool);
+				typing(&tbool, a);
 
 				// Select
 				if (!select.count(name)) break;

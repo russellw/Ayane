@@ -48,5 +48,5 @@ struct Parser {
 
 	// Check the correctness of expressions, in context where error can report line number
 	void checkSize(Expr* a, size_t arity);
-	void typing(Expr* a, Type* ty);
+	void typing(Type* ty, Expr* a);
 };

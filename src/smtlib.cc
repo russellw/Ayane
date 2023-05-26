@@ -329,7 +329,7 @@ struct Parser1: Parser {
 			case s_assert:
 			{
 				auto a = expr();
-				typing(a, &tbool);
+				typing(&tbool, a);
 				expect(')');
 				cnf(a);
 				break;
