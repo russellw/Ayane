@@ -336,8 +336,6 @@ void Parser::typing(Type* ty, Expr* a) {
 	case Tag::rat:
 	case Tag::real:
 	case Tag::true1:
-	case Tag::var:
-		// Leaf
 		assert(!a->n);
 
 		// Safe to call type(a) because there are no subexpressions
@@ -416,6 +414,16 @@ void Parser::typing(Type* ty, Expr* a) {
 		checkSize(1, a);
 		if (&tbool != ty) err("type mismatch");
 		typing(&tbool, at(a, 0));
+		break;
+	case Tag::var:
+		assert(!a->n);
+
+		// Parsers need to make sure variables have leaf types, to preserve validity of data structures, so we only need to check
+		// here for Boolean variables
+		if (ty == &tbool) err("boolean variables not supported", inappropriateError);
+
+		// Safe to call type(a) because there are no subexpressions
+		if (type(a) != ty) err("type mismatch");
 		break;
 	}
 }

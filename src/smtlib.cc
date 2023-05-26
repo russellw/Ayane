@@ -6,9 +6,13 @@ enum {
 	k_string,
 };
 
+// TODO: should this be static?
 char issym[0x100];
 
 struct Parser1: Parser {
+	// TODO: should this be static?
+	Vec<pair<Str*, Var*>> vars;
+
 	// Tokenizer
 	void lex() {
 	loop:
@@ -211,6 +215,24 @@ struct Parser1: Parser {
 	}
 
 	// Expressions
+	Expr* quant(Tag tag) {
+		expect('(');
+		Vec<Expr*> v(1);
+		auto o = vars.n;
+		do {
+			expect('(');
+			auto s = word();
+			auto ty = type1();
+			if (ty->kind == Kind::fn) err("Bool is not a valid variable type");
+			expect(')');
+			auto a = var((LeafType*)ty, vars.n);
+			vars.add(make_pair(s, a));
+			v.add(a);
+		} while (!eat(')'));
+		v[0] = expr();
+		vars.n = o;
+		return comp(tag, v);
+	}
 	Expr* expr(Tag tag) {
 		Vec<Expr*> v;
 		do v.add(expr());
@@ -230,6 +252,10 @@ struct Parser1: Parser {
 			switch (s - keywords) {
 			case s_and:
 				return expr(Tag::and1);
+			case s_exists:
+				return quant(Tag::exists);
+			case s_forall:
+				return quant(Tag::all);
 			case s_ge:
 			{
 				auto a = expr();

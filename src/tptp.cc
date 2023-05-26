@@ -49,7 +49,7 @@ struct Parser1: Parser {
 	// SORT
 	bool cnfMode;
 	const Select& select;
-	Vec<pair<Str*, Expr*>> vars;
+	Vec<pair<Str*, Var*>> vars;
 	///
 
 	// Tokenizer
@@ -478,10 +478,7 @@ struct Parser1: Parser {
 			auto s = str;
 			lex();
 			auto ty = &tindividual;
-			if (eat(':')) {
-				ty = atomicType();
-				if (ty == &tbool) err("$o variables not supported", inappropriateError);
-			}
+			if (eat(':')) ty = atomicType();
 			auto a = var(ty, vars.n);
 			vars.add(make_pair(s, a));
 			v.add(a);
