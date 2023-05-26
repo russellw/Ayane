@@ -253,6 +253,12 @@ struct Parser1: Parser {
 		case '(':
 		{
 			s = word();
+			if (s->fn) {
+				Vec<Expr*> v(1, s->fn);
+				do v.add(expr());
+				while (!eat(')'));
+				return comp(Tag::call, v);
+			}
 			switch (s - keywords) {
 			case s_and:
 				return expr(Tag::and1);
@@ -324,12 +330,6 @@ struct Parser1: Parser {
 				return comp(Tag::not1, comp(Tag::eqv, a, b));
 			}
 			}
-			if (s->fn) {
-				Vec<Expr*> v(1, s->fn);
-				do v.add(expr());
-				while (!eat(')'));
-				return comp(Tag::call, v);
-			}
 			snprintf(buf, bufSize, "'%s': not found", s->v);
 			err(buf);
 		}
@@ -344,8 +344,12 @@ struct Parser1: Parser {
 			// Function declarations have global scope
 			if (s->fn) return s->fn;
 
-			// Perhaps surprisingly, true and false are not reserved words. They effectively have system scope, so they can be
-			// shadowed by function declarations.
+			// There is the question of whether it should be possible to shadow true and false. They are not listed as reserved
+			// words. SMT-LIB reference 2.6 says 'binders cannot shadow theory function symbols'. (This parser allows them to do so,
+			// because that is simpler, but that is presumably a language extension.) But are true and false 'function' symbols?
+			// Only if you count constants as functions of arity zero, which one might do in some contexts and not others. It does
+			// seem that if we allow defined constants of those names at all, then they should shadow the built-in ones. Z3 4.12.1
+			// allows such shadowing without complaint, so this parser follows suit.
 			switch (s - keywords) {
 			case s_false:
 				return bools;
