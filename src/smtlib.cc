@@ -181,7 +181,7 @@ struct Parser1: Parser {
 	}
 
 	// Types
-	LeafType* atomicType() {
+	LeafType* type1() {
 		if (tok != k_word) err("composite types not supported", inappropriateError);
 		auto s = str;
 		lex();
@@ -189,19 +189,20 @@ struct Parser1: Parser {
 		case s_Int:
 			return &tinteger;
 		}
-		if (s->ty) return s->ty;
-		err("unknown type");
+		if (!s->ty) err("unknown type");
+		assert(s->ty->kind != Kind::fn);
+		return s->ty;
 	}
 
 	Type* topLevelType() {
 		expect('(');
 
-		if (eat(')')) return atomicType();
+		if (eat(')')) return type1();
 
 		Vec<Type*> v(1);
-		do v.add(atomicType());
+		do v.add(type1());
 		while (!eat(')'));
-		v[0] = atomicType();
+		v[0] = type1();
 		return compType(v);
 	}
 
@@ -315,8 +316,8 @@ struct Parser1: Parser {
 			case s_assert:
 			{
 				auto a = expr();
-				expect(')');
 				typing(a, &tbool);
+				expect(')');
 				cnf(a);
 				break;
 			}
@@ -330,7 +331,7 @@ struct Parser1: Parser {
 				break;
 			}
 			case s_define_sort:
-				opaqueType(word());
+				// TODO: opaqueType(word());
 				expect(')');
 				break;
 			case s_push:
