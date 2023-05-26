@@ -286,6 +286,14 @@ struct Parser1: Parser {
 				return comp(Tag::not1, comp(Tag::eqv, a, b));
 			}
 			}
+			if (s->fn) {
+				Vec<Expr*> v(1, s->fn);
+				do v.add(expr());
+				while (!eat(')'));
+				return comp(Tag::call, v);
+			}
+			snprintf(buf, bufSize, "'%s': not found", s->v);
+			err(buf);
 		}
 		case k_num:
 			// TODO: this is not quite correct; in the reals theory, integer literals actually have real type

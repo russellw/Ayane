@@ -1,6 +1,7 @@
 #ifdef DBG
 
 // Trace function entry and exit
+// TODO: clean up some of this
 struct Tracer {
 	Tracer();
 	~Tracer();
