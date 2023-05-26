@@ -16,8 +16,17 @@ void stackTrace();
 #define assert(a) (a) || assertFail(__FILE__, __LINE__, __func__, #a)
 #define unreachable assert(0)
 
+// SORT
 inline void print(char c) {
 	putchar(c);
+}
+
+inline void print(const char* s) {
+	printf("%s", s);
+}
+
+inline void print(const void* p) {
+	printf("%p", p);
 }
 
 inline void print(int32_t n) {
@@ -34,14 +43,6 @@ inline void print(uint32_t n) {
 
 inline void print(uint64_t n) {
 	printf("%" PRIu64, n);
-}
-
-inline void print(const char* s) {
-	printf("%s", s);
-}
-
-inline void print(const void* p) {
-	printf("%p", p);
 }
 
 template <class K, class T> void print(const pair<K, T>& ab) {
@@ -62,6 +63,7 @@ template <class T> void print(const vector<T>& v) {
 	}
 	putchar(']');
 }
+///
 
 #else
 
