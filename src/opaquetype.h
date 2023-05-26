@@ -5,5 +5,3 @@ struct OpaqueType: LeafType {
 	OpaqueType(char* s): LeafType(Kind::opaque), s(s) {
 	}
 };
-
-OpaqueType* opaqueType(Str* s);
