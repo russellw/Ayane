@@ -1,3 +1,16 @@
+// Error codes specified by this program have numbers starting at 200 to avoid overlap with those specified by POSIX or Windows.
+// Numbers are assigned roughly in order of increasing severity.
+
+// This can happen even when the input is correct, e.g. problem contains higher-order logic that the system does not understand,
+// 'inappropriate' in SZS terminology.
+const int inappropriateError = 200;
+
+// This means an error in the input
+const int inputError = 201;
+
+// This means a bug in the code
+const int assertError = 202;
+
 // TODO: this is not sorting
 // SORT
 size_t fnv(const void* p, size_t n);
@@ -13,17 +26,6 @@ inline size_t roundUp(size_t n, size_t alignment) {
 	return (n + alignment - 1) & ~(alignment - 1);
 }
 ///
-
-// Error codes specified by this program have numbers starting at 200 to avoid overlap with those specified by POSIX or Windows.
-// Numbers are assigned roughly in order from 'things that can reasonably happen even when the input is not actually incorrect'
-// (e.g. problem contains higher order logic that the system does not understand, 'inappropriate' in SZS terminology) to 'things
-// that can only happen if there is an error in the input' (e.g. syntax error) to 'things that can only happen if there is a bug in
-// the code' (e.g. assert failure).
-// TODO: fold 201-202
-const int inappropriateError = 200;
-const int typeError = 201;
-const int syntaxError = 202;
-const int assertError = 203;
 
 // SORT
 void* ialloc(size_t n);

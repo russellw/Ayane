@@ -93,7 +93,7 @@ int main(int argc, char** argv) {
 					++i;
 					if (i == argc) {
 						fprintf(stderr, "%s: expected arg\n", argv[i]);
-						return syntaxError;
+						return inputError;
 					}
 					s = argv[i];
 					break;
@@ -120,11 +120,11 @@ int main(int argc, char** argv) {
 				continue;
 			}
 			fprintf(stderr, "%s: unknown option\n", argv[i]);
-			return syntaxError;
+			return inputError;
 		}
 		if (file) {
 			fprintf(stderr, "%s: Input file already specified\n", s);
-			return syntaxError;
+			return inputError;
 		}
 		file = s;
 	}

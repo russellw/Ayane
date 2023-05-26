@@ -346,7 +346,7 @@ struct Parser1: Parser {
 				return definedFunctor(Tag::sub);
 			case s_distinct:
 			{
-				if (cnfMode) err("cnf does not support $distinct", typeError);
+				if (cnfMode) err("cnf does not support $distinct");
 				Vec<Expr*> v;
 				args(v);
 				Vec<Expr*> inequalities;

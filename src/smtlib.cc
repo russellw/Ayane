@@ -193,7 +193,7 @@ struct Parser1: Parser {
 				return &tinteger;
 			}
 			if (s->ty) return s->ty;
-			err("unknown sort", typeError);
+			err("unknown sort");
 		}
 		err("expected sort");
 	}
@@ -339,7 +339,7 @@ struct Parser1: Parser {
 			case s_declare_fun:
 			{
 				auto s = word();
-				if (s->fn) err("function already declared", typeError);
+				if (s->fn) err("function already declared");
 				s->fn = new (ialloc(sizeof(Fn))) Fn(s->v, topLevelType());
 				expect(')');
 				break;
@@ -347,7 +347,7 @@ struct Parser1: Parser {
 			case s_declare_sort:
 			{
 				auto s = word();
-				if (s->ty) err("sort already declared", typeError);
+				if (s->ty) err("sort already declared");
 				if (tok != k_num || num->tag != Tag::integer) err("expected arity");
 				if (mpz_sgn(((Int*)num)->v)) err("sort parameters not supported", inappropriateError);
 				lex();
@@ -358,7 +358,7 @@ struct Parser1: Parser {
 			case s_define_sort:
 			{
 				auto s = word();
-				if (s->ty) err("sort already defined", typeError);
+				if (s->ty) err("sort already defined");
 				s->ty = topLevelType();
 				expect(')');
 				break;

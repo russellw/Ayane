@@ -43,7 +43,7 @@ for file in problems:
             e = m[1]
             break
 
-        m = re.match(r"\S\s*(typeError)\s+", s)
+        m = re.match(r"\S\s*(inputError)\s+", s)
         if m:
             e = m[1]
             break
@@ -67,7 +67,7 @@ for file in problems:
     code = codes.get(code, code)
     s = p.stdout
 
-    if code in ("inappropriateError", "typeError"):
+    if code in ("inappropriateError", "inputError"):
         r = code
     elif code:
         err()

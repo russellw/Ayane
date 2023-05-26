@@ -1,4 +1,4 @@
-%typeError
+%inputError
 
 fof(a,conjecture,
 

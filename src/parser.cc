@@ -207,7 +207,7 @@ Expr* Parser::fn(Str* s, Type* ty) {
 		}
 
 		// Specified type is not consistent with what we already have
-		err("type mismatch", typeError);
+		err("type mismatch");
 	}
 
 	// Making a new function is the simple case
@@ -219,7 +219,7 @@ void Parser::checkSize(Expr* a, size_t n) {
 	if (a->n == n) return;
 	if (a->tag == Tag::call) --n;
 	sprintf(buf, "expected %zu args", n);
-	err(buf, typeError);
+	err(buf);
 }
 
 // In TPTP, types that are not specified or otherwise implied by context, default to individual
@@ -265,7 +265,7 @@ void Parser::typing(Expr* a, Type* ty) {
 		// Arithmetic of arity 2, type passes straight through
 		// TODO: would it be better to specialize to addInt etc?
 		checkSize(a, 2);
-		if (!isNum(ty)) err("invalid type for arithmetic", typeError);
+		if (!isNum(ty)) err("invalid type for arithmetic");
 		typing(at(a, 0), ty);
 		typing(at(a, 1), ty);
 		break;
@@ -279,7 +279,7 @@ void Parser::typing(Expr* a, Type* ty) {
 	case Tag::eqv:
 	case Tag::or1:
 		// Connective
-		if (&tbool != ty) err("type mismatch", typeError);
+		if (&tbool != ty) err("type mismatch");
 		for (size_t i = 0; i < a->n; ++i) typing(at(a, i), ty);
 		break;
 	case Tag::call:
@@ -293,7 +293,7 @@ void Parser::typing(Expr* a, Type* ty) {
 		auto fty = f->ty;
 		if (fty) {
 			// Check for input like a(b) where a is just a constant
-			if (fty->kind != Kind::fn) err("called a non-function", typeError);
+			if (fty->kind != Kind::fn) err("called a non-function");
 
 			// Check for input like a(b) followed by a(b, c)
 			checkSize(a, fty->n);
@@ -307,7 +307,7 @@ void Parser::typing(Expr* a, Type* ty) {
 				}
 
 			// And of course, check return type
-			if (at(fty, 0) != ty) err("type mismatch", typeError);
+			if (at(fty, 0) != ty) err("type mismatch");
 		} else {
 			// In TPTP, an undeclared function defaults to all parameters individual, and the return type individual or Boolean
 			// depending on context. Here, we allow a little more leeway. The return type defaults to whatever the context wanted.
@@ -331,7 +331,7 @@ void Parser::typing(Expr* a, Type* ty) {
 	case Tag::trunc:
 		// Arithmetic of arity 1, type passes straight through
 		checkSize(a, 1);
-		if (!isNum(ty)) err("invalid type for arithmetic", typeError);
+		if (!isNum(ty)) err("invalid type for arithmetic");
 		typing(at(a, 0), ty);
 		break;
 	case Tag::distinctObj:
@@ -345,7 +345,7 @@ void Parser::typing(Expr* a, Type* ty) {
 		assert(!a->n);
 
 		// Safe to call type(a) because there are no subexpressions
-		if (type(a) != ty) err("type mismatch", typeError);
+		if (type(a) != ty) err("type mismatch");
 		break;
 	case Tag::div:
 		// Arithmetic of arity 2, type passes straight through, but fractions only
@@ -355,7 +355,7 @@ void Parser::typing(Expr* a, Type* ty) {
 		case Kind::real:
 			break;
 		default:
-			err("invalid type for division", typeError);
+			err("invalid type for division");
 		}
 		typing(at(a, 0), ty);
 		typing(at(a, 1), ty);
@@ -366,7 +366,7 @@ void Parser::typing(Expr* a, Type* ty) {
 		switch (ty->kind) {
 		case Kind::boolean:
 		case Kind::fn:
-			err("invalid type for equality", typeError);
+			err("invalid type for equality");
 		default:
 			break;
 		}
@@ -381,7 +381,7 @@ void Parser::typing(Expr* a, Type* ty) {
 			a1->ty = ty;
 			break;
 		}
-		if (a1->ty != ty) err("type mismatch", typeError);
+		if (a1->ty != ty) err("type mismatch");
 		break;
 	}
 	case Tag::isInt:
@@ -393,12 +393,12 @@ void Parser::typing(Expr* a, Type* ty) {
 		checkSize(a, 1);
 
 		// Safe to call type(a) because it will stop at this tag
-		if (type(a) != ty) err("type mismatch", typeError);
+		if (type(a) != ty) err("type mismatch");
 
 		// But that means the argument may have a different type
 		ty = typeOrIndividual(at(a, 0));
 
-		if (!isNum(ty)) err("invalid type for arithmetic", typeError);
+		if (!isNum(ty)) err("invalid type for arithmetic");
 		typing(at(a, 0), ty);
 		break;
 	case Tag::lt:
@@ -406,19 +406,19 @@ void Parser::typing(Expr* a, Type* ty) {
 		checkSize(a, 2);
 
 		// Safe to call type(a) because it will stop at this tag
-		if (type(a) != ty) err("type mismatch", typeError);
+		if (type(a) != ty) err("type mismatch");
 
 		// But that means the argument may have a different type
 		ty = typeOrIndividual(at(a, 0));
 
-		if (!isNum(ty)) err("invalid type for comparison", typeError);
+		if (!isNum(ty)) err("invalid type for comparison");
 		typing(at(a, 0), ty);
 		typing(at(a, 1), ty);
 		break;
 	case Tag::not1:
 		// Connective of arity 1
 		checkSize(a, 1);
-		if (&tbool != ty) err("type mismatch", typeError);
+		if (&tbool != ty) err("type mismatch");
 		typing(at(a, 0), &tbool);
 		break;
 	}

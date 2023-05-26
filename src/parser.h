@@ -32,7 +32,7 @@ struct Parser {
 	~Parser();
 
 	// Report an error with line number, and exit
-	[[noreturn]] void err(const char* msg, int code = syntaxError);
+	[[noreturn]] void err(const char* msg, int code = inputError);
 
 	// Helper functions
 	void digits();
