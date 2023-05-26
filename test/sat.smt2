@@ -1,3 +1,4 @@
+(set-info :status sat)
 (declare-fun a () Bool)
 (declare-fun b () Bool)
 (assert a)

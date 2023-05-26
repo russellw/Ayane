@@ -250,6 +250,14 @@ struct Parser1: Parser {
 			switch (s - keywords) {
 			case s_and:
 				return expr(Tag::and1);
+			case s_eq:
+			{
+				auto a = expr();
+				auto b = expr();
+				expect(')');
+				auto tag = type(a) == &tbool ? Tag::eqv : Tag::eq;
+				return comp(tag, a, b);
+			}
 			case s_exists:
 				return quant(Tag::exists);
 			case s_forall:
@@ -323,13 +331,23 @@ struct Parser1: Parser {
 			// TODO: this is not quite correct; in the reals theory, integer literals actually have real type
 			return num1;
 		case k_word:
+			// SMTLIB has lexical scope, so bound variables can shadow everything else
+			for (auto i = vars.rbegin(), e = vars.rend(); i != e; ++i)
+				if (i->first == s) return i->second;
+
+			// Function declarations have global scope
+			if (s->fn) return s->fn;
+
+			// Perhaps surprisingly, true and false are not reserved words. They effectively have system scope, so they can be
+			// shadowed by function declarations.
 			switch (s - keywords) {
 			case s_false:
 				return bools;
 			case s_true:
 				return bools + 1;
 			}
-			if (s->fn) return s->fn;
+
+			// Unlike TPTP, it's an error to use a name that has not been declared
 			snprintf(buf, bufSize, "'%s': not found", s->v);
 			err(buf);
 		}

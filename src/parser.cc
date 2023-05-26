@@ -244,6 +244,8 @@ static Type* typeOrIndividual(Expr* a) {
 }
 
 void Parser::typing(Type* ty, Expr* a) {
+	// We need to be careful about calling type(a) at this point, because in TPTP, the type of this expression (or some
+	// subexpression thereof) may not necessarily be specified yet. But the type expected for it, should be specified.
 	assert(ty);
 
 	// In first-order logic, a function cannot return a function, nor can a variable store one. (That would be higher-order logic.)

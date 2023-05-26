@@ -46,7 +46,10 @@ struct Parser {
 	// the fly, but must be consistent with previous usage.
 	Expr* fn(Type* ty, Str* s);
 
-	// Check the correctness of expressions, in context where error can report line number
+	// Typing() has a dual role: Check consistency (applies to all languages except DIMACS) and fill in any unspecified types
+	// (applies to languages like TPTP, where some types may be implied). It's a member of Parser because the check should be done
+	// in context where error can report line number. After it returns, everything should be fully and correctly typed, and this
+	// condition should be maintained as an invariant by all subsequent processing.
 	void checkSize(size_t n, Expr* a);
 	void typing(Type* ty, Expr* a);
 };
