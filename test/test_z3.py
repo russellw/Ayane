@@ -33,7 +33,7 @@ for file in problems:
     e = test_common.get_expected(file)
     if e in ("inappropriateError", "inputError"):
         continue
-    print(file)
+    print(file, end="\t")
 
     cmd = "z3", file
     p = subprocess.run(
@@ -41,6 +41,12 @@ for file in problems:
     )
     code = p.returncode
     s = p.stdout.lower()
+
+    if s.startswith("unsupported"):
+        print("unsupported")
+        continue
+
+    print()
 
     if code:
         err()
