@@ -50,6 +50,7 @@ struct Parser {
 	// (applies to languages like TPTP, where some types may be implied). It's a member of Parser because the check should be done
 	// in context where error can report line number. After it returns, everything should be fully and correctly typed, and this
 	// condition should be maintained as an invariant by all subsequent processing.
+	// TODO: would these jobs be better separated?
 	void checkSize(size_t n, Expr* a);
 	void typing(Type* ty, Expr* a);
 };

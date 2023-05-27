@@ -45,7 +45,6 @@ for file in problems:
     if s.startswith("unsupported"):
         print("unsupported")
         continue
-
     print()
 
     if code:
