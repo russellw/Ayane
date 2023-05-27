@@ -30,10 +30,8 @@ def err():
 
 
 for file in problems:
-    e = test_common.get_expected(file)
-    if e in ("inappropriateError", "inputError"):
-        continue
     print(file, end="\t")
+    e = test_common.get_expected(file)
 
     cmd = "z3", file
     p = subprocess.run(
@@ -48,7 +46,7 @@ for file in problems:
     print()
 
     if code:
-        err()
+        r = "inputError"
     elif "unsat" in s:
         r = 0
     elif "sat" in s:

@@ -30,10 +30,6 @@ def err():
 
 
 for file in problems:
-    e = test_common.get_expected(file)
-    if e in ("inappropriateError", "inputError"):
-        continue
-
     L = test_common.get_logic(file)
     if L not in (
         "QF_UF",
@@ -46,19 +42,17 @@ for file in problems:
     ):
         continue
 
-    print(file, end="\t")
+    print(file)
+    e = test_common.get_expected(file)
 
     cmd = os.path.join(here, "..", "bin", "opensmt"), file
     p = subprocess.run(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf-8"
     )
-    code = p.returncode
     s = p.stdout.lower()
 
-    print()
-
-    if code:
-        err()
+    if s.startswith("(error"):
+        r = "inputError"
     elif "unsat" in s:
         r = 0
     elif "sat" in s:
