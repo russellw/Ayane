@@ -6,7 +6,7 @@ def get_p(file):
     ext = os.path.splitext(file)[1]
     assert ext == ".cnf"
     for s in open(file).readlines():
-        m = re.match(r"p\s+(\d+)\s+(\d+)", s)
+        m = re.match(r"p\s+cnf\s+(\d+)\s+(\d+)", s)
         if m:
             return m[1], m[2]
 
