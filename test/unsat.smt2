@@ -1,3 +1,3 @@
-(set-info :status unsat)
+; unsat
 (assert false)
 (check-sat)

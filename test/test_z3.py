@@ -12,12 +12,6 @@ args = parser.parse_args()
 
 here = os.path.dirname(os.path.realpath(__file__))
 
-codes = {}
-for s in open(os.path.join(here, "..", "src", "etc.h")).readlines():
-    m = re.match(r"const int (\w+Error) = (\d+);", s)
-    if m:
-        codes[int(m[2])] = m[1]
-
 problems = []
 if args.files:
     for file in args.files:
@@ -26,7 +20,7 @@ else:
     for root, dirs, files in os.walk(here):
         for file in files:
             ext = os.path.splitext(file)[1]
-            if ext in (".p", ".cnf", ".smt2"):
+            if ext in (".cnf", ".smt2"):
                 problems.append(os.path.join(root, file))
 
 
@@ -36,20 +30,19 @@ def err():
 
 
 for file in problems:
-    print(file)
     e = common.get_expected(file)
+    if e in ("inappropriateError", "inputError"):
+        continue
+    print(file)
 
-    cmd = "./ayane", "-t3", file
+    cmd = "z3", file
     p = subprocess.run(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf-8"
     )
     code = p.returncode
-    code = codes.get(code, code)
-    s = p.stdout
+    s = p.stdout.lower()
 
-    if code in ("inappropriateError", "inputError"):
-        r = code
-    elif code:
+    if code:
         err()
     elif "unsat" in s:
         r = 0

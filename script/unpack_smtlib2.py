@@ -1,8 +1,9 @@
 import os
 import subprocess
 
-import common
 import smtlib
+
+import common
 
 args = common.args_files()
 os.chdir("C:/smtlib/2")
