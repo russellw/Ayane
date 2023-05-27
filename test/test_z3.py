@@ -4,7 +4,7 @@ import re
 import subprocess
 import sys
 
-import common
+import test_common
 
 parser = argparse.ArgumentParser()
 parser.add_argument("files", nargs="*")
@@ -30,7 +30,7 @@ def err():
 
 
 for file in problems:
-    e = common.get_expected(file)
+    e = test_common.get_expected(file)
     if e in ("inappropriateError", "inputError"):
         continue
     print(file)

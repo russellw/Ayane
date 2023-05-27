@@ -2,9 +2,8 @@ import datetime
 import subprocess
 import time
 
-import smtlib
-
 import common
+import smtlib
 
 args = common.args_problems()
 codes = common.get_error_codes()

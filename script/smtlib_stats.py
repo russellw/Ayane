@@ -1,8 +1,7 @@
 import time
 
-import smtlib
-
 import common
+import smtlib
 
 args = common.args_problems()
 problems = smtlib.get_problems(args)
