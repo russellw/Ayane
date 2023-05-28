@@ -4,9 +4,10 @@ Expr bools[2] = {{Tag::false1}, {Tag::true1}};
 
 // SORT
 Expr* distinct(Vec<Expr*>& v) {
-	Vec<Expr*> inequalities;
+	Vec<Expr*> inequalities(v.n * (v.n - 1) / 2);
+	size_t k = 0;
 	for (auto i = v.begin(), e = v.end(); i < e; ++i)
-		for (auto j = v.begin(); j < i; ++j) inequalities.add(comp(Tag::not1, comp(Tag::eq, *i, *j)));
+		for (auto j = v.begin(); j < i; ++j) inequalities[k++] = comp(Tag::not1, comp(Tag::eq, *i, *j));
 	return comp(Tag::and1, inequalities);
 }
 
