@@ -42,9 +42,11 @@ def get_problems(args):
 
 
 def print_header(file):
+    i = 0
     for s in open(file):
-        if s.startswith("(declare-fun"):
+        if i == 30:
             break
+        i += 1
         print(s, end="")
 
 
