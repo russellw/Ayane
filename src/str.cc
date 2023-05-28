@@ -3,6 +3,8 @@
 Str keywords[] = {
 	// clang-format off
 	{0, 0, "Bool"},
+	{0, 0, "Float32"},
+	{0, 0, "Float64"},
 	{0, 0, "Int"},
 	{0, 0, "Real"},
 	{0, 0, "RoundingMode"},
@@ -20,6 +22,7 @@ Str keywords[] = {
 	{0, 0, "cnf"},
 	{0, 0, "conjecture"},
 	{0, 0, "declare-const"},
+	{0, 0, "declare-datatype"},
 	{0, 0, "declare-datatypes"},
 	{0, 0, "declare-fun"},
 	{0, 0, "declare-sort"},

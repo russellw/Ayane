@@ -6,6 +6,8 @@ src = os.path.join(here, "..", "src")
 words = (
     # SORT
     "Bool",
+    "Float32",
+    "Float64",
     "Int",
     "Real",
     "RoundingMode",
@@ -23,6 +25,7 @@ words = (
     "cnf",
     "conjecture",
     "declare-const",
+    "declare-datatype",
     "declare-datatypes",
     "declare-fun",
     "declare-sort",

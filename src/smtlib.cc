@@ -255,14 +255,16 @@ struct Parser1: Parser {
 			switch (s - keywords) {
 			case s_Bool:
 				return &tbool;
-			case s_Int:
-				return &tinteger;
-			case s_Real:
-				return &treal;
+			case s_Float32:
+			case s_Float64:
 			case s_RoundingMode:
 			case s_String:
 				sprintf(buf, "%s: not supported", s->v);
 				err(buf, inappropriateError);
+			case s_Int:
+				return &tinteger;
+			case s_Real:
+				return &treal;
 			}
 			snprintf(buf, bufSize, "'%s': unknown sort", s->v);
 			err(buf);
@@ -513,6 +515,7 @@ struct Parser1: Parser {
 				expect(')');
 				break;
 			}
+			case s_declare_datatype:
 			case s_declare_datatypes:
 				sprintf(buf, "%s: not supported", s->v);
 				err(buf, inappropriateError);

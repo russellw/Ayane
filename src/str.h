@@ -13,6 +13,8 @@ struct Str {
 // Keywords are strings that are known to be important
 enum {
 	s_Bool,
+	s_Float32,
+	s_Float64,
 	s_Int,
 	s_Real,
 	s_RoundingMode,
@@ -30,6 +32,7 @@ enum {
 	s_cnf,
 	s_conjecture,
 	s_declare_const,
+	s_declare_datatype,
 	s_declare_datatypes,
 	s_declare_fun,
 	s_declare_sort,
