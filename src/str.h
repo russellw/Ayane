@@ -27,6 +27,7 @@ enum {
 	s_check_sat,
 	s_cnf,
 	s_conjecture,
+	s_declare_datatypes,
 	s_declare_fun,
 	s_declare_sort,
 	s_define_fun,
