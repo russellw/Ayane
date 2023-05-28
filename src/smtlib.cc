@@ -460,6 +460,7 @@ struct Parser1: Parser {
 				s->fn = new (ialloc(sizeof(Fn))) Fn(compType(u), s->v);
 
 				// Body
+				bufp = buf;
 				v[0] = comp(Tag::eq, s->fn, expr());
 				locals.n = o;
 
