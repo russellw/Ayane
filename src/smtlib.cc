@@ -247,12 +247,21 @@ struct Parser1: Parser {
 		return comp(tag, v);
 	}
 
+	// SORT
 	Expr* expr(Tag tag) {
 		Vec<Expr*> v;
 		do v.add(expr());
 		while (!eat(')'));
 		return comp(tag, v);
 	}
+
+	Expr* leftAssoc(Tag tag) {
+		auto a = expr();
+		do a = comp(tag, a, expr());
+		while (!eat(')'));
+		return a;
+	}
+	///
 
 	Expr* expr() {
 		auto k = tok;
@@ -287,7 +296,7 @@ struct Parser1: Parser {
 				return comp(Tag::not1, eq(a, b));
 			}
 			case s_div:
-				return expr(Tag::divEuclid);
+				return leftAssoc(Tag::divEuclid);
 			case s_eq:
 			{
 				auto a = expr();
@@ -353,9 +362,9 @@ struct Parser1: Parser {
 			{
 				auto a = expr();
 				if (eat(')')) return comp(Tag::minus, a);
-				auto b = expr();
-				expect(')');
-				return comp(Tag::sub, a, b);
+				do a = comp(Tag::sub, a, expr());
+				while (!eat(')'));
+				return a;
 			}
 			case s_mod:
 				return expr(Tag::remEuclid);
@@ -364,12 +373,12 @@ struct Parser1: Parser {
 			case s_or:
 				return expr(Tag::or1);
 			case s_plus:
-				return expr(Tag::add);
+				return leftAssoc(Tag::add);
 			case s_slash:
 				// TODO: check types for integer division
 				return expr(Tag::div);
 			case s_star:
-				return expr(Tag::mul);
+				return leftAssoc(Tag::mul);
 			case s_xor:
 			{
 				auto a = expr();
