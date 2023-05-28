@@ -8,11 +8,6 @@ enum {
 
 char issym[0x100];
 
-Expr* eq(Expr* a, Expr* b) {
-	auto tag = type(a) == &tbool ? Tag::eqv : Tag::eq;
-	return comp(tag, a, b);
-}
-
 struct Parser1: Parser {
 	// SORT
 	Vec<pair<Str*, Expr*>> locals;
@@ -346,10 +341,10 @@ struct Parser1: Parser {
 				err(buf, inappropriateError);
 			case s_distinct:
 			{
-				auto a = expr();
-				auto b = expr();
-				expect(')');
-				return comp(Tag::not1, eq(a, b));
+				Vec<Expr*> v;
+				do v.add(expr());
+				while (!eat(')'));
+				return distinct(v);
 			}
 			case s_div:
 				return leftAssoc(Tag::divEuclid);
