@@ -17,6 +17,52 @@ struct Parser1: Parser {
 	Vec<pair<Str*, Expr*>> locals;
 
 	// Tokenizer
+	void number() {
+		mpq_t q;
+		tok = k_num;
+
+		// SMT-LIB requires nonempty digit sequences before and after '.', which makes parsing slightly easier.
+		auto z = mpq_numref(q);
+		lexInt(z);
+
+		// After parsing the integer, we find out if this is actually a decimal
+		switch (*src) {
+		case '.':
+		{
+			++src;
+
+			// Need to parse the decimal part, but also track exactly how many digits it was written as; 1.23 != 1.023.
+			auto s = src;
+
+			// The integer parsing function would otherwise accept a sign here, but that would not make sense
+			if (!isdigit((unsigned char)*s)) err("expected digit");
+
+			mpz_t decimal;
+			lexInt(decimal);
+
+			// Given 1.23, first convert to 100/100, to make room, so to speak, to add in the decimal part.
+			auto scale = src - s;
+			auto powScale = mpq_denref(q);
+			mpz_init(powScale);
+			mpz_ui_pow_ui(powScale, 10, scale);
+			mpz_mul(z, z, powScale);
+
+			// Now convert to 123/100
+			if (*srck == '-') mpz_sub(z, z, decimal);
+			else
+				mpz_add(z, z, decimal);
+
+			mpz_clear(decimal);
+			break;
+		}
+		default:
+			num = integer(z);
+			return;
+		}
+		mpq_canonicalize(q);
+		num = rat(Tag::real, q);
+	}
+
 	void lex() {
 	loop:
 		auto s = srck = src;

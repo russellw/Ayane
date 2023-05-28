@@ -37,10 +37,6 @@ struct Parser {
 	// Helper functions
 	void digits();
 	void lexInt(mpz_t z);
-	void exponent(mpq_t q);
-
-	// Lex a number, tok = k_num, num = the number
-	void number();
 
 	// Type a function, in context where error can report line number. For languages like TPTP where definitions can be implied on
 	// the fly, but must be consistent with previous usage. Also used by DIMACS for a simpler case.
