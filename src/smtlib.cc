@@ -276,7 +276,9 @@ struct Parser1: Parser {
 			case s_bvnot:
 			case s_bvor:
 			case s_bvxor:
-				err("bit vectors not supported", inappropriateError);
+			case s_ite:
+				sprintf(buf, "%s: not supported", s->v);
+				err(buf, inappropriateError);
 			case s_distinct:
 			{
 				auto a = expr();
@@ -316,9 +318,6 @@ struct Parser1: Parser {
 				expect(')');
 				return imp(a, b);
 			}
-			case s_ite:
-				sprintf(buf, "%s: not supported", s->v);
-				err(buf, inappropriateError);
 			case s_le:
 			{
 				auto a = expr();
@@ -477,10 +476,18 @@ struct Parser1: Parser {
 
 				// Body
 				bufp = buf;
-				v[0] = eq(s->fn, expr());
+				auto body = expr();
 				locals.n = o;
 
+				// Notional call
+				Expr* call = s->fn;
+				if (v.n > 1) {
+					v[0] = call;
+					call = comp(Tag::call, v);
+				}
+
 				// Define
+				v[0] = eq(call, body);
 				auto a = comp(Tag::all, v);
 				typing(&tbool, a);
 				expect(')');
