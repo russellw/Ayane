@@ -230,7 +230,6 @@ struct Parser1: Parser {
 			locals.add(make_pair(s, a));
 			v.add(a);
 		}
-		expect(')');
 	}
 
 	Expr* quant(Tag tag) {
@@ -238,6 +237,7 @@ struct Parser1: Parser {
 		auto o = locals.n;
 		params(v);
 		v[0] = expr();
+		expect(')');
 		locals.n = o;
 		return comp(tag, v);
 	}
