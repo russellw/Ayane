@@ -8,6 +8,7 @@ words = (
     "Bool",
     "Int",
     "Real",
+    "RoundingMode",
     "String",
     "and",
     "assert",

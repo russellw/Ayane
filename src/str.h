@@ -15,6 +15,7 @@ enum {
 	s_Bool,
 	s_Int,
 	s_Real,
+	s_RoundingMode,
 	s_String,
 	s_and,
 	s_assert,
