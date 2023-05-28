@@ -520,8 +520,17 @@ struct Parser1: Parser {
 			{
 				auto s = word();
 				if (s->ty) err("sort already declared");
-				if (tok != k_num || num->tag != Tag::integer) err("expected arity");
-				if (mpz_sgn(((Int*)num)->v)) err("sort parameters not supported", inappropriateError);
+				if (tok != k_num) err("expected arity");
+				switch (num->tag) {
+				case Tag::integer:
+					if (mpz_sgn(((Int*)num)->v)) err("sort parameters not supported", inappropriateError);
+					break;
+				case Tag::real:
+					if (mpq_sgn(((Rat*)num)->v)) err("sort parameters not supported", inappropriateError);
+					break;
+				default:
+					err("expected arity");
+				}
 				lex();
 				expect(')');
 				s->ty = new (ialloc(sizeof(OpaqueType))) OpaqueType(s->v);
