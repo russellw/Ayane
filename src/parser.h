@@ -13,7 +13,7 @@ struct Parser {
 	// Source text
 	char* src0;
 
-	// Current token in source text
+	// Beginning of current token in source text
 	char* srck;
 
 	// Current position in source text
@@ -43,7 +43,7 @@ struct Parser {
 	void number();
 
 	// Type a function, in context where error can report line number. For languages like TPTP where definitions can be implied on
-	// the fly, but must be consistent with previous usage.
+	// the fly, but must be consistent with previous usage. Also used by DIMACS for a simpler case.
 	Expr* fn(Type* ty, Str* s);
 
 	// Typing() has a dual role: Check consistency (applies to all languages except DIMACS) and fill in any unspecified types
