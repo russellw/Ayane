@@ -217,22 +217,27 @@ struct Parser1: Parser {
 	}
 
 	// Expressions
-	Expr* quant(Tag tag) {
+	void params(Vec<Expr*>& v) {
 		expect('(');
-		Vec<Expr*> v(1);
-		auto o = locals.n;
-		do {
+		while (!eat(')')) {
 			expect('(');
 			auto s = word();
 			auto ty = type1();
-			if (ty->kind == Kind::fn) err("Bool is not a valid variable type");
+			// TODO: do we need to check for Boolean parameters here?
+			if (ty->kind == Kind::fn) err("higher-order functions not supported", inappropriateError);
 			expect(')');
 			auto a = var((LeafType*)ty, locals.n);
 			locals.add(make_pair(s, a));
 			v.add(a);
-		} while (!eat(')'));
-		v[0] = expr();
+		}
 		expect(')');
+	}
+
+	Expr* quant(Tag tag) {
+		Vec<Expr*> v(1);
+		auto o = locals.n;
+		params(v);
+		v[0] = expr();
 		locals.n = o;
 		return comp(tag, v);
 	}
@@ -430,6 +435,39 @@ struct Parser1: Parser {
 				lex();
 				expect(')');
 				s->ty = new (ialloc(sizeof(OpaqueType))) OpaqueType(s->v);
+				break;
+			}
+			case s_define_fun:
+			{
+				// Name
+				auto s = word();
+				if (s->fn) err("function already declared");
+
+				// Parameters
+				// SORT
+				auto o = locals.n;
+				Vec<Expr*> v(1);
+				///
+				params(v);
+
+				Vec<Type*> u(v.n);
+				for (size_t i = 1; i < v.n; ++i) u[i] = ((Var*)v[i])->ty;
+
+				// Return type
+				u[0] = type1();
+
+				// Declare
+				s->fn = new (ialloc(sizeof(Fn))) Fn(compType(u), s->v);
+
+				// Body
+				v[0] = comp(Tag::eq, s->fn, expr());
+				locals.n = o;
+
+				// Define
+				auto a = comp(Tag::all, v);
+				typing(&tbool, a);
+				expect(')');
+				cnf(a);
 				break;
 			}
 			case s_define_sort:
