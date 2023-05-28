@@ -237,7 +237,9 @@ struct Parser1: Parser {
 	void skip() {
 		while (!eat(')')) {
 			if (!tok) err("unclosed '('");
-			lex();
+			if (eat('(')) skip();
+			else
+				lex();
 		}
 	}
 

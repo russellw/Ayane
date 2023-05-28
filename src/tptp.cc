@@ -342,6 +342,15 @@ struct Parser1: Parser {
 		return 0;
 	}
 
+	void skip() {
+		while (!eat(')')) {
+			if (!tok) err("unclosed '('");
+			if (eat('(')) skip();
+			else
+				lex();
+		}
+	}
+
 	// Types
 	LeafType* atomicType() {
 		auto k = tok;
@@ -642,18 +651,6 @@ struct Parser1: Parser {
 		err("expected name");
 	}
 
-	void ignore() {
-		switch (tok) {
-		case '(':
-			lex();
-			while (!eat(')')) ignore();
-			return;
-		case 0:
-			err("too many '('s");
-		}
-		lex();
-	}
-
 	Parser1(const char* file, const Select& select): Parser(file), select(select) {
 		lex();
 		while (tok) {
@@ -784,10 +781,7 @@ struct Parser1: Parser {
 			default:
 				err("unknown language");
 			}
-			if (tok == ',') do
-					ignore();
-				while (tok != ')');
-			expect(')');
+			skip();
 			expect('.');
 		}
 	}
