@@ -22,6 +22,7 @@ words = (
     "check-sat",
     "cnf",
     "conjecture",
+    "declare-const",
     "declare-datatypes",
     "declare-fun",
     "declare-sort",

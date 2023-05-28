@@ -505,6 +505,14 @@ struct Parser1: Parser {
 			}
 			case s_check_sat:
 				return;
+			case s_declare_const:
+			{
+				auto s = word();
+				if (s->fn) err("constant already declared");
+				s->fn = new (ialloc(sizeof(Fn))) Fn(type1(), s->v);
+				expect(')');
+				break;
+			}
 			case s_declare_datatypes:
 				sprintf(buf, "%s: not supported", s->v);
 				err(buf, inappropriateError);
