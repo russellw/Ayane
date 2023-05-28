@@ -8,6 +8,11 @@ enum {
 
 char issym[0x100];
 
+Expr* eq(Expr* a, Expr* b) {
+	auto tag = type(a) == &tbool ? Tag::eqv : Tag::eq;
+	return comp(tag, a, b);
+}
+
 struct Parser1: Parser {
 	Vec<pair<Str*, Expr*>> locals;
 
@@ -272,8 +277,7 @@ struct Parser1: Parser {
 				auto a = expr();
 				auto b = expr();
 				expect(')');
-				auto tag = type(a) == &tbool ? Tag::eqv : Tag::eq;
-				return comp(tag, a, b);
+				return eq(a, b);
 			}
 			case s_exists:
 				return quant(Tag::exists);
@@ -461,7 +465,7 @@ struct Parser1: Parser {
 
 				// Body
 				bufp = buf;
-				v[0] = comp(Tag::eq, s->fn, expr());
+				v[0] = eq(s->fn, expr());
 				locals.n = o;
 
 				// Define
