@@ -272,6 +272,11 @@ struct Parser1: Parser {
 			switch (s - keywords) {
 			case s_and:
 				return expr(Tag::and1);
+			case s_bvand:
+			case s_bvnot:
+			case s_bvor:
+			case s_bvxor:
+				err("bit vectors not supported", inappropriateError);
 			case s_eq:
 			{
 				auto a = expr();
