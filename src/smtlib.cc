@@ -203,8 +203,12 @@ struct Parser1: Parser {
 				return &tinteger;
 			case s_Real:
 				return &treal;
+			case s_String:
+				sprintf(buf, "%s: not supported", s->v);
+				err(buf, inappropriateError);
 			}
-			err("unknown sort");
+			snprintf(buf, bufSize, "'%s': unknown sort", s->v);
+			err(buf);
 		}
 		err("expected sort");
 	}
