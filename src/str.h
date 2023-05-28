@@ -85,6 +85,7 @@ enum {
 	s_type,
 	s_uminus,
 	s_xor,
+	s_bang,
 	s_star,
 	s_plus,
 	s_minus,

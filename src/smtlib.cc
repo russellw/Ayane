@@ -234,6 +234,13 @@ struct Parser1: Parser {
 		return s;
 	}
 
+	void skip() {
+		while (!eat(')')) {
+			if (!tok) err("unclosed '('");
+			lex();
+		}
+	}
+
 	// Types
 	Type* type1() {
 		switch (tok) {
@@ -332,6 +339,12 @@ struct Parser1: Parser {
 			switch (s - keywords) {
 			case s_and:
 				return expr(Tag::and1);
+			case s_bang:
+			{
+				auto a = expr();
+				skip();
+				return a;
+			}
 			case s_bvand:
 			case s_bvnot:
 			case s_bvor:
@@ -472,13 +485,6 @@ struct Parser1: Parser {
 	}
 
 	// Top level
-	void skip() {
-		while (!eat(')')) {
-			if (!tok) err("unclosed '('");
-			lex();
-		}
-	}
-
 	Parser1(const char* file): Parser(file) {
 		lex();
 		while (tok) {

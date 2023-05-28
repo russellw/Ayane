@@ -78,6 +78,7 @@ words = (
     "type",
     "uminus",
     "xor",
+    ("!", "bang"),
     ("*", "star"),
     ("+", "plus"),
     ("-", "minus"),
