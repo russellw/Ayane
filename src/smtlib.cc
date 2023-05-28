@@ -286,6 +286,8 @@ struct Parser1: Parser {
 				expect(')');
 				return comp(Tag::not1, eq(a, b));
 			}
+			case s_div:
+				return expr(Tag::divEuclid);
 			case s_eq:
 			{
 				auto a = expr();
@@ -355,6 +357,8 @@ struct Parser1: Parser {
 				expect(')');
 				return comp(Tag::sub, a, b);
 			}
+			case s_mod:
+				return expr(Tag::remEuclid);
 			case s_not:
 				return expr(Tag::not1);
 			case s_or:
