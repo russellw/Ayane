@@ -433,6 +433,9 @@ struct Parser1: Parser {
 			}
 			case s_check_sat:
 				return;
+			case s_declare_datatypes:
+				sprintf(buf, "%s: not supported", s->v);
+				err(buf, inappropriateError);
 			case s_declare_fun:
 			{
 				auto s = word();
