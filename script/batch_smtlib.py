@@ -16,8 +16,8 @@ hardest = {}
 
 try:
     for file in problems:
-        print(file)
-        smtlib.print_header(file)
+        # print(file)
+        # smtlib.print_header(file)
         expected = smtlib.get_expected(file)
 
         cmd = "./ayane", "-t", str(args.time), file
@@ -26,9 +26,11 @@ try:
             cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf-8"
         )
         t = time.time() - t
-        print("%.3f seconds" % t)
+        # print("%.3f seconds" % t)
         s = p.stdout
-        print(s)
+        if not s.startswith("C:"):
+            print(file)
+        print(s, end="")
 
         code = codes.get(p.returncode, p.returncode)
         if code == "inappropriateError":
