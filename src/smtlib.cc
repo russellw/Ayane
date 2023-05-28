@@ -9,7 +9,7 @@ enum {
 char issym[0x100];
 
 struct Parser1: Parser {
-	Vec<pair<Str*, Var*>> vars;
+	Vec<pair<Str*, Expr*>> locals;
 
 	// Tokenizer
 	void lex() {
@@ -220,20 +220,20 @@ struct Parser1: Parser {
 	Expr* quant(Tag tag) {
 		expect('(');
 		Vec<Expr*> v(1);
-		auto o = vars.n;
+		auto o = locals.n;
 		do {
 			expect('(');
 			auto s = word();
 			auto ty = type1();
 			if (ty->kind == Kind::fn) err("Bool is not a valid variable type");
 			expect(')');
-			auto a = var((LeafType*)ty, vars.n);
-			vars.add(make_pair(s, a));
+			auto a = var((LeafType*)ty, locals.n);
+			locals.add(make_pair(s, a));
 			v.add(a);
 		} while (!eat(')'));
 		v[0] = expr();
 		expect(')');
-		vars.n = o;
+		locals.n = o;
 		return comp(tag, v);
 	}
 
@@ -295,12 +295,30 @@ struct Parser1: Parser {
 				expect(')');
 				return imp(a, b);
 			}
+			case s_ite:
+				sprintf(buf, "%s: not supported", s->v);
+				err(buf, inappropriateError);
 			case s_le:
 			{
 				auto a = expr();
 				auto b = expr();
 				expect(')');
 				return comp(Tag::or1, comp(Tag::eq, a, b), comp(Tag::lt, a, b));
+			}
+			case s_let:
+			{
+				expect('(');
+				auto o = locals.n;
+				do {
+					expect('(');
+					auto s = word();
+					locals.add(make_pair(s, expr()));
+					expect(')');
+				} while (!eat(')'));
+				auto a = expr();
+				expect(')');
+				locals.n = o;
+				return a;
 			}
 			case s_lt:
 			{
@@ -310,7 +328,13 @@ struct Parser1: Parser {
 				return comp(Tag::lt, a, b);
 			}
 			case s_minus:
-				return expr(Tag::sub);
+			{
+				auto a = expr();
+				if (eat(')')) return comp(Tag::minus, a);
+				auto b = expr();
+				expect(')');
+				return comp(Tag::sub, a, b);
+			}
 			case s_not:
 				return expr(Tag::not1);
 			case s_or:
@@ -337,8 +361,8 @@ struct Parser1: Parser {
 			// TODO: this is not quite correct; in the reals theory, integer literals actually have real type
 			return num1;
 		case k_word:
-			// SMTLIB has lexical scope, so bound variables can shadow everything else
-			for (auto i = vars.rbegin(), e = vars.rend(); i != e; ++i)
+			// SMTLIB has lexical scope
+			for (auto i = locals.rbegin(), e = locals.rend(); i != e; ++i)
 				if (i->first == s) return i->second;
 
 			// Function declarations have global scope
