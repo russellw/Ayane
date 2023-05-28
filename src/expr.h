@@ -18,6 +18,7 @@ struct Expr {
 extern Expr bools[2];
 
 // SORT
+Expr* distinct(Vec<Expr*>& v);
 void flatten(Tag tag, Expr* a, vector<Expr*>& r);
 Expr* imp(Expr* a, Expr* b);
 bool occurs(Expr* a, Expr* b);

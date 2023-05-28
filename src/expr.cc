@@ -3,6 +3,13 @@
 Expr bools[2] = {{Tag::false1}, {Tag::true1}};
 
 // SORT
+Expr* distinct(Vec<Expr*>& v) {
+	Vec<Expr*> inequalities;
+	for (auto i = v.begin(), e = v.end(); i < e; ++i)
+		for (auto j = v.begin(); j < i; ++j) inequalities.add(comp(Tag::not1, comp(Tag::eq, *i, *j)));
+	return comp(Tag::and1, inequalities);
+}
+
 void flatten(Tag tag, Expr* a, vector<Expr*>& r) {
 	if (a->tag == tag) {
 		for (size_t i = 0; i < a->n; ++i) flatten(tag, at(a, i), r);

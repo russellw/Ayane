@@ -277,6 +277,13 @@ struct Parser1: Parser {
 			case s_bvor:
 			case s_bvxor:
 				err("bit vectors not supported", inappropriateError);
+			case s_distinct:
+			{
+				auto a = expr();
+				auto b = expr();
+				expect(')');
+				return comp(Tag::not1, eq(a, b));
+			}
 			case s_eq:
 			{
 				auto a = expr();
