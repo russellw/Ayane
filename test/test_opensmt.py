@@ -26,7 +26,7 @@ else:
 
 def err():
     print(s, end="")
-    raise Exception(str(code))
+    raise Exception()
 
 
 for file in problems:
