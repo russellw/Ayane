@@ -18,6 +18,7 @@ words = (
     "conjecture",
     "declare-fun",
     "declare-sort",
+    "define-fun",
     "define-sort",
     "difference",
     "distinct",
