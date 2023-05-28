@@ -14,7 +14,10 @@ Expr* eq(Expr* a, Expr* b) {
 }
 
 struct Parser1: Parser {
+	// SORT
 	Vec<pair<Str*, Expr*>> locals;
+	bool realOnly = 0;
+	///
 
 	// Tokenizer
 	void number() {
@@ -26,9 +29,7 @@ struct Parser1: Parser {
 		lexInt(z);
 
 		// After parsing the integer, we find out if this is actually a decimal
-		switch (*src) {
-		case '.':
-		{
+		if (*src == '.') {
 			++src;
 
 			// Need to parse the decimal part, but also track exactly how many digits it was written as; 1.23 != 1.023.
@@ -53,14 +54,19 @@ struct Parser1: Parser {
 				mpz_add(z, z, decimal);
 
 			mpz_clear(decimal);
-			break;
-		}
-		default:
-			num = integer(z);
+
+			mpq_canonicalize(q);
+			num = rat(Tag::real, q);
 			return;
 		}
-		mpq_canonicalize(q);
-		num = rat(Tag::real, q);
+
+		// Just an integer, but some logics treat it as a real anyway
+		if (realOnly) {
+			mpz_init_set_ui(mpq_denref(q), 1);
+			num = rat(Tag::real, q);
+			return;
+		}
+		num = integer(z);
 	}
 
 	void lex() {
@@ -441,7 +447,6 @@ struct Parser1: Parser {
 			err(buf);
 		}
 		case k_num:
-			// TODO: this is not quite correct; in the reals theory, integer literals actually have real type
 			return num1;
 		case k_word:
 			// SMTLIB has lexical scope
@@ -570,9 +575,15 @@ struct Parser1: Parser {
 			}
 			case s_push:
 			case s_set_info:
-			case s_set_logic:
 				skip();
 				break;
+			case s_set_logic:
+			{
+				auto s = word();
+				if (strchr(s->v, 'R') && !strchr(s->v, 'I')) realOnly = 1;
+				expect(')');
+				break;
+			}
 			default:
 				snprintf(buf, bufSize, "'%s': unknown command", s->v);
 				err(buf);
