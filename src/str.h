@@ -101,6 +101,7 @@ enum {
 	s_imp,
 	s_gt,
 	s_ge,
+	s_underscore,
 };
 
 // And statically allocated for fast lookup

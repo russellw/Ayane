@@ -355,6 +355,7 @@ struct Parser1: Parser {
 			case s_bvor:
 			case s_bvxor:
 			case s_ite:
+			case s_underscore:
 				sprintf(buf, "%s: not supported", s->v);
 				err(buf, inappropriateError);
 			case s_distinct:
