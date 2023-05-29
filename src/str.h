@@ -48,6 +48,7 @@ enum {
 	s_floor,
 	s_fof,
 	s_forall,
+	s_fp_eq,
 	s_fp_lt,
 	s_greater,
 	s_greatereq,

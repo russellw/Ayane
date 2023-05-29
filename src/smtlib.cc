@@ -334,6 +334,7 @@ struct Parser1: Parser {
 		switch (k) {
 		case '(':
 		{
+			if (tok == '(') err("composite operator not supported", inappropriateError);
 			s = word();
 			if (s->fn) {
 				Vec<Expr*> v(1, s->fn);
@@ -356,6 +357,7 @@ struct Parser1: Parser {
 			case s_bvsdiv:
 			case s_bvsmod:
 			case s_bvxor:
+			case s_fp_eq:
 			case s_fp_lt:
 			case s_ite:
 			case s_underscore:

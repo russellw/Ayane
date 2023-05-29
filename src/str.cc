@@ -38,6 +38,7 @@ Str keywords[] = {
 	{0, 0, "floor"},
 	{0, 0, "fof"},
 	{0, 0, "forall"},
+	{0, 0, "fp.eq"},
 	{0, 0, "fp.lt"},
 	{0, 0, "greater"},
 	{0, 0, "greatereq"},

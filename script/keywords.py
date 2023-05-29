@@ -41,6 +41,7 @@ words = (
     "floor",
     "fof",
     "forall",
+    "fp.eq",
     "fp.lt",
     "greater",
     "greatereq",
