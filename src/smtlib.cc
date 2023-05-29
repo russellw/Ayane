@@ -356,6 +356,7 @@ struct Parser1: Parser {
 			case s_bvsdiv:
 			case s_bvsmod:
 			case s_bvxor:
+			case s_fp_lt:
 			case s_ite:
 			case s_underscore:
 				sprintf(buf, "%s: not supported", s->v);
