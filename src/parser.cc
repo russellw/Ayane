@@ -140,11 +140,15 @@ void Parser::check(size_t n, Expr* a) {
 	err(buf);
 }
 
+// TODO: ensure type(a) is defined
 void Parser::check(Type* ty, Expr* a) {
 	// In first-order logic, a function cannot return a function, nor can a variable store one. (That would be higher-order logic.)
 	// The code should be written so that neither the top-level callers nor the recursive calls, can ever ask for a function to be
 	// returned.
 	assert(ty->kind != Kind::fn);
+
+	// Most obviously, check this expression returns the expected type
+	if (type(a) != ty) err("type mismatch");
 
 	// This switch should be exhaustive
 	switch (a->tag) {
@@ -167,14 +171,12 @@ void Parser::check(Type* ty, Expr* a) {
 	case Tag::all:
 	case Tag::exists:
 		// Quantifier
-		// TODO: does SMT-LIB need to check a Boolean was wanted here?
 		check(&tbool, at(a, 0));
 		break;
 	case Tag::and1:
 	case Tag::eqv:
 	case Tag::or1:
 		// Connective
-		if (&tbool != ty) err("type mismatch");
 		// TODO: foreach?
 		for (size_t i = 0; i < a->n; ++i) check(&tbool, at(a, i));
 		break;
@@ -218,13 +220,13 @@ void Parser::check(Type* ty, Expr* a) {
 		break;
 	case Tag::distinctObj:
 	case Tag::false1:
+	case Tag::fn:
 	case Tag::integer:
 	case Tag::rat:
 	case Tag::real:
 	case Tag::true1:
 		// Leaf
 		assert(!a->n);
-		if (type(a) != ty) err("type mismatch");
 		break;
 	case Tag::div:
 		// Arithmetic of arity 2, type passes straight through, but fractions only
@@ -242,7 +244,6 @@ void Parser::check(Type* ty, Expr* a) {
 	case Tag::eq:
 		// Eq is always a special case
 		check(2, a);
-		if (&tbool != ty) err("type mismatch");
 		ty = type(at(a, 0));
 		switch (ty->kind) {
 		case Kind::boolean:
@@ -254,17 +255,6 @@ void Parser::check(Type* ty, Expr* a) {
 		check(ty, at(a, 0));
 		check(ty, at(a, 1));
 		break;
-	case Tag::fn:
-	{
-		assert(!a->n);
-		auto a1 = (Fn*)a;
-		if (!a1->ty) {
-			a1->ty = ty;
-			break;
-		}
-		if (a1->ty != ty) err("type mismatch");
-		break;
-	}
 	case Tag::isInt:
 	case Tag::isRat:
 	case Tag::toInt:
@@ -272,30 +262,27 @@ void Parser::check(Type* ty, Expr* a) {
 	case Tag::toReal:
 		// Type converter of arity 1
 		check(1, a);
-		if (type(a) != ty) err("type mismatch");
 
 		// That means the argument may have a different type
-		ty = type(at(a, 0));
+		t = type(at(a, 0));
+		if (!isNum(t)) err("invalid type for arithmetic");
 
-		if (!isNum(ty)) err("invalid type for arithmetic");
-		check(ty, at(a, 0));
+		check(t, at(a, 0));
 		break;
 	case Tag::lt:
 		// Type converter of arity 2
 		check(2, a);
-		if (type(a) != ty) err("type mismatch");
 
 		// That means the argument may have a different type
-		ty = type(at(a, 0));
+		auto t = type(at(a, 0));
+		if (!isNum(t)) err("invalid type for comparison");
 
-		if (!isNum(ty)) err("invalid type for comparison");
-		check(ty, at(a, 0));
-		check(ty, at(a, 1));
+		check(t, at(a, 0));
+		check(t, at(a, 1));
 		break;
 	case Tag::not1:
 		// Connective of arity 1
 		check(1, a);
-		if (&tbool != ty) err("type mismatch");
 		check(&tbool, at(a, 0));
 		break;
 	case Tag::var:
@@ -304,11 +291,7 @@ void Parser::check(Type* ty, Expr* a) {
 		// Parsers need to make sure variables have leaf types, to preserve validity of data structures, so we only need to check
 		// here for Boolean variables
 		if (ty == &tbool) err("boolean variables not supported", inappropriateError);
-
-		if (((Var*)a)->ty != ty) err("type mismatch");
 		break;
 	}
-
-	// And of course, check return type
-	if (type(a) != ty) err("type mismatch");
+	// TODO: factor out most of the recursion?
 }
