@@ -26,6 +26,8 @@ enum {
 	s_bvand,
 	s_bvnot,
 	s_bvor,
+	s_bvsdiv,
+	s_bvsmod,
 	s_bvxor,
 	s_ceiling,
 	s_check_sat,

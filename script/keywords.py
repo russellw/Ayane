@@ -19,6 +19,8 @@ words = (
     "bvand",
     "bvnot",
     "bvor",
+    "bvsdiv",
+    "bvsmod",
     "bvxor",
     "ceiling",
     "check-sat",

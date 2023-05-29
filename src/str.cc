@@ -16,6 +16,8 @@ Str keywords[] = {
 	{0, 0, "bvand"},
 	{0, 0, "bvnot"},
 	{0, 0, "bvor"},
+	{0, 0, "bvsdiv"},
+	{0, 0, "bvsmod"},
 	{0, 0, "bvxor"},
 	{0, 0, "ceiling"},
 	{0, 0, "check-sat"},
