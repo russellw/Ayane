@@ -25,6 +25,7 @@ words = (
     "ceiling",
     "check-sat",
     "cnf",
+    "concat",
     "conjecture",
     "declare-const",
     "declare-datatype",

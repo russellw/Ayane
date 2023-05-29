@@ -22,6 +22,7 @@ Str keywords[] = {
 	{0, 0, "ceiling"},
 	{0, 0, "check-sat"},
 	{0, 0, "cnf"},
+	{0, 0, "concat"},
 	{0, 0, "conjecture"},
 	{0, 0, "declare-const"},
 	{0, 0, "declare-datatype"},

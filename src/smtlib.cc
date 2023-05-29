@@ -358,6 +358,7 @@ struct Parser1: Parser {
 			case s_bvsdiv:
 			case s_bvsmod:
 			case s_bvxor:
+			case s_concat:
 			case s_fp_eq:
 			case s_fp_lt:
 			case s_ite:

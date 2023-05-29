@@ -32,6 +32,7 @@ enum {
 	s_ceiling,
 	s_check_sat,
 	s_cnf,
+	s_concat,
 	s_conjecture,
 	s_declare_const,
 	s_declare_datatype,
