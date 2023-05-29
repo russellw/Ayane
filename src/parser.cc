@@ -202,9 +202,6 @@ void Parser::check(Type* ty, Expr* a) {
 				break;
 			}
 
-		// And of course, check return type
-		if (at(fty, 0) != ty) err("type mismatch");
-
 		// And recur, based on the parameter types
 		for (size_t i = 1; i < fty->n; ++i) check(at(fty, i), at(a, i));
 		break;
@@ -311,4 +308,7 @@ void Parser::check(Type* ty, Expr* a) {
 		if (((Var*)a)->ty != ty) err("type mismatch");
 		break;
 	}
+
+	// And of course, check return type
+	if (type(a) != ty) err("type mismatch");
 }

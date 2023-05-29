@@ -568,14 +568,14 @@ struct Parser1: Parser {
 				///
 				params(v);
 
-				Vec<Type*> u(v.n);
-				for (size_t i = 1; i < v.n; ++i) u[i] = ((Var*)v[i])->ty;
+				Vec<Type*> w(v.n);
+				for (size_t i = 1; i < v.n; ++i) w[i] = ((Var*)v[i])->ty;
 
 				// Return type
-				u[0] = type1();
+				w[0] = type1();
 
 				// Declare
-				s->fn = new (ialloc(sizeof(Fn))) Fn(compType(u), s->v);
+				s->fn = new (ialloc(sizeof(Fn))) Fn(compType(w), s->v);
 
 				// Body
 				bufp = buf;
