@@ -336,6 +336,7 @@ struct Parser1: Parser {
 		{
 			if (tok == '(') err("composite operator not supported", inappropriateError);
 			s = word();
+			// TODO: is a 'let' bound variable allowed in operator position?
 			if (s->fn) {
 				Vec<Expr*> v(1, s->fn);
 				do v.add(expr());
@@ -506,7 +507,7 @@ struct Parser1: Parser {
 			{
 				bufp = buf;
 				auto a = expr();
-				typing(&tbool, a);
+				check(&tbool, a);
 				expect(')');
 				cnf(a);
 				break;
@@ -590,7 +591,7 @@ struct Parser1: Parser {
 				// Define
 				v[0] = eq(call, body);
 				auto a = comp(Tag::all, v);
-				typing(&tbool, a);
+				check(&tbool, a);
 				expect(')');
 				cnf(a);
 				break;

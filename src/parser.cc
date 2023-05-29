@@ -133,39 +133,14 @@ Expr* Parser::fn(Type* ty, Str* s) {
 	return s->fn = a;
 }
 
-void Parser::checkSize(size_t n, Expr* a) {
+void Parser::check(size_t n, Expr* a) {
 	if (a->n == n) return;
 	if (a->tag == Tag::call) --n;
 	sprintf(buf, "expected %zu args", n);
 	err(buf);
 }
 
-// In TPTP, types that are not specified or otherwise implied by context, default to individual
-static Type* typeOrIndividual(Expr* a) {
-	switch (a->tag) {
-	case Tag::call:
-	{
-		auto f = (Fn*)at(a, 0);
-		assert(f->tag == Tag::fn);
-		if (!f->ty) return &tindividual;
-		return at(f->ty, 0);
-	}
-	case Tag::fn:
-	{
-		auto ty = ((Fn*)a)->ty;
-		if (!ty) return &tindividual;
-		return ty;
-	}
-	default:
-		return type(a);
-	}
-}
-
-void Parser::typing(Type* ty, Expr* a) {
-	// We need to be careful about calling type(a) at this point, because in TPTP, the type of this expression (or some
-	// subexpression thereof) may not necessarily be specified yet. But the type expected for it, should be specified.
-	assert(ty);
-
+void Parser::check(Type* ty, Expr* a) {
 	// In first-order logic, a function cannot return a function, nor can a variable store one. (That would be higher-order logic.)
 	// The code should be written so that neither the top-level callers nor the recursive calls, can ever ask for a function to be
 	// returned.
@@ -184,23 +159,24 @@ void Parser::typing(Type* ty, Expr* a) {
 	case Tag::sub:
 		// Arithmetic of arity 2, type passes straight through
 		// TODO: would it be better to specialize to addInt etc?
-		checkSize(2, a);
+		check(2, a);
 		if (!isNum(ty)) err("invalid type for arithmetic");
-		typing(ty, at(a, 0));
-		typing(ty, at(a, 1));
+		check(ty, at(a, 0));
+		check(ty, at(a, 1));
 		break;
 	case Tag::all:
 	case Tag::exists:
 		// Quantifier
 		// TODO: does SMT-LIB need to check a Boolean was wanted here?
-		typing(&tbool, at(a, 0));
+		check(&tbool, at(a, 0));
 		break;
 	case Tag::and1:
 	case Tag::eqv:
 	case Tag::or1:
 		// Connective
 		if (&tbool != ty) err("type mismatch");
-		for (size_t i = 0; i < a->n; ++i) typing(&tbool, at(a, i));
+		// TODO: foreach?
+		for (size_t i = 0; i < a->n; ++i) check(&tbool, at(a, i));
 		break;
 	case Tag::call:
 	{
@@ -209,37 +185,28 @@ void Parser::typing(Type* ty, Expr* a) {
 		auto f = (Fn*)at(a, 0);
 		assert(f->tag == Tag::fn);
 
-		// The function may or may not already have a type; in TPTP, types can sometimes be inferred from context
+		// Check for input like a(b) where a is just a constant
 		auto fty = f->ty;
-		if (fty) {
-			// Check for input like a(b) where a is just a constant
-			if (fty->kind != Kind::fn) err("called a non-function");
+		if (fty->kind != Kind::fn) err("called a non-function");
 
-			// Check for input like a(b) followed by a(b, c)
-			checkSize(fty->n, a);
+		// Check for input like a(b) followed by a(b, c)
+		check(fty->n, a);
 
-			// Check for inappropriate parameter types
-			for (size_t i = 1; i < fty->n; ++i) switch (at(fty, i)->kind) {
-				case Kind::boolean:
-					err("boolean parameters not supported", inappropriateError);
-				case Kind::fn:
-					err("higher-order functions not supported", inappropriateError);
-				default:
-					break;
-				}
+		// Check for inappropriate parameter types
+		for (size_t i = 1; i < fty->n; ++i) switch (at(fty, i)->kind) {
+			case Kind::boolean:
+				err("boolean parameters not supported", inappropriateError);
+			case Kind::fn:
+				err("higher-order functions not supported", inappropriateError);
+			default:
+				break;
+			}
 
-			// And of course, check return type
-			if (at(fty, 0) != ty) err("type mismatch");
-		} else {
-			// In TPTP, an undeclared function defaults to all parameters individual, and the return type individual or Boolean
-			// depending on context. Here, we allow a little more leeway. The return type defaults to whatever the context wanted.
-			Vec<Type*> v(a->n, ty);
-			for (size_t i = 1; i < a->n; ++i) v[i] = &tindividual;
-			f->ty = fty = compType(v);
-		}
+		// And of course, check return type
+		if (at(fty, 0) != ty) err("type mismatch");
 
 		// And recur, based on the parameter types
-		for (size_t i = 1; i < fty->n; ++i) typing(at(fty, i), at(a, i));
+		for (size_t i = 1; i < fty->n; ++i) check(at(fty, i), at(a, i));
 		break;
 	}
 	case Tag::ceil:
@@ -248,9 +215,9 @@ void Parser::typing(Type* ty, Expr* a) {
 	case Tag::round:
 	case Tag::trunc:
 		// Arithmetic of arity 1, type passes straight through
-		checkSize(1, a);
+		check(1, a);
 		if (!isNum(ty)) err("invalid type for arithmetic");
-		typing(ty, at(a, 0));
+		check(ty, at(a, 0));
 		break;
 	case Tag::distinctObj:
 	case Tag::false1:
@@ -258,14 +225,13 @@ void Parser::typing(Type* ty, Expr* a) {
 	case Tag::rat:
 	case Tag::real:
 	case Tag::true1:
+		// Leaf
 		assert(!a->n);
-
-		// Safe to call type(a) because there are no subexpressions
 		if (type(a) != ty) err("type mismatch");
 		break;
 	case Tag::div:
 		// Arithmetic of arity 2, type passes straight through, but fractions only
-		checkSize(2, a);
+		check(2, a);
 		switch (ty->kind) {
 		case Kind::rat:
 		case Kind::real:
@@ -273,12 +239,14 @@ void Parser::typing(Type* ty, Expr* a) {
 		default:
 			err("invalid type for division");
 		}
-		typing(ty, at(a, 0));
-		typing(ty, at(a, 1));
+		check(ty, at(a, 0));
+		check(ty, at(a, 1));
 		break;
 	case Tag::eq:
 		// Eq is always a special case
-		ty = typeOrIndividual(at(a, 0));
+		check(2, a);
+		if (&tbool != ty) err("type mismatch");
+		ty = type(at(a, 0));
 		switch (ty->kind) {
 		case Kind::boolean:
 		case Kind::fn:
@@ -286,8 +254,8 @@ void Parser::typing(Type* ty, Expr* a) {
 		default:
 			break;
 		}
-		typing(ty, at(a, 0));
-		typing(ty, at(a, 1));
+		check(ty, at(a, 0));
+		check(ty, at(a, 1));
 		break;
 	case Tag::fn:
 	{
@@ -306,36 +274,32 @@ void Parser::typing(Type* ty, Expr* a) {
 	case Tag::toRat:
 	case Tag::toReal:
 		// Type converter of arity 1
-		checkSize(1, a);
-
-		// Safe to call type(a) because it will stop at this tag
+		check(1, a);
 		if (type(a) != ty) err("type mismatch");
 
-		// But that means the argument may have a different type
-		ty = typeOrIndividual(at(a, 0));
+		// That means the argument may have a different type
+		ty = type(at(a, 0));
 
 		if (!isNum(ty)) err("invalid type for arithmetic");
-		typing(ty, at(a, 0));
+		check(ty, at(a, 0));
 		break;
 	case Tag::lt:
 		// Type converter of arity 2
-		checkSize(2, a);
-
-		// Safe to call type(a) because it will stop at this tag
+		check(2, a);
 		if (type(a) != ty) err("type mismatch");
 
-		// But that means the argument may have a different type
-		ty = typeOrIndividual(at(a, 0));
+		// That means the argument may have a different type
+		ty = type(at(a, 0));
 
 		if (!isNum(ty)) err("invalid type for comparison");
-		typing(ty, at(a, 0));
-		typing(ty, at(a, 1));
+		check(ty, at(a, 0));
+		check(ty, at(a, 1));
 		break;
 	case Tag::not1:
 		// Connective of arity 1
-		checkSize(1, a);
+		check(1, a);
 		if (&tbool != ty) err("type mismatch");
-		typing(&tbool, at(a, 0));
+		check(&tbool, at(a, 0));
 		break;
 	case Tag::var:
 		assert(!a->n);
@@ -344,8 +308,7 @@ void Parser::typing(Type* ty, Expr* a) {
 		// here for Boolean variables
 		if (ty == &tbool) err("boolean variables not supported", inappropriateError);
 
-		// Safe to call type(a) because there are no subexpressions
-		if (type(a) != ty) err("type mismatch");
+		if (((Var*)a)->ty != ty) err("type mismatch");
 		break;
 	}
 }
