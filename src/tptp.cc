@@ -45,6 +45,42 @@ Expr* distinctObj(Str* s) {
 	return a;
 }
 
+// TODO: ty -> t?
+void defaultType(Type* ty, Expr* a) {
+	switch (a->tag) {
+	case Tag::all:
+	case Tag::exists:
+	case Tag::not1:
+		defaultType(&tbool, at(a, 0));
+		break;
+	case Tag::and1:
+	case Tag::eqv:
+	case Tag::or1:
+		for (auto b: a) defaultType(&tbool, b);
+		break;
+	case Tag::call:
+	{
+		auto f = (Fn*)at(a, 0);
+		if (f->ty) break;
+		Vec<Type*> v(a->n, ty);
+		for (size_t i = 1; i < a->n; ++i) v[i] = &tindividual;
+		f->ty = compType(v);
+		for (size_t i = 1; i < a->n; ++i) defaultType(&tindividual, at(a, i));
+		break;
+	}
+	case Tag::fn:
+	{
+		auto f = (Fn*)a;
+		if (f->ty) break;
+		f->ty = ty;
+		break;
+	}
+	default:
+		for (auto b: a) defaultType(&tindividual, b);
+		break;
+	}
+}
+
 struct Parser1: Parser {
 	// SORT
 	bool cnfMode;
@@ -684,6 +720,7 @@ struct Parser1: Parser {
 						a = at(a, 0);
 						no = no ^ 1;
 					}
+					defaultType(&tbool, a);
 					typing(&tbool, a);
 					(no ? neg : pos).add(a);
 				} while (eat('|'));
@@ -729,6 +766,7 @@ struct Parser1: Parser {
 				cnfMode = 0;
 				auto a = logicFormula();
 				assert(!vars.n);
+				defaultType(&tbool, a);
 				typing(&tbool, a);
 
 				// Select
