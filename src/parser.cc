@@ -274,7 +274,7 @@ void Parser::check(Type* ty, Expr* a) {
 		check(2, a);
 
 		// That means the argument may have a different type
-		auto t = type(at(a, 0));
+		t = type(at(a, 0));
 		if (!isNum(t)) err("invalid type for comparison");
 
 		check(t, at(a, 0));
