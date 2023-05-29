@@ -17,6 +17,16 @@ struct Expr {
 // respectively.
 extern Expr bools[2];
 
+// a predicate is a function with Boolean return type. A first-order constant (or propositional variable) is a function of arity
+// zero.
+struct Fn: Expr {
+	Type* ty;
+	char* s;
+
+	Fn(Type* ty, char* s): Expr(Tag::fn), ty(ty), s(s) {
+	}
+};
+
 // SORT
 Expr* distinct(Vec<Expr*>& v);
 Expr* eq(Expr* a, Expr* b);
@@ -35,11 +45,11 @@ struct Eqn: pair<Expr*, Expr*> {
 };
 
 #ifdef DBG
-void check(Expr* a);
+void dbgCheck(Expr* a);
 
 void dbgPrint(Tag tag);
 void dbgPrint(Expr* a);
 #else
-inline void check(Expr* a) {
+inline void dbgCheck(Expr* a) {
 }
 #endif

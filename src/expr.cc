@@ -120,7 +120,7 @@ static bool inbuf(void* p0) {
 	return buf <= p && p < bufp;
 }
 
-void check(Expr* a) {
+void dbgCheck(Expr* a) {
 	assert(size_t(a->tag) <= size_t(Tag::var));
 	switch (a->tag) {
 	case Tag::distinctObj:
@@ -148,7 +148,7 @@ void check(Expr* a) {
 		// spill into ialloc.
 
 		// Recursively check subexpressions
-		for (auto b: a) check(b);
+		for (auto b: a) dbgCheck(b);
 		break;
 	}
 }

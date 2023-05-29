@@ -17,8 +17,8 @@ size_t cost(Clause* c) {
 priority_queue<Clause*, vector<Clause*>, ClauseCompare> passive;
 
 void clause() {
-	for (auto a: neg) check(a);
-	for (auto a: pos) check(a);
+	for (auto a: neg) dbgCheck(a);
+	for (auto a: pos) dbgCheck(a);
 
 	// Normalize atoms
 	initNorm();

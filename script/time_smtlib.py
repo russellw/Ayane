@@ -18,7 +18,7 @@ for file in problems:
         cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf-8"
     )
     t = time.time() - t
-    if t > 30:
+    if t > 10:
         print("%s\t%.3f seconds" % (file, t))
     s = p.stdout
 
