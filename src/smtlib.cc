@@ -304,7 +304,6 @@ struct Parser1: Parser {
 			expect('(');
 			auto s = word();
 			auto t = type1();
-			// TODO: do we need to check for Boolean parameters here?
 			if (t->kind == Kind::fn) err("higher-order functions not supported", inappropriateError);
 			expect(')');
 			auto a = var((LeafType*)t, locals.n);
