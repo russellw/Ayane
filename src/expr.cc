@@ -9,8 +9,8 @@ Expr* imp(Expr* a, Expr* b) {
 
 bool occurs(Expr* a, Expr* b) {
 	if (a == b) return 1;
-	for (size_t i = 0; i < b->n; ++i)
-		if (occurs(a, at(b, i))) return 1;
+	for (auto bi: b)
+		if (occurs(a, bi)) return 1;
 	return 0;
 }
 
