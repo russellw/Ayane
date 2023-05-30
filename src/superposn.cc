@@ -9,7 +9,7 @@ Expr* altVars(Expr* a) {
 	}
 	if (a->tag == Tag::var) {
 		auto a1 = (Var*)a;
-		auto b = a1->ty->alts[a1->i];
+		auto b = a1->t->alts[a1->i];
 		assert(a != b);
 		return b;
 	}

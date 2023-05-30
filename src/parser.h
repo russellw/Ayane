@@ -40,9 +40,9 @@ struct Parser {
 
 	// Type a function, in context where error can report line number. For languages like TPTP where definitions can be implied on
 	// the fly, but must be consistent with previous usage. Also used by DIMACS for a simpler case.
-	Expr* fn(Type* ty, Str* s);
+	Expr* fn(Type* t, Str* s);
 
 	// Recursively type-check an expression, in context where error can report line number
 	void check(size_t n, Expr* a);
-	void check(Type* ty, Expr* a);
+	void check(Type* t, Expr* a);
 };

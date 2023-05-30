@@ -81,12 +81,12 @@ Type* type(Expr* a) {
 	{
 		auto f = (Fn*)at(a, 0);
 		assert(f->tag == Tag::fn);
-		return at(f->ty, 0);
+		return at(f->t, 0);
 	}
 	case Tag::distinctObj:
 		return &tindividual;
 	case Tag::fn:
-		return ((Fn*)a)->ty;
+		return ((Fn*)a)->t;
 	case Tag::integer:
 	case Tag::toInt:
 		return &tinteger;
@@ -97,7 +97,7 @@ Type* type(Expr* a) {
 	case Tag::toReal:
 		return &treal;
 	case Tag::var:
-		return ((Var*)a)->ty;
+		return ((Var*)a)->t;
 	}
 	unreachable;
 }

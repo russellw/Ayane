@@ -251,7 +251,7 @@ struct Parser1: Parser {
 		case k_word:
 			auto s = str;
 			lex();
-			if (s->ty) return s->ty;
+			if (s->t) return s->t;
 			switch (s - keywords) {
 			case s_Bool:
 				return &tbool;
@@ -290,11 +290,11 @@ struct Parser1: Parser {
 		while (!eat(')')) {
 			expect('(');
 			auto s = word();
-			auto ty = type1();
+			auto t = type1();
 			// TODO: do we need to check for Boolean parameters here?
-			if (ty->kind == Kind::fn) err("higher-order functions not supported", inappropriateError);
+			if (t->kind == Kind::fn) err("higher-order functions not supported", inappropriateError);
 			expect(')');
-			auto a = var((LeafType*)ty, locals.n);
+			auto a = var((LeafType*)t, locals.n);
 			locals.add(make_pair(s, a));
 			v.add(a);
 		}
@@ -538,7 +538,7 @@ struct Parser1: Parser {
 			case s_declare_sort:
 			{
 				auto s = word();
-				if (s->ty) err("sort already declared");
+				if (s->t) err("sort already declared");
 				if (tok != k_num) err("expected arity");
 				switch (num->tag) {
 				case Tag::integer:
@@ -552,7 +552,7 @@ struct Parser1: Parser {
 				}
 				lex();
 				expect(')');
-				s->ty = new (ialloc(sizeof(OpaqueType))) OpaqueType(s->v);
+				s->t = new (ialloc(sizeof(OpaqueType))) OpaqueType(s->v);
 				break;
 			}
 			case s_define_fun:
@@ -569,7 +569,7 @@ struct Parser1: Parser {
 				params(v);
 
 				Vec<Type*> w(v.n);
-				for (size_t i = 1; i < v.n; ++i) w[i] = ((Var*)v[i])->ty;
+				for (size_t i = 1; i < v.n; ++i) w[i] = ((Var*)v[i])->t;
 
 				// Return type
 				w[0] = type1();
@@ -600,8 +600,8 @@ struct Parser1: Parser {
 			case s_define_sort:
 			{
 				auto s = word();
-				if (s->ty) err("sort already defined");
-				s->ty = topLevelType();
+				if (s->t) err("sort already defined");
+				s->t = topLevelType();
 				expect(')');
 				break;
 			}

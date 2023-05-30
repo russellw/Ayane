@@ -1,13 +1,13 @@
 #include "main.h"
 
-Var* var(LeafType* ty, size_t i) {
-	while (ty->vars.n <= i) {
-		ty->vars.add(0);
-		ty->alts.add(0);
+Var* var(LeafType* t, size_t i) {
+	while (t->vars.n <= i) {
+		t->vars.add(0);
+		t->alts.add(0);
 	}
-	if (!ty->vars[i]) {
-		ty->vars[i] = new (ialloc(sizeof(Var))) Var(ty, i);
-		ty->alts[i] = new (ialloc(sizeof(Var))) Var(ty, i);
+	if (!t->vars[i]) {
+		t->vars[i] = new (ialloc(sizeof(Var))) Var(t, i);
+		t->alts[i] = new (ialloc(sizeof(Var))) Var(t, i);
 	}
-	return ty->vars[i];
+	return t->vars[i];
 }

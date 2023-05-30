@@ -1,6 +1,6 @@
 // Strings are interned for fast comparison, and fast access to associated types and values
 struct Str {
-	Type* ty;
+	Type* t;
 	Fn* fn;
 
 	// Although the allocated size of dynamically allocated strings will vary according to the number of characters needed, the

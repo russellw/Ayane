@@ -187,7 +187,7 @@ Expr* all(int pol, Expr* a) {
 	for (size_t i = 1; i < a->n; ++i) {
 		auto x = (Var*)at(a, i);
 		assert(x->tag == Tag::var);
-		auto y = var(((Var*)x)->ty, vars++);
+		auto y = var(((Var*)x)->t, vars++);
 		m.add(make_pair(x, y));
 	}
 	a = nnf(pol, at(a, 0));
@@ -208,7 +208,7 @@ Expr* exists(int pol, Expr* a) {
 	for (size_t i = 1; i < a->n; ++i) {
 		auto x = (Var*)at(a, i);
 		assert(x->tag == Tag::var);
-		auto y = skolem(((Var*)x)->ty, args);
+		auto y = skolem(((Var*)x)->t, args);
 		m.add(make_pair(x, y));
 	}
 	a = nnf(pol, at(a, 0));

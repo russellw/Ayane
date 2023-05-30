@@ -6,8 +6,8 @@ LeafType tinteger(Kind::integer);
 LeafType trat(Kind::rat);
 LeafType treal(Kind::real);
 
-bool isNum(Type* ty) {
-	switch (ty->kind) {
+bool isNum(Type* t) {
+	switch (t->kind) {
 	case Kind::integer:
 	case Kind::rat:
 	case Kind::real:
@@ -26,22 +26,22 @@ void dbgPrint(Kind kind) {
 	dbgPrint(kindNames[(int)kind]);
 }
 
-void dbgPrint(Type* ty) {
-	switch (ty->kind) {
+void dbgPrint(Type* t) {
+	switch (t->kind) {
 	case Kind::fn:
-		dbgPrint(at(ty, 0));
+		dbgPrint(at(t, 0));
 		putchar('(');
-		for (size_t i = 1; i < ty->n; ++i) {
+		for (size_t i = 1; i < t->n; ++i) {
 			if (i > 1) dbgPrint(", ");
-			dbgPrint(at(ty, i));
+			dbgPrint(at(t, i));
 		}
 		putchar(')');
 		break;
 	case Kind::opaque:
-		dbgPrint(((OpaqueType*)ty)->s);
+		dbgPrint(((OpaqueType*)t)->s);
 		break;
 	default:
-		dbgPrint(ty->kind);
+		dbgPrint(t->kind);
 		break;
 	}
 }

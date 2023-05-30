@@ -4,17 +4,17 @@ namespace {
 Vec<pair<Type*, size_t>> freshVars;
 Vec<pair<Var*, Var*>> normVars;
 
-Var* freshVar(LeafType* ty) {
+Var* freshVar(LeafType* t) {
 	for (auto& ab: freshVars)
-		if (ab.first == ty) return var(ty, ++ab.second);
-	freshVars.add(make_pair(ty, 0));
-	return var(ty, 0);
+		if (ab.first == t) return var(t, ++ab.second);
+	freshVars.add(make_pair(t, 0));
+	return var(t, 0);
 }
 
 Var* normVar(Var* a) {
 	for (auto& ab: normVars)
 		if (ab.first == a) return ab.second;
-	auto b = freshVar(a->ty);
+	auto b = freshVar(a->t);
 	normVars.add(make_pair(a, b));
 	return b;
 }

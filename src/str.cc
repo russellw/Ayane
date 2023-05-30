@@ -124,7 +124,7 @@ void clear(char* a) {
 Str* make(int tag, char* v, size_t n) {
 	auto a = (Str*)ialloc(offsetof(Str, v) + n + 1);
 	a->fn = 0;
-	a->ty = 0;
+	a->t = 0;
 	memcpy(a->v, v, n);
 	a->v[n] = 0;
 	return a;

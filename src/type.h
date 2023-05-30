@@ -29,7 +29,7 @@ extern LeafType tinteger;
 extern LeafType trat;
 extern LeafType treal;
 
-bool isNum(Type* ty);
+bool isNum(Type* t);
 
 // In typed first-order logic, we can name a type, and then work with it without needing to know what it is made of
 struct OpaqueType: LeafType {
@@ -41,5 +41,5 @@ struct OpaqueType: LeafType {
 
 #ifdef DBG
 void dbgPrint(Kind kind);
-void dbgPrint(Type* ty);
+void dbgPrint(Type* t);
 #endif

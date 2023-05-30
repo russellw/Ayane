@@ -27,13 +27,13 @@ struct Select: unordered_set<char*> {
 };
 
 OpaqueType* opaqueType(Str* s) {
-	if (s->ty) {
-		assert(s->ty->kind == Kind::opaque);
-		return (OpaqueType*)s->ty;
+	if (s->t) {
+		assert(s->t->kind == Kind::opaque);
+		return (OpaqueType*)s->t;
 	}
-	auto ty = new (ialloc(sizeof(OpaqueType))) OpaqueType(s->v);
-	s->ty = ty;
-	return ty;
+	auto t = new (ialloc(sizeof(OpaqueType))) OpaqueType(s->v);
+	s->t = t;
+	return t;
 }
 
 unordered_map<Str*, Expr*> distinctObjs;
@@ -45,8 +45,7 @@ Expr* distinctObj(Str* s) {
 	return a;
 }
 
-// TODO: ty -> t?
-void defaultType(Type* ty, Expr* a) {
+void defaultType(Type* t, Expr* a) {
 	switch (a->tag) {
 	case Tag::all:
 	case Tag::exists:
@@ -61,18 +60,18 @@ void defaultType(Type* ty, Expr* a) {
 	case Tag::call:
 	{
 		auto f = (Fn*)at(a, 0);
-		if (f->ty) break;
-		Vec<Type*> v(a->n, ty);
+		if (f->t) break;
+		Vec<Type*> v(a->n, t);
 		for (size_t i = 1; i < a->n; ++i) v[i] = &tindividual;
-		f->ty = compType(v);
+		f->t = compType(v);
 		for (size_t i = 1; i < a->n; ++i) defaultType(&tindividual, at(a, i));
 		break;
 	}
 	case Tag::fn:
 	{
 		auto f = (Fn*)a;
-		if (f->ty) break;
-		f->ty = ty;
+		if (f->t) break;
+		f->t = t;
 		break;
 	}
 	default:
@@ -397,9 +396,9 @@ struct Parser1: Parser {
 			err("type constructors not supported", inappropriateError);
 		case '(':
 		{
-			auto ty = atomicType();
+			auto t = atomicType();
 			expect(')');
-			return ty;
+			return t;
 		}
 		case k_dollarWord:
 			switch (s - keywords) {
@@ -433,9 +432,9 @@ struct Parser1: Parser {
 			v[0] = atomicType();
 			return compType(v);
 		}
-		auto ty = atomicType();
-		if (!eat('>')) return ty;
-		return compType(atomicType(), ty);
+		auto t = atomicType();
+		if (!eat('>')) return t;
+		return compType(atomicType(), t);
 	}
 
 	// Expressions
@@ -599,9 +598,9 @@ struct Parser1: Parser {
 			if (tok != k_var) err("expected variable");
 			auto s = str;
 			lex();
-			auto ty = &tindividual;
-			if (eat(':')) ty = atomicType();
-			auto a = var(ty, vars.n);
+			auto t = &tindividual;
+			if (eat(':')) t = atomicType();
+			auto a = var(t, vars.n);
 			vars.add(make_pair(s, a));
 			v.add(a);
 		} while (eat(','));

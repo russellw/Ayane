@@ -103,7 +103,7 @@ void Parser::lexInt(mpz_t z) {
 	*src = c;
 }
 
-Expr* Parser::fn(Type* ty, Str* s) {
+Expr* Parser::fn(Type* t, Str* s) {
 	// For languages like TPTP where it's okay to repeat declarations, provided they agree with each other
 	if (s->fn) {
 		auto a = s->fn;
@@ -113,14 +113,14 @@ Expr* Parser::fn(Type* ty, Str* s) {
 		assert(a->s == s->v);
 
 		// If no type is specified, done
-		if (!ty) return a;
+		if (!t) return a;
 
 		// If it already has the specified type, done
-		if (a->ty == ty) return a;
+		if (a->t == t) return a;
 
 		// If it doesn't already have a type, now it does
-		if (!a->ty) {
-			a->ty = ty;
+		if (!a->t) {
+			a->t = t;
 			return a;
 		}
 
@@ -129,7 +129,7 @@ Expr* Parser::fn(Type* ty, Str* s) {
 	}
 
 	// Making a new function is the simple case
-	auto a = new (ialloc(sizeof(Fn))) Fn(ty, s->v);
+	auto a = new (ialloc(sizeof(Fn))) Fn(t, s->v);
 	return s->fn = a;
 }
 
@@ -141,14 +141,14 @@ void Parser::check(size_t n, Expr* a) {
 }
 
 // TODO: ensure type(a) is defined
-void Parser::check(Type* ty, Expr* a) {
+void Parser::check(Type* t, Expr* a) {
 	// In first-order logic, a function cannot return a function, nor can a variable store one. (That would be higher-order logic.)
 	// The code should be written so that neither the top-level callers nor the recursive calls, can ever ask for a function to be
 	// returned.
-	assert(ty->kind != Kind::fn);
+	assert(t->kind != Kind::fn);
 
 	// Most obviously, check this expression returns the expected type
-	if (type(a) != ty) err("type mismatch");
+	if (type(a) != t) err("type mismatch");
 
 	// This switch should be exhaustive
 	switch (a->tag) {
@@ -164,9 +164,9 @@ void Parser::check(Type* ty, Expr* a) {
 		// Arithmetic of arity 2, type passes straight through
 		// TODO: would it be better to specialize to addInt etc?
 		check(2, a);
-		if (!isNum(ty)) err("invalid type for arithmetic");
-		check(ty, at(a, 0));
-		check(ty, at(a, 1));
+		if (!isNum(t)) err("invalid type for arithmetic");
+		check(t, at(a, 0));
+		check(t, at(a, 1));
 		break;
 	case Tag::all:
 	case Tag::exists:
@@ -188,7 +188,7 @@ void Parser::check(Type* ty, Expr* a) {
 		assert(f->tag == Tag::fn);
 
 		// Check for input like a(b) where a is just a constant
-		auto fty = f->ty;
+		auto fty = f->t;
 		if (fty->kind != Kind::fn) err("called a non-function");
 
 		// Check for input like a(b) followed by a(b, c)
@@ -215,45 +215,35 @@ void Parser::check(Type* ty, Expr* a) {
 	case Tag::trunc:
 		// Arithmetic of arity 1, type passes straight through
 		check(1, a);
-		if (!isNum(ty)) err("invalid type for arithmetic");
-		check(ty, at(a, 0));
-		break;
-	case Tag::distinctObj:
-	case Tag::false1:
-	case Tag::fn:
-	case Tag::integer:
-	case Tag::rat:
-	case Tag::real:
-	case Tag::true1:
-		// Leaf
-		assert(!a->n);
+		if (!isNum(t)) err("invalid type for arithmetic");
+		check(t, at(a, 0));
 		break;
 	case Tag::div:
 		// Arithmetic of arity 2, type passes straight through, but fractions only
 		check(2, a);
-		switch (ty->kind) {
+		switch (t->kind) {
 		case Kind::rat:
 		case Kind::real:
 			break;
 		default:
 			err("invalid type for division");
 		}
-		check(ty, at(a, 0));
-		check(ty, at(a, 1));
+		check(t, at(a, 0));
+		check(t, at(a, 1));
 		break;
 	case Tag::eq:
 		// Eq is always a special case
 		check(2, a);
-		ty = type(at(a, 0));
-		switch (ty->kind) {
+		t = type(at(a, 0));
+		switch (t->kind) {
 		case Kind::boolean:
 		case Kind::fn:
 			err("invalid type for equality");
 		default:
 			break;
 		}
-		check(ty, at(a, 0));
-		check(ty, at(a, 1));
+		check(t, at(a, 0));
+		check(t, at(a, 1));
 		break;
 	case Tag::isInt:
 	case Tag::isRat:
@@ -290,8 +280,7 @@ void Parser::check(Type* ty, Expr* a) {
 
 		// Parsers need to make sure variables have leaf types, to preserve validity of data structures, so we only need to check
 		// here for Boolean variables
-		if (ty == &tbool) err("boolean variables not supported", inappropriateError);
+		if (t == &tbool) err("boolean variables not supported", inappropriateError);
 		break;
 	}
-	// TODO: factor out most of the recursion?
 }
