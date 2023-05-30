@@ -240,12 +240,20 @@ struct Parser1: Parser {
 	}
 
 	void skip() {
-		while (!eat(')')) {
-			if (!tok) err("unclosed '('");
-			if (eat('(')) skip();
-			else
-				lex();
-		}
+		size_t n = 1;
+		do {
+			switch (tok) {
+			case '(':
+				++n;
+				break;
+			case ')':
+				--n;
+				break;
+			case 0:
+				err("unclosed '('");
+			}
+			lex();
+		} while (n);
 	}
 
 	// Types
