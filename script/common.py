@@ -4,7 +4,7 @@ import random
 import re
 
 
-# TODO: sort
+# SORTF
 def get_error_codes():
     here = os.path.dirname(os.path.realpath(__file__))
     codes = {}
