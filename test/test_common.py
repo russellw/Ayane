@@ -2,24 +2,7 @@ import os
 import re
 
 
-def get_p(file):
-    ext = os.path.splitext(file)[1]
-    assert ext == ".cnf"
-    for s in open(file).readlines():
-        m = re.match(r"p\s+cnf\s+(\d+)\s+(\d+)", s)
-        if m:
-            return m[1], m[2]
-
-
-def get_logic(file):
-    ext = os.path.splitext(file)[1]
-    assert ext == ".smt2"
-    for s in open(file).readlines():
-        m = re.match(r"\(set-logic\s+(\w+)\)", s)
-        if m:
-            return m[1]
-
-
+# SORTF
 def get_expected(file):
     for s in open(file).readlines():
         m = re.match(r"\S\s*(inappropriateError)\s+", s)
@@ -38,3 +21,21 @@ def get_expected(file):
         if m:
             return 1
     raise Exception(file)
+
+
+def get_logic(file):
+    ext = os.path.splitext(file)[1]
+    assert ext == ".smt2"
+    for s in open(file).readlines():
+        m = re.match(r"\(set-logic\s+(\w+)\)", s)
+        if m:
+            return m[1]
+
+
+def get_p(file):
+    ext = os.path.splitext(file)[1]
+    assert ext == ".cnf"
+    for s in open(file).readlines():
+        m = re.match(r"p\s+cnf\s+(\d+)\s+(\d+)", s)
+        if m:
+            return m[1], m[2]
