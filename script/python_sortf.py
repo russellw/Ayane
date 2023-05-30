@@ -4,6 +4,7 @@ import re
 import common
 
 
+# SORTF
 def indent(v, i):
     if i == len(v):
         return -1
@@ -22,7 +23,7 @@ def def1(v, i):
     dent = indent(v, i)
     while indent(v, i) == dent and re.match(r"\s*#", v[i]):
         i += 1
-    if not indent(v, i) == dent and re.match(r"\s*def ", v[i]):
+    if not (indent(v, i) == dent and re.match(r"\s*def ", v[i])):
         return
     i += 1
     while indent(v, i) > dent:
