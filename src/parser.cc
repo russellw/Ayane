@@ -170,7 +170,7 @@ void Parser::check(Type* t, Expr* a) {
 	case Tag::all:
 	case Tag::exists:
 		// Quantifier
-		check(&tbool, at(a, 0));
+		check(t, at(a, 0));
 		return;
 	case Tag::call:
 	{
@@ -220,7 +220,7 @@ void Parser::check(Type* t, Expr* a) {
 		}
 		break;
 	case Tag::eq:
-		// Eq is always a special case
+		// Type converter of arity 2
 		check(2, a);
 		t = type(at(a, 0));
 		switch (t->kind) {
@@ -239,7 +239,7 @@ void Parser::check(Type* t, Expr* a) {
 	case Tag::toInt:
 	case Tag::toRat:
 	case Tag::toReal:
-		// Type converter of arity 1
+		// Arithmetic type converter of arity 1
 		check(1, a);
 
 		// That means the argument may have a different type
@@ -247,7 +247,7 @@ void Parser::check(Type* t, Expr* a) {
 		if (!isNum(t)) err("invalid type for arithmetic");
 		break;
 	case Tag::lt:
-		// Type converter of arity 2
+		// Arithmetic type converter of arity 2
 		check(2, a);
 
 		// That means the argument may have a different type
