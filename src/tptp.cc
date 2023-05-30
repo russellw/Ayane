@@ -45,7 +45,6 @@ Expr* distinctObj(Str* s) {
 	return a;
 }
 
-// TODO: this might be the best place to check for call of something that does not take parameters
 void defaultType(Type* t, Expr* a) {
 	switch (a->tag) {
 	case Tag::all:

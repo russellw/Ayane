@@ -140,7 +140,6 @@ void Parser::check(size_t n, Expr* a) {
 	err(buf);
 }
 
-// TODO: ensure type(a) is defined
 void Parser::check(Type* t, Expr* a) {
 	// In first-order logic, a function cannot return a function, nor can a variable store one. (That would be higher-order logic.)
 	// The code should be written so that neither the top-level callers nor the recursive calls, can ever ask for a function to be
@@ -178,11 +177,8 @@ void Parser::check(Type* t, Expr* a) {
 		auto f = (Fn*)at(a, 0);
 		assert(f->tag == Tag::fn);
 
-		// Check for input like a(b) where a is just a constant
+		// Arity depends on function
 		auto ft = f->t;
-		if (ft->kind != Kind::fn) err("called a non-function");
-
-		// Check for input like a(b) followed by a(b, c)
 		check(ft->n, a);
 
 		// Check for inappropriate parameter types

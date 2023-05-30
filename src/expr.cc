@@ -52,7 +52,7 @@ Type* type(Expr* a) {
 	{
 		auto f = (Fn*)at(a, 0);
 		assert(f->tag == Tag::fn);
-		assert(f->t->kind == Kind::fn);
+		if (f->t->kind != Kind::fn) return 0;
 		return at(f->t, 0);
 	}
 	case Tag::distinctObj:
