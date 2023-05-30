@@ -1,8 +1,8 @@
 rem Backup
-copy %~dp0*.py %tmp%
-copy %~dp0..\test\*.py %tmp%
-copy %~dp0..\src\*.cc %tmp%
-copy %~dp0..\src\*.h %tmp%
+copy %~dp0*.py %tmp% >nul:
+copy %~dp0..\test\*.py %tmp% >nul:
+copy %~dp0..\src\*.cc %tmp% >nul:
+copy %~dp0..\src\*.h %tmp% >nul:
 
 rem Standard tools for Python
 black %~dp0..
