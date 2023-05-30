@@ -51,33 +51,31 @@ void defaultType(Type* t, Expr* a) {
 	case Tag::exists:
 	case Tag::not1:
 		defaultType(&tbool, at(a, 0));
-		break;
+		return;
 	case Tag::and1:
 	case Tag::eqv:
 	case Tag::or1:
 		for (auto b: a) defaultType(&tbool, b);
-		break;
+		return;
 	case Tag::call:
 	{
 		auto f = (Fn*)at(a, 0);
-		if (f->t) break;
+		if (f->t) return;
 		Vec<Type*> v(a->n, t);
 		for (size_t i = 1; i < a->n; ++i) v[i] = &tindividual;
 		f->t = compType(v);
 		for (size_t i = 1; i < a->n; ++i) defaultType(&tindividual, at(a, i));
-		break;
+		return;
 	}
 	case Tag::fn:
 	{
 		auto f = (Fn*)a;
-		if (f->t) break;
+		if (f->t) return;
 		f->t = t;
-		break;
+		return;
 	}
-	default:
-		for (auto b: a) defaultType(&tindividual, b);
-		break;
 	}
+	for (auto b: a) defaultType(&tindividual, b);
 }
 
 struct Parser1: Parser {
@@ -378,6 +376,7 @@ struct Parser1: Parser {
 	}
 
 	void skip() {
+		// TODO: iterative
 		while (!eat(')')) {
 			if (!tok) err("unclosed '('");
 			if (eat('(')) skip();

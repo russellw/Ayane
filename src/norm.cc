@@ -33,9 +33,8 @@ bool constant(Expr* a) {
 	case Tag::rat:
 	case Tag::real:
 		return 1;
-	default:
-		return 0;
 	}
+	return 0;
 }
 
 Expr* op1(Expr* x, void (*f)(mpz_t, const mpz_t, const mpz_t)) {
@@ -215,8 +214,6 @@ Expr* norm(Expr* a) {
 		break;
 	case Tag::trunc:
 		if (constant(x)) return op1(x, mpz_tdiv_q);
-		break;
-	default:
 		break;
 	}
 	return compi(a->tag, v);

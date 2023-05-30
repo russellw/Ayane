@@ -191,8 +191,6 @@ void Parser::check(Type* t, Expr* a) {
 				err("boolean parameters not supported", inappropriateError);
 			case Kind::fn:
 				err("higher-order functions not supported", inappropriateError);
-			default:
-				break;
 			}
 
 		// And recur, based on the parameter types

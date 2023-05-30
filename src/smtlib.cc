@@ -511,7 +511,7 @@ struct Parser1: Parser {
 				check(&tbool, a);
 				expect(')');
 				cnf(a);
-				break;
+				continue;
 			}
 			case s_check_sat:
 				return;
@@ -521,7 +521,7 @@ struct Parser1: Parser {
 				if (s->fn) err("constant already declared");
 				s->fn = new (ialloc(sizeof(Fn))) Fn(type1(), s->v);
 				expect(')');
-				break;
+				continue;
 			}
 			case s_declare_datatype:
 			case s_declare_datatypes:
@@ -533,7 +533,7 @@ struct Parser1: Parser {
 				if (s->fn) err("function already declared");
 				s->fn = new (ialloc(sizeof(Fn))) Fn(topLevelType(), s->v);
 				expect(')');
-				break;
+				continue;
 			}
 			case s_declare_sort:
 			{
@@ -553,7 +553,7 @@ struct Parser1: Parser {
 				lex();
 				expect(')');
 				s->t = new (ialloc(sizeof(OpaqueType))) OpaqueType(s->v);
-				break;
+				continue;
 			}
 			case s_define_fun:
 			{
@@ -595,7 +595,7 @@ struct Parser1: Parser {
 				check(&tbool, a);
 				expect(')');
 				cnf(a);
-				break;
+				continue;
 			}
 			case s_define_sort:
 			{
@@ -603,23 +603,22 @@ struct Parser1: Parser {
 				if (s->t) err("sort already defined");
 				s->t = topLevelType();
 				expect(')');
-				break;
+				continue;
 			}
 			case s_push:
 			case s_set_info:
 				skip();
-				break;
+				continue;
 			case s_set_logic:
 			{
 				auto s = word();
 				if (strchr(s->v, 'R') && !strchr(s->v, 'I')) realOnly = 1;
 				expect(')');
-				break;
+				continue;
 			}
-			default:
-				snprintf(buf, bufSize, "'%s': unknown command", s->v);
-				err(buf);
 			}
+			snprintf(buf, bufSize, "'%s': unknown command", s->v);
+			err(buf);
 		}
 	}
 };

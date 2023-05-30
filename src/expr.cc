@@ -132,25 +132,23 @@ void dbgCheck(Expr* a) {
 	case Tag::true1:
 	case Tag::var:
 		assert(!a->n);
-		break;
-	default:
-		assert(a->n);
-
-		// If this expression is allocated in temporary buffer, all subexpressions which are likewise allocated, should be earlier
-		// in the buffer
-		if (inbuf(a))
-			for (auto b: a)
-				if (inbuf(b)) assert(b < a);
-
-		// It is tempting to think we can add an 'else' to perform another check: If this expression is permanently allocated, all
-		// subexpressions better be likewise. But that does not hold: Maybe the subexpressions are temporary, and this expression
-		// should been likewise, but a particularly complex input formula caused temporary allocation to overflow the buffer and
-		// spill into ialloc.
-
-		// Recursively check subexpressions
-		for (auto b: a) dbgCheck(b);
-		break;
+		return;
 	}
+	assert(a->n);
+
+	// If this expression is allocated in temporary buffer, all subexpressions which are likewise allocated, should be earlier in
+	// the buffer
+	if (inbuf(a))
+		for (auto b: a)
+			if (inbuf(b)) assert(b < a);
+
+	// It is tempting to think we can add an 'else' to perform another check: If this expression is permanently allocated, all
+	// subexpressions better be likewise. But that does not hold: Maybe the subexpressions are temporary, and this expression should
+	// been likewise, but a particularly complex input formula caused temporary allocation to overflow the buffer and spill into
+	// ialloc.
+
+	// Recursively check subexpressions
+	for (auto b: a) dbgCheck(b);
 }
 
 void dbgPrint(Tag tag) {
@@ -171,35 +169,34 @@ void dbgPrint(Expr* a) {
 			dbgPrint(at(a, i));
 		}
 		putchar(')');
-		break;
+		return;
 	case Tag::fn:
 	{
 		auto s = ((Fn*)a)->s;
 		if (s) dbgPrint(s);
 		else
 			printf("_%p", a);
-		break;
+		return;
 	}
 	case Tag::integer:
 		mpz_out_str(stdout, 10, ((Int*)a)->v);
-		break;
+		return;
 	case Tag::rat:
 	case Tag::real:
 		mpq_out_str(stdout, 10, ((Rat*)a)->v);
-		break;
+		return;
 	case Tag::var:
 		printf("%p", a);
-		break;
-	default:
-		dbgPrint(a->tag);
-		if (!a->n) break;
-		putchar('(');
-		for (size_t i = 0; i < a->n; ++i) {
-			if (i) dbgPrint(", ");
-			dbgPrint(at(a, i));
-		}
-		putchar(')');
-		break;
+		return;
 	}
+	dbgPrint(a->tag);
+	if (!a->n) return;
+
+	putchar('(');
+	for (size_t i = 0; i < a->n; ++i) {
+		if (i) dbgPrint(", ");
+		dbgPrint(at(a, i));
+	}
+	putchar(')');
 }
 #endif

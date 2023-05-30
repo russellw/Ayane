@@ -11,13 +11,11 @@ void freeVars(Expr* a, Vec<Expr*>& freev) {
 		boundv.add(begin(a) + 1, a->n - 1);
 		freeVars(at(a, 0), freev);
 		boundv.n = o;
-		break;
+		return;
 	}
 	case Tag::var:
 		if (!boundv.has(a) && !freev.has(a)) freev.add(a);
-		break;
-	default:
-		for (size_t i = 0; i < a->n; ++i) freeVars(at(a, i), freev);
-		break;
+		return;
 	}
+	for (size_t i = 0; i < a->n; ++i) freeVars(at(a, i), freev);
 }

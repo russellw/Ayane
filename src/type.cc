@@ -12,9 +12,8 @@ bool isNum(Type* t) {
 	case Kind::rat:
 	case Kind::real:
 		return 1;
-	default:
-		return 0;
 	}
+	return 0;
 }
 
 #ifdef DBG
@@ -36,13 +35,11 @@ void dbgPrint(Type* t) {
 			dbgPrint(at(t, i));
 		}
 		putchar(')');
-		break;
+		return;
 	case Kind::opaque:
 		dbgPrint(((OpaqueType*)t)->s);
-		break;
-	default:
-		dbgPrint(t->kind);
-		break;
+		return;
 	}
+	dbgPrint(t->kind);
 }
 #endif
