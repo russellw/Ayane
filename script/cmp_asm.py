@@ -23,6 +23,7 @@ cmd = (
     "-Wimplicit-fallthrough",
     "-Wno-assume",
     "-Wno-deprecated-declarations",
+    "-Wno-switch",
     "-c",
     "-std:c++17",
     src,

@@ -35,7 +35,7 @@ void* ialloc(size_t n) {
 		end = p + block;
 	}
 	auto r = p;
-#ifdef DEBUG
+#ifdef DBG
 	memset(r, 0xcc, n);
 #endif
 	p += n;
