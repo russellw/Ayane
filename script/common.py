@@ -14,6 +14,28 @@ def get_error_codes():
     return codes
 
 
+def args_python_files():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("files", nargs="*")
+    args = parser.parse_args()
+
+    files = args.files
+    if not files:
+        here = os.path.dirname(os.path.realpath(__file__))
+        files = here,os.path.join(here,'..','test')
+
+    r = []
+    for arg in files:
+        if os.path.isdir(arg):
+            for root, dirs, files in os.walk(arg):
+                for file in files:
+                    ext = os.path.splitext(file)[1]
+                    if ext == ".py" :
+                        r.append(os.path.join(root, file))
+            continue
+        r.append(arg)
+    return r
+
 def args_problems():
     parser = argparse.ArgumentParser()
     parser.add_argument(
