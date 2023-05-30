@@ -25,7 +25,6 @@ for file in problems:
     code = codes.get(p.returncode, p.returncode)
     if code == "inappropriateError":
         continue
-    tried += 1
     if code in (-14, 4294967282):
         continue
     if code:
