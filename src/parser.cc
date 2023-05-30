@@ -150,7 +150,8 @@ void Parser::check(Type* t, Expr* a) {
 	// Most obviously, check this expression returns the expected type
 	if (type(a) != t) err("type mismatch");
 
-	// This switch should be exhaustive
+	// Check arity and specific type requirements
+	// TODO: no exhaustiveness check
 	switch (a->tag) {
 	case Tag::add:
 	case Tag::divEuclid:
@@ -165,24 +166,14 @@ void Parser::check(Type* t, Expr* a) {
 		// TODO: would it be better to specialize to addInt etc?
 		check(2, a);
 		if (!isNum(t)) err("invalid type for arithmetic");
-		check(t, at(a, 0));
-		check(t, at(a, 1));
 		break;
 	case Tag::all:
 	case Tag::exists:
 		// Quantifier
 		check(&tbool, at(a, 0));
-		break;
-	case Tag::and1:
-	case Tag::eqv:
-	case Tag::or1:
-		// Connective
-		// TODO: foreach?
-		for (size_t i = 0; i < a->n; ++i) check(&tbool, at(a, i));
-		break;
+		return;
 	case Tag::call:
 	{
-		// Check consistency of data structures
 		assert(a->n > 1);
 		auto f = (Fn*)at(a, 0);
 		assert(f->tag == Tag::fn);
@@ -206,7 +197,7 @@ void Parser::check(Type* t, Expr* a) {
 
 		// And recur, based on the parameter types
 		for (size_t i = 1; i < fty->n; ++i) check(at(fty, i), at(a, i));
-		break;
+		return;
 	}
 	case Tag::ceil:
 	case Tag::floor:
@@ -216,7 +207,6 @@ void Parser::check(Type* t, Expr* a) {
 		// Arithmetic of arity 1, type passes straight through
 		check(1, a);
 		if (!isNum(t)) err("invalid type for arithmetic");
-		check(t, at(a, 0));
 		break;
 	case Tag::div:
 		// Arithmetic of arity 2, type passes straight through, but fractions only
@@ -228,8 +218,6 @@ void Parser::check(Type* t, Expr* a) {
 		default:
 			err("invalid type for division");
 		}
-		check(t, at(a, 0));
-		check(t, at(a, 1));
 		break;
 	case Tag::eq:
 		// Eq is always a special case
@@ -239,11 +227,12 @@ void Parser::check(Type* t, Expr* a) {
 		case Kind::boolean:
 		case Kind::fn:
 			err("invalid type for equality");
-		default:
-			break;
 		}
-		check(t, at(a, 0));
-		check(t, at(a, 1));
+		break;
+	case Tag::eqv:
+		// Connective of arity 2
+		check(2, a);
+		// TODO: foreach?
 		break;
 	case Tag::isInt:
 	case Tag::isRat:
@@ -256,8 +245,6 @@ void Parser::check(Type* t, Expr* a) {
 		// That means the argument may have a different type
 		t = type(at(a, 0));
 		if (!isNum(t)) err("invalid type for arithmetic");
-
-		check(t, at(a, 0));
 		break;
 	case Tag::lt:
 		// Type converter of arity 2
@@ -266,14 +253,10 @@ void Parser::check(Type* t, Expr* a) {
 		// That means the argument may have a different type
 		t = type(at(a, 0));
 		if (!isNum(t)) err("invalid type for comparison");
-
-		check(t, at(a, 0));
-		check(t, at(a, 1));
 		break;
 	case Tag::not1:
 		// Connective of arity 1
 		check(1, a);
-		check(&tbool, at(a, 0));
 		break;
 	case Tag::var:
 		assert(!a->n);
@@ -281,6 +264,9 @@ void Parser::check(Type* t, Expr* a) {
 		// Parsers need to make sure variables have leaf types, to preserve validity of data structures, so we only need to check
 		// here for Boolean variables
 		if (t == &tbool) err("boolean variables not supported", inappropriateError);
-		break;
+		return;
 	}
+
+	// Recursion code shared by most but not all cases
+	for (auto b: a) check(t, b);
 }
