@@ -10,8 +10,7 @@ static size_t cost(Expr* a) {
 
 size_t cost(Clause* c) {
 	size_t n = 0;
-	// TODO: foreach?
-	for (size_t i = 0; i < c->n; ++i) n += cost(c->v[i]);
+	for (auto i: c) n += cost(c->v[i]);
 	return n;
 }
 
