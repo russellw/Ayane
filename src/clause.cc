@@ -4,12 +4,14 @@ Vec<Expr*> neg, pos;
 
 static size_t cost(Expr* a) {
 	size_t n = 1;
-	for (size_t i = 0; i < a->n; ++i) n += cost(at(a, i));
+	// TODO: args1?
+	for (auto b: a) n += cost(b);
 	return n;
 }
 
 size_t cost(Clause* c) {
 	size_t n = 0;
+	// TODO: foreach?
 	for (size_t i = 0; i < c->n; ++i) n += cost(c->v[i]);
 	return n;
 }
