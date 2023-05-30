@@ -150,7 +150,6 @@ void Parser::check(Type* t, Expr* a) {
 	if (type(a) != t) err("type mismatch");
 
 	// Check arity and specific type requirements
-	// TODO: no exhaustiveness check
 	switch (a->tag) {
 	case Tag::add:
 	case Tag::divEuclid:
