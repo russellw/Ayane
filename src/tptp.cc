@@ -45,6 +45,7 @@ Expr* distinctObj(Str* s) {
 	return a;
 }
 
+// TODO: this might be the best place to check for call of something that does not take parameters
 void defaultType(Type* t, Expr* a) {
 	switch (a->tag) {
 	case Tag::all:
@@ -566,11 +567,9 @@ struct Parser1: Parser {
 		case k_word:
 		{
 			auto a = fn(0, s);
-
-			// Not a function call
 			if (tok != '(') return a;
 
-			// Function is being called, so gather the function and arguments
+			// Function call
 			Vec<Expr*> v(1, a);
 			args(v);
 			return comp(Tag::call, v);
