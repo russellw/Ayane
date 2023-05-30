@@ -1,3 +1,5 @@
+@echo off
+
 rem Backup
 copy %~dp0*.py %tmp% >nul:
 copy %~dp0..\test\*.py %tmp% >nul:
