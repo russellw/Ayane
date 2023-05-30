@@ -4,7 +4,7 @@ import random
 import re
 
 
-# todo:sort
+# TODO: sort
 def get_error_codes():
     here = os.path.dirname(os.path.realpath(__file__))
     codes = {}
@@ -40,7 +40,7 @@ def args_python_files():
 
 def modify_files(f, files):
     for file in files:
-        v =list(s.rstrip() for s in  open(file).readlines())
+        v = list(s.rstrip() for s in open(file).readlines())
         o = v.copy()
 
         w = f(v)
@@ -49,7 +49,7 @@ def modify_files(f, files):
 
         if v != o:
             print(file)
-            open(file, "w", newline="\n").writelines([s+'\n'for s in v])
+            open(file, "w", newline="\n").writelines([s + "\n" for s in v])
 
 
 def args_problems():
