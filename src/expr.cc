@@ -2,41 +2,7 @@
 
 Expr bools[2] = {{Tag::false1}, {Tag::true1}};
 
-static Type* typeOrIndividual(Expr* a) {
-	switch (a->tag) {
-	case Tag::call:
-	{
-		auto f = (Fn*)at(a, 0);
-		assert(f->tag == Tag::fn);
-		if (!f->t) return &tindividual;
-		assert(f->t->kind == Kind::fn);
-		return at(f->t, 0);
-	}
-	case Tag::fn:
-	{
-		auto f = (Fn*)a;
-		if (!f->t) return &tindividual;
-		return f->t;
-	}
-	}
-	return type(a);
-}
-
 // SORT
-Expr* distinct(Vec<Expr*>& v) {
-	Vec<Expr*> inequalities(v.n * (v.n - 1) / 2);
-	size_t k = 0;
-	for (auto i = v.begin(), e = v.end(); i < e; ++i)
-		for (auto j = v.begin(); j < i; ++j) inequalities[k++] = comp(Tag::not1, eq(*i, *j));
-	return comp(Tag::and1, inequalities);
-}
-
-Expr* eq(Expr* a, Expr* b) {
-	// This function may be called in the TPTP parser, where as yet untyped functions can default to $i
-	auto tag = typeOrIndividual(a) == &tbool ? Tag::eqv : Tag::eq;
-	return comp(tag, a, b);
-}
-
 void flatten(Tag tag, Expr* a, vector<Expr*>& r) {
 	if (a->tag == tag) {
 		for (size_t i = 0; i < a->n; ++i) flatten(tag, at(a, i), r);

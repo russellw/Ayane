@@ -472,7 +472,11 @@ struct Parser1: Parser {
 				if (cnfMode) err("cnf does not support $distinct");
 				Vec<Expr*> v;
 				args(v);
-				return distinct(v);
+				Vec<Expr*> inequalities(v.n * (v.n - 1) / 2);
+				size_t k = 0;
+				for (auto i = v.begin(), e = v.end(); i < e; ++i)
+					for (auto j = v.begin(); j < i; ++j) inequalities[k++] = comp(Tag::not1, comp(Tag::eq(*i, *j)));
+				return comp(Tag::and1, inequalities);
 			}
 			case s_false:
 				return bools;

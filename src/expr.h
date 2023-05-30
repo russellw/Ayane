@@ -28,8 +28,6 @@ struct Fn: Expr {
 };
 
 // SORT
-Expr* distinct(Vec<Expr*>& v);
-Expr* eq(Expr* a, Expr* b);
 void flatten(Tag tag, Expr* a, vector<Expr*>& r);
 Expr* imp(Expr* a, Expr* b);
 bool occurs(Expr* a, Expr* b);
