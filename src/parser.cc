@@ -225,7 +225,6 @@ void Parser::check(Type* t, Expr* a) {
 	case Tag::eqv:
 		// Connective of arity 2
 		check(2, a);
-		// TODO: foreach?
 		break;
 	case Tag::isInt:
 	case Tag::isRat:
