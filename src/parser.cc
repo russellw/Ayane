@@ -179,14 +179,14 @@ void Parser::check(Type* t, Expr* a) {
 		assert(f->tag == Tag::fn);
 
 		// Check for input like a(b) where a is just a constant
-		auto fty = f->t;
-		if (fty->kind != Kind::fn) err("called a non-function");
+		auto ft = f->t;
+		if (ft->kind != Kind::fn) err("called a non-function");
 
 		// Check for input like a(b) followed by a(b, c)
-		check(fty->n, a);
+		check(ft->n, a);
 
 		// Check for inappropriate parameter types
-		for (size_t i = 1; i < fty->n; ++i) switch (at(fty, i)->kind) {
+		for (size_t i = 1; i < ft->n; ++i) switch (at(ft, i)->kind) {
 			case Kind::boolean:
 				err("boolean parameters not supported", inappropriateError);
 			case Kind::fn:
@@ -194,7 +194,7 @@ void Parser::check(Type* t, Expr* a) {
 			}
 
 		// And recur, based on the parameter types
-		for (size_t i = 1; i < fty->n; ++i) check(at(fty, i), at(a, i));
+		for (size_t i = 1; i < ft->n; ++i) check(at(ft, i), at(a, i));
 		return;
 	}
 	case Tag::ceil:

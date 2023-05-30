@@ -2,6 +2,26 @@
 
 Expr bools[2] = {{Tag::false1}, {Tag::true1}};
 
+static Type* typeOrIndividual(Expr* a) {
+	switch (a->tag) {
+	case Tag::call:
+	{
+		auto f = (Fn*)at(a, 0);
+		assert(f->tag == Tag::fn);
+		if (!f->t) return &tindividual;
+		assert(f->t->kind == Kind::fn);
+		return at(f->t, 0);
+	}
+	case Tag::fn:
+	{
+		auto f = (Fn*)a;
+		if (!f->t) return &tindividual;
+		return f->t;
+	}
+	}
+	return type(a);
+}
+
 // SORT
 Expr* distinct(Vec<Expr*>& v) {
 	Vec<Expr*> inequalities(v.n * (v.n - 1) / 2);
@@ -12,7 +32,8 @@ Expr* distinct(Vec<Expr*>& v) {
 }
 
 Expr* eq(Expr* a, Expr* b) {
-	auto tag = type(a) == &tbool ? Tag::eqv : Tag::eq;
+	// This function may be called in the TPTP parser, where as yet untyped functions can default to $i
+	auto tag = typeOrIndividual(a) == &tbool ? Tag::eqv : Tag::eq;
 	return comp(tag, a, b);
 }
 
@@ -48,22 +69,6 @@ Expr* quantify(Expr* a) {
 
 Type* type(Expr* a) {
 	switch (a->tag) {
-	case Tag::add:
-	case Tag::ceil:
-	case Tag::div:
-	case Tag::divEuclid:
-	case Tag::divFloor:
-	case Tag::divTrunc:
-	case Tag::floor:
-	case Tag::minus:
-	case Tag::mul:
-	case Tag::remEuclid:
-	case Tag::remFloor:
-	case Tag::remTrunc:
-	case Tag::round:
-	case Tag::sub:
-	case Tag::trunc:
-		return type(at(a, 0));
 	case Tag::all:
 	case Tag::and1:
 	case Tag::eq:
@@ -81,12 +86,16 @@ Type* type(Expr* a) {
 	{
 		auto f = (Fn*)at(a, 0);
 		assert(f->tag == Tag::fn);
+		assert(f->t->kind == Kind::fn);
 		return at(f->t, 0);
 	}
 	case Tag::distinctObj:
 		return &tindividual;
 	case Tag::fn:
-		return ((Fn*)a)->t;
+	{
+		auto f = (Fn*)a;
+		return f->t;
+	}
 	case Tag::integer:
 	case Tag::toInt:
 		return &tinteger;
@@ -99,7 +108,7 @@ Type* type(Expr* a) {
 	case Tag::var:
 		return ((Var*)a)->t;
 	}
-	unreachable;
+	return type(at(a, 0));
 }
 ///
 
