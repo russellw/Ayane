@@ -1,7 +1,7 @@
 #include "main.h"
 
 namespace {
-const size_t many = 50;
+const size_t many = 10;
 
 // How many clauses a formula will expand into, for the purpose of deciding when subformulas need to be renamed. The answer could
 // exceed the range of a fixed-size integer, but then we don't actually need the number, we only need to know whether it went over
