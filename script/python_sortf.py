@@ -52,7 +52,7 @@ def f(v):
             i += 1
             j = i
             w = []
-            while 1:
+            while j < len(v):
                 k = def1(v, j)
                 if not k:
                     break
@@ -70,9 +70,10 @@ def cat(w):
     r = []
     for i in range(len(w)):
         r.extend(w[i])
-        r.append("")
-        if not w[0][0].isspace():
+        if i + 1 < len(w):
             r.append("")
+            if not w[0][0].isspace():
+                r.append("")
     return r
 
 
