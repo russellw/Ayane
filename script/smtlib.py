@@ -26,6 +26,31 @@ unsupported_logics = (
 )
 
 
+# SORTF
+def check(r, expected):
+    if not r:
+        return
+    if r == expected:
+        return
+    raise Exception(r + " != " + expected)
+
+
+def get_expected(file):
+    for s in open(file):
+        m = re.match(r"\(set-info :status (\w+)\)", s)
+        if m:
+            return m[1]
+    raise Exception(file)
+
+
+def get_logic(file):
+    for s in open(file):
+        m = re.match(r"\(set-logic (\w+)\)", s)
+        if m:
+            return m[1]
+    raise Exception(file)
+
+
 def get_problems(args):
     problems = []
     for root, dirs, files in os.walk("C:\\smtlib"):
@@ -48,22 +73,6 @@ def print_header(file):
             break
         i += 1
         print(s, end="")
-
-
-def get_logic(file):
-    for s in open(file):
-        m = re.match(r"\(set-logic (\w+)\)", s)
-        if m:
-            return m[1]
-    raise Exception(file)
-
-
-def get_expected(file):
-    for s in open(file):
-        m = re.match(r"\(set-info :status (\w+)\)", s)
-        if m:
-            return m[1]
-    raise Exception(file)
 
 
 def read(file):
@@ -160,11 +169,3 @@ def read(file):
     while tok:
         v.append(expr())
     return v
-
-
-def check(r, expected):
-    if not r:
-        return
-    if r == expected:
-        return
-    raise Exception(r + " != " + expected)
