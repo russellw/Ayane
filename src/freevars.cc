@@ -17,5 +17,5 @@ void freeVars(Expr* a, Vec<Expr*>& freev) {
 		if (!boundv.has(a) && !freev.has(a)) freev.add(a);
 		return;
 	}
-	for (size_t i = 0; i < a->n; ++i) freeVars(at(a, i), freev);
+	for (auto b: a) freeVars(b, freev);
 }

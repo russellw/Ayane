@@ -10,8 +10,8 @@ size_t nclauses(bool pol, Expr* a);
 
 size_t nclausesMul(bool pol, Expr* a) {
 	size_t n = 1;
-	for (size_t i = 0; i < a->n; ++i) {
-		n *= nclauses(pol, at(a, i));
+	for (auto b: a) {
+		n *= nclauses(pol, b);
 		if (n >= many) return many;
 	}
 	return n;
@@ -19,8 +19,8 @@ size_t nclausesMul(bool pol, Expr* a) {
 
 size_t nclausesAdd(bool pol, Expr* a) {
 	size_t n = 0;
-	for (size_t i = 0; i < a->n; ++i) {
-		n += nclauses(pol, at(a, i));
+	for (auto b: a) {
+		n += nclauses(pol, b);
 		if (n >= many) return many;
 	}
 	return n;
@@ -287,7 +287,7 @@ Expr* nnf(bool pol, Expr* a) {
 // expansion would occur, had selected formulas not already been renamed.
 void flatten(Tag tag, Expr* a, Vec<Expr*>& v) {
 	if (a->tag == tag) {
-		for (size_t i = 0; i < a->n; ++i) flatten(tag, at(a, i), v);
+		for (auto b: a) flatten(tag, b, v);
 		return;
 	}
 	v.add(a);
@@ -316,7 +316,7 @@ Expr* distribute(Expr* a) {
 	case Tag::or1:
 	{
 		// Arguments can be taken without loss of generality as ANDs
-		Vec<Expr*> ands;
+		Vec<Expr*> ands(a->n);
 		for (size_t i = 0; i < a->n; ++i) {
 			// Recur
 			auto b = distribute(at(a, i));
@@ -324,10 +324,11 @@ Expr* distribute(Expr* a) {
 			// And make a flat layer of ANDs
 			Vec<Expr*> v;
 			flatten(Tag::and1, b, v);
-			ands.add(comp(Tag::and1, v));
+			ands[i] = comp(Tag::and1, v);
 		}
 
 		// OR distributes over AND by Cartesian product
+		// TODO: avoid making redundant ANDs?
 		Vec<size_t> j(ands.n);
 		memset(j.data, 0, j.n * sizeof(size_t));
 		Vec<Expr*> r;
@@ -350,7 +351,7 @@ void literals(Expr* a) {
 		neg.add(at(a, 0));
 		return;
 	case Tag::or1:
-		for (size_t i = 0; i < a->n; ++i) literals(at(a, i));
+		for (auto b: a) literals(b);
 		return;
 	}
 	pos.add(a);
@@ -358,8 +359,8 @@ void literals(Expr* a) {
 
 bool hasNum(Expr* a) {
 	if (isNum(type(a))) return 1;
-	for (size_t i = 0; i < a->n; ++i)
-		if (hasNum(at(a, i))) return 1;
+	for (auto b: a)
+		if (hasNum(b)) return 1;
 	return 0;
 }
 
@@ -371,7 +372,7 @@ bool hasNum(Vec<Expr*>& v) {
 
 void clauses(Expr* a) {
 	if (a->tag == Tag::and1) {
-		for (size_t i = 0; i < a->n; ++i) clauses(at(a, i));
+		for (auto b: a) clauses(b);
 		return;
 	}
 

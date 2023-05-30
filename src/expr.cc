@@ -129,10 +129,10 @@ void dbgPrint(Tag tag) {
 void dbgPrint(Expr* a) {
 	switch (a->tag) {
 	case Tag::call:
-		dbgPrint(at(a, 0));
 		putchar('(');
-		for (size_t i = 1; i < a->n; ++i) {
-			if (i > 1) dbgPrint(", ");
+		dbgPrint(at(a, 0));
+		for (size_t i = 0; i < a->n; ++i) {
+			if (i) putchar(' ');
 			dbgPrint(at(a, i));
 		}
 		putchar(')');
@@ -156,14 +156,16 @@ void dbgPrint(Expr* a) {
 		printf("%p", a);
 		return;
 	}
-	dbgPrint(a->tag);
-	if (!a->n) return;
-
-	putchar('(');
-	for (size_t i = 0; i < a->n; ++i) {
-		if (i) dbgPrint(", ");
-		dbgPrint(at(a, i));
+	if (a->n) {
+		putchar('(');
+		dbgPrint(a->tag);
+		for (auto b: a) {
+			putchar(' ');
+			dbgPrint(b);
+		}
+		putchar(')');
+		return;
 	}
-	putchar(')');
+	dbgPrint(a->tag);
 }
 #endif

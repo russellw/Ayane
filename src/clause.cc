@@ -4,7 +4,6 @@ Vec<Expr*> neg, pos;
 
 static size_t cost(Expr* a) {
 	size_t n = 1;
-	// TODO: args1?
 	for (auto b: a) n += cost(b);
 	return n;
 }

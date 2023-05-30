@@ -75,12 +75,12 @@ bool gt(Expr* a, Expr* b) {
 
 	// Sufficient condition: Exists ai >= b
 	// TODO: check generated code
-	for (size_t i = 0; i < a->n; ++i)
-		if (ge(at(a, i), b)) return 1;
+	for (auto ai: a)
+		if (ge(ai, b)) return 1;
 
 	// Necessary condition: a > all bi
-	for (size_t i = 0; i < b->n; ++i)
-		if (!gt(a, at(b, i))) return 0;
+	for (auto bi: b)
+		if (!gt(a, bi)) return 0;
 
 	// Different functions. Comparison has the required property that true is considered smaller than any other expression (except
 	// false, which does not occur during superposition proof search).
