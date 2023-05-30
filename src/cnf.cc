@@ -285,6 +285,24 @@ Expr* nnf(bool pol, Expr* a) {
 
 // Distribute OR down into AND, completing the layering of the operators for CNF. This is the second place where exponential
 // expansion would occur, had selected formulas not already been renamed.
+void flatten(Tag tag, Expr* a, Vec<Expr*>& v) {
+	if (a->tag == tag) {
+		for (size_t i = 0; i < a->n; ++i) flatten(tag, at(a, i), v);
+		return;
+	}
+	v.add(a);
+}
+
+void cartProduct(Vec<Expr*>& v, size_t i, Vec<size_t>& j, Vec<Expr*>& r) {
+	if (i == j.n) {
+		Vec<Expr*> w;
+		for (size_t i = 0; i < v.n; ++i) w.add(at(v[i], j[i]));
+		r.add(comp(Tag::or1, w));
+		return;
+	}
+	for (j[i] = 0; j[i] < v[i]->n; ++j[i]) cartProduct(v, i + 1, j, r);
+}
+
 Expr* distribute(Expr* a) {
 	// TODO: .clang-format AfterCaseLabel
 	// TODO: .clang-format AllowShortFunctionsOnASingleLine
@@ -298,22 +316,23 @@ Expr* distribute(Expr* a) {
 	case Tag::or1:
 	{
 		// Arguments can be taken without loss of generality as ANDs
-		vector<vector<Expr*>> ands;
+		Vec<Expr*> ands;
 		for (size_t i = 0; i < a->n; ++i) {
 			// Recur
 			auto b = distribute(at(a, i));
 
 			// And make a flat layer of ANDs
-			vector<Expr*> v;
+			Vec<Expr*> v;
 			flatten(Tag::and1, b, v);
-			ands.push_back(v);
+			ands.add(comp(Tag::and1, v));
 		}
 
 		// OR distributes over AND by Cartesian product
-		auto p = cartProduct(ands);
-		Vec<Expr*> v(p.size());
-		for (size_t i = 0; i < v.n; ++i) v[i] = comp(Tag::or1, p[i]);
-		return comp(Tag::and1, v);
+		Vec<size_t> j(ands.n);
+		memset(j.data, 0, j.n * sizeof(size_t));
+		Vec<Expr*> r;
+		cartProduct(ands, 0, j, r);
+		return comp(Tag::and1, r);
 	}
 	}
 	return a;

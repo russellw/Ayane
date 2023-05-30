@@ -3,14 +3,6 @@
 Expr bools[2] = {{Tag::false1}, {Tag::true1}};
 
 // SORT
-void flatten(Tag tag, Expr* a, vector<Expr*>& r) {
-	if (a->tag == tag) {
-		for (size_t i = 0; i < a->n; ++i) flatten(tag, at(a, i), r);
-		return;
-	}
-	r.push_back(a);
-}
-
 Expr* imp(Expr* a, Expr* b) {
 	return comp(Tag::or1, comp(Tag::not1, a), b);
 }

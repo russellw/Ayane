@@ -40,8 +40,6 @@ using std::vector;
 #include "stats.h"
 #include "vec.h"
 
-#include "cartproduct.h"
-
 // Types
 struct Str;
 struct Var;
