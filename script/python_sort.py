@@ -10,11 +10,7 @@ def end(i):
             return j
     raise Exception()
 
-
-for file in common.args_python_files():
-    v = open(file).readlines()
-    o = v.copy()
-
+def f(v):
     for i in range(len(v)):
         if re.match(r"\s*# SORT\s*$", v[i]):
             j = end(i + 1)
@@ -22,6 +18,4 @@ for file in common.args_python_files():
             w.sort()
             v[i + 1 : j] = w
 
-    if v != o:
-        print(file)
-        open(file, "w", newline="\n").writelines(v)
+common.modify_files(f, common.args_python_files())
