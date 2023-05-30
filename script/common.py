@@ -40,7 +40,7 @@ def args_python_files():
 
 def modify_files(f, files):
     for file in files:
-        v = open(file).readlines()
+        v =list(s.rstrip() for s in  open(file).readlines())
         o = v.copy()
 
         w = f(v)
@@ -49,7 +49,7 @@ def modify_files(f, files):
 
         if v != o:
             print(file)
-            open(file, "w", newline="\n").writelines(v)
+            open(file, "w", newline="\n").writelines([s+'\n'for s in v])
 
 
 def args_problems():

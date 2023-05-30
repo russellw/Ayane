@@ -6,6 +6,9 @@ isort %~dp0..
 if %errorlevel% neq 0 goto :eof
 
 rem Custom tools for Python
+python %~dp0python_comments.py
+if %errorlevel% neq 0 goto :eof
+
 python %~dp0python_sort.py
 if %errorlevel% neq 0 goto :eof
 
