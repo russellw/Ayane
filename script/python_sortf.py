@@ -5,18 +5,11 @@ import common
 
 
 # SORTF
-def indent(v, i):
-    if i == len(v):
-        return -1
-    s = v[i]
-    if not s:
-        return 1000000
-    j = 0
-    while s[j] == " ":
-        j += 1
-    if s[j] == "\t":
-        raise Exception("file indented with tabs")
-    return j
+def cat(w):
+    r = []
+    for v in w:
+        r.extend(v)
+    return r
 
 
 def def1(v, i):
@@ -37,13 +30,6 @@ def def_name(v):
         if m:
             return m[1]
     raise Exception(v)
-
-
-def trim(v):
-    i = len(v)
-    while not v[i - 1]:
-        i -= 1
-    return v[:i]
 
 
 def f(v):
@@ -67,15 +53,25 @@ def f(v):
         i += 1
 
 
-def cat(w):
-    r = []
-    for i in range(len(w)):
-        r.extend(w[i])
-        if i + 1 < len(w):
-            r.append("")
-            if not w[0][0].isspace():
-                r.append("")
-    return r
+def indent(v, i):
+    if i == len(v):
+        return -1
+    s = v[i]
+    if not s:
+        return 1000000
+    j = 0
+    while s[j] == " ":
+        j += 1
+    if s[j] == "\t":
+        raise Exception("file indented with tabs")
+    return j
+
+
+def trim(v):
+    i = len(v)
+    while not v[i - 1]:
+        i -= 1
+    return v[:i]
 
 
 common.modify_files(f, common.args_python_files())

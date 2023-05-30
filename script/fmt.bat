@@ -1,3 +1,9 @@
+rem Backup
+copy %~dp0*.py %tmp%
+copy %~dp0..\test\*.py %tmp%
+copy %~dp0..\src\*.cc %tmp%
+copy %~dp0..\src\*.h %tmp%
+
 rem Standard tools for Python
 black %~dp0..
 if %errorlevel% neq 0 goto :eof
@@ -16,6 +22,10 @@ python %~dp0python_sortf.py
 if %errorlevel% neq 0 goto :eof
 
 python %~dp0keywords.py
+if %errorlevel% neq 0 goto :eof
+
+rem Restore standard line spacing
+black %~dp0..
 if %errorlevel% neq 0 goto :eof
 
 rem Standard tools for C++
