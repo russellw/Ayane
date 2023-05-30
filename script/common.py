@@ -40,17 +40,20 @@ def args_python_files():
 
 def modify_files(f, files):
     for file in files:
-        v = list(s.rstrip() for s in open(file).readlines())
-        o = v.copy()
+        try:
+            v = list(s.rstrip() for s in open(file).readlines())
+            o = v.copy()
 
-        w = f(v)
-        if w:
-            v = w
+            w = f(v)
+            if w:
+                v = w
 
-        if v != o:
+            if v != o:
+                print(file)
+                open(file, "w", newline="\n").writelines([s + "\n" for s in v])
+        except :
             print(file)
-            open(file, "w", newline="\n").writelines([s + "\n" for s in v])
-
+            raise
 
 def args_problems():
     parser = argparse.ArgumentParser()
