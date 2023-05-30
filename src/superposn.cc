@@ -19,7 +19,7 @@ Expr* altVars(Expr* a) {
 Clause* altVars(Clause* c) {
 	size_t n = c->n;
 	auto d = new (balloc(offsetof(Clause, v) + n * sizeof(void*))) Clause(c->nn, n);
-	for (size_t i = 0; i < n; ++i) d->v[i] = altVars(at(c, i));
+	for (auto i: c) d->v[i] = altVars(at(c, i));
 	return d;
 }
 
