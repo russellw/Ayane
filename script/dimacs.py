@@ -771,13 +771,14 @@ satlib_problems = (
     "valves-gates-1-k617-unsat.shuffled-as.sat03-412.cnf",
 )
 
-# SORTF
 
-def print_header(file):
-    for s in open(file):
-        if not s[0].islower():
-            break
-        print(s, end="")
+# SORTF
+def check(r, expected):
+    if not r:
+        return
+    if r == expected:
+        return
+    raise Exception(r + " != " + expected)
 
 
 def get_expected(file):
@@ -789,9 +790,8 @@ def get_expected(file):
     raise Exception(file)
 
 
-def check(r, expected):
-    if not r:
-        return
-    if r == expected:
-        return
-    raise Exception(r + " != " + expected)
+def print_header(file):
+    for s in open(file):
+        if not s[0].islower():
+            break
+        print(s, end="")

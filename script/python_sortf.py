@@ -38,6 +38,8 @@ def f(v):
         if re.match(r"\s*# SORTF\s*$", v[i]):
             i += 1
             j = i
+            while not v[j]:
+                j += 1
             w = []
             while j < len(v):
                 k = def1(v, j)
