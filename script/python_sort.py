@@ -16,7 +16,7 @@ def f(v):
         if re.match(r"\s*# SORT\s*$", v[i]):
             j = end(v, i + 1)
             w = v[i + 1 : j]
-            if '' in w:
+            if "" in w:
                 raise Exception(i)
             w.sort()
             v[i + 1 : j] = w

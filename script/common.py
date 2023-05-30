@@ -51,9 +51,10 @@ def modify_files(f, files):
             if v != o:
                 print(file)
                 open(file, "w", newline="\n").writelines([s + "\n" for s in v])
-        except :
+        except:
             print(file)
             raise
+
 
 def args_problems():
     parser = argparse.ArgumentParser()
