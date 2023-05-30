@@ -14,13 +14,13 @@ def end(v, i):
 def f(v):
     for i in range(len(v)):
         if re.match(r"\s*# SORT\s*$", v[i]):
-            i+=1
-            j = end(v, i )
-            w = v[i  : j]
+            i += 1
+            j = end(v, i)
+            w = v[i:j]
             if "" in w:
                 raise Exception(i)
             w.sort()
-            v[i  : j] = w
+            v[i:j] = w
 
 
 common.modify_files(f, common.args_python_files())
