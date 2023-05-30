@@ -22,10 +22,6 @@ Expr* comp(Tag tag, Vec<Expr*>& v) {
 	return comp(tag, v.data, v.n);
 }
 
-Expr* comp(Tag tag, vector<Expr*>& v) {
-	return comp(tag, v.data(), v.size());
-}
-
 namespace {
 bool eq(Tag tag, Expr** a, size_t n, Comp* b) {
 	assert(a);

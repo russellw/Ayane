@@ -25,7 +25,6 @@ inline Expr* at(Expr* a, size_t i) {
 Expr* comp(Tag tag, Expr* a);
 Expr* comp(Tag tag, Expr* a, Expr* b);
 Expr* comp(Tag tag, Vec<Expr*>& v);
-Expr* comp(Tag tag, vector<Expr*>& v);
 
 // Permanent composite expressions are interned
 Expr* compi(Tag tag, Vec<Expr*>& v);
