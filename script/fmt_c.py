@@ -38,8 +38,6 @@ def cases(i, dent):
     return i, r
 
 
-
-
 def sort_cases(i, dent):
     j, cs = cases(i, dent)
     for c in cs:
