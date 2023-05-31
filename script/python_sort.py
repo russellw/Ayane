@@ -25,7 +25,7 @@ def block(v, i):
         raise Exception(i)
 
     #def
-    if   re.match(r"\s*def \w+\(", v[i])):
+    if   re.match(r"\s*def \w+\(", v[i]):
         i += 1
         while indent(v, i) > dent:
             i += 1
