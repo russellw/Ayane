@@ -83,7 +83,7 @@ struct Parser1: Parser {
 	bool cnfMode;
 	const Select& select;
 	Vec<pair<Str*, Var*>> vars;
-	///
+	//
 
 	// Tokenizer
 	void lexWord() {
@@ -701,7 +701,7 @@ struct Parser1: Parser {
 			assert(!vars.n);
 			bufp = buf;
 			auto kw = wordOrDigits() - keywords;
-			///
+			//
 			expect('(');
 			auto name = wordOrDigits()->v;
 			switch (kw) {

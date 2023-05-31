@@ -68,7 +68,7 @@ Type* type(Expr* a) {
 	}
 	return type(at(a, 0));
 }
-///
+//
 
 Eqn::Eqn(Expr* a) {
 	if (a->tag == Tag::eq) {

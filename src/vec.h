@@ -79,7 +79,7 @@ public:
 			if (a == b) return 1;
 		return 0;
 	}
-	///
+	//
 };
 
 template <class K, class T> bool get(K a, T& b, Vec<pair<K, T>>& m) {

@@ -32,7 +32,7 @@ Expr* imp(Expr* a, Expr* b);
 bool occurs(Expr* a, Expr* b);
 Expr* quantify(Expr* a);
 Type* type(Expr* a);
-///
+//
 
 // Equality can be represented as an expression like any other binary operator, but there are also algorithms that need to pay
 // particular attention to equations, e.g. in order to apply them in both directions, enough that it is worth having a specific type

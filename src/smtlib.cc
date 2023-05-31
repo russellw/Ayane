@@ -17,7 +17,7 @@ struct Parser1: Parser {
 	// SORT
 	Vec<pair<Str*, Expr*>> locals;
 	bool realOnly = 0;
-	///
+	//
 
 	// Tokenizer
 	void number() {
@@ -336,7 +336,7 @@ struct Parser1: Parser {
 		while (!eat(')'));
 		return a;
 	}
-	///
+	//
 
 	Expr* expr() {
 		auto k = tok;
@@ -581,7 +581,7 @@ struct Parser1: Parser {
 				// SORT
 				auto o = locals.n;
 				Vec<Expr*> v(1);
-				///
+				//
 				params(v);
 
 				Vec<Type*> w(v.n);
