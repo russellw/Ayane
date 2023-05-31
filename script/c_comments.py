@@ -3,48 +3,7 @@ import re
 import common
 
 
-def special(s):
-    m = re.match(r"(\s*)// sort$", s, re.IGNORECASE)
-    if m:
-        return f"{m[1]}// SORT"
-
-    m = re.match(r"(\s*)// sortf$", s, re.IGNORECASE)
-    if m:
-        return f"{m[1]}// SORTF"
-
-    m = re.match(r"(\s*)// todo:\s*(.*)", s, re.IGNORECASE)
-    if m:
-        return f"{m[1]}// TODO: {m[2]}"
-
-    m = re.match(r"(\s*)// $", s)
-    if m:
-        return f"{m[1]}//"
-
-    if re.match(r"\s*// https?:", s):
-        return s
-    if re.match(r"\s*// namespace", s):
-        return s
-    if re.match(r"\s*// clang-format off", s):
-        return s
-    if re.match(r"\s*// clang-format on", s):
-        return s
-
-
-def sentence_end(s):
-    if s.startswith("("):
-        s = s[1:]
-    if s.endswith(")"):
-        s = s[:-1]
-
-    if s in ("e.g.", "i.e."):
-        return
-
-    if s.endswith("."):
-        return 1
-    if s.endswith("?"):
-        return 1
-
-
+# SORTF
 def capitalize(s):
     if len(s) == 1:
         return s
@@ -56,31 +15,6 @@ def capitalize(s):
         if c.isupper():
             return s
     return s.capitalize()
-
-
-def words(s):
-    v = s.split()
-    for i in range(len(v) - 1):
-        if sentence_end(v[i]):
-            v[i + 1] = capitalize(v[i + 1])
-    return v
-
-
-def lines(dent, v):
-    width = 132 - len(dent) * 4 - 3
-    s = ""
-    r = []
-    for t in v:
-        if len(s) + 1 + len(t) > width:
-            r.append(s)
-            s = t
-        else:
-            if s:
-                s += " "
-            s += t
-    assert s
-    r.append(s)
-    return [dent + "// " + s for s in r]
 
 
 def f(v):
@@ -119,6 +53,73 @@ def f(v):
         r = lines(dent, words(" ".join(w)))
         v[i:j] = r
         i += len(r)
+
+
+def lines(dent, v):
+    width = 132 - len(dent) * 4 - 3
+    s = ""
+    r = []
+    for t in v:
+        if len(s) + 1 + len(t) > width:
+            r.append(s)
+            s = t
+        else:
+            if s:
+                s += " "
+            s += t
+    assert s
+    r.append(s)
+    return [dent + "// " + s for s in r]
+
+
+def sentence_end(s):
+    if s.startswith("("):
+        s = s[1:]
+    if s.endswith(")"):
+        s = s[:-1]
+
+    if s in ("e.g.", "i.e."):
+        return
+
+    if s.endswith("."):
+        return 1
+    if s.endswith("?"):
+        return 1
+
+
+def special(s):
+    m = re.match(r"(\s*)// sort$", s, re.IGNORECASE)
+    if m:
+        return f"{m[1]}// SORT"
+
+    m = re.match(r"(\s*)// sortf$", s, re.IGNORECASE)
+    if m:
+        return f"{m[1]}// SORTF"
+
+    m = re.match(r"(\s*)// todo:\s*(.*)", s, re.IGNORECASE)
+    if m:
+        return f"{m[1]}// TODO: {m[2]}"
+
+    m = re.match(r"(\s*)// $", s)
+    if m:
+        return f"{m[1]}//"
+
+    if re.match(r"\s*// https?:", s):
+        return s
+    if re.match(r"\s*// namespace", s):
+        return s
+    if re.match(r"\s*// clang-format off", s):
+        return s
+    if re.match(r"\s*// clang-format on", s):
+        return s
+
+
+def words(s):
+    v = s.split()
+    for i in range(len(v) - 1):
+        if sentence_end(v[i]):
+            v[i + 1] = capitalize(v[i + 1])
+    return v
 
 
 common.modify_files(f, common.args_c_files())
