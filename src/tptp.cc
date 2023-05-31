@@ -130,7 +130,7 @@ struct Parser1: Parser {
 		mpq_t q;
 		tok = k_num;
 
-		// TPTP requires nonempty digit sequences before and after '.', which makes parsing slightly easier.
+		// TPTP requires nonempty digit sequences before and after '.', which makes parsing slightly easier
 		auto z = mpq_numref(q);
 		lexInt(z);
 
@@ -140,7 +140,7 @@ struct Parser1: Parser {
 		{
 			++src;
 
-			// Need to parse the decimal part, but also track exactly how many digits it was written as; 1.23 != 1.023.
+			// Need to parse the decimal part, but also track exactly how many digits it was written as; 1.23 != 1.023
 			auto s = src;
 
 			// The integer parsing function would otherwise accept a sign here, but that would not make sense
@@ -149,7 +149,7 @@ struct Parser1: Parser {
 			mpz_t decimal;
 			lexInt(decimal);
 
-			// Given 1.23, first convert to 100/100, to make room, so to speak, to add in the decimal part.
+			// Given 1.23, first convert to 100/100, to make room, so to speak, to add in the decimal part
 			auto scale = src - s;
 			auto powScale = mpq_denref(q);
 			mpz_init(powScale);
@@ -759,9 +759,9 @@ struct Parser1: Parser {
 						if (eat('>')) err("type constructors not supported", inappropriateError);
 
 						// The symbol will be used as the name of a type. No particular action is required at this point, so accept
-						// this and move on.
+						// this and move on
 					} else {
-						// The symbol is the name of a function with the specified type. Make sure it has this type.
+						// The symbol is the name of a function with the specified type. Make sure it has this type
 						fn(topLevelType(), s);
 					}
 

@@ -1,6 +1,6 @@
 // Composite expressions. Built-in operators like equality and addition are represented by tags. The most important variety of
 // composite expression is the function call, represented by Tag::call, with the function as v[0], so in that case the arguments
-// start at 1.
+// start at 1
 struct Comp: Expr {
 	Expr* v[];
 

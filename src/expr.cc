@@ -112,7 +112,7 @@ void dbgCheck(Expr* a) {
 	// It is tempting to think we can add an 'else' to perform another check: if this expression is permanently allocated, all
 	// subexpressions better be likewise. But that does not hold: maybe the subexpressions are temporary, and this expression should
 	// been likewise, but a particularly complex input formula caused temporary allocation to overflow the buffer and spill into
-	// ialloc.
+	// ialloc
 
 	// Recursively check subexpressions
 	for (auto b: a) dbgCheck(b);

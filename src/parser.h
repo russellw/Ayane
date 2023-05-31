@@ -39,12 +39,12 @@ struct Parser {
 	void lexInt(mpz_t z);
 
 	// Type a function, in context where error can report line number. For languages like TPTP where definitions can be implied on
-	// the fly, but must be consistent with previous usage. Also used by DIMACS for a simpler case.
+	// the fly, but must be consistent with previous usage. Also used by DIMACS for a simpler case
 	Expr* fn(Type* t, Str* s);
 
 	// Recursively type-check an expression, in context where error can report line number. Assumes as precondition that the
 	// expression is structurally sound, i.e. the correct class of C++ object is present everywhere, including some type being
-	// assigned to every function. Checks for inconsistent types and wrong numbers of arguments.
+	// assigned to every function. Checks for inconsistent types and wrong numbers of arguments
 	void check(size_t n, Expr* a);
 	void check(Type* t, Expr* a);
 };

@@ -25,7 +25,7 @@ Clause* altVars(Clause* c) {
 
 // First-order logic usually takes the view that equality is a special case, but superposition calculus takes the view that equality
 // is the general case. Non-equality predicates are considered to be equations 'p=true'; this is a special exemption from the usual
-// rule that equality is not allowed on formulas.
+// rule that equality is not allowed on formulas
 bool equatable(Expr* a, Expr* b) {
 	if (type(a) != type(b)) return 0;
 	if (type(a) == &tbool) return a == bools + 1 || b == bools + 1;
@@ -44,7 +44,7 @@ Expr* equate(Expr* a, Expr* b) {
 
 // Equality tends to generate a large number of clauses. Superposition calculus is designed to moderate the profusion of clauses
 // using an ordering on expressions, that tries to apply equations in one direction only; the difficulty, of course, is doing this
-// without breaking completeness.
+// without breaking completeness
 // TODO: fixup to take into account 0 vs 1 arg start
 // TODO: compare with KBO
 size_t sym(Expr* a) {
@@ -59,11 +59,11 @@ bool ge(Expr* a, Expr* b) {
 }
 
 // TODO: some analysis on the operators used in the clauses, to figure out what order is
-// Likely to be best. For now, just use an arbitrary order.
+// Likely to be best. For now, just use an arbitrary order
 
 // Check whether one expression is unambiguously greater than another. This is much more delicate than comparison for e.g. sorting,
 // where arbitrary choices can be made; to avoid breaking completeness of the calculus, the criteria are much stricter, and when in
-// doubt, we return false.
+// doubt, we return false
 bool gt(Expr* a, Expr* b) {
 	// Fast equality test
 	if (a == b) return 0;
@@ -83,7 +83,7 @@ bool gt(Expr* a, Expr* b) {
 		if (!gt(a, bi)) return 0;
 
 	// Different functions. Comparison has the required property that true is considered smaller than any other expression (except
-	// false, which does not occur during superposition proof search).
+	// false, which does not occur during superposition proof search)
 	auto af = sym(a);
 	auto bf = sym(b);
 	if (af != bf) return af > bf;
@@ -163,7 +163,7 @@ void factorc() {
 	if (!equatable(c1, d1)) return;
 
 	// The first expression of the second equation is called 'd0' because in the superposition rule, below, it will be an equation
-	// in the second clause. Here, however, it is still a second equation in the first clause.
+	// in the second clause. Here, however, it is still a second equation in the first clause
 	if (!unify(c0, d0)) return;
 
 	neg.n = 0;
@@ -313,7 +313,7 @@ void superposn1() {
 
 // If a complete saturation proof procedure finds no more possible derivations, then the problem is satisfiable. In practice, this
 // almost never happens for nontrivial problems, but serves as a good way to test the completeness of the prover on some trivial
-// problems. However, if completeness was lost for any reason, then we will need to report failure instead.
+// problems. However, if completeness was lost for any reason, then we will need to report failure instead
 int result = 1;
 
 void superposn() {
@@ -338,7 +338,7 @@ void superposn() {
 		}
 
 		// The normal and alternate-variable versions of g are logically the same but algorithmically distinct. It is important to
-		// keep track of both of them during this iteration. After that, g will be kept, and g1 will be discarded.
+		// keep track of both of them during this iteration. After that, g will be kept, and g1 will be discarded
 		bufp = buf;
 		auto g1 = altVars(g);
 

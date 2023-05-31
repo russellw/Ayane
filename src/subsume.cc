@@ -77,7 +77,7 @@ bool subsumes(Clause* c0, Clause* d0) {
 	if (c0->np() > d0->np()) return 0;
 
 	// It's okay to use a fixed-size array here, because beyond a certain length, subsumption checking is unlikely to be useful.
-	// Indeed, beyond a certain length, generating clauses is unlikely to be useful.
+	// Indeed, beyond a certain length, generating clauses is unlikely to be useful
 	if (sizeof used < d0->n) return 0;
 
 	c = c0;

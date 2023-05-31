@@ -1,5 +1,5 @@
 // At the moment, the only composite types understood by the system, are functions specified by parameters and return type. These
-// are represented with the return type as v[0].
+// are represented with the return type as v[0]
 struct CompType: Type {
 	Type* v[];
 

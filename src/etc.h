@@ -1,8 +1,8 @@
 // Error codes specified by this program have numbers starting at 200 to avoid overlap with those specified by POSIX or Windows.
-// Numbers are assigned roughly in order of increasing severity.
+// Numbers are assigned roughly in order of increasing severity
 
 // This can happen even when the input is correct, e.g. problem contains higher-order logic that the system does not understand,
-// 'inappropriate' in SZS terminology.
+// 'inappropriate' in SZS terminology
 const int inappropriateError = 200;
 
 // This means an error in the input

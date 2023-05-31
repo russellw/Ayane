@@ -116,9 +116,15 @@ def special(s):
 
 def words(s):
     v = s.split()
+
     for i in range(len(v) - 1):
         if sentence_end(v[i]):
             v[i + 1] = capitalize(v[i + 1])
+
+    i = len(v) - 1
+    if v[i].endswith("."):
+        v[i] = v[i][:-1]
+
     return v
 
 

@@ -1,5 +1,5 @@
 // Arbitrary precision rationals. These also represent real numbers (well, the rational subset of the reals), distinguished (for the
-// sake of the type system) by tag.
+// sake of the type system) by tag
 struct Rat: Expr {
 	mpq_t v;
 

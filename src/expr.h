@@ -4,7 +4,7 @@ enum class Tag {
 };
 
 // Expressions are the most important data structures in the system. Logic formulas are expressions of Boolean type; terms are
-// expressions of other types.
+// expressions of other types
 struct Expr {
 	Tag tag;
 	uint32_t n = 0;
@@ -14,11 +14,11 @@ struct Expr {
 };
 
 // The Boolean constants are primitive expressions. False and true are represented as &bools[value], i.e. bools and bools+1
-// respectively.
+// respectively
 extern Expr bools[2];
 
 // a predicate is a function with Boolean return type. A first-order constant (or propositional variable) is a function of arity
-// zero.
+// zero
 struct Fn: Expr {
 	Type* t;
 	char* s;
@@ -36,7 +36,7 @@ Type* type(Expr* a);
 
 // Equality can be represented as an expression like any other binary operator, but there are also algorithms that need to pay
 // particular attention to equations, e.g. in order to apply them in both directions, enough that it is worth having a specific type
-// for them in such contexts.
+// for them in such contexts
 struct Eqn: pair<Expr*, Expr*> {
 	Eqn(Expr* a);
 };

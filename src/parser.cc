@@ -12,7 +12,7 @@
 Parser::Parser(const char* file): file(file) {
 	// Read all the input in one go before beginning parsing, to make the parsers simpler and faster. Testing indicates
 	// memory-mapped files are not really faster for this case, so the input data is read-write so parsers can scribble over it if
-	// that makes their job easier.
+	// that makes their job easier
 	size_t n;
 	if (strcmp(file, "stdin") == 0) {
 #ifdef _WIN32
@@ -143,7 +143,7 @@ void Parser::check(size_t n, Expr* a) {
 void Parser::check(Type* t, Expr* a) {
 	// In first-order logic, a function cannot return a function, nor can a variable store one. (That would be higher-order logic.)
 	// The code should be written so that neither the top-level callers nor the recursive calls, can ever ask for a function to be
-	// returned.
+	// returned
 	assert(t->kind != Kind::fn);
 
 	// Most obviously, check this expression returns the expected type

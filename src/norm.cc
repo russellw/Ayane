@@ -201,7 +201,7 @@ Expr* norm(Expr* a) {
 			// TODO: should fmt put blank line before comment?
 			// Different languages have different conventions on the default rounding mode for converting fractions to integers.
 			// TPTP defines it as floor, so that is used here. To use a different rounding mode, explicity round the rational number
-			// first, and then convert to integer.
+			// first, and then convert to integer
 			mpz_fdiv_q(r, mpq_numref(x1->v), mpq_denref(x1->v));
 			return integer(r);
 		}

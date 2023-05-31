@@ -141,7 +141,7 @@ struct Init {
 		strs.qty = qty;
 		for (auto a = keywords; a < keywords + qty; ++a) {
 			// C++ allows the edge case where a string literal exactly fills an array, leaving no room for a null terminator. This
-			// is sometimes useful, but would not be appropriate here, so make sure it's not the case.
+			// is sometimes useful, but would not be appropriate here, so make sure it's not the case
 			assert(strlen(a->v) < sizeof a->v);
 
 			// Where in the hash table does this keyword belong?
