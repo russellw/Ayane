@@ -30,8 +30,39 @@ def special(s):
         return s
 
 
+def sentence_end(s):
+    if s.startswith("("):
+        s = s[1:]
+    if s.endswith(")"):
+        s = s[:-1]
+
+    if s in ("e.g.", "i.e."):
+        return
+
+    if s.endswith("."):
+        return 1
+    if s.endswith("?"):
+        return 1
+
+
+def capitalize(s):
+    if len(s) == 1:
+        return s
+    if not s[1].isalpha():
+        return s
+    if "_" in s:
+        return s
+    for c in s:
+        if c.isupper():
+            return s
+    return s.capitalize()
+
+
 def words(s):
     v = s.split()
+    for i in range(len(v) - 1):
+        if sentence_end(v[i]):
+            v[i + 1] = capitalize(v[i + 1])
     return v
 
 
