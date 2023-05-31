@@ -2,7 +2,7 @@ import os
 import re
 
 
-# SORTF
+# SORT
 def get_expected(file):
     for s in open(file).readlines():
         m = re.match(r"\S\s*(inappropriateError)\s+", s)

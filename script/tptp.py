@@ -3,7 +3,7 @@ import random
 import re
 
 
-# SORTF
+# SORT
 def check(r, expected):
     if not r:
         return

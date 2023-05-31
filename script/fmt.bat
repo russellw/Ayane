@@ -20,9 +20,6 @@ if %errorlevel% neq 0 goto :eof
 python %~dp0python_sort.py
 if %errorlevel% neq 0 goto :eof
 
-python %~dp0python_sortf.py
-if %errorlevel% neq 0 goto :eof
-
 python %~dp0keywords.py
 if %errorlevel% neq 0 goto :eof
 

@@ -3,7 +3,7 @@ import re
 import common
 
 
-# SORTF
+# SORT
 def cat(v):
     r = []
     for w in v:
@@ -34,7 +34,7 @@ def def_name(v):
 def f(v):
     i = 0
     while i < len(v):
-        if not re.match(r"\s*# SORTF\s*$", v[i]):
+        if not re.match(r"\s*# SORT\s*$", v[i]):
             i += 1
             continue
         i += 1

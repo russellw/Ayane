@@ -10,11 +10,6 @@ def f(v):
             v[i] = f"{m[1]}# SORT"
             continue
 
-        m = re.match(r"(\s*)# sortf$", v[i], re.IGNORECASE)
-        if m:
-            v[i] = f"{m[1]}# SORTF"
-            continue
-
         m = re.match(r"(\s*)# todo:\s*(.*)", v[i], re.IGNORECASE)
         if m:
             v[i] = f"{m[1]}# TODO: {m[2]}"

@@ -38,11 +38,6 @@ def cases(i, dent):
     return i, r
 
 
-def sort_case(c):
-    i = 0
-    while re.match(r"\s*(case .*|default):$", c[i]):
-        i += 1
-    c[:i] = sorted(c[:i])
 
 
 def sort_cases(i, dent):

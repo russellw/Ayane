@@ -3,7 +3,7 @@ import re
 import common
 
 
-# SORTF
+# SORT
 def f(v):
     i = 0
     while i < len(v):

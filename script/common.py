@@ -4,7 +4,7 @@ import random
 import re
 
 
-# SORTF
+# SORT
 def args_c_files():
     parser = argparse.ArgumentParser()
     parser.add_argument("files", nargs="*")

@@ -772,7 +772,7 @@ satlib_problems = (
 )
 
 
-# SORTF
+# SORT
 def check(r, expected):
     if not r:
         return
