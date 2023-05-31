@@ -10,12 +10,8 @@ def cat(v):
     return r
 
 
-def block(v, i):
+def def1(v, i):
     dent = indent(v, i)
-
-    # already at the end
-    if not (indent(v, i) == dent and not re.match(r"\s*#$", v[i])):
-        return
 
     # skip comments
     while (
@@ -25,19 +21,20 @@ def block(v, i):
     ):
         i += 1
 
-    # a comment in a sort block should be followed by something to sort
-    if not (indent(v, i) == dent and not re.match(r"\s*#$", v[i])):
-        raise Exception(i)
+    #there should be no more leading blank lines
+    if i<len(v):
+        assert v[i]
 
-    # def
-    if re.match(r"\s*def \w+\(", v[i]):
+    # if there is no def, we are done
+    if not (indent(v, i) == dent and re.match(r"\s*def \w+\(", v[i])):
+        return
+
+
+    # function body
+    i += 1
+    while indent(v, i) > dent:
         i += 1
-        while indent(v, i) > dent:
-            i += 1
-        return i
-
-    # assume just one line
-    return i + 1
+    return i
 
 
 def f(v):
@@ -47,20 +44,40 @@ def f(v):
             i += 1
             continue
         i += 1
+
+        #delete leading blank lines
         j = i
         while not v[j]:
             j += 1
-        r = []
-        while j < len(v):
-            k = block(v, j)
-            if not k:
-                break
-            r.append(trim(v[j:k]))
-            j = k
-        if not r:
-            raise Exception(i)
-        r.sort(key=key)
-        v[i:j] = cat(r)
+        del v[i:j]
+        j=i
+
+        #sorting function definitions is different from sorting individual lines
+        if def1(v,i):
+            r = []
+            while j < len(v):
+                k = def1(v, j)
+                if not k:
+                    break
+                r.append(trim(v[j:k]))
+                j = k
+            assert r
+            r.sort(key=def_key)
+            v[i:j] = cat(r)
+        else:
+            dent = indent(v, j)
+            while (
+                indent(v, j) == dent
+                and not re.match(r"\s*#", v[j])
+            ):
+                j += 1
+            assert indent(v,j)<=dent
+            r=v[i:j]
+            r.sort()
+            v[i:j] = r
+
+        i=j
+
 
 
 def indent(v, i):
@@ -77,13 +94,10 @@ def indent(v, i):
     return j
 
 
-def key(v):
+def def_key(v):
     for s in v:
-        if re.match(r"\s*#", s):
-            continue
-        if re.match(r"\s*def \w+\(", s):
-            return " " + s
-        return s
+        if not re.match(r"\s*#", s):
+            return s
     raise Exception(v)
 
 
