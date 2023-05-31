@@ -214,7 +214,7 @@ Expr* exists(int pol, Expr* a) {
 	return a;
 }
 
-// Negation normal form consists of several transformations that are as easy to do at the same time: Move NOTs inward to the literal
+// Negation normal form consists of several transformations that are as easy to do at the same time: move NOTs inward to the literal
 // layer, flipping things around on the way, while simultaneously resolving quantifiers
 Expr* nnf(bool pol, Expr* a) {
 	auto tag = a->tag;
@@ -392,7 +392,7 @@ void clauses(Expr* a) {
 void cnf(Expr* a) {
 	dbgCheck(a);
 
-	// First run the input formula through the full process: Rename subformulas where necessary to avoid exponential expansion, then
+	// First run the input formula through the full process: rename subformulas where necessary to avoid exponential expansion, then
 	// convert to negation normal form, distribute OR into AND, and convert to clauses
 	defs.n = 0;
 	a = maybeRename(1, a);

@@ -73,7 +73,7 @@ bool gt(Expr* a, Expr* b) {
 	if (a->tag == Tag::var) return 0;
 	if (b->tag == Tag::var) return occurs(b, a);
 
-	// Sufficient condition: Exists ai >= b
+	// Sufficient condition: exists ai >= b
 	// TODO: check generated code
 	for (auto ai: a)
 		if (ge(ai, b)) return 1;
