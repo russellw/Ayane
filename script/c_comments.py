@@ -53,6 +53,7 @@ def f(v):
         s = special(v[i])
         if s:
             v[i] = s
+            i += 1
             continue
 
         # ordinary comments
