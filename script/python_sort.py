@@ -21,14 +21,13 @@ def def1(v, i):
     ):
         i += 1
 
-    #there should be no more leading blank lines
-    if i<len(v):
+    # there should be no more leading blank lines
+    if i < len(v):
         assert v[i]
 
     # if there is no def, we are done
     if not (indent(v, i) == dent and re.match(r"\s*def \w+\(", v[i])):
         return
-
 
     # function body
     i += 1
@@ -45,15 +44,15 @@ def f(v):
             continue
         i += 1
 
-        #delete leading blank lines
+        # delete leading blank lines
         j = i
         while not v[j]:
             j += 1
         del v[i:j]
-        j=i
+        j = i
 
-        #sorting function definitions is different from sorting individual lines
-        if def1(v,i):
+        # sorting function definitions is different from sorting individual lines
+        if def1(v, i):
             r = []
             while j < len(v):
                 k = def1(v, j)
@@ -66,18 +65,14 @@ def f(v):
             v[i:j] = cat(r)
         else:
             dent = indent(v, j)
-            while (
-                indent(v, j) == dent
-                and not re.match(r"\s*#", v[j])
-            ):
+            while indent(v, j) == dent and not re.match(r"\s*#", v[j]):
                 j += 1
-            assert indent(v,j)<=dent
-            r=v[i:j]
+            assert indent(v, j) <= dent
+            r = v[i:j]
             r.sort()
             v[i:j] = r
 
-        i=j
-
+        i = j
 
 
 def indent(v, i):
