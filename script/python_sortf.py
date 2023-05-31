@@ -4,7 +4,7 @@ import common
 
 
 # SORTF
-def cat(v ):
+def cat(v):
     r = []
     for w in v:
         r.extend(w)

@@ -16,13 +16,16 @@ def special(s):
     if m:
         return f"{m[1]}// TODO: {m[2]}"
 
+
 def words(s):
-    v=s.split()
+    v = s.split()
     return v
-def lines(dent,v):
+
+
+def lines(dent, v):
     width = 132 - len(dent) * 4 - 3
     s = ""
-    r=[]
+    r = []
     for t in v:
         if len(s) + 1 + len(t) > width:
             r.append(s)
@@ -33,32 +36,35 @@ def lines(dent,v):
             s += t
     assert s
     r.append(s)
-    return [dent+'// '+s for s in r]
+    return [dent + "// " + s for s in r]
+
+
 def f(v):
     for i in range(len(v)):
-        if not match(r'\s*//',v[i]):
-            i+=1
+        if not re.match(r"\s*//", v[i]):
+            i += 1
             continue
 
-        #special comment
+        # special comment
         s = special(v[i])
         if s:
             v[i] = s
             continue
 
-        #ordinary comments
-        j=i
-        w=[]
-        while j<len(v):
-            m=match(r'(\s*)//(.*)',v[j])
+        # ordinary comments
+        j = i
+        w = []
+        while j < len(v):
+            m = re.match(r"(\s*)//(.*)", v[j])
             if not m:
                 break
             if special(v[j]):
                 break
-            j+=1
-            dent=m[1]
+            j += 1
+            dent = m[1]
             w.append(m[2])
-        v[i:j]=lines(dent,words(' '.join(w)))
-        i=j
+        v[i:j] = lines(dent, words(" ".join(w)))
+        i = j
+
 
 common.modify_files(f, common.args_c_files())
