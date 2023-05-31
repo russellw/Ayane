@@ -4,22 +4,29 @@ import common
 
 
 def special(s):
-    m = re.match(r"(\s*)//\s*sort$", s, re.IGNORECASE)
+    m = re.match(r"(\s*)// sort$", s, re.IGNORECASE)
     if m:
         return f"{m[1]}// SORT"
 
-    m = re.match(r"(\s*)//\s*sortf$", s, re.IGNORECASE)
+    m = re.match(r"(\s*)// sortf$", s, re.IGNORECASE)
     if m:
         return f"{m[1]}// SORTF"
 
-    m = re.match(r"(\s*)//\s*todo:\s*(.*)", s, re.IGNORECASE)
+    m = re.match(r"(\s*)// todo:\s*(.*)", s, re.IGNORECASE)
     if m:
         return f"{m[1]}// TODO: {m[2]}"
 
-    if re.match(r"\s*//", s):
-        return s
+    m = re.match(r"(\s*)// $", s)
+    if m:
+        return f"{m[1]}//"
 
-    if re.match(r"\s*//\s*https?:", s):
+    if re.match(r"\s*// https?:", s):
+        return s
+    if re.match(r"\s*// namespace", s):
+        return s
+    if re.match(r"\s*// clang-format off", s):
+        return s
+    if re.match(r"\s*// clang-format on", s):
         return s
 
 
@@ -46,6 +53,13 @@ def lines(dent, v):
 
 
 def f(v):
+    # comments begin with exactly one space
+    for i in range(len(v)):
+        m = re.match(r"(\s*)//\s*(.*)", v[i])
+        if m:
+            v[i] = f"{m[1]}// {m[2]}"
+
+    # other formatting
     i = 0
     while i < len(v):
         if not re.match(r"\s*//", v[i]):
