@@ -15,11 +15,11 @@ def f(v):
         if re.match(r"\s*# SORT\s*$", v[i]):
             i += 1
             j = end(v, i)
-            w = v[i:j]
-            if "" in w:
+            r = v[i:j]
+            if "" in r:
                 raise Exception(i)
-            w.sort()
-            v[i:j] = w
+            r.sort()
+            v[i:j] = r
 
 
 common.modify_files(f, common.args_python_files())

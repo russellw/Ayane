@@ -96,9 +96,9 @@ def modify_files(f, files):
             v = list(s.rstrip() for s in open(file).readlines())
             o = v.copy()
 
-            w = f(v)
-            if w:
-                v = w
+            r = f(v)
+            if r:
+                v = r
 
             if v != o:
                 print(file)

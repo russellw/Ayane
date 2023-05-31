@@ -4,10 +4,10 @@ import common
 
 
 # SORTF
-def cat(w):
+def cat(v ):
     r = []
-    for v in w:
-        r.extend(v)
+    for w in v:
+        r.extend(w)
     return r
 
 
@@ -34,24 +34,24 @@ def def_name(v):
 def f(v):
     i = 0
     while i < len(v):
-        if re.match(r"\s*# SORTF\s*$", v[i]):
+        if not re.match(r"\s*# SORTF\s*$", v[i]):
             i += 1
-            j = i
-            while not v[j]:
-                j += 1
-            w = []
-            while j < len(v):
-                k = def1(v, j)
-                if not k:
-                    break
-                w.append(trim(v[j:k]))
-                j = k
-            if not w:
-                raise Exception(i)
-            w.sort(key=def_name)
-            v[i:j] = cat(w)
             continue
         i += 1
+        j = i
+        while not v[j]:
+            j += 1
+        r = []
+        while j < len(v):
+            k = def1(v, j)
+            if not k:
+                break
+            r.append(trim(v[j:k]))
+            j = k
+        if not r:
+            raise Exception(i)
+        r.sort(key=def_name)
+        v[i:j] = cat(r)
 
 
 def indent(v, i):
