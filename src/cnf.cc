@@ -305,7 +305,6 @@ void cartProduct(Vec<Expr*>& v, size_t i, Vec<size_t>& j, Vec<Expr*>& r) {
 
 Expr* distribute(Expr* a) {
 	// TODO: .clang-format AfterCaseLabel
-	// TODO: .clang-format AllowShortFunctionsOnASingleLine
 	switch (a->tag) {
 	case Tag::and1:
 	{

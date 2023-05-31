@@ -17,7 +17,7 @@ size_t fnv(const void* p, size_t n);
 size_t fnv(const char* s);
 //
 
-//todo:best layout?
+// TODO: best layout?
 // SORT
 inline size_t hashCombine(size_t a, size_t b) { return a ^ b + 0x9e3779b9u + (a << 6) + (a >> 2); }
 
