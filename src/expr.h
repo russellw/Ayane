@@ -9,22 +9,20 @@ struct Expr {
 	Tag tag;
 	uint32_t n = 0;
 
-	Expr(Tag tag): tag(tag) {
-	}
+	Expr(Tag tag): tag(tag) {}
 };
 
 // The Boolean constants are primitive expressions. False and true are represented as &bools[value], i.e. bools and bools+1
 // respectively
 extern Expr bools[2];
 
-// a predicate is a function with Boolean return type. A first-order constant (or propositional variable) is a function of arity
+// A predicate is a function with Boolean return type. A first-order constant (or propositional variable) is a function of arity
 // zero
 struct Fn: Expr {
 	Type* t;
 	char* s;
 
-	Fn(Type* t, char* s): Expr(Tag::fn), t(t), s(s) {
-	}
+	Fn(Type* t, char* s): Expr(Tag::fn), t(t), s(s) {}
 };
 
 // SORT
@@ -47,6 +45,5 @@ void dbgCheck(Expr* a);
 void dbgPrint(Tag tag);
 void dbgPrint(Expr* a);
 #else
-inline void dbgCheck(Expr* a) {
-}
+inline void dbgCheck(Expr* a) {}
 #endif

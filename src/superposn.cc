@@ -54,9 +54,7 @@ size_t sym(Expr* a) {
 
 bool gt(Expr* a, Expr* b);
 
-bool ge(Expr* a, Expr* b) {
-	return a == b || gt(a, b);
-}
+bool ge(Expr* a, Expr* b) { return a == b || gt(a, b); }
 
 // TODO: some analysis on the operators used in the clauses, to figure out what order is
 // Likely to be best. For now, just use an arbitrary order

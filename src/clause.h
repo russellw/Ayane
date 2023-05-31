@@ -8,27 +8,16 @@ struct Clause {
 	bool dead = 0;
 	Expr* v[];
 
-	Clause(size_t nn, size_t n): nn(nn), n(n) {
-	}
+	Clause(size_t nn, size_t n): nn(nn), n(n) {}
 
-	size_t np() {
-		return n - nn;
-	}
+	size_t np() { return n - nn; }
 
-	Range neg() {
-		return Range(0, nn);
-	}
-	Range pos() {
-		return Range(nn, n);
-	}
+	Range neg() { return Range(0, nn); }
+	Range pos() { return Range(nn, n); }
 };
 
-inline Range::iterator begin(Clause* c) {
-	return 0;
-}
-inline Range::iterator end(Clause* c) {
-	return c->n;
-}
+inline Range::iterator begin(Clause* c) { return 0; }
+inline Range::iterator end(Clause* c) { return c->n; }
 
 inline Expr* at(Clause* c, size_t i) {
 	assert(i < c->n);
@@ -41,9 +30,7 @@ extern Vec<Expr*> neg, pos;
 size_t cost(Clause* c);
 
 struct ClauseCompare {
-	bool operator()(Clause* c, Clause* d) {
-		return cost(c) > cost(d);
-	}
+	bool operator()(Clause* c, Clause* d) { return cost(c) > cost(d); }
 };
 
 extern priority_queue<Clause*, vector<Clause*>, ClauseCompare> passive;

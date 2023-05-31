@@ -61,9 +61,7 @@ Parser::Parser(const char* file): file(file) {
 	src[n + 1] = 0;
 }
 
-Parser::~Parser() {
-	free(src0);
-}
+Parser::~Parser() { free(src0); }
 
 void Parser::err(const char* msg, int code) {
 	size_t line = 1;

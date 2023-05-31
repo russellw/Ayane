@@ -17,8 +17,7 @@ enum {
 struct Select: unordered_set<char*> {
 	bool all;
 
-	explicit Select(bool all): all(all) {
-	}
+	explicit Select(bool all): all(all) {}
 
 	size_t count(char* s) const {
 		if (all) return 1;
@@ -833,6 +832,4 @@ struct Parser1: Parser {
 };
 } // namespace
 
-void tptp(const char* file) {
-	Parser1 parser(file, Select(1));
-}
+void tptp(const char* file) { Parser1 parser(file, Select(1)); }

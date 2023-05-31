@@ -107,19 +107,12 @@ bool eq(int tag, char* a, size_t n, Str* b) {
 		if (*a++ != *z++) return 0;
 	return !*z;
 }
-bool eq(Str* a, Str* b) {
-	return strcmp(a->v, b->v) == 0;
-}
+bool eq(Str* a, Str* b) { return strcmp(a->v, b->v) == 0; }
 
-size_t hash(int tag, char* a, size_t n) {
-	return fnv(a, n);
-}
-size_t hash(Str* a) {
-	return fnv(a->v);
-}
+size_t hash(int tag, char* a, size_t n) { return fnv(a, n); }
+size_t hash(Str* a) { return fnv(a->v); }
 
-void clear(char* a) {
-}
+void clear(char* a) {}
 
 Str* make(int tag, char* v, size_t n) {
 	auto a = (Str*)ialloc(offsetof(Str, v) + n + 1);
@@ -157,6 +150,4 @@ struct Init {
 } init;
 } // namespace
 
-Str* intern(char* s, size_t n) {
-	return strs.intern(0, s, n);
-}
+Str* intern(char* s, size_t n) { return strs.intern(0, s, n); }

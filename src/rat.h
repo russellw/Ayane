@@ -3,9 +3,7 @@
 struct Rat: Expr {
 	mpq_t v;
 
-	Rat(Tag tag, mpq_t v): Expr(tag) {
-		memcpy(this->v, v, sizeof this->v);
-	}
+	Rat(Tag tag, mpq_t v): Expr(tag) { memcpy(this->v, v, sizeof this->v); }
 };
 
 Rat* rat(Tag tag, mpq_t v);

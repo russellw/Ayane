@@ -113,12 +113,8 @@ enum {
 extern Str keywords[];
 
 Str* intern(char* s, size_t n);
-inline Str* intern(const char* s) {
-	return intern((char*)s, strlen(s));
-}
+inline Str* intern(const char* s) { return intern((char*)s, strlen(s)); }
 
 #ifdef DBG
-inline void dbgPrint(Str* s) {
-	dbgPrint(s->v);
-}
+inline void dbgPrint(Str* s) { dbgPrint(s->v); }
 #endif

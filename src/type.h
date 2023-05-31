@@ -7,8 +7,7 @@ struct Type {
 	Kind kind;
 	uint32_t n = 0;
 
-	Type(Kind kind): kind(kind) {
-	}
+	Type(Kind kind): kind(kind) {}
 };
 
 struct LeafType: Type {
@@ -19,8 +18,7 @@ struct LeafType: Type {
 	// this is to rename the variables in one clause, to an alternate set
 	Vec<Var*> alts;
 
-	LeafType(Kind kind): Type(kind) {
-	}
+	LeafType(Kind kind): Type(kind) {}
 };
 
 extern LeafType tbool;
@@ -35,8 +33,7 @@ bool isNum(Type* t);
 struct OpaqueType: LeafType {
 	char* s;
 
-	OpaqueType(char* s): LeafType(Kind::opaque), s(s) {
-	}
+	OpaqueType(char* s): LeafType(Kind::opaque), s(s) {}
 };
 
 #ifdef DBG

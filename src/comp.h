@@ -4,17 +4,11 @@
 struct Comp: Expr {
 	Expr* v[];
 
-	Comp(Tag tag, size_t n): Expr(tag) {
-		this->n = n;
-	}
+	Comp(Tag tag, size_t n): Expr(tag) { this->n = n; }
 };
 
-inline Expr** begin(Expr* a) {
-	return ((Comp*)a)->v;
-}
-inline Expr** end(Expr* a) {
-	return ((Comp*)a)->v + a->n;
-}
+inline Expr** begin(Expr* a) { return ((Comp*)a)->v; }
+inline Expr** end(Expr* a) { return ((Comp*)a)->v + a->n; }
 
 inline Expr* at(Expr* a, size_t i) {
 	assert(i < a->n);

@@ -17,13 +17,9 @@ unordered_map<size_t, uint64_t> numStats;
 std::map<vector<const char*>, uint64_t> traces;
 } // namespace
 
-void incStat(const char* s, uint64_t n) {
-	strStats[intern(s)->v] += n;
-}
+void incStat(const char* s, uint64_t n) { strStats[intern(s)->v] += n; }
 
-void incStat(size_t s, uint64_t n) {
-	numStats[s] += n;
-}
+void incStat(size_t s, uint64_t n) { numStats[s] += n; }
 
 void incTrace() {
 #ifdef _WIN32

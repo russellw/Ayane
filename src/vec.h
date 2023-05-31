@@ -29,9 +29,7 @@ public:
 	Vec(const Vec&) = delete;
 	Vec& operator=(const Vec&) = delete;
 
-	explicit Vec(size_t o = 0) {
-		init(o);
-	}
+	explicit Vec(size_t o = 0) { init(o); }
 
 	explicit Vec(size_t o, T a) {
 		init(o);
@@ -43,19 +41,11 @@ public:
 	}
 
 	// Iterators
-	T* begin() {
-		return data;
-	}
-	T* end() {
-		return begin() + n;
-	}
+	T* begin() { return data; }
+	T* end() { return begin() + n; }
 
-	reverse_iterator rbegin() {
-		return reverse_iterator(end());
-	}
-	reverse_iterator rend() {
-		return reverse_iterator(begin());
-	}
+	reverse_iterator rbegin() { return reverse_iterator(end()); }
+	reverse_iterator rend() { return reverse_iterator(begin()); }
 
 	// SORT
 	T& operator[](size_t i) {
@@ -79,7 +69,6 @@ public:
 			if (a == b) return 1;
 		return 0;
 	}
-	//
 };
 
 template <class K, class T> bool get(K a, T& b, Vec<pair<K, T>>& m) {

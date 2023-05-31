@@ -8,9 +8,7 @@
 #include <crtdbg.h>
 #include <dbghelp.h>
 #else
-extern "C" const char* __asan_default_options() {
-	return "detect_leaks=0";
-}
+extern "C" const char* __asan_default_options() { return "detect_leaks=0"; }
 #endif
 
 void stackTrace() {

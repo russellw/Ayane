@@ -3,9 +3,7 @@
 Expr bools[2] = {{Tag::false1}, {Tag::true1}};
 
 // SORT
-Expr* imp(Expr* a, Expr* b) {
-	return comp(Tag::or1, comp(Tag::not1, a), b);
-}
+Expr* imp(Expr* a, Expr* b) { return comp(Tag::or1, comp(Tag::not1, a), b); }
 
 bool occurs(Expr* a, Expr* b) {
 	if (a == b) return 1;

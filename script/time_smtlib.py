@@ -12,7 +12,8 @@ problems = smtlib.get_problems(args)
 for file in problems:
     expected = smtlib.get_expected(file)
 
-    cmd = "./ayane", "-t", str(args.time), file
+    # cmd = "./ayane", "-t", str(args.time), file
+    cmd = "./ayane", file
     t = time.time()
     p = subprocess.run(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf-8"

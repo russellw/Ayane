@@ -16,34 +16,21 @@ void stackTrace();
 #define assert(a) (a) || assertFail(__FILE__, __LINE__, __func__, #a)
 #define unreachable assert(0)
 
+//todo:best layout?
 // SORT
-inline void dbgPrint(char c) {
-	putchar(c);
-}
+inline void dbgPrint(char c) { putchar(c); }
 
-inline void dbgPrint(const char* s) {
-	printf("%s", s);
-}
+inline void dbgPrint(const char* s) { printf("%s", s); }
 
-inline void dbgPrint(const void* p) {
-	printf("%p", p);
-}
+inline void dbgPrint(const void* p) { printf("%p", p); }
 
-inline void dbgPrint(int32_t n) {
-	printf("%" PRId32, n);
-}
+inline void dbgPrint(int32_t n) { printf("%" PRId32, n); }
 
-inline void dbgPrint(int64_t n) {
-	printf("%" PRId64, n);
-}
+inline void dbgPrint(int64_t n) { printf("%" PRId64, n); }
 
-inline void dbgPrint(uint32_t n) {
-	printf("%" PRIu32, n);
-}
+inline void dbgPrint(uint32_t n) { printf("%" PRIu32, n); }
 
-inline void dbgPrint(uint64_t n) {
-	printf("%" PRIu64, n);
-}
+inline void dbgPrint(uint64_t n) { printf("%" PRIu64, n); }
 
 template <class K, class T> void dbgPrint(const pair<K, T>& ab) {
 	putchar('<');
@@ -69,8 +56,7 @@ template <class T> void dbgPrint(const vector<T>& v) {
 
 #define dbg(a)
 
-inline void stackTrace() {
-}
+inline void stackTrace() {}
 
 #ifdef _MSC_VER
 #define assert(a) __assume(a)
