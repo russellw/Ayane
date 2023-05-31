@@ -16,6 +16,9 @@ def special(s):
     if m:
         return f"{m[1]}// TODO: {m[2]}"
 
+    if re.match(r"\s*//\s*https?:", s):
+        return s
+
 
 def words(s):
     v = s.split()
