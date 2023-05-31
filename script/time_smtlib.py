@@ -19,7 +19,7 @@ for file in problems:
     )
     t = time.time() - t
     if t > 10:
-        print("%s\t%.3f seconds" % (file, t))
+        print("%s\t%.3f seconds" % (file, t), flush=True)
     s = p.stdout
 
     code = codes.get(p.returncode, p.returncode)
