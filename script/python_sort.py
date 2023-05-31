@@ -74,8 +74,11 @@ def indent(v, i):
     return j
 def key(v):
     for s in v:
-        if not re.match(r"\s*#", s):
-            return s
+        if re.match(r"\s*#", s):
+            continue
+        if   re.match(r"\s*def \w+\(", s):
+            return' '+s
+        return s
     raise Exception(v)
 
 
