@@ -35,7 +35,7 @@ rem Standard tools for C++
 if %errorlevel% neq 0 goto :eof
 
 rem Custom tools for C++
-python %~dp0fmt_c.py %~dp0..\src
+python %~dp0c_comments.py
 if %errorlevel% neq 0 goto :eof
 
 rem Show results

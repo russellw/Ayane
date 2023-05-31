@@ -5,6 +5,29 @@ import re
 
 
 # SORTF
+def args_c_files():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("files", nargs="*")
+    args = parser.parse_args()
+
+    files = args.files
+    if not files:
+        here = os.path.dirname(os.path.realpath(__file__))
+        files = [os.path.join(here, "..", "src")]
+
+    r = []
+    for arg in files:
+        if os.path.isdir(arg):
+            for root, dirs, files in os.walk(arg):
+                for file in files:
+                    ext = os.path.splitext(file)[1]
+                    if ext in (".cc", ".h"):
+                        r.append(os.path.join(root, file))
+            continue
+        r.append(arg)
+    return r
+
+
 def args_files():
     parser = argparse.ArgumentParser()
     parser.add_argument("files", nargs="+")
