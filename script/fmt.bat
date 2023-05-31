@@ -38,5 +38,8 @@ rem Custom tools for C++
 python %~dp0c_comments.py
 if %errorlevel% neq 0 goto :eof
 
+python %~dp0c_sort_case_labels.py
+if %errorlevel% neq 0 goto :eof
+
 rem Show results
 git diff
