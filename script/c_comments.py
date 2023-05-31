@@ -40,7 +40,7 @@ def lines(dent, v):
 
 
 def f(v):
-    i=0
+    i = 0
     while i < len(v):
         if not re.match(r"\s*//", v[i]):
             i += 1
@@ -66,7 +66,7 @@ def f(v):
             w.append(m[2])
         r = lines(dent, words(" ".join(w)))
         v[i:j] = r
-        i +=len(r)
+        i += len(r)
 
 
 common.modify_files(f, common.args_c_files())
