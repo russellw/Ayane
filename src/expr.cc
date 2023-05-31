@@ -38,8 +38,7 @@ Type* type(Expr* a) {
 	case Tag::or1:
 	case Tag::true1:
 		return &tbool;
-	case Tag::call:
-	{
+	case Tag::call: {
 		auto f = (Fn*)at(a, 0);
 		assert(f->tag == Tag::fn);
 		if (f->t->kind != Kind::fn) return 0;
@@ -47,8 +46,7 @@ Type* type(Expr* a) {
 	}
 	case Tag::distinctObj:
 		return &tindividual;
-	case Tag::fn:
-	{
+	case Tag::fn: {
 		auto f = (Fn*)a;
 		return f->t;
 	}
@@ -135,8 +133,7 @@ void dbgPrint(Expr* a) {
 		}
 		putchar(')');
 		return;
-	case Tag::fn:
-	{
+	case Tag::fn: {
 		auto s = ((Fn*)a)->s;
 		if (s) dbgPrint(s);
 		else

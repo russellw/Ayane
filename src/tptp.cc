@@ -56,8 +56,7 @@ void defaultType(Type* t, Expr* a) {
 	case Tag::or1:
 		for (auto b: a) defaultType(&tbool, b);
 		return;
-	case Tag::call:
-	{
+	case Tag::call: {
 		auto f = (Fn*)at(a, 0);
 		if (f->t) return;
 		Vec<Type*> v(a->n, t);
@@ -66,8 +65,7 @@ void defaultType(Type* t, Expr* a) {
 		for (size_t i = 1; i < a->n; ++i) defaultType(&tindividual, at(a, i));
 		return;
 	}
-	case Tag::fn:
-	{
+	case Tag::fn: {
 		auto f = (Fn*)a;
 		if (f->t) return;
 		f->t = t;
@@ -135,8 +133,7 @@ struct Parser1: Parser {
 
 		// After parsing the integer, we find out if this is actually a rational or decimal
 		switch (*src) {
-		case '.':
-		{
+		case '.': {
 			++src;
 
 			// Need to parse the decimal part, but also track exactly how many digits it was written as; 1.23 != 1.023
@@ -399,8 +396,7 @@ struct Parser1: Parser {
 		switch (k) {
 		case '!':
 			err("type constructors not supported", inappropriateError);
-		case '(':
-		{
+		case '(': {
 			auto t = atomicType();
 			expect(')');
 			return t;
@@ -466,15 +462,13 @@ struct Parser1: Parser {
 			err("formula not supported as expression", inappropriateError);
 		case k_distinctObj:
 			return distinctObj(s);
-		case k_dollarWord:
-		{
+		case k_dollarWord: {
 			switch (s - keywords) {
 			case s_ceiling:
 				return definedFunctor(Tag::ceil);
 			case s_difference:
 				return definedFunctor(Tag::sub);
-			case s_distinct:
-			{
+			case s_distinct: {
 				if (cnfMode) err("cnf does not support $distinct");
 				Vec<Expr*> v;
 				args(v);
@@ -488,8 +482,7 @@ struct Parser1: Parser {
 				return bools;
 			case s_floor:
 				return definedFunctor(Tag::floor);
-			case s_greater:
-			{
+			case s_greater: {
 				expect('(');
 				auto a = atomicTerm();
 				expect(',');
@@ -497,8 +490,7 @@ struct Parser1: Parser {
 				expect(')');
 				return comp(Tag::lt, b, a);
 			}
-			case s_greatereq:
-			{
+			case s_greatereq: {
 				expect('(');
 				auto a = atomicTerm();
 				expect(',');
@@ -514,8 +506,7 @@ struct Parser1: Parser {
 				err("$ite not supported", inappropriateError);
 			case s_less:
 				return definedFunctor(Tag::lt);
-			case s_lesseq:
-			{
+			case s_lesseq: {
 				expect('(');
 				auto a = atomicTerm();
 				expect(',');
@@ -560,8 +551,7 @@ struct Parser1: Parser {
 		}
 		case k_num:
 			return num1;
-		case k_var:
-		{
+		case k_var: {
 			for (auto i = vars.rbegin(), e = vars.rend(); i != e; ++i)
 				if (i->first == s) return i->second;
 			if (!cnfMode) err("unknown variable");
@@ -569,8 +559,7 @@ struct Parser1: Parser {
 			vars.add(make_pair(s, a));
 			return a;
 		}
-		case k_word:
-		{
+		case k_word: {
 			auto a = fn(0, s);
 			if (tok != '(') return a;
 
@@ -622,8 +611,7 @@ struct Parser1: Parser {
 		switch (tok) {
 		case '!':
 			return quant(Tag::all);
-		case '(':
-		{
+		case '(': {
 			lex();
 			auto a = logicFormula();
 			expect(')');
@@ -677,14 +665,12 @@ struct Parser1: Parser {
 	// Top level
 	Str* wordOrDigits() {
 		switch (tok) {
-		case k_num:
-		{
+		case k_num: {
 			auto r = intern(srck, src - srck);
 			lex();
 			return r;
 		}
-		case k_word:
-		{
+		case k_word: {
 			auto r = str;
 			lex();
 			return r;
@@ -704,8 +690,7 @@ struct Parser1: Parser {
 			expect('(');
 			auto name = wordOrDigits()->v;
 			switch (kw) {
-			case s_cnf:
-			{
+			case s_cnf: {
 				expect(',');
 
 				// Role
@@ -739,8 +724,7 @@ struct Parser1: Parser {
 			}
 			case s_fof:
 			case s_tcf:
-			case s_tff:
-			{
+			case s_tff: {
 				expect(',');
 
 				// Role
@@ -794,8 +778,7 @@ struct Parser1: Parser {
 				cnf(a);
 				break;
 			}
-			case s_include:
-			{
+			case s_include: {
 				auto dir = getenv("TPTP");
 				if (!dir) err("TPTP environment variable not set");
 

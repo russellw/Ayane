@@ -79,8 +79,7 @@ int main(int argc, char** argv) {
 			case 's':
 				lang = Lang::smtlib;
 				continue;
-			case 't':
-			{
+			case 't': {
 				do ++s;
 				while (isalpha((unsigned char)*s));
 

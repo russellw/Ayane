@@ -154,8 +154,7 @@ struct Parser1: Parser {
 			src = s;
 			tok = k_word;
 			return;
-		case '"':
-		{
+		case '"': {
 			++src;
 			auto r = src;
 			auto s = src;
@@ -198,8 +197,7 @@ struct Parser1: Parser {
 		case ';':
 			src = strchr(s, '\n');
 			goto loop;
-		case '|':
-		{
+		case '|': {
 			++src;
 			auto r = src;
 			auto s = src;
@@ -344,8 +342,7 @@ struct Parser1: Parser {
 		auto num1 = num;
 		lex();
 		switch (k) {
-		case '(':
-		{
+		case '(': {
 			if (tok == '(') err("composite operator not supported", inappropriateError);
 			s = word();
 			// TODO: is a 'let' bound variable allowed in operator position?
@@ -358,8 +355,7 @@ struct Parser1: Parser {
 			switch (s - keywords) {
 			case s_and:
 				return expr(Tag::and1);
-			case s_bang:
-			{
+			case s_bang: {
 				auto a = expr();
 				skip();
 				return a;
@@ -377,8 +373,7 @@ struct Parser1: Parser {
 			case s_underscore:
 				sprintf(buf, "%s: not supported", s->v);
 				err(buf, inappropriateError);
-			case s_distinct:
-			{
+			case s_distinct: {
 				Vec<Expr*> v;
 				do v.add(expr());
 				while (!eat(')'));
@@ -390,8 +385,7 @@ struct Parser1: Parser {
 			}
 			case s_div:
 				return leftAssoc(Tag::divEuclid);
-			case s_eq:
-			{
+			case s_eq: {
 				auto a = expr();
 				auto b = expr();
 				expect(')');
@@ -401,36 +395,31 @@ struct Parser1: Parser {
 				return quant(Tag::exists);
 			case s_forall:
 				return quant(Tag::all);
-			case s_ge:
-			{
+			case s_ge: {
 				auto a = expr();
 				auto b = expr();
 				expect(')');
 				return comp(Tag::or1, comp(Tag::eq, b, a), comp(Tag::lt, b, a));
 			}
-			case s_gt:
-			{
+			case s_gt: {
 				auto a = expr();
 				auto b = expr();
 				expect(')');
 				return comp(Tag::lt, b, a);
 			}
-			case s_imp:
-			{
+			case s_imp: {
 				auto a = expr();
 				auto b = expr();
 				expect(')');
 				return imp(a, b);
 			}
-			case s_le:
-			{
+			case s_le: {
 				auto a = expr();
 				auto b = expr();
 				expect(')');
 				return comp(Tag::or1, comp(Tag::eq, a, b), comp(Tag::lt, a, b));
 			}
-			case s_let:
-			{
+			case s_let: {
 				expect('(');
 				auto o = locals.n;
 				do {
@@ -444,15 +433,13 @@ struct Parser1: Parser {
 				locals.n = o;
 				return a;
 			}
-			case s_lt:
-			{
+			case s_lt: {
 				auto a = expr();
 				auto b = expr();
 				expect(')');
 				return comp(Tag::lt, a, b);
 			}
-			case s_minus:
-			{
+			case s_minus: {
 				auto a = expr();
 				if (eat(')')) return comp(Tag::minus, a);
 				do a = comp(Tag::sub, a, expr());
@@ -472,8 +459,7 @@ struct Parser1: Parser {
 				return expr(Tag::div);
 			case s_star:
 				return leftAssoc(Tag::mul);
-			case s_xor:
-			{
+			case s_xor: {
 				auto a = expr();
 				auto b = expr();
 				expect(')');
@@ -520,8 +506,7 @@ struct Parser1: Parser {
 			expect('(');
 			auto s = word();
 			switch (s - keywords) {
-			case s_assert:
-			{
+			case s_assert: {
 				bufp = buf;
 				auto a = expr();
 				check(&tbool, a);
@@ -531,8 +516,7 @@ struct Parser1: Parser {
 			}
 			case s_check_sat:
 				return;
-			case s_declare_const:
-			{
+			case s_declare_const: {
 				auto s = word();
 				if (s->fn) err("constant already declared");
 				s->fn = new (ialloc(sizeof(Fn))) Fn(type1(), s->v);
@@ -543,16 +527,14 @@ struct Parser1: Parser {
 			case s_declare_datatypes:
 				sprintf(buf, "%s: not supported", s->v);
 				err(buf, inappropriateError);
-			case s_declare_fun:
-			{
+			case s_declare_fun: {
 				auto s = word();
 				if (s->fn) err("function already declared");
 				s->fn = new (ialloc(sizeof(Fn))) Fn(topLevelType(), s->v);
 				expect(')');
 				continue;
 			}
-			case s_declare_sort:
-			{
+			case s_declare_sort: {
 				auto s = word();
 				if (s->t) err("sort already declared");
 				if (tok != k_num) err("expected arity");
@@ -571,8 +553,7 @@ struct Parser1: Parser {
 				s->t = new (ialloc(sizeof(OpaqueType))) OpaqueType(s->v);
 				continue;
 			}
-			case s_define_fun:
-			{
+			case s_define_fun: {
 				// Name
 				auto s = word();
 				if (s->fn) err("function already declared");
@@ -613,8 +594,7 @@ struct Parser1: Parser {
 				cnf(a);
 				continue;
 			}
-			case s_define_sort:
-			{
+			case s_define_sort: {
 				auto s = word();
 				if (s->t) err("sort already defined");
 				s->t = topLevelType();
@@ -625,8 +605,7 @@ struct Parser1: Parser {
 			case s_set_info:
 				skip();
 				continue;
-			case s_set_logic:
-			{
+			case s_set_logic: {
 				auto s = word();
 				if (strchr(s->v, 'R') && !strchr(s->v, 'I')) realOnly = 1;
 				expect(')');

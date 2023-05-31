@@ -33,8 +33,7 @@ size_t nclauses(bool pol, Expr* a) {
 		return nclauses(pol, at(a, 0));
 	case Tag::and1:
 		return pol ? nclausesAdd(pol, a) : nclausesMul(pol, a);
-	case Tag::eqv:
-	{
+	case Tag::eqv: {
 		auto x = at(a, 0);
 		auto y = at(a, 1);
 
@@ -133,14 +132,12 @@ void maybeRenameAnds(int pol, Vec<Expr*>& v) {
 Expr* maybeRename(int pol, Expr* a) {
 	switch (a->tag) {
 	case Tag::all:
-	case Tag::exists:
-	{
+	case Tag::exists: {
 		Vec<Expr*> v(a->n, maybeRename(pol, at(a, 0)));
 		memcpy(v.data + 1, begin(a) + 1, (a->n - 1) * sizeof(void*));
 		return comp(a->tag, v);
 	}
-	case Tag::and1:
-	{
+	case Tag::and1: {
 		Vec<Expr*> v(a->n);
 		for (size_t i = 0; i < a->n; ++i) v[i] = maybeRename(pol, at(a, i));
 
@@ -148,8 +145,7 @@ Expr* maybeRename(int pol, Expr* a) {
 		if (pol <= 0) maybeRenameAnds(pol, v);
 		return comp(a->tag, v);
 	}
-	case Tag::eqv:
-	{
+	case Tag::eqv: {
 		auto x = maybeRename(0, at(a, 0));
 		auto y = maybeRename(0, at(a, 1));
 		if (nclausesApprox(0, x) >= many) x = rename(0, x);
@@ -158,8 +154,7 @@ Expr* maybeRename(int pol, Expr* a) {
 	}
 	case Tag::not1:
 		return comp(Tag::not1, maybeRename(-pol, at(a, 0)));
-	case Tag::or1:
-	{
+	case Tag::or1: {
 		Vec<Expr*> v(a->n);
 		for (size_t i = 0; i < a->n; ++i) v[i] = maybeRename(pol, at(a, i));
 
@@ -221,8 +216,7 @@ Expr* nnf(bool pol, Expr* a) {
 	switch (tag) {
 	case Tag::all:
 		return pol ? all(pol, a) : exists(pol, a);
-	case Tag::and1:
-	{
+	case Tag::and1: {
 		if (!pol) tag = Tag::or1;
 		Vec<Expr*> v(a->n);
 		for (size_t i = 0; i < a->n; ++i) v[i] = nnf(pol, at(a, i));
@@ -235,8 +229,7 @@ Expr* nnf(bool pol, Expr* a) {
 	case Tag::real:
 		assert(!a->n);
 		break;
-	case Tag::eqv:
-	{
+	case Tag::eqv: {
 		// Equivalence is the most difficult operator to deal with
 		auto x = at(a, 0);
 		auto y = at(a, 1);
@@ -254,8 +247,7 @@ Expr* nnf(bool pol, Expr* a) {
 		return bools + !pol;
 	case Tag::not1:
 		return nnf(!pol, at(a, 0));
-	case Tag::or1:
-	{
+	case Tag::or1: {
 		if (!pol) tag = Tag::and1;
 		Vec<Expr*> v(a->n);
 		for (size_t i = 0; i < a->n; ++i) v[i] = nnf(pol, at(a, i));
@@ -263,16 +255,14 @@ Expr* nnf(bool pol, Expr* a) {
 	}
 	case Tag::true1:
 		return bools + pol;
-	case Tag::var:
-	{
+	case Tag::var: {
 		// Variables are mapped to new variables or Skolem functions
 		Expr* b;
 		auto found = get((Var*)a, b, m);
 		assert(found);
 		return b;
 	}
-	default:
-	{
+	default: {
 		assert(a->n);
 		Vec<Expr*> v(a->n);
 		for (size_t i = 0; i < a->n; ++i) v[i] = nnf(1, at(a, i));
@@ -304,16 +294,13 @@ void cartProduct(Vec<Expr*>& v, size_t i, Vec<size_t>& j, Vec<Expr*>& r) {
 }
 
 Expr* distribute(Expr* a) {
-	// TODO: .clang-format AfterCaseLabel
 	switch (a->tag) {
-	case Tag::and1:
-	{
+	case Tag::and1: {
 		Vec<Expr*> v(a->n);
 		for (size_t i = 0; i < a->n; ++i) v[i] = distribute(at(a, i));
 		return comp(Tag::and1, v);
 	}
-	case Tag::or1:
-	{
+	case Tag::or1: {
 		// Arguments can be taken without loss of generality as ANDs
 		Vec<Expr*> ands(a->n);
 		for (size_t i = 0; i < a->n; ++i) {

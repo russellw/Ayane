@@ -168,8 +168,7 @@ void Parser::check(Type* t, Expr* a) {
 		// Quantifier
 		check(t, at(a, 0));
 		return;
-	case Tag::call:
-	{
+	case Tag::call: {
 		assert(a->n > 1);
 		auto f = (Fn*)at(a, 0);
 		assert(f->tag == Tag::fn);
