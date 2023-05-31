@@ -2,6 +2,7 @@ import re
 
 import common
 
+
 def cat(v):
     r = []
     for w in v:
@@ -12,29 +13,31 @@ def cat(v):
 def block(v, i):
     dent = indent(v, i)
 
-    #already at the end
-    if not (indent(v,i)==dent and not  re.match(r"\s*#$", v[i])):
+    # already at the end
+    if not (indent(v, i) == dent and not re.match(r"\s*#$", v[i])):
         return
 
-    #skip comments
-    while indent(v,i)==dent and not  re.match(r"\s*#$", v[i])  and re.match(r"\s*#", v[i]):
+    # skip comments
+    while (
+        indent(v, i) == dent
+        and not re.match(r"\s*#$", v[i])
+        and re.match(r"\s*#", v[i])
+    ):
         i += 1
 
-    #a comment in a sort block should be followed by something to sort
-    if not (indent(v,i)==dent and not  re.match(r"\s*#$", v[i])):
+    # a comment in a sort block should be followed by something to sort
+    if not (indent(v, i) == dent and not re.match(r"\s*#$", v[i])):
         raise Exception(i)
 
-    #def
-    if   re.match(r"\s*def \w+\(", v[i]):
+    # def
+    if re.match(r"\s*def \w+\(", v[i]):
         i += 1
         while indent(v, i) > dent:
             i += 1
         return i
 
-    #assume just one line
-    return i+1
-
-
+    # assume just one line
+    return i + 1
 
 
 def f(v):
@@ -72,15 +75,16 @@ def indent(v, i):
     if s[j] == "\t":
         raise Exception("file indented with tabs")
     return j
+
+
 def key(v):
     for s in v:
         if re.match(r"\s*#", s):
             continue
-        if   re.match(r"\s*def \w+\(", s):
-            return' '+s
+        if re.match(r"\s*def \w+\(", s):
+            return " " + s
         return s
     raise Exception(v)
-
 
 
 def trim(v):
@@ -88,9 +92,6 @@ def trim(v):
     while not v[i - 1]:
         i -= 1
     return v[:i]
-
-
-
 
 
 common.modify_files(f, common.args_python_files())
