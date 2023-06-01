@@ -25,13 +25,6 @@ def block(v, dent, i):
     return i + 1
 
 
-def cat(v):
-    r = []
-    for w in v:
-        r.extend(w)
-    return r
-
-
 def f(v):
     i = 0
     while i < len(v):
@@ -63,7 +56,7 @@ def f(v):
                     w.append("")
                 break
 
-        v[i:j] = cat(r)
+        v[i:j] = common.cat(r)
 
         i = j + 1
 

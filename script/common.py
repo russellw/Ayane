@@ -80,6 +80,13 @@ def args_python_files():
     return r
 
 
+def cat(v):
+    r = []
+    for w in v:
+        r.extend(w)
+    return r
+
+
 def get_error_codes():
     here = os.path.dirname(os.path.realpath(__file__))
     codes = {}

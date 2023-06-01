@@ -3,13 +3,6 @@ import re
 import common
 
 
-def cat(v):
-    r = []
-    for w in v:
-        r.extend(w)
-    return r
-
-
 def def1(v, i):
     dent = indent(v, i)
 
@@ -62,7 +55,7 @@ def f(v):
                 j = k
             assert r
             r.sort(key=def_key)
-            v[i:j] = cat(r)
+            v[i:j] = common.cat(r)
         else:
             dent = indent(v, j)
             while indent(v, j) == dent and not re.match(r"\s*#", v[j]):
