@@ -48,11 +48,12 @@ def f(v):
 
         j = i
         r = []
-        while not re.match(r"\s*//", v[j]):
+        while 1:
             k = block(v, dent, j)
+            if not k:
+                break
             r.append(v[j:k])
             j = k
-        assert indent(v, i) == dent
         assert r
         r.sort()
         v[i:j] = cat(r)
