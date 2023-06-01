@@ -91,4 +91,3 @@ void* ialloc(size_t n) {
 	p += n;
 	return r;
 }
-//

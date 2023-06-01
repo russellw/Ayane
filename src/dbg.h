@@ -16,7 +16,6 @@ void stackTrace();
 #define assert(a) (a) || assertFail(__FILE__, __LINE__, __func__, #a)
 #define unreachable assert(0)
 
-// TODO: best layout?
 // SORT
 inline void dbgPrint(char c) { putchar(c); }
 
