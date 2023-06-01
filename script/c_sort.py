@@ -54,13 +54,13 @@ def f(v):
             j = k
         assert r
 
-        r.sort()
+        r.sort(key=key)
 
-        #if we have at least one multiline block, separate them by blank lines
+        # if we have at least one multiline block, separate them by blank lines
         for w in r:
-            if len(w)>1:
+            if len(w) > 1:
                 for w in r[:-1]:
-                    w.append('')
+                    w.append("")
                 break
 
         v[i:j] = cat(r)
@@ -78,6 +78,13 @@ def indent(v, i):
     while s[j] == "\t":
         j += 1
     return j
+
+
+def key(v):
+    for s in v:
+        if not re.match(r"\s*//", s):
+            return s
+    raise Exception(v)
 
 
 common.modify_files(f, common.args_c_files())

@@ -5,13 +5,6 @@ Expr bools[2] = {{Tag::false1}, {Tag::true1}};
 // SORT
 Expr* imp(Expr* a, Expr* b) { return comp(Tag::or1, comp(Tag::not1, a), b); }
 
-bool occurs(Expr* a, Expr* b) {
-	if (a == b) return 1;
-	for (auto bi: b)
-		if (occurs(a, bi)) return 1;
-	return 0;
-}
-
 Expr* quantify(Expr* a) {
 	Vec<Expr*> vars;
 	freeVars(a, vars);
@@ -63,6 +56,13 @@ Type* type(Expr* a) {
 		return ((Var*)a)->t;
 	}
 	return type(at(a, 0));
+}
+
+bool occurs(Expr* a, Expr* b) {
+	if (a == b) return 1;
+	for (auto bi: b)
+		if (occurs(a, bi)) return 1;
+	return 0;
 }
 //
 

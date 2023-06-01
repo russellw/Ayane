@@ -77,9 +77,9 @@ void defaultType(Type* t, Expr* a) {
 
 struct Parser1: Parser {
 	// SORT
+	Vec<pair<Str*, Var*>> vars;
 	bool cnfMode;
 	const Select& select;
-	Vec<pair<Str*, Var*>> vars;
 	//
 
 	// Tokenizer
@@ -684,8 +684,8 @@ struct Parser1: Parser {
 		while (tok) {
 			// SORT
 			assert(!vars.n);
-			bufp = buf;
 			auto kw = wordOrDigits() - keywords;
+			bufp = buf;
 			//
 			expect('(');
 			auto name = wordOrDigits()->v;

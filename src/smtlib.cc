@@ -560,8 +560,8 @@ struct Parser1: Parser {
 
 				// Parameters
 				// SORT
-				auto o = locals.n;
 				Vec<Expr*> v(1);
+				auto o = locals.n;
 				//
 				params(v);
 

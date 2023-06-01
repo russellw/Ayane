@@ -27,9 +27,9 @@ struct Fn: Expr {
 
 // SORT
 Expr* imp(Expr* a, Expr* b);
-bool occurs(Expr* a, Expr* b);
 Expr* quantify(Expr* a);
 Type* type(Expr* a);
+bool occurs(Expr* a, Expr* b);
 //
 
 // Equality can be represented as an expression like any other binary operator, but there are also algorithms that need to pay
