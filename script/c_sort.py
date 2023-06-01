@@ -5,28 +5,28 @@ import common
 
 # SORT
 def block(v, dent, i):
-    assert indent(v, i) == dent
-    assert re.match(r"\s*(case .*|default):", v[i])
-
-    # block starts with one or more case labels
-    while re.match(r"\s*(case .*|default):", v[i]):
+    # skip blank lines
+    while i < len(v) and not v[i]:
         i += 1
 
-    # braced block
+    # end
+    if indent(v, i) < dent or re.match(r"\s*//$", v[i]):
+        return
+
+    # skip comments
+    while not re.match(r"\s*//$", v[i]) and re.match(r"\s*//", v[i]):
+        i += 1
+
+    # there should be no more leading blank lines
+    if i < len(v):
+        assert v[i]
+
+    # braced block, probably a function definition
     if v[i - 1].endswith("{"):
         while not (indent(v, i) == dent and re.match(r"\s*}$", v[i])):
             i += 1
-        return i + 1
 
-    # blocks may be chained with [[fallthrough]]
-    while 1:
-        while indent(v, i) != dent:
-            i += 1
-        assert re.match(r"\s*(case .*|default):", v[i]) or re.match(r"\s*}", v[i])
-        if not re.match(r"\s*\[\[fallthrough\]\];", v[i - 1]):
-            return i
-        while re.match(r"\s*(case .*|default):", v[i]):
-            i += 1
+    return i + 1
 
 
 def cat(v):
@@ -39,7 +39,7 @@ def cat(v):
 def f(v):
     i = 0
     while i < len(v):
-        if not re.match(r"(\s*)switch \(.*\) {", v[i]):
+        if not re.match(r"\s*// SORT$", v[i]):
             i += 1
             continue
 
@@ -48,7 +48,7 @@ def f(v):
 
         j = i
         r = []
-        while not re.match(r"\s*}", v[j]):
+        while not re.match(r"\s*//", v[j]):
             k = block(v, dent, j)
             r.append(v[j:k])
             j = k
@@ -61,6 +61,8 @@ def f(v):
 
 
 def indent(v, i):
+    if i == len(v):
+        return -1
     s = v[i]
     if not s:
         return 1000000
