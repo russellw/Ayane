@@ -149,8 +149,6 @@ int main(int argc, char** argv) {
 		tptp(file);
 		break;
 	}
-	// TODO: testing parser
-	exit(0);
 
 	// Solve
 	superposn();
