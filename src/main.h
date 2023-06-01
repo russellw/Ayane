@@ -36,7 +36,6 @@ using std::vector;
 #include "buf.h"
 #include "dbg.h"
 #include "etc.h"
-#include "range.h"
 #include "stats.h"
 #include "vec.h"
 

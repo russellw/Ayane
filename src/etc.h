@@ -11,6 +11,29 @@ const int inputError = 201;
 // This means a bug in the code
 const int assertError = 202;
 
+struct Range: pair<size_t, size_t> {
+	struct iterator {
+		size_t i;
+
+		iterator(size_t i): i(i) {}
+
+		size_t operator*() { return i; }
+
+		iterator& operator++() {
+			++i;
+			return *this;
+		}
+
+		bool operator!=(iterator a) { return i != a.i; }
+	};
+
+	Range() {}
+	Range(size_t first, size_t second): pair(first, second) {}
+
+	iterator begin() { return first; }
+	iterator end() { return second; }
+};
+
 // SORT
 inline size_t hashCombine(size_t a, size_t b) { return a ^ b + 0x9e3779b9u + (a << 6) + (a >> 2); }
 inline size_t roundUp(size_t n, size_t alignment) { return (n + alignment - 1) & ~(alignment - 1); }
