@@ -22,7 +22,7 @@ def block(v, dent, i):
         while indent(v, i) != dent:
             i += 1
         assert re.match(r"\s*(case .*|default):", v[i]) or re.match(r"\s*}", v[i])
-        if not re.match(r"\s*[[fallthrough]];", v[i - 1]):
+        if not re.match(r"\s*\[\[fallthrough\]\];", v[i - 1]):
             return i
         while re.match(r"\s*(case .*|default):", v[i]):
             i += 1
