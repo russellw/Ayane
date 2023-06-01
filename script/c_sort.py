@@ -22,7 +22,7 @@ def block(v, dent, i):
         assert v[i]
 
     # braced block, probably a function definition
-    if v[i - 1].endswith("{"):
+    if v[i].endswith("{"):
         while not (indent(v, i) == dent and re.match(r"\s*}$", v[i])):
             i += 1
 
