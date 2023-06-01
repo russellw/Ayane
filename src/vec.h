@@ -53,6 +53,12 @@ public:
 		return begin()[i];
 	}
 
+	bool has(T a) {
+		for (auto b: *this)
+			if (a == b) return 1;
+		return 0;
+	}
+
 	void add(T a) {
 		reserve(n + 1);
 		data[n++] = a;
@@ -62,12 +68,6 @@ public:
 		reserve(n + o);
 		memcpy(data + n, v, o * sizeof(T));
 		n += o;
-	}
-
-	bool has(T a) {
-		for (auto b: *this)
-			if (a == b) return 1;
-		return 0;
 	}
 };
 

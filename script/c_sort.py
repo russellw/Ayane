@@ -5,10 +5,6 @@ import common
 
 # SORT
 def block(v, dent, i):
-    # skip blank lines
-    while i < len(v) and not v[i]:
-        i += 1
-
     # end
     if indent(v, i) < dent or re.match(r"\s*//$", v[i]):
         return
@@ -49,13 +45,24 @@ def f(v):
         j = i
         r = []
         while 1:
+            while j < len(v) and not v[j]:
+                j += 1
             k = block(v, dent, j)
             if not k:
                 break
             r.append(v[j:k])
             j = k
         assert r
+
         r.sort()
+
+        #if we have at least one multiline block, separate them by blank lines
+        for w in r:
+            if len(w)>1:
+                for w in r[:-1]:
+                    w.append('')
+                break
+
         v[i:j] = cat(r)
 
         i = j + 1
