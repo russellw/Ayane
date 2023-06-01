@@ -8,6 +8,7 @@ def block(v, dent, i):
     assert indent(v, i) == dent
     assert re.match(r"\s*(case .*|default):", v[i])
 
+    # block starts with one or more case labels
     while re.match(r"\s*(case .*|default):", v[i]):
         i += 1
 
@@ -47,7 +48,7 @@ def f(v):
 
         j = i
         r = []
-        while not re.match(r"\s*}", v[i]):
+        while not re.match(r"\s*}", v[j]):
             k = block(v, dent, j)
             r.append(v[j:k])
             j = k
