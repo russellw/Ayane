@@ -70,11 +70,6 @@ def indent(v, i):
     return j
 
 
-def iscase(v, i):
-    if re.match(r"\s*case .*:", v[i]):
-        return 1
-    if re.match(r"\s*default:", v[i]):
-        return 1
 
 
 common.modify_files(f, common.args_c_files())

@@ -41,5 +41,8 @@ if %errorlevel% neq 0 goto :eof
 python %~dp0c_sort_case_blocks.py
 if %errorlevel% neq 0 goto :eof
 
+python %~dp0c_sort.py
+if %errorlevel% neq 0 goto :eof
+
 rem Show results
 git diff

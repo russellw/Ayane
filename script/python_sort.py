@@ -39,7 +39,7 @@ def def1(v, i):
 def f(v):
     i = 0
     while i < len(v):
-        if not re.match(r"\s*# SORT\s*$", v[i]):
+        if not re.match(r"\s*# SORT$", v[i]):
             i += 1
             continue
         i += 1
