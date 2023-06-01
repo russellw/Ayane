@@ -45,10 +45,11 @@ def f(v):
         dent = indent(v, i)
         i += 1
 
+        j = i
         r = []
         while not re.match(r"\s*}", v[i]):
             k = block(v, dent, j)
-            r.append(trim(v[j:k]))
+            r.append(v[j:k])
             j = k
         assert indent(v, i) == dent
         assert r
