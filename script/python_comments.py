@@ -12,7 +12,8 @@ def f(v):
 
         m = re.match(r"(\s*)# todo:\s*(.*)", v[i], re.IGNORECASE)
         if m:
-            v[i] = f"{m[1]}# TODO: {m[2]}"
+            s = "todo".upper()
+            v[i] = f"{m[1]}# {s}: {m[2]}"
             continue
 
 
