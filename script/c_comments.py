@@ -94,6 +94,7 @@ def special(s):
 
     m = re.match(r"(\s*)// todo:\s*(.*)", s, re.IGNORECASE)
     if m:
+        #todo:change this so it doesn't show up in search
         return f"{m[1]}// TODO: {m[2]}"
 
     m = re.match(r"(\s*)// $", s)
