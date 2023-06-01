@@ -133,7 +133,6 @@ int main(int argc, char** argv) {
 			lang = Lang::dimacs;
 			break;
 		case s_smt2:
-			// TODO: should we also accept .smt?
 			lang = Lang::smtlib;
 			break;
 		}
