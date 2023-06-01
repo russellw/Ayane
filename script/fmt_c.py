@@ -47,5 +47,3 @@ def sort_case_blocks():
         m = re.match(r"(\s*)switch \(.*\) {", lines[i])
         if m:
             sort_cases(i + 1, m[1])
-
-
