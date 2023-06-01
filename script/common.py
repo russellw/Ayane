@@ -97,6 +97,18 @@ def get_error_codes():
     return codes
 
 
+def indent(v, i):
+    if i == len(v):
+        return -1
+    s = v[i]
+    if not s:
+        return 1000000
+    j = 0
+    while s[j].isspace():
+        j += 1
+    return j
+
+
 def modify_files(f, files):
     for file in files:
         try:

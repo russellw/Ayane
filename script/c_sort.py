@@ -6,7 +6,7 @@ import common
 # SORT
 def block(v, dent, i):
     # end
-    if indent(v, i) < dent or re.match(r"\s*//$", v[i]):
+    if common.indent(v, i) < dent or re.match(r"\s*//$", v[i]):
         return
 
     # skip comments
@@ -19,7 +19,7 @@ def block(v, dent, i):
 
     # braced block, probably a function definition
     if v[i].endswith("{"):
-        while not (indent(v, i) == dent and re.match(r"\s*}$", v[i])):
+        while not (common.indent(v, i) == dent and re.match(r"\s*}$", v[i])):
             i += 1
 
     return i + 1
@@ -32,7 +32,7 @@ def f(v):
             i += 1
             continue
 
-        dent = indent(v, i)
+        dent = common.indent(v, i)
         i += 1
 
         j = i
@@ -59,18 +59,6 @@ def f(v):
         v[i:j] = common.cat(r)
 
         i = j + 1
-
-
-def indent(v, i):
-    if i == len(v):
-        return -1
-    s = v[i]
-    if not s:
-        return 1000000
-    j = 0
-    while s[j] == "\t":
-        j += 1
-    return j
 
 
 def key(v):

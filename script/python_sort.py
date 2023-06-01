@@ -4,11 +4,11 @@ import common
 
 
 def def1(v, i):
-    dent = indent(v, i)
+    dent = common.indent(v, i)
 
     # skip comments
     while (
-        indent(v, i) == dent
+        common.indent(v, i) == dent
         and not re.match(r"\s*#$", v[i])
         and re.match(r"\s*#", v[i])
     ):
@@ -19,12 +19,12 @@ def def1(v, i):
         assert v[i]
 
     # if there is no def, we are done
-    if not (indent(v, i) == dent and re.match(r"\s*def \w+\(", v[i])):
+    if not (common.indent(v, i) == dent and re.match(r"\s*def \w+\(", v[i])):
         return
 
     # function body
     i += 1
-    while indent(v, i) > dent:
+    while common.indent(v, i) > dent:
         i += 1
     return i
 
@@ -57,29 +57,15 @@ def f(v):
             r.sort(key=def_key)
             v[i:j] = common.cat(r)
         else:
-            dent = indent(v, j)
-            while indent(v, j) == dent and not re.match(r"\s*#", v[j]):
+            dent = common.indent(v, j)
+            while common.indent(v, j) == dent and not re.match(r"\s*#", v[j]):
                 j += 1
-            assert indent(v, j) <= dent
+            assert common.indent(v, j) <= dent
             r = v[i:j]
             r.sort()
             v[i:j] = r
 
         i = j
-
-
-def indent(v, i):
-    if i == len(v):
-        return -1
-    s = v[i]
-    if not s:
-        return 1000000
-    j = 0
-    while s[j] == " ":
-        j += 1
-    if s[j] == "\t":
-        raise Exception("file indented with tabs")
-    return j
 
 
 def def_key(v):
